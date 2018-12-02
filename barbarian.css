@@ -1,0 +1,6 @@
+.barbarian {
+    height: 400px;
+    width: 400px;
+    background-image: url(./sprites/sprite.png);
+    position: absolute;
+}

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="./barbarian.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script> 
+$(document).ready(function(){
+    var barbarian = $(".barbarian");
+    var SPRITE_FPS = 5;
+    var PIXELS_PER_SECOND = 150; // pixels per second 
+    var GRID_COLUMNS = 8;
+    var RUN_SPEED_INCREASE_FACTOR = 1.5;
+    var DIRECTION_CHANGE_DELAY = 200;
+    var MOVING_RIGHT = ['RIGHT', 'RUN_RIGHT'];
+    var MOVING_LEFT = ['LEFT', 'RUN_LEFT'];
+    var ATTACKING = ['ATTACK_LEFT', 'ATTACK_RIGHT'];
+    var KEYPRESS = {
+        'LEFT'   : 37,
+        'UP'     : 38,
+        'RIGHT'  : 39,
+        'DOWN'   : 40,
+        'ATTACK' : 65,
+        'RUN'    : 82,
+        'STOP'   : 83,
+        'JUMP'   : 91
+    };
+
+    var windowWidth = $( document ).width() - barbarian.width();
+    var lastDirectionChangeTime = 0;
+    var action = 'STOP_RIGHT';
+
+    var throttleDirectionChange = function(requestedDirection, ) {
+        var isDirectionChange = oldaction === (requestedDirection === 'LEFT' ? 'RIGHT' : 'LEFT');
+        var elapsedTimeSinceDirectionChange;
+        if (isDirectionChange) {
+            // direction change
+            var currentTime = new Date().getTime();
+            if (lastDirectionChangeTime === 0 ) {
+                lastDirectionChangeTime = currentTime;
+            } else {
+                elapsedTimeSinceDirectionChange = currentTime - lastDirectionChangeTime;
+                if (elapsedTimeSinceDirectionChange >= DIRECTION_CHANGE_DELAY) {
+                    lastDirectionChangeTime = currentTime;
+                }
+            }
+        }
+        if (isDirectionChange && elapsedTimeSinceDirectionChange < DIRECTION_CHANGE_DELAY) {
+            return true;
+        }
+        return false;
+    }
+
+    var isAttacking = function(action) {
+        return ATTACKING.includes(action);
+    }
+
+    var isMovingRight = function(action) {
+        return MOVING_RIGHT.includes(action);
+    }
+
+    var isMovingLeft = function(action) {
+        return MOVING_LEFT.includes(action);
+    }
+
+    var stop = function(action, previousAction) {
+        if (isMovingRight(previousAction)) {
+            return 'STOP_RIGHT';
+        } else if (isMovingLeft(previousAction)) {
+            return 'STOP_LEFT';
+        }
+        return action;
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async function walkPath(path, dir, heightOffset) {
+        var index = 0;
+        while(action === dir || action ==='STOP_LEFT' || action ==='STOP_RIGHT') {
+	   var windowWidth = $( document ).width() - barbarian.width();
+           var position = path[index];
+           if (action === 'STOP_RIGHT') {
+               console.log('check frame and then stop index is ' + index);
+               barbarian.css('background-position','0px 0px');
+               barbarian.stop();
+               break;
+           }
+           if (action === 'STOP_LEFT') {
+               console.log('check frame and then stop index is ' + index + ' and height offset is ' + barbarian.height());
+               barbarian.css('background-position',(-1*6*barbarian.width()) + 'px ' +  -1*barbarian.height() + 'px');
+               barbarian.stop();
+               break;
+           }
+           if (action === 'LEFT' && barbarian.offset().left === 0) {
+               barbarian.stop();
+               break;
+           }
+           if (action === 'RIGHT' && barbarian.offset().left === windowWidth) {
+               break;
+           }
+           if (action === 'RUN_LEFT' && barbarian.offset().left === 0) {
+               console.log('stop running left');
+               break;
+           }
+           if (action === 'RUN_RIGHT' && barbarian.offset().left === windowWidth) {
+               console.log('stop running right');
+               break;
+           }
+           barbarian.css('background-position',(-1*position*barbarian.width()) + 'px ' + -1*heightOffset + 'px');
+
+           if((action === 'ATTACK_RIGHT' || action === 'ATTACK_LEFT') && index >= path.length - 1 ) {
+               console.log('attack is done');
+               if (action === 'ATTACK_RIGHT') {
+                   action = 'STOP_RIGHT';
+               } else if (action === 'ATTACK_LEFT') {
+                   action = 'STOP_LEFT';
+               }
+               break;
+           }
+           await sleep(1000/SPRITE_FPS);
+
+           index++;
+               
+           if (index == path.length) {
+               index = 0;
+           }
+        }
+    }
+
+    function walkRight(act) {
+        action = act;
+        var path = [1, 2, 3, 4, 5, 6];
+        walkPath(path, 'RIGHT', 0, 0);
+    }
+
+    function walkLeft(act) {
+        action = act;
+        var path = [13, 12, 11, 10, 9, 8];
+        walkPath(path, 'LEFT', 1*barbarian.height());
+    }
+
+    function runLeft(act) {
+        action = act;
+        var path = [24, 25, 26, 27, 28, 29];
+        walkPath(path, 'RUN_LEFT', 3*barbarian.height());
+    }
+
+    function runRight(act) {
+        action = act;
+        var path = [16, 17, 18, 19, 20, 21]
+        walkPath(path, 'RUN_RIGHT', 2*barbarian.height());
+    }
+
+    var right = function(action) {
+        if (action !== 'RIGHT' && !throttleDirectionChange('RIGHT')) {
+            barbarian.stop();
+            var distance = (windowWidth - barbarian.offset().left);
+	    barbarian.animate({left: windowWidth + 'px'}, distance / PIXELS_PER_SECOND * 1000, 'linear');
+            walkRight('RIGHT');
+            return 'RIGHT';
+        }
+    }
+
+    var left = function(action) {
+        if (action !== 'LEFT' && !throttleDirectionChange('LEFT')) {
+            var oldLeft = barbarian.offset().left;
+            barbarian.stop();
+            var distance = barbarian.offset().left;
+            barbarian.animate({left: '0px'}, distance / PIXELS_PER_SECOND * 1000, 'linear');
+            var elapsedTimeSinceDirectionChange = 1000;
+            action = 'LEFT';
+            walkLeft('LEFT');
+            return 'LEFT';
+        }
+    }
+
+    function attackRight(act) {
+        action = act;
+        var path = [32, 33, 34, 35, 36, 37, 38, 39];
+        walkPath(path, 'ATTACK_RIGHT', 4*barbarian.height());
+    }
+
+    function attackLeft(act) {
+        action = act;
+        var path = [47, 46, 45, 44, 43, 42, 41, 40];
+        walkPath(path, 'ATTACK_LEFT', 5*barbarian.height());
+    }
+
+    var attack = function(action, oldaction) {
+        console.log('action:' + action);
+        if (action !== 'ATTACK_LEFT' && action !== 'ATTACK_RIGHT') {
+            barbarian.stop();
+            var distance = (windowWidth - barbarian.offset().left);
+                
+            console.log('oldaction:' + oldaction);
+            if (oldaction === 'RIGHT' || oldaction === 'ATTACK_RIGHT' || oldaction === 'RUN_RIGHT' || oldaction === 'STOP_RIGHT') {
+                action = 'ATTACK_RIGHT';
+                console.log('attack right');
+                attackRight(action);
+            } else if (oldaction === 'LEFT' || oldaction === 'ATTACK_LEFT' || oldaction === 'RUN_LEFT' || oldaction === 'STOP_LEFT') {
+                action = 'ATTACK_LEFT';
+                console.log('attack left');
+                attackLeft(action);
+            }
+        }
+        return action;
+    }
+
+    var run = function(action) {
+        if (!isMovingRight()) {
+            barbarian.stop();
+            var distance;
+            if (action === 'LEFT' || action === 'ATTACK_LEFT' || action === 'STOP_LEFT') {
+                distance = barbarian.offset().left;
+                barbarian.animate({left: '0px'}, distance / PIXELS_PER_SECOND / RUN_SPEED_INCREASE_FACTOR  * 1000, 'linear');
+            } else if (action == 'RIGHT' || action === 'ATTACK_RIGHT' || action ==='STOP_RIGHT') {
+                distance = (windowWidth - barbarian.offset().left);
+                barbarian.animate({left: windowWidth + 'px'}, distance / PIXELS_PER_SECOND / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
+            }
+                
+            if (oldaction === 'RIGHT' || oldaction === 'ATTACK_RIGHT' || oldaction === 'STOP_RIGHT') {
+                action = 'RUN_RIGHT';
+                runRight(action);
+            } else if (oldaction == 'LEFT' || oldaction === 'ATTACK_LEFT' || oldaction ==='STOP_LEFT') {
+                action = 'RUN_LEFT';
+                runLeft(action);
+            }
+        }
+        return action;
+    }
+
+    $(document).keydown(function(e) {
+        var barbarian = $(".barbarian");
+        oldaction = action;
+        switch(e.which) {
+           case KEYPRESS['RUN']:
+                action = run(action);
+                break;
+            case KEYPRESS['JUMP']:
+                break;
+            case KEYPRESS['STOP']:
+                action = stop(action, oldaction);
+                break;
+            case KEYPRESS['RIGHT']:
+                action = right(action); 
+                break;
+            case KEYPRESS['LEFT']:
+                action = left(action);
+                break;
+            case KEYPRESS['ATTACK']:
+                action = attack(action, oldaction);
+                break;
+            case KEYPRESS['UP']: // up
+                break;
+            case KEYPRESS['DOWN']: // down
+                break;
+
+            default: return; // exit this handler for other keys
+        }
+        e.preventDefault(); // prevent the default action (scroll / move caret)
+    });
+
+});
+</script> 
+</head>
+<body>
+<div class="barbarian"></div>
+</body>
+</html>
+

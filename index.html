@@ -5,15 +5,41 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script> 
 $(document).ready(function(){
-    var barbarian = $(".barbarian");
+    // The speed of the sprite movement in frames per second
     var SPRITE_FPS = 5;
-    var PIXELS_PER_SECOND = 150; // pixels per second 
+    // The speed that a sprite moves
+    var SPRITE_PIXELS_PER_SECOND = 150;
+    // The number of grid columns for the sprite
     var GRID_COLUMNS = 8;
+
+    // The multipler for the speed increase when running
     var RUN_SPEED_INCREASE_FACTOR = 1.5;
+
+    // The amount of time to throttle rapid diretion changes
     var DIRECTION_CHANGE_DELAY = 200;
+
+    // Stopping sprite horizontal and vertical offsets
+    var STOP_RIGHT_POSITION = 0;
+    var STOP_LEFT_POSITION = 6;
+    var STOP_RIGHT_HEIGHT_OFFSET = 0;
+    var STOP_LEFT_HEIGHT_OFFSET = 1;
+
+    // Actions
+    var STOP_RIGHT = 'STOP_RIGHT';
+    var STOP_LEFT = 'STOP_LEFT';
+    var RUN_LEFT = 'RUN_LEFT';
+    var RUN_RIGHT = 'RUN_RIGHT';
+    var ATTACK_RIGHT = 'ATTACK_RIGHT';
+    var ATTACK_LEFT = 'ATTACK_LEFT';
+    var LEFT = 'LEFT';
+    var RIGHT = 'RIGHT';
+
+    // Aggregated actions
     var MOVING_RIGHT = ['RIGHT', 'RUN_RIGHT'];
     var MOVING_LEFT = ['LEFT', 'RUN_LEFT'];
     var ATTACKING = ['ATTACK_LEFT', 'ATTACK_RIGHT'];
+
+    // Keypress event names
     var KEYPRESS = {
         'LEFT'   : 37,
         'UP'     : 38,
@@ -25,20 +51,26 @@ $(document).ready(function(){
         'JUMP'   : 91
     };
 
-    var windowWidth = $( document ).width() - barbarian.width();
+    // Global variables
+    var barbarian = $(".barbarian");
+    var windowWidth = $(document).width() - barbarian.width();
     var lastDirectionChangeTime = 0;
-    var action = 'STOP_RIGHT';
+    var action = STOP_RIGHT;
 
-    var throttleDirectionChange = function(requestedDirection, ) {
-        var isDirectionChange = oldaction === (requestedDirection === 'LEFT' ? 'RIGHT' : 'LEFT');
-        var elapsedTimeSinceDirectionChange;
+    /**
+     * Throttles rapid diretion changes.
+     *
+     * @param requestedDirection The requested direction that may be throttled.
+     * @returns True if throttling should be performed, false otherwise.
+     */
+    function shouldThrottleDirectionChange(requestedDirection) {
+        var isDirectionChange = oldaction === (requestedDirection === LEFT ? RIGHT : LEFT);
         if (isDirectionChange) {
-            // direction change
             var currentTime = new Date().getTime();
             if (lastDirectionChangeTime === 0 ) {
                 lastDirectionChangeTime = currentTime;
             } else {
-                elapsedTimeSinceDirectionChange = currentTime - lastDirectionChangeTime;
+                var elapsedTimeSinceDirectionChange = currentTime - lastDirectionChangeTime;
                 if (elapsedTimeSinceDirectionChange >= DIRECTION_CHANGE_DELAY) {
                     lastDirectionChangeTime = currentTime;
                 }
@@ -50,184 +82,175 @@ $(document).ready(function(){
         return false;
     }
 
-    var isAttacking = function(action) {
+    /**
+     * Determine if the barbarian is currently attacking.
+     *
+     * @param action the current action.
+     * @returns True if the barbarian is attacking, false otherwise.
+     */
+    function isAttacking(action) {
         return ATTACKING.includes(action);
     }
 
-    var isMovingRight = function(action) {
+    /**
+     * Determine if the barbarian is moving right.
+     *
+     * @param action The current action.
+     * @returns True if the barbarian is moving right, false otherwise.
+     */
+    function isMovingRight(action) {
         return MOVING_RIGHT.includes(action);
     }
 
-    var isMovingLeft = function(action) {
+    /**
+     * Determine if the barbarian is moving left.
+     *
+     * @param action The current action.
+     * @returns True if the barbarian is moving left, false otherwise.
+     */
+    function isMovingLeft(action) {
         return MOVING_LEFT.includes(action);
     }
 
-    var stop = function(action, previousAction) {
-        if (isMovingRight(previousAction)) {
-            return 'STOP_RIGHT';
-        } else if (isMovingLeft(previousAction)) {
-            return 'STOP_LEFT';
-        }
-        return action;
-    }
-
+    /**
+     * Sleep helper method used to achieve desired frames per second for position change.
+     *
+     * @param ms The number of milliseconds to sleep.
+     */
     function sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async function walkPath(path, dir, heightOffset) {
+    /**
+     * Starts an attack to the left or right depending on the direction the barbarian is moving.
+     */
+    function attack() {
+        if (action !== ATTACK_LEFT && action !== ATTACK_RIGHT) {
+            barbarian.stop();
+            var distance = (windowWidth - barbarian.offset().left);
+                
+            if (oldaction === RIGHT || oldaction === ATTACK_RIGHT || oldaction === RUN_RIGHT || oldaction === STOP_RIGHT) {
+                action = ATTACK_RIGHT;
+                moveSpritePosition([32, 33, 34, 35, 36, 37, 38, 39], ATTACK_RIGHT, 4*barbarian.height());
+            } else if (oldaction === LEFT || oldaction === ATTACK_LEFT || oldaction === RUN_LEFT || oldaction === STOP_LEFT) {
+                action = ATTACK_LEFT;
+                moveSpritePosition([47, 46, 45, 44, 43, 42, 41, 40], ATTACK_LEFT, 5*barbarian.height());
+            }
+        }
+    }
+
+    /**
+     * Stops the sprite and position animation. Puts the barbarian sprite in the appropriate stop position.
+     *
+     * @param action The current action.
+     * @param previousAction The previous action. 
+     * @returns The new action if the barbarian was moving, the unchanged action otherwise.
+     */
+    function stop(action, previousAction) {
+        var isRight = isMovingRight(previousAction);
+        var isLeft = isMovingLeft(previousAction);
+        var isMoving = isRight || isLeft;
+        var newAction = action;
+        if (isMoving) {
+
+            var x = isRight ? (-1 * STOP_RIGHT_POSITION * barbarian.width()) 
+                            : (-1 * STOP_LEFT_POSITION * barbarian.width());
+
+            var y = isRight ? (-1 * STOP_RIGHT_HEIGHT_OFFSET) 
+                            : -1 * STOP_LEFT_HEIGHT_OFFSET * barbarian.height();
+            barbarian.css('background-position', x + 'px ' + y + 'px');
+            barbarian.stop();
+            newAction = isRight ? STOP_RIGHT : STOP_LEFT; 
+        }
+        return newAction;
+    }
+
+
+
+    function right() {
+        if (action !== 'RIGHT' && !shouldThrottleDirectionChange('RIGHT')) {
+            barbarian.stop();
+            var distance = (windowWidth - barbarian.offset().left);
+	    barbarian.animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
+
+            action = RIGHT;
+            moveSpritePosition([1, 2, 3, 4, 5, 6], RIGHT, 0, 0);
+        } 
+    }
+
+    function left() {
+        if (action !== 'LEFT' && !shouldThrottleDirectionChange('LEFT')) {
+            var oldLeft = barbarian.offset().left;
+            barbarian.stop();
+            var distance = barbarian.offset().left;
+            barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
+
+            action = LEFT;
+            moveSpritePosition([13, 12, 11, 10, 9, 8], LEFT, 1*barbarian.height());
+        }
+    }
+
+    function run() {
+        if (!isMovingRight()) {
+            barbarian.stop();
+            var distance;
+            if (action === LEFT || action === ATTACK_LEFT || action === STOP_LEFT) {
+                distance = barbarian.offset().left;
+                barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND / RUN_SPEED_INCREASE_FACTOR  * 1000, 'linear');
+            } else if (action == RIGHT || action === ATTACK_RIGHT || action === STOP_RIGHT) {
+                distance = (windowWidth - barbarian.offset().left);
+                barbarian.animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
+            }
+                
+            if (oldaction === RIGHT || oldaction === ATTACK_RIGHT || oldaction === STOP_RIGHT) {
+                action = RUN_RIGHT;
+                moveSpritePosition([16, 17, 18, 19, 20, 21], 'RUN_RIGHT', 2*barbarian.height());
+            } else if (oldaction == LEFT || oldaction === ATTACK_LEFT || oldaction === STOP_LEFT) {
+                action = RUN_LEFT;
+                moveSpritePosition([24, 25, 26, 27, 28, 29], RUN_LEFT, 3*barbarian.height());
+            }
+        }
+        return action;
+    }
+
+    /**
+     * This method animates the position of the spite according to the path provided.
+     *
+     * @path The path that the sprite will take.
+     * @requestedAction The action requested that is assicated with the path.
+     */
+    async function moveSpritePosition(path, requestedAction, heightOffset) {
         var index = 0;
-        while(action === dir || action ==='STOP_LEFT' || action ==='STOP_RIGHT') {
+        while(action === requestedAction) {
 	   var windowWidth = $( document ).width() - barbarian.width();
            var position = path[index];
-           if (action === 'STOP_RIGHT') {
-               console.log('check frame and then stop index is ' + index);
-               barbarian.css('background-position','0px 0px');
-               barbarian.stop();
-               break;
-           }
-           if (action === 'STOP_LEFT') {
-               console.log('check frame and then stop index is ' + index + ' and height offset is ' + barbarian.height());
-               barbarian.css('background-position',(-1*6*barbarian.width()) + 'px ' +  -1*barbarian.height() + 'px');
-               barbarian.stop();
-               break;
-           }
-           if (action === 'LEFT' && barbarian.offset().left === 0) {
-               barbarian.stop();
-               break;
-           }
-           if (action === 'RIGHT' && barbarian.offset().left === windowWidth) {
-               break;
-           }
-           if (action === 'RUN_LEFT' && barbarian.offset().left === 0) {
-               console.log('stop running left');
-               break;
-           }
-           if (action === 'RUN_RIGHT' && barbarian.offset().left === windowWidth) {
-               console.log('stop running right');
-               break;
-           }
-           barbarian.css('background-position',(-1*position*barbarian.width()) + 'px ' + -1*heightOffset + 'px');
 
-           if((action === 'ATTACK_RIGHT' || action === 'ATTACK_LEFT') && index >= path.length - 1 ) {
-               console.log('attack is done');
-               if (action === 'ATTACK_RIGHT') {
-                   action = 'STOP_RIGHT';
-               } else if (action === 'ATTACK_LEFT') {
-                   action = 'STOP_LEFT';
+           barbarian.css('background-position',(-1*position*barbarian.width()) + 'px ' + -1*heightOffset + 'px');
+           if (action === STOP_RIGHT || action === STOP_LEFT) {
+               break;
+           }
+           if ((action === LEFT || action === RUN_LEFT) && barbarian.offset().left === 0) {
+               barbarian.stop();
+               break;
+           }
+           if ((action === RIGHT || action === RUN_RIGHT) && barbarian.offset().left === windowWidth) {
+               break;
+           }
+           if((action === ATTACK_RIGHT || action === ATTACK_LEFT) && index >= path.length - 1 ) {
+               if (action === ATTACK_RIGHT) {
+                   action = STOP_RIGHT;
+               } else if (action === ATTACK_LEFT) {
+                   action = STOP_LEFT;
                }
                break;
            }
            await sleep(1000/SPRITE_FPS);
 
-           index++;
-               
-           if (index == path.length) {
+           // loop the sprite animation
+           if (index++ == path.length) {
                index = 0;
            }
         }
-    }
-
-    function walkRight(act) {
-        action = act;
-        var path = [1, 2, 3, 4, 5, 6];
-        walkPath(path, 'RIGHT', 0, 0);
-    }
-
-    function walkLeft(act) {
-        action = act;
-        var path = [13, 12, 11, 10, 9, 8];
-        walkPath(path, 'LEFT', 1*barbarian.height());
-    }
-
-    function runLeft(act) {
-        action = act;
-        var path = [24, 25, 26, 27, 28, 29];
-        walkPath(path, 'RUN_LEFT', 3*barbarian.height());
-    }
-
-    function runRight(act) {
-        action = act;
-        var path = [16, 17, 18, 19, 20, 21]
-        walkPath(path, 'RUN_RIGHT', 2*barbarian.height());
-    }
-
-    var right = function(action) {
-        if (action !== 'RIGHT' && !throttleDirectionChange('RIGHT')) {
-            barbarian.stop();
-            var distance = (windowWidth - barbarian.offset().left);
-	    barbarian.animate({left: windowWidth + 'px'}, distance / PIXELS_PER_SECOND * 1000, 'linear');
-            walkRight('RIGHT');
-            return 'RIGHT';
-        }
-    }
-
-    var left = function(action) {
-        if (action !== 'LEFT' && !throttleDirectionChange('LEFT')) {
-            var oldLeft = barbarian.offset().left;
-            barbarian.stop();
-            var distance = barbarian.offset().left;
-            barbarian.animate({left: '0px'}, distance / PIXELS_PER_SECOND * 1000, 'linear');
-            var elapsedTimeSinceDirectionChange = 1000;
-            action = 'LEFT';
-            walkLeft('LEFT');
-            return 'LEFT';
-        }
-    }
-
-    function attackRight(act) {
-        action = act;
-        var path = [32, 33, 34, 35, 36, 37, 38, 39];
-        walkPath(path, 'ATTACK_RIGHT', 4*barbarian.height());
-    }
-
-    function attackLeft(act) {
-        action = act;
-        var path = [47, 46, 45, 44, 43, 42, 41, 40];
-        walkPath(path, 'ATTACK_LEFT', 5*barbarian.height());
-    }
-
-    var attack = function(action, oldaction) {
-        console.log('action:' + action);
-        if (action !== 'ATTACK_LEFT' && action !== 'ATTACK_RIGHT') {
-            barbarian.stop();
-            var distance = (windowWidth - barbarian.offset().left);
-                
-            console.log('oldaction:' + oldaction);
-            if (oldaction === 'RIGHT' || oldaction === 'ATTACK_RIGHT' || oldaction === 'RUN_RIGHT' || oldaction === 'STOP_RIGHT') {
-                action = 'ATTACK_RIGHT';
-                console.log('attack right');
-                attackRight(action);
-            } else if (oldaction === 'LEFT' || oldaction === 'ATTACK_LEFT' || oldaction === 'RUN_LEFT' || oldaction === 'STOP_LEFT') {
-                action = 'ATTACK_LEFT';
-                console.log('attack left');
-                attackLeft(action);
-            }
-        }
-        return action;
-    }
-
-    var run = function(action) {
-        if (!isMovingRight()) {
-            barbarian.stop();
-            var distance;
-            if (action === 'LEFT' || action === 'ATTACK_LEFT' || action === 'STOP_LEFT') {
-                distance = barbarian.offset().left;
-                barbarian.animate({left: '0px'}, distance / PIXELS_PER_SECOND / RUN_SPEED_INCREASE_FACTOR  * 1000, 'linear');
-            } else if (action == 'RIGHT' || action === 'ATTACK_RIGHT' || action ==='STOP_RIGHT') {
-                distance = (windowWidth - barbarian.offset().left);
-                barbarian.animate({left: windowWidth + 'px'}, distance / PIXELS_PER_SECOND / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
-            }
-                
-            if (oldaction === 'RIGHT' || oldaction === 'ATTACK_RIGHT' || oldaction === 'STOP_RIGHT') {
-                action = 'RUN_RIGHT';
-                runRight(action);
-            } else if (oldaction == 'LEFT' || oldaction === 'ATTACK_LEFT' || oldaction ==='STOP_LEFT') {
-                action = 'RUN_LEFT';
-                runLeft(action);
-            }
-        }
-        return action;
     }
 
     $(document).keydown(function(e) {
@@ -235,7 +258,7 @@ $(document).ready(function(){
         oldaction = action;
         switch(e.which) {
            case KEYPRESS['RUN']:
-                action = run(action);
+                run(action);
                 break;
             case KEYPRESS['JUMP']:
                 break;
@@ -243,17 +266,17 @@ $(document).ready(function(){
                 action = stop(action, oldaction);
                 break;
             case KEYPRESS['RIGHT']:
-                action = right(action); 
+                right(); 
                 break;
             case KEYPRESS['LEFT']:
-                action = left(action);
+                left();
                 break;
             case KEYPRESS['ATTACK']:
-                action = attack(action, oldaction);
+                attack();
                 break;
-            case KEYPRESS['UP']: // up
+            case KEYPRESS['UP']:
                 break;
-            case KEYPRESS['DOWN']: // down
+            case KEYPRESS['DOWN']:
                 break;
 
             default: return; // exit this handler for other keys

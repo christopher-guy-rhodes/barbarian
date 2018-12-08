@@ -31,8 +31,16 @@ $(document).ready(function(){
     var RUN_RIGHT = 'RUN_RIGHT';
     var ATTACK_RIGHT = 'ATTACK_RIGHT';
     var ATTACK_LEFT = 'ATTACK_LEFT';
+    var JUMP_RIGHT = 'JUMP_RIGHT';
+    var JUMP_LEFT = 'JUMP_LEFT';
     var LEFT = 'LEFT';
     var RIGHT = 'RIGHT';
+    var RUN = 'RUN';
+    var JUMP = 'JUMP';
+    var STOP = 'STOP';
+    var ATTACK = 'ATTACK';
+    var UP = 'UP';
+    var DOWN = 'DOWN';
 
     // Aggregated actions
     var MOVING_RIGHT = ['RIGHT', 'RUN_RIGHT'];
@@ -41,14 +49,14 @@ $(document).ready(function(){
 
     // Keypress event names
     var KEYPRESS = {
-        'LEFT'   : 37,
-        'UP'     : 38,
-        'RIGHT'  : 39,
-        'DOWN'   : 40,
-        'ATTACK' : 65,
-        'RUN'    : 82,
-        'STOP'   : 83,
-        'JUMP'   : 91
+        LEFT   : 37,
+        UP     : 38,
+        RIGHT  : 39,
+        DOWN   : 40,
+        ATTACK : 65,
+        RUN    : 82,
+        STOP   : 83,
+        JUMP   : 74 
     };
 
     // Global variables
@@ -168,7 +176,7 @@ $(document).ready(function(){
 
 
     function right() {
-        if (action !== 'RIGHT' && !shouldThrottleDirectionChange('RIGHT')) {
+        if (action !== RIGHT && !shouldThrottleDirectionChange(RIGHT)) {
             barbarian.stop();
             var distance = (windowWidth - barbarian.offset().left);
 	    barbarian.animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
@@ -178,8 +186,21 @@ $(document).ready(function(){
         } 
     }
 
+    function jump() {
+        console.log('in jump');
+        if (isMovingRight(action)) {
+            console.log('jump right');
+            barbarian.stop();
+            var distance = (windowWidth - barbarian.offset().left);
+	    barbarian.animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
+
+            action = JUMP_RIGHT;
+            moveSpritePosition([48, 49, 50, 51, 52, 53, 54], JUMP_RIGHT, 6*barbarian.height());
+        }
+    }
+
     function left() {
-        if (action !== 'LEFT' && !shouldThrottleDirectionChange('LEFT')) {
+        if (action !== LEFT && !shouldThrottleDirectionChange(LEFT)) {
             var oldLeft = barbarian.offset().left;
             barbarian.stop();
             var distance = barbarian.offset().left;
@@ -204,7 +225,7 @@ $(document).ready(function(){
                 
             if (oldaction === RIGHT || oldaction === ATTACK_RIGHT || oldaction === STOP_RIGHT) {
                 action = RUN_RIGHT;
-                moveSpritePosition([16, 17, 18, 19, 20, 21], 'RUN_RIGHT', 2*barbarian.height());
+                moveSpritePosition([16, 17, 18, 19, 20, 21], RUN_RIGHT, 2*barbarian.height());
             } else if (oldaction == LEFT || oldaction === ATTACK_LEFT || oldaction === STOP_LEFT) {
                 action = RUN_LEFT;
                 moveSpritePosition([24, 25, 26, 27, 28, 29], RUN_LEFT, 3*barbarian.height());
@@ -244,6 +265,16 @@ $(document).ready(function(){
                }
                break;
            }
+           if((action === JUMP_RIGHT || action === JUMP_LEFT) && index >= path.length - 1 ) {
+               console.log('a');
+               if (action === JUMP_RIGHT) {
+                   action = STOP_RIGHT;
+               } else if (action === JUMP_LEFT) {
+                   action = LEFT;
+               }
+               barbarian.stop();
+               break;
+           }
            await sleep(1000/SPRITE_FPS);
 
            // loop the sprite animation
@@ -257,26 +288,27 @@ $(document).ready(function(){
         var barbarian = $(".barbarian");
         oldaction = action;
         switch(e.which) {
-           case KEYPRESS['RUN']:
+           case KEYPRESS[RUN]:
                 run(action);
                 break;
-            case KEYPRESS['JUMP']:
+            case KEYPRESS[JUMP]:
+                jump(action);
                 break;
-            case KEYPRESS['STOP']:
+            case KEYPRESS[STOP]:
                 action = stop(action, oldaction);
                 break;
-            case KEYPRESS['RIGHT']:
+            case KEYPRESS[RIGHT]:
                 right(); 
                 break;
-            case KEYPRESS['LEFT']:
+            case KEYPRESS[LEFT]:
                 left();
                 break;
-            case KEYPRESS['ATTACK']:
+            case KEYPRESS[ATTACK]:
                 attack();
                 break;
-            case KEYPRESS['UP']:
+            case KEYPRESS[UP]:
                 break;
-            case KEYPRESS['DOWN']:
+            case KEYPRESS[DOWN]:
                 break;
 
             default: return; // exit this handler for other keys

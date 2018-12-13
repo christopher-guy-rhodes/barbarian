@@ -251,7 +251,6 @@ $(document).ready(function(){
                break;
            }
            if ((action === LEFT || action === RUN_LEFT) && barbarian.offset().left === 0) {
-               barbarian.stop();
                break;
            }
            if ((action === RIGHT || action === RUN_RIGHT) && barbarian.offset().left === windowWidth) {
@@ -278,7 +277,7 @@ $(document).ready(function(){
            await sleep(1000/SPRITE_FPS);
 
            // loop the sprite animation
-           if (index++ == path.length) {
+           if (index++ == path.length - 1) {
                index = 0;
            }
         }

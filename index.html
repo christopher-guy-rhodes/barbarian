@@ -33,6 +33,8 @@ $(document).ready(function(){
     var ATTACK_LEFT = 'ATTACK_LEFT';
     var JUMP_RIGHT = 'JUMP_RIGHT';
     var JUMP_LEFT = 'JUMP_LEFT';
+
+    // Keypresses
     var LEFT = 'LEFT';
     var RIGHT = 'RIGHT';
     var RUN = 'RUN';
@@ -45,6 +47,8 @@ $(document).ready(function(){
     // Aggregated actions
     var MOVING_RIGHT = ['RIGHT', 'RUN_RIGHT'];
     var MOVING_LEFT = ['LEFT', 'RUN_LEFT'];
+    var FACING_RIGHT = ['RIGHT', 'RUN_RIGHT', 'ATTACK_RIGHT', 'STOP_RIGHT', 'JUMP_RIGHT'];
+    var FACING_LEFT = ['LEFT', 'RUN_LEFT', 'ATTACK_LEFT', 'STOP_LEFT', 'JUMP_LEFT'];
     var ATTACKING = ['ATTACK_LEFT', 'ATTACK_RIGHT'];
 
     // Keypress event names
@@ -111,6 +115,26 @@ $(document).ready(function(){
     }
 
     /**
+     * Determine if the barbarian is facing right.
+     *
+     * @ param action The current action.
+     * @returns True if the barbarian is facing right, false otherwise
+     */
+    function isFacingRight(action) {
+        return FACING_RIGHT.includes(action);
+    }
+
+    /**
+     * Determine if the barbarian is facing left.
+     *
+     * @ param action The current action.
+     * @returns True if the barbarian is facing left, false otherwise
+     */
+    function isFacingLeft(action) {
+        return FACING_LEFT.includes(action);
+    }
+
+    /**
      * Determine if the barbarian is moving left.
      *
      * @param action The current action.
@@ -135,14 +159,13 @@ $(document).ready(function(){
     function attack() {
         if (action !== ATTACK_LEFT && action !== ATTACK_RIGHT) {
             barbarian.stop();
-            var distance = (windowWidth - barbarian.offset().left);
                 
-            if (oldaction === RIGHT || oldaction === ATTACK_RIGHT || oldaction === RUN_RIGHT || oldaction === STOP_RIGHT) {
+            if (isFacingRight(oldaction)) {
                 action = ATTACK_RIGHT;
-                moveSpritePosition([32, 33, 34, 35, 36, 37, 38, 39], ATTACK_RIGHT, 4*barbarian.height());
-            } else if (oldaction === LEFT || oldaction === ATTACK_LEFT || oldaction === RUN_LEFT || oldaction === STOP_LEFT) {
+                moveSpritePosition([32, 33, 34, 35, 36, 37, 38, 39], ATTACK_RIGHT, 4);
+            } else if (isFacingLeft(oldaction)) {
                 action = ATTACK_LEFT;
-                moveSpritePosition([47, 46, 45, 44, 43, 42, 41, 40], ATTACK_LEFT, 5*barbarian.height());
+                moveSpritePosition([47, 46, 45, 44, 43, 42, 41, 40], ATTACK_LEFT, 5);
             }
         }
     }
@@ -195,14 +218,14 @@ $(document).ready(function(){
 	    barbarian.animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
 
             action = JUMP_RIGHT;
-            moveSpritePosition([48, 49, 50, 51, 52, 53, 54], JUMP_RIGHT, 6*barbarian.height());
+            moveSpritePosition([48, 49, 50, 51, 52, 53, 54], JUMP_RIGHT, 6);
         } else if (isMovingLeft(action) || action == STOP_LEFT) {
             barbarian.stop();
             var distance = barbarian.offset().left;
             barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
 
             action = JUMP_LEFT;
-            moveSpritePosition([62, 61, 60, 59, 58, 57, 56 ], JUMP_LEFT, 7*barbarian.height());
+            moveSpritePosition([62, 61, 60, 59, 58, 57, 56 ], JUMP_LEFT, 7);
         }
     }
 
@@ -214,7 +237,7 @@ $(document).ready(function(){
             barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
 
             action = LEFT;
-            moveSpritePosition([13, 12, 11, 10, 9, 8], LEFT, 1*barbarian.height());
+            moveSpritePosition([13, 12, 11, 10, 9, 8], LEFT, 1);
         }
     }
 
@@ -232,10 +255,10 @@ $(document).ready(function(){
                 
             if (oldaction === RIGHT || oldaction === ATTACK_RIGHT || oldaction === STOP_RIGHT) {
                 action = RUN_RIGHT;
-                moveSpritePosition([16, 17, 18, 19, 20, 21], RUN_RIGHT, 2*barbarian.height());
+                moveSpritePosition([16, 17, 18, 19, 20, 21], RUN_RIGHT, 2);
             } else if (oldaction == LEFT || oldaction === ATTACK_LEFT || oldaction === STOP_LEFT) {
                 action = RUN_LEFT;
-                moveSpritePosition([24, 25, 26, 27, 28, 29], RUN_LEFT, 3*barbarian.height());
+                moveSpritePosition([24, 25, 26, 27, 28, 29], RUN_LEFT, 3);
             }
         }
         return action;
@@ -247,7 +270,8 @@ $(document).ready(function(){
      * @path The path that the sprite will take.
      * @requestedAction The action requested that is assicated with the path.
      */
-    async function moveSpritePosition(path, requestedAction, heightOffset) {
+    async function moveSpritePosition(path, requestedAction, heightOffsetGridUnits) {
+        var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
         while(action === requestedAction) {
 	   var windowWidth = $( document ).width() - barbarian.width();

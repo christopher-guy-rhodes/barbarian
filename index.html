@@ -188,7 +188,7 @@ $(document).ready(function(){
 
     function jump() {
         console.log('in jump');
-        if (isMovingRight(action)) {
+        if (isMovingRight(action) || action == STOP_RIGHT) {
             console.log('jump right');
             barbarian.stop();
             var distance = (windowWidth - barbarian.offset().left);
@@ -196,6 +196,13 @@ $(document).ready(function(){
 
             action = JUMP_RIGHT;
             moveSpritePosition([48, 49, 50, 51, 52, 53, 54], JUMP_RIGHT, 6*barbarian.height());
+        } else if (isMovingLeft(action) || action == STOP_LEFT) {
+            barbarian.stop();
+            var distance = barbarian.offset().left;
+            barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
+
+            action = JUMP_LEFT;
+            moveSpritePosition([62, 61, 60, 59, 58, 57, 56 ], JUMP_LEFT, 7*barbarian.height());
         }
     }
 
@@ -269,7 +276,7 @@ $(document).ready(function(){
                if (action === JUMP_RIGHT) {
                    action = STOP_RIGHT;
                } else if (action === JUMP_LEFT) {
-                   action = LEFT;
+                   action = STOP_LEFT;
                }
                barbarian.stop();
                break;

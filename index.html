@@ -26,10 +26,15 @@ $(document).ready(function(){
         oldaction = action;
         switch(e.which) {
            case KEYPRESS[RUN]:
-                run(action);
+                if(!isRunning(action)) {
+                    run(action);
+                }
                 break;
             case KEYPRESS[JUMP]:
-                jump(action);
+                console.log('isJumping:' + isJumping(action));
+                if (!isJumping(action)) {
+                    jump(action);
+                }
                 break;
             case KEYPRESS[STOP]:
                 action = stop(action, oldaction);
@@ -41,7 +46,9 @@ $(document).ready(function(){
                 left();
                 break;
             case KEYPRESS[ATTACK]:
-                attack();
+                if (!isAttacking(action)) {
+                    attack();
+                }
                 break;
             case KEYPRESS[UP]:
                 break;

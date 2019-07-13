@@ -9,6 +9,26 @@ function isAttacking(action) {
 }
 
 /**
+ * Determine if the barbarian is currently running.
+ *
+ * @param action the current action.
+ * @returns True if the barbarian is attacking, false otherwise.
+ */
+function isRunning(action) {
+    return RUNNING.includes(action);
+}
+
+/**
+ * Determine if the barbarian is currently jumping.
+ *
+ * @param action the current action.
+ * @returns True if the barbarian is jumping, false otherwise.
+g */
+function isJumping(action) {
+    return JUMPING.includes(action);
+}
+
+/**
  * Determine if the barbarian is moving right.
  *
  * @param action The current action.

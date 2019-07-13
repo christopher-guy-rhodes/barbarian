@@ -2,30 +2,21 @@
  * Starts an attack to the left or right depending on the direction the barbarian is moving.
  */
 function attack() {
-    barbarian.stop();
-    var isRight = isFacingRight(action);
-    animateSprite(isRight ? ATTACK_RIGHT_FRAMES : ATTACK_LEFT_FRAMES, isRight ?  ATTACK_RIGHT : ATTACK_LEFT, isRight ?  ATTACK_RIGHT_OFFSET : ATTACK_LEFT_OFFSET);
+    actionHelper(action, undefined, ATTACK_RIGHT_FRAMES, ATTACK_LEFT_FRAMES, ATTACK_RIGHT, ATTACK_LEFT, ATTACK_RIGHT_OFFSET, ATTACK_LEFT_OFFSET);
 }
 
 /**
  * Starts an jump to the left or right depending on the direction the barbarian is moving.
  */
 function jump() {
-    barbarian.stop();
-    var isRight = isFacingRight(action);
-    isRight ? moveRight() : moveLeft();
-    animateSprite(isRight ? JUMP_RIGHT_FRAMES : JUMP_LEFT_FRAMES, isRight ? JUMP_RIGHT : JUMP_LEFT, isRight ? JUMP_RIGHT_OFFSET : JUMP_LEFT_OFFSET);
+    actionHelper(action, false, JUMP_RIGHT_FRAMES, JUMP_LEFT_FRAMES, JUMP_RIGHT, JUMP_LEFT, JUMP_RIGHT_OFFSET, JUMP_LEFT_OFFSET);
 }
 
 /**
  * Starts the barbarian running to the left or right depending on the direction the barbarian is moving.
  */
 function run() {
-    barbarian.stop();
-    var isRight = isFacingRight(action);
-    isRight ? runRight() : runLeft();
-    animateSprite(isRight ? RUN_RIGHT_FRAMES : RUN_LEFT_FRAMES, isRight ? RUN_RIGHT : RUN_LEFT, isRight ? RUN_RIGHT_OFFSET : RUN_LEFT_OFFSET);
-              
+    actionHelper(action, true, RUN_RIGHT_FRAMES, RUN_LEFT_FRAMES, RUN_RIGHT, RUN_LEFT, RUN_RIGHT_OFFSET, RUN_LEFT_OFFSET);
 }
 
 
@@ -69,6 +60,17 @@ function left() {
 
         animateSprite([13, 12, 11, 10, 9, 8], LEFT, 1);
     }
+}
+
+function actionHelper(action, isRunning, rightFrames, leftFrames, rightAction, leftAction, rightOffset, leftOffset) {
+    barbarian.stop();
+    var isRight = isFacingRight(action);
+    if (typeof isRunning !== 'undefined') {
+        isRunning ? isRight ? runRight() : runLeft()
+                  : isRight ? moveRight() : moveLeft();
+    }
+    
+    animateSprite(isRight ? rightFrames : leftFrames, isRight ? rightAction : leftAction, isRight ? rightOffset : leftOffset);
 }
 
 

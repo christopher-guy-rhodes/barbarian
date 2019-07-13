@@ -36,6 +36,7 @@ var STOP = 'STOP';
 var ATTACK = 'ATTACK';
 var UP = 'UP';
 var DOWN = 'DOWN';
+var PAUSE = 'PAUSE';
 
 // Aggregated actions
 var MOVING_RIGHT = ['RIGHT', 'RUN_RIGHT'];
@@ -70,9 +71,10 @@ var KEYPRESS = {
     RIGHT  : 39,
     DOWN   : 40,
     ATTACK : 65,
+    PAUSE  : 80, 
     RUN    : 82,
     STOP   : 83,
-    JUMP   : 74 
+    JUMP   : 74
 };
 
 

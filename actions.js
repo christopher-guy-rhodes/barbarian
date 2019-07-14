@@ -28,6 +28,7 @@ function run() {
  * @returns The new action if the barbarian was moving, the unchanged action otherwise.
  */
 function stop(action, previousAction) {
+    console.log('stop:' + action);
     var isRight = isFacingRight(previousAction);
 
     var x = isRight ? (-1 * STOP_RIGHT_POSITION * barbarian.width()) 
@@ -64,6 +65,7 @@ function left() {
 
 function actionHelper(action, isRunning, rightFrames, leftFrames, rightAction, leftAction, rightOffset, leftOffset) {
     barbarian.stop();
+    console.log('action:' + action);
     var isRight = isFacingRight(action);
     if (typeof isRunning !== 'undefined') {
         isRunning ? isRight ? runRight() : runLeft()

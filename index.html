@@ -10,8 +10,6 @@ $(document).ready(function(){
     $.getScript('http://localhost/constants.js', function() {
     // Include throttler to prevent rapid direction change
     $.getScript('http://localhost/directionThrottler.js', function() {
-    // Include movement helpers
-    $.getScript('http://localhost/movementHelpers.js', function() {
     // Include animation module
     $.getScript('http://localhost/animator.js', function() {
     // Include action definitions
@@ -27,34 +25,33 @@ $(document).ready(function(){
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");
         switch(e.which) {
-           case KEYPRESS[RUN]:
-                if(!isRunning(action)) {
+           case KEYPRESS[KP_RUN]:
+                if(action !== RUN) {
                     run(action);
                 }
                 break;
-            case KEYPRESS[JUMP]:
-                console.log('isJumping:' + isJumping(action));
-                if (!isJumping(action)) {
+            case KEYPRESS[KP_JUMP]:
+                if (action !== JUMP) {
                     jump(action);
                 }
                 break;
-            case KEYPRESS[STOP]:
+            case KEYPRESS[KP_STOP]:
                 action = stop(action);
                 break;
-            case KEYPRESS[RIGHT]:
+            case KEYPRESS[KP_RIGHT]:
                 right(); 
                 break;
-            case KEYPRESS[LEFT]:
+            case KEYPRESS[KP_LEFT]:
                 left();
                 break;
-            case KEYPRESS[ATTACK]:
-                if (!isAttacking(action)) {
+            case KEYPRESS[KP_ATTACK]:
+                if (action !== ATTACK) {
                     attack();
                 }
                 break;
-            case KEYPRESS[UP]:
+            case KEYPRESS[KP_UP]:
                 break;
-            case KEYPRESS[DOWN]:
+            case KEYPRESS[KP_DOWN]:
                 break;
 
             default: return; // exit this handler for other keys
@@ -62,7 +59,7 @@ $(document).ready(function(){
         e.preventDefault(); // prevent the default action (scroll / move caret)
     });
 
-})})})})})});
+})})})})});
 </script> 
 </head>
 <body>

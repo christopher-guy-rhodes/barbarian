@@ -55,34 +55,26 @@
         console.log('direction:' + direction + ' olddirection:' + olddirection);
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
-        while(action === requestedAction) {
+        while(action === requestedAction && direction === requestedDirection) {
 	   var windowWidth = $( document ).width() - barbarian.width();
            var position = path[index];
 
            barbarian.css('background-position',(-1*position*barbarian.width()) + 'px ' + -1*heightOffset + 'px');
-           if (action === STOP_RIGHT || action === STOP_LEFT) {
+           if (action === STOP) {
                break;
            }
-           if ((action === WALK_LEFT || action === RUN_LEFT) && barbarian.offset().left === 0) {
+           if (direction === LEFT && barbarian.offset().left === 0) {
                break;
            }
-           if ((action === WALK_RIGHT || action === RUN_RIGHT) && barbarian.offset().left === windowWidth) {
+           if (direction === RIGHT && barbarian.offset().left === windowWidth) {
                break;
            }
-           if((action === ATTACK_RIGHT || action === ATTACK_LEFT) && index >= path.length - 1 ) {
-               if (action === ATTACK_RIGHT) {
-                   action = STOP_RIGHT;
-               } else if (action === ATTACK_LEFT) {
-                   action = STOP_LEFT;
-               }
+           if(action === ATTACK && index >= path.length - 1 ) {
+               action = STOP;
                break;
            }
-           if((action === JUMP_RIGHT || action === JUMP_LEFT) && index >= path.length - 1 ) {
-               if (action === JUMP_RIGHT) {
-                   action = STOP_RIGHT;
-               } else if (action === JUMP_LEFT) {
-                   action = STOP_LEFT;
-               }
+           if(action === JUMP && index >= path.length - 1 ) {
+               action = STOP;
                barbarian.stop();
                break;
            }

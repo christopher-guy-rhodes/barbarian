@@ -2,21 +2,21 @@
  * Starts an attack to the left or right depending on the direction the barbarian is moving.
  */
 function attack() {
-    actionHelper(action, undefined, ATTACK_RIGHT_FRAMES, ATTACK_LEFT_FRAMES, ATTACK_RIGHT, ATTACK_LEFT, ATTACK_RIGHT_OFFSET, ATTACK_LEFT_OFFSET);
+    actionHelper(action, undefined, ATTACK_RIGHT_FRAMES, ATTACK_LEFT_FRAMES, ATTACK, ATTACK, ATTACK_RIGHT_OFFSET, ATTACK_LEFT_OFFSET);
 }
 
 /**
  * Starts an jump to the left or right depending on the direction the barbarian is moving.
  */
 function jump() {
-    actionHelper(action, false, JUMP_RIGHT_FRAMES, JUMP_LEFT_FRAMES, JUMP_RIGHT, JUMP_LEFT, JUMP_RIGHT_OFFSET, JUMP_LEFT_OFFSET);
+    actionHelper(action, false, JUMP_RIGHT_FRAMES, JUMP_LEFT_FRAMES, JUMP, JUMP, JUMP_RIGHT_OFFSET, JUMP_LEFT_OFFSET);
 }
 
 /**
  * Starts the barbarian running to the left or right depending on the direction the barbarian is moving.
  */
 function run() {
-    actionHelper(action, true, RUN_RIGHT_FRAMES, RUN_LEFT_FRAMES, RUN_RIGHT, RUN_LEFT, RUN_RIGHT_OFFSET, RUN_LEFT_OFFSET);
+    actionHelper(action, true, RUN_RIGHT_FRAMES, RUN_LEFT_FRAMES, RUN, RUN, RUN_RIGHT_OFFSET, RUN_LEFT_OFFSET);
 }
 
 
@@ -27,7 +27,7 @@ function run() {
  * @returns The new action if the barbarian was moving, the unchanged action otherwise.
  */
 function stop(action) {
-    var isRight = isFacingRight(action);
+    var isRight = direction === RIGHT;
 
     var x = isRight ? (-1 * STOP_RIGHT_POSITION * barbarian.width()) 
                     : (-1 * STOP_LEFT_POSITION * barbarian.width());
@@ -36,34 +36,32 @@ function stop(action) {
                         : -1 * STOP_LEFT_HEIGHT_OFFSET * barbarian.height();
     barbarian.css('background-position', x + 'px ' + y + 'px');
     barbarian.stop();
-    newAction = isRight ? STOP_RIGHT : STOP_LEFT; 
-    return newAction;
 }
 
 function right() {
-    if (action !== WALK_RIGHT && !shouldThrottleDirectionChange(WALK_RIGHT)) {
+    if (!shouldThrottleDirectionChange(RIGHT)) {
         barbarian.stop();
         var distance = (windowWidth - barbarian.offset().left);
         barbarian.animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
 
-        animateSprite([1, 2, 3, 4, 5, 6], WALK_RIGHT, RIGHT, 0);
+        animateSprite([1, 2, 3, 4, 5, 6], WALK, RIGHT, 0);
     } 
 }
 
 function left() {
-    if (action !== WALK_LEFT && !shouldThrottleDirectionChange(WALK_LEFT)) {
+    if (!shouldThrottleDirectionChange(LEFT)) {
         var oldLeft = barbarian.offset().left;
         barbarian.stop();
         var distance = barbarian.offset().left;
         barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
 
-        animateSprite([13, 12, 11, 10, 9, 8], WALK_LEFT, LEFT, 1);
+        animateSprite([13, 12, 11, 10, 9, 8], LEFT, LEFT, 1);
     }
 }
 
 function actionHelper(action, isRunning, rightFrames, leftFrames, rightAction, leftAction, rightOffset, leftOffset) {
     barbarian.stop();
-    var isRight = isFacingRight(action);
+    var isRight = direction === RIGHT;
     if (typeof isRunning !== 'undefined') {
         isRunning ? isRight ? runRight() : runLeft()
                   : isRight ? moveRight() : moveLeft();

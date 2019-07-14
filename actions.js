@@ -24,11 +24,10 @@ function run() {
  * Stops the sprite and position animation. Puts the barbarian sprite in the appropriate stop position.
  *
  * @param action The current action.
- * @param previousAction The previous action. 
  * @returns The new action if the barbarian was moving, the unchanged action otherwise.
  */
-function stop(action, previousAction) {
-    var isRight = isFacingRight(previousAction);
+function stop(action) {
+    var isRight = isFacingRight(action);
 
     var x = isRight ? (-1 * STOP_RIGHT_POSITION * barbarian.width()) 
                     : (-1 * STOP_LEFT_POSITION * barbarian.width());
@@ -47,7 +46,7 @@ function right() {
         var distance = (windowWidth - barbarian.offset().left);
         barbarian.animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
 
-        animateSprite([1, 2, 3, 4, 5, 6], WALK_RIGHT, 0, 0);
+        animateSprite([1, 2, 3, 4, 5, 6], WALK_RIGHT, RIGHT, 0);
     } 
 }
 
@@ -58,7 +57,7 @@ function left() {
         var distance = barbarian.offset().left;
         barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
 
-        animateSprite([13, 12, 11, 10, 9, 8], WALK_LEFT, 1);
+        animateSprite([13, 12, 11, 10, 9, 8], WALK_LEFT, LEFT, 1);
     }
 }
 
@@ -70,5 +69,5 @@ function actionHelper(action, isRunning, rightFrames, leftFrames, rightAction, l
                   : isRight ? moveRight() : moveLeft();
     }
     
-    animateSprite(isRight ? rightFrames : leftFrames, isRight ? rightAction : leftAction, isRight ? rightOffset : leftOffset);
+    animateSprite(isRight ? rightFrames : leftFrames, isRight ? rightAction : leftAction, isRight ? RIGHT : LEFT, isRight ? rightOffset : leftOffset);
 }

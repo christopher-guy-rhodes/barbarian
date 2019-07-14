@@ -46,9 +46,13 @@
      * @path The path that the sprite will take.
      * @requestedAction The action requested that is assicated with the path.
      */
-    async function animateSprite(path, requestedAction, heightOffsetGridUnits) {
+    async function animateSprite(path, requestedAction, requestedDirection, heightOffsetGridUnits) {
+        oldaction = action;
         action = requestedAction;
-        console.log('action:' + action);
+        olddirection = direction;
+        direction = requestedDirection;
+        console.log('action:' + action + ' oldaction:' + oldaction);
+        console.log('direction:' + direction + ' olddirection:' + olddirection);
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
         while(action === requestedAction) {

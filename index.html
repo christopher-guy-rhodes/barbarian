@@ -20,10 +20,12 @@ $(document).ready(function(){
     barbarian = $(".barbarian");
     windowWidth = $(document).width() - barbarian.width();
     action = '';
+    oldaction = '';
+    direction = '';
+    olddirection = '';
 
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");
-        oldaction = action;
         switch(e.which) {
            case KEYPRESS[RUN]:
                 if(!isRunning(action)) {
@@ -37,7 +39,7 @@ $(document).ready(function(){
                 }
                 break;
             case KEYPRESS[STOP]:
-                action = stop(action, oldaction);
+                action = stop(action);
                 break;
             case KEYPRESS[RIGHT]:
                 right(); 

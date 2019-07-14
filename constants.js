@@ -29,6 +29,9 @@ var JUMP_LEFT = 'JUMP_LEFT';
 var WALK_LEFT = 'WALK_LEFT';
 var WALK_RIGHT = 'WALK_RIGHT';
 
+// Directions 
+// TODP: rename keypresses and use LEFT and RIGHT for directions
+
 // Keypresses
 var LEFT = 'LEFT';
 var RIGHT = 'RIGHT';

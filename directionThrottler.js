@@ -7,7 +7,7 @@ var lastDirectionChangeTime = 0;
  * @returns True if throttling should be performed, false otherwise.
  */
 function shouldThrottleDirectionChange(requestedDirection) {
-    var isDirectionChange = oldaction === (requestedDirection === LEFT ? RIGHT : LEFT);
+    var isDirectionChange = oldaction === (requestedDirection === WALK_LEFT ? WALK_RIGHT : WALK_LEFT);
     if (isDirectionChange) {
         var currentTime = new Date().getTime();
         if (lastDirectionChangeTime === 0 ) {

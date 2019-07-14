@@ -48,6 +48,7 @@
      */
     async function animateSprite(path, requestedAction, heightOffsetGridUnits) {
         action = requestedAction;
+        console.log('action:' + action);
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
         while(action === requestedAction) {
@@ -58,10 +59,10 @@
            if (action === STOP_RIGHT || action === STOP_LEFT) {
                break;
            }
-           if ((action === LEFT || action === RUN_LEFT) && barbarian.offset().left === 0) {
+           if ((action === WALK_LEFT || action === RUN_LEFT) && barbarian.offset().left === 0) {
                break;
            }
-           if ((action === RIGHT || action === RUN_RIGHT) && barbarian.offset().left === windowWidth) {
+           if ((action === WALK_RIGHT || action === RUN_RIGHT) && barbarian.offset().left === windowWidth) {
                break;
            }
            if((action === ATTACK_RIGHT || action === ATTACK_LEFT) && index >= path.length - 1 ) {
@@ -73,7 +74,6 @@
                break;
            }
            if((action === JUMP_RIGHT || action === JUMP_LEFT) && index >= path.length - 1 ) {
-               console.log('a');
                if (action === JUMP_RIGHT) {
                    action = STOP_RIGHT;
                } else if (action === JUMP_LEFT) {

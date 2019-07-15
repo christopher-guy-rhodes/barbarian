@@ -49,7 +49,7 @@
     async function animateSprite(path, requestedAction, requestedDirection, heightOffsetGridUnits) {
         action = requestedAction;
         direction = requestedDirection;
-        console.log('action:' + action);
+        console.log('action:' + action + ' ' + direction);
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
         while(action === requestedAction && direction === requestedDirection) {
@@ -61,15 +61,14 @@
                break;
            }
            if (direction === LEFT && barbarian.offset().left === 0) {
-               //stop(direction);
                action = STOP;
                break;
            }
            if (direction === RIGHT && barbarian.offset().left === windowWidth) {
-               //stop(direction);
                action = STOP;
                break;
            }
+           // attacks don't terminate at the end of the screen but at the last frame
            if(action === ATTACK && index >= path.length - 1 ) {
                action = STOP;
                break;

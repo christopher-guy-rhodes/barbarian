@@ -1,28 +1,37 @@
 /**
  * Starts an attack to the left or right depending on the direction the barbarian is moving.
+ *
+ * @param direction the direction the barbarian is moving
  */
-function attack() {
+function attack(direction) {
     actionHelper(direction, undefined, ATTACK_FRAMES, ATTACK);
 }
 
 /**
  * Starts an jump to the left or right depending on the direction the barbarian is moving.
+ *
+ * @param direction the direction the barbarian is moving
  */
-function jump() {
+function jump(direction) {
     actionHelper(direction, false, JUMP_FRAMES, JUMP);
 }
 
 /**
  * Starts the barbarian running to the left or right depending on the direction the barbarian is moving.
+ *
+ * @param direction the direction the barbarian is moving
  */
-function run() {
+function run(direction) {
     actionHelper(direction, true, RUN_FRAMES, RUN);
 }
 
-function walk() {
-    if (!shouldThrottleDirectionChange(direction)) {
-        actionHelper(direction, false, WALK_FRAMES, WALK);
-    } 
+/**
+ * Starts the barbarian walking to the left or right depending on the direction the barbarian is moving.
+ *
+ * @param direction the direction the barbarian is moving
+ */
+function walk(direction) {
+    actionHelper(direction, false, WALK_FRAMES, WALK);
 }
 
 /**
@@ -31,7 +40,7 @@ function walk() {
  * @param action The current action.
  * @returns The new action if the barbarian was moving, the unchanged action otherwise.
  */
-function stop(action) {
+function stop(direction) {
     var isRight = direction === RIGHT;
 
     var x = isRight ? (-1 * STOP_RIGHT_POSITION * barbarian.width()) 
@@ -42,7 +51,6 @@ function stop(action) {
     barbarian.css('background-position', x + 'px ' + y + 'px');
     barbarian.stop();
 }
-
 
 function actionHelper(direction, isRunning, frames, requestedAction) {
     barbarian.stop();

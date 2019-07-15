@@ -47,12 +47,9 @@
      * @requestedAction The action requested that is assicated with the path.
      */
     async function animateSprite(path, requestedAction, requestedDirection, heightOffsetGridUnits) {
-        oldaction = action;
         action = requestedAction;
-        olddirection = direction;
         direction = requestedDirection;
-        console.log('action:' + action + ' oldaction:' + oldaction);
-        console.log('direction:' + direction + ' olddirection:' + olddirection);
+        console.log('action:' + action);
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
         while(action === requestedAction && direction === requestedDirection) {
@@ -64,11 +61,13 @@
                break;
            }
            if (direction === LEFT && barbarian.offset().left === 0) {
-               stop();
+               //stop(direction);
+               action = STOP;
                break;
            }
            if (direction === RIGHT && barbarian.offset().left === windowWidth) {
-               stop();
+               //stop(direction);
+               action = STOP;
                break;
            }
            if(action === ATTACK && index >= path.length - 1 ) {

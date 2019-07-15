@@ -9,7 +9,7 @@ var GRID_COLUMNS = 8;
 var RUN_SPEED_INCREASE_FACTOR = 1.5;
 
 // The amount of time to throttle rapid diretion changes
-var DIRECTION_CHANGE_DELAY = 200;
+var KEYPRESS_THROTTLE_DELAY = 200;
 
 // Stopping sprite horizontal and vertical offsets
 var STOP_RIGHT_POSITION = 0;
@@ -35,9 +35,6 @@ var KP_RUN = 'KP_RUN';
 var KP_JUMP = 'KP_JUMP';
 var KP_STOP = 'KP_STOP';
 var KP_ATTACK = 'KP_ATTACK';
-var KP_UP = 'KP_UP';
-var KP_DOWN = 'KP_DOWN';
-var KP_PAUSE = 'KP_PAUSE';
 
 // Animation sequences
 var ATTACK_FRAMES = { 
@@ -75,11 +72,8 @@ var WALK_FRAMES = {
 // Keypress event names
 var KEYPRESS = {
     KP_LEFT   : 37,
-    KP_UP     : 38,
     KP_RIGHT  : 39,
-    KP_DOWN   : 40,
     KP_ATTACK : 65,
-    KP_PAUSE  : 80, 
     KP_RUN    : 82,
     KP_STOP   : 83,
     KP_JUMP   : 74

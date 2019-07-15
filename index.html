@@ -8,8 +8,6 @@ $(document).ready(function(){
 
     // Include constants
     $.getScript('http://localhost/constants.js', function() {
-    // Include throttler to prevent rapid direction change
-    $.getScript('http://localhost/directionThrottler.js', function() {
     // Include animation module
     $.getScript('http://localhost/animator.js', function() {
     // Include action definitions
@@ -18,50 +16,64 @@ $(document).ready(function(){
     barbarian = $(".barbarian");
     windowWidth = $(document).width() - barbarian.width();
     action = STOP;
-    oldaction = '';
     direction = RIGHT;
-    olddirection = '';
+    var keypressTime;
+    var lastKeypressTime;
 
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");
-        switch(e.which) {
-           case KEYPRESS[KP_RUN]:
-                if(action !== RUN) {
-                    run(action);
-                }
-                break;
-            case KEYPRESS[KP_JUMP]:
-                if (action !== JUMP) {
-                    jump(action);
-                }
-                break;
-            case KEYPRESS[KP_STOP]:
-                action = stop(action);
-                break;
-            case KEYPRESS[KP_RIGHT]:
-                direction = RIGHT;
-                walk();
-                break;
-            case KEYPRESS[KP_LEFT]:
-                direction = LEFT;
-                walk(); 
-                break;
-            case KEYPRESS[KP_ATTACK]:
-                if (action !== ATTACK) {
-                    attack();
-                }
-                break;
-            case KEYPRESS[KP_UP]:
-                break;
-            case KEYPRESS[KP_DOWN]:
-                break;
 
-            default: return; // exit this handler for other keys
+        keypressTime = new Date().getTime();
+
+        if (!shouldThrottle(lastKeypressTime)) {
+            lastKeypressTime = keypressTime;
+            keypressTime = new Date().getTime();
+            console.log('NOT THROTTLING KEYPRESS');
+            switch(e.which) {
+               case KEYPRESS[KP_RUN]:
+                    if(action !== RUN) {
+                        run(direction);
+                    }
+                    break;
+                case KEYPRESS[KP_JUMP]:
+                    if (action !== JUMP) {
+                        jump(direction);
+                    }
+                    break;
+                case KEYPRESS[KP_STOP]:
+                    action = stop(direction);
+                    break;
+                case KEYPRESS[KP_RIGHT]:
+                    direction = RIGHT;
+                    walk(direction);
+                    break;
+                case KEYPRESS[KP_LEFT]:
+                    direction = LEFT;
+                    walk(direction); 
+                    break;
+                case KEYPRESS[KP_ATTACK]:
+                    if (action !== ATTACK) {
+                        attack(direction);
+                    }
+                    break;
+                default: return; // exit this handler for other keys
+            }
+        } else {
+            console.log('THROTTLING KEYPRESS');
         }
         e.preventDefault(); // prevent the default action (scroll / move caret)
     });
 
-})})})})});
+    function shouldThrottle(lastKeypressTime) {
+        var elapsed = KEYPRESS_THROTTLE_DELAY;
+        if (typeof lastKeypressTime !== undefined) {
+            elapsed = new Date().getTime() - lastKeypressTime
+            console.log('elapsesd:' + elapsed);
+        }
+        return elapsed < KEYPRESS_THROTTLE_DELAY;
+    }
+
+})})})});
 </script> 
 </head>
 <body>

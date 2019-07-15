@@ -28,7 +28,6 @@ $(document).ready(function(){
         if (!shouldThrottle(lastKeypressTime)) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
-            console.log('NOT THROTTLING KEYPRESS');
             switch(e.which) {
                case KEYPRESS[KP_RUN]:
                     if(action !== RUN) {
@@ -44,12 +43,16 @@ $(document).ready(function(){
                     action = stop(direction);
                     break;
                 case KEYPRESS[KP_RIGHT]:
-                    direction = RIGHT;
-                    walk(direction);
+                    if (action !== WALK || direction !== RIGHT) {
+                        direction = RIGHT;
+                        walk(direction);
+                    }
                     break;
                 case KEYPRESS[KP_LEFT]:
-                    direction = LEFT;
-                    walk(direction); 
+                    if (action != WALK || direction !== LEFT) { 
+                        direction = LEFT;
+                        walk(direction); 
+                    }
                     break;
                 case KEYPRESS[KP_ATTACK]:
                     if (action !== ATTACK) {
@@ -58,8 +61,6 @@ $(document).ready(function(){
                     break;
                 default: return; // exit this handler for other keys
             }
-        } else {
-            console.log('THROTTLING KEYPRESS');
         }
         e.preventDefault(); // prevent the default action (scroll / move caret)
     });
@@ -68,7 +69,6 @@ $(document).ready(function(){
         var elapsed = KEYPRESS_THROTTLE_DELAY;
         if (typeof lastKeypressTime !== undefined) {
             elapsed = new Date().getTime() - lastKeypressTime
-            console.log('elapsesd:' + elapsed);
         }
         return elapsed < KEYPRESS_THROTTLE_DELAY;
     }

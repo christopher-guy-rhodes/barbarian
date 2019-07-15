@@ -40,21 +40,37 @@ var KP_DOWN = 'KP_DOWN';
 var KP_PAUSE = 'KP_PAUSE';
 
 // Animation sequences
-var ATTACK_RIGHT_FRAMES = [32, 33, 34, 35, 36, 37, 38, 39];
-var ATTACK_LEFT_FRAMES = [47, 46, 45, 44, 43, 42, 41, 40];
-var JUMP_RIGHT_FRAMES = [48, 49, 50, 51, 52, 53, 54];
-var JUMP_LEFT_FRAMES = [62, 61, 60, 59, 58, 57, 56 ];
-var RUN_RIGHT_FRAMES = [16, 17, 18, 19, 20, 21];
-var RUN_LEFT_FRAMES = [24, 25, 26, 27, 28, 29];
+var ATTACK_FRAMES = { 
+    LEFT : {
+        'FRAMES' : [47, 46, 45, 44, 43, 42, 41, 40],
+        'HEIGHT_OFFSET' : 5},
+    RIGHT : {
+        'FRAMES' :  [32, 33, 34, 35, 36, 37, 38, 39],
+        'HEIGHT_OFFSET' : 4}};
 
-// vertical offsets
-var RUN_RIGHT_OFFSET = 2;
-var RUN_LEFT_OFFSET = 3;
-var ATTACK_RIGHT_OFFSET = 4;
-var ATTACK_LEFT_OFFSET = 5;
-var JUMP_RIGHT_OFFSET = 6;
-var JUMP_LEFT_OFFSET = 7;
+var JUMP_FRAMES = { 
+    LEFT : {
+        'FRAMES' : [62, 61, 60, 59, 58, 57, 56 ],
+        'HEIGHT_OFFSET' : 7},
+    RIGHT : {
+        'FRAMES' :  [48, 49, 50, 51, 52, 53, 54],
+        'HEIGHT_OFFSET' : 6}};
 
+var RUN_FRAMES = {
+    LEFT : {
+        'FRAMES' : [24, 25, 26, 27, 28, 29],
+        'HEIGHT_OFFSET' : 3},
+    RIGHT : {
+        'FRAMES' : [16, 17, 18, 19, 20, 21],
+        'HEIGHT_OFFSET' : 2}};
+
+var WALK_FRAMES = {
+    LEFT : {
+        'FRAMES' :  [13, 12, 11, 10, 9, 8],
+        'HEIGHT_OFFSET' : 1},
+    RIGHT : {
+        'FRAMES' : [1, 2, 3, 4, 5, 6],
+        'HEIGHT_OFFSET' : 0}};
 
 // Keypress event names
 var KEYPRESS = {

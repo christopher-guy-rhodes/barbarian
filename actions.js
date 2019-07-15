@@ -2,23 +2,28 @@
  * Starts an attack to the left or right depending on the direction the barbarian is moving.
  */
 function attack() {
-    actionHelper(action, undefined, ATTACK_RIGHT_FRAMES, ATTACK_LEFT_FRAMES, ATTACK, ATTACK, ATTACK_RIGHT_OFFSET, ATTACK_LEFT_OFFSET);
+    actionHelper(direction, undefined, ATTACK_FRAMES, ATTACK);
 }
 
 /**
  * Starts an jump to the left or right depending on the direction the barbarian is moving.
  */
 function jump() {
-    actionHelper(action, false, JUMP_RIGHT_FRAMES, JUMP_LEFT_FRAMES, JUMP, JUMP, JUMP_RIGHT_OFFSET, JUMP_LEFT_OFFSET);
+    actionHelper(direction, false, JUMP_FRAMES, JUMP);
 }
 
 /**
  * Starts the barbarian running to the left or right depending on the direction the barbarian is moving.
  */
 function run() {
-    actionHelper(action, true, RUN_RIGHT_FRAMES, RUN_LEFT_FRAMES, RUN, RUN, RUN_RIGHT_OFFSET, RUN_LEFT_OFFSET);
+    actionHelper(direction, true, RUN_FRAMES, RUN);
 }
 
+function walk() {
+    if (!shouldThrottleDirectionChange(direction)) {
+        actionHelper(direction, false, WALK_FRAMES, WALK);
+    } 
+}
 
 /**
  * Stops the sprite and position animation. Puts the barbarian sprite in the appropriate stop position.
@@ -38,28 +43,8 @@ function stop(action) {
     barbarian.stop();
 }
 
-function right() {
-    if (!shouldThrottleDirectionChange(RIGHT)) {
-        barbarian.stop();
-        var distance = (windowWidth - barbarian.offset().left);
-        barbarian.animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
 
-        animateSprite([1, 2, 3, 4, 5, 6], WALK, RIGHT, 0);
-    } 
-}
-
-function left() {
-    if (!shouldThrottleDirectionChange(LEFT)) {
-        var oldLeft = barbarian.offset().left;
-        barbarian.stop();
-        var distance = barbarian.offset().left;
-        barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
-
-        animateSprite([13, 12, 11, 10, 9, 8], LEFT, LEFT, 1);
-    }
-}
-
-function actionHelper(action, isRunning, rightFrames, leftFrames, rightAction, leftAction, rightOffset, leftOffset) {
+function actionHelper(direction, isRunning, frames, requestedAction) {
     barbarian.stop();
     var isRight = direction === RIGHT;
     if (typeof isRunning !== 'undefined') {
@@ -67,5 +52,5 @@ function actionHelper(action, isRunning, rightFrames, leftFrames, rightAction, l
                   : isRight ? moveRight() : moveLeft();
     }
     
-    animateSprite(isRight ? rightFrames : leftFrames, isRight ? rightAction : leftAction, isRight ? RIGHT : LEFT, isRight ? rightOffset : leftOffset);
+    animateSprite(frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET']);
 }

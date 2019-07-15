@@ -64,18 +64,15 @@
                break;
            }
            if (direction === LEFT && barbarian.offset().left === 0) {
+               stop();
                break;
            }
            if (direction === RIGHT && barbarian.offset().left === windowWidth) {
+               stop();
                break;
            }
            if(action === ATTACK && index >= path.length - 1 ) {
                action = STOP;
-               break;
-           }
-           if(action === JUMP && index >= path.length - 1 ) {
-               action = STOP;
-               barbarian.stop();
                break;
            }
            await sleep(1000/SPRITE_FPS);

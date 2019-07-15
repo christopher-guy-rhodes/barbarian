@@ -17,9 +17,9 @@ $(document).ready(function(){
 
     barbarian = $(".barbarian");
     windowWidth = $(document).width() - barbarian.width();
-    action = '';
+    action = STOP;
     oldaction = '';
-    direction = '';
+    direction = RIGHT;
     olddirection = '';
 
     $(document).keydown(function(e) {
@@ -39,10 +39,12 @@ $(document).ready(function(){
                 action = stop(action);
                 break;
             case KEYPRESS[KP_RIGHT]:
-                right(); 
+                direction = RIGHT;
+                walk();
                 break;
             case KEYPRESS[KP_LEFT]:
-                left();
+                direction = LEFT;
+                walk(); 
                 break;
             case KEYPRESS[KP_ATTACK]:
                 if (action !== ATTACK) {

@@ -43,28 +43,31 @@
     /**
      * This method animates the position of the spite according to the path provided.
      *
+     * @sprite The sprite to animate
      * @path The path that the sprite will take.
      * @requestedAction The action requested that is assicated with the path.
+     * @requestedDirection The direction the sprite is to move
+     @ @heightOffsetGridUnits the height offset for the sprite
      */
-    async function animateSprite(path, requestedAction, requestedDirection, heightOffsetGridUnits) {
+    async function animateSprite(sprite, path, requestedAction, requestedDirection, heightOffsetGridUnits) {
         action = requestedAction;
         direction = requestedDirection;
-        console.log('action:' + action + ' ' + direction);
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
         while(action === requestedAction && direction === requestedDirection) {
+           console.log('direction:' + direction + ' requestedDirection:' + requestedDirection);
 	   var windowWidth = $( document ).width() - barbarian.width();
            var position = path[index];
 
-           barbarian.css('background-position',(-1*position*barbarian.width()) + 'px ' + -1*heightOffset + 'px');
+           sprite.css('background-position',(-1*position*barbarian.width()) + 'px ' + -1*heightOffset + 'px');
            if (action === STOP) {
                break;
            }
-           if (direction === LEFT && barbarian.offset().left === 0) {
+           if (direction === LEFT && sprite.offset().left === 0) {
                action = STOP;
                break;
            }
-           if (direction === RIGHT && barbarian.offset().left === windowWidth) {
+           if (direction === RIGHT && sprite.offset().left === windowWidth) {
                action = STOP;
                break;
            }
@@ -80,6 +83,7 @@
                index = 0;
            }
         }
+        console.log('broke out action:' + action + ' direction:' + direction);
     }
 
 

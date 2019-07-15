@@ -4,3 +4,10 @@
     background-image: url(./sprites/sprite.png);
     position: absolute;
 }
+.monster {
+    height: 400px;
+    width: 400px;
+    background-image: url(./sprites/sprite.png);
+    position: relative;
+    float: right;
+}

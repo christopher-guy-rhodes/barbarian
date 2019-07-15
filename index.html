@@ -14,11 +14,16 @@ $(document).ready(function(){
     $.getScript('http://localhost/actions.js', function() {
 
     barbarian = $(".barbarian");
+    monster = $(".monster");
+    monster.css('background-position', -1*14*monster.width() + 'px ' + -1*monster.height() + 'px');
+    
     windowWidth = $(document).width() - barbarian.width();
     action = STOP;
     direction = RIGHT;
     var keypressTime;
     var lastKeypressTime;
+
+    //animateSprite(monster, ATTACK_FRAMES[LEFT]['FRAMES'], ATTACK, LEFT, ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET']);
 
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");
@@ -78,6 +83,7 @@ $(document).ready(function(){
 </head>
 <body>
 <div class="barbarian"></div>
+<div class="monster"></div>
 </body>
 </html>
 

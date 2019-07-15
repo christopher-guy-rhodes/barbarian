@@ -60,5 +60,5 @@ function actionHelper(direction, isRunning, frames, requestedAction) {
                   : isRight ? moveRight() : moveLeft();
     }
     
-    animateSprite(frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET']);
+    animateSprite(barbarian, frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET']);
 }

@@ -49,31 +49,32 @@
      * @requestedDirection The direction the sprite is to move
      @ @heightOffsetGridUnits the height offset for the sprite
      */
-    async function animateSprite(sprite, path, requestedAction, requestedDirection, heightOffsetGridUnits) {
-        action = requestedAction;
-        direction = requestedDirection;
+    async function animateSprite(sprite, spriteName, path, requestedAction, requestedDirection, heightOffsetGridUnits) {
+        action[spriteName] = requestedAction;
+        direction[spriteName] = requestedDirection;
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
-        while(action === requestedAction && direction === requestedDirection) {
-           console.log('direction:' + direction + ' requestedDirection:' + requestedDirection);
+        console.log('action:' + action[spriteName] + ' requestedAction:' + requestedAction +  ' direction:' + direction[spriteName] + ' requestedDirection:' + requestedDirection);
+        while(action[spriteName] === requestedAction && direction[spriteName] === requestedDirection) {
+           console.log('action:' + action[spriteName] + ' requestedAction:' + requestedAction +  ' direction:' + direction[spriteName] + ' requestedDirection:' + requestedDirection);
 	   var windowWidth = $( document ).width() - barbarian.width();
            var position = path[index];
 
            sprite.css('background-position',(-1*position*barbarian.width()) + 'px ' + -1*heightOffset + 'px');
-           if (action === STOP) {
+           if (action[spriteName] === STOP) {
                break;
            }
-           if (direction === LEFT && sprite.offset().left === 0) {
-               action = STOP;
+           if (direction[spriteName] === LEFT && sprite.offset().left === 0) {
+               action[spriteName] = STOP;
                break;
            }
-           if (direction === RIGHT && sprite.offset().left === windowWidth) {
-               action = STOP;
+           if (direction[spriteName] === RIGHT && sprite.offset().left === windowWidth) {
+               action[spriteName] = STOP;
                break;
            }
            // attacks don't terminate at the end of the screen but at the last frame
-           if(action === ATTACK && index >= path.length - 1 ) {
-               action = STOP;
+           if(action[spriteName] === ATTACK && index >= path.length - 1 ) {
+               action[spriteName] = STOP;
                break;
            }
            await sleep(1000/SPRITE_FPS);
@@ -83,7 +84,7 @@
                index = 0;
            }
         }
-        console.log('broke out action:' + action + ' direction:' + direction);
+        console.log('broke out sprite:' + spriteName + ' action:' + action[spriteName] + ' ' + direction[spriteName]);
     }
 
 

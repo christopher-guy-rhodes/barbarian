@@ -18,12 +18,16 @@ $(document).ready(function(){
     monster.css('background-position', -1*14*monster.width() + 'px ' + -1*monster.height() + 'px');
     
     windowWidth = $(document).width() - barbarian.width();
-    action = STOP;
-    direction = RIGHT;
+    action = {};
+    direction = {};
+    action['barbarian'] = STOP;
+    direction['barbarian'] = RIGHT;
+    action['monster'] = ATTACK;
+    direction['monster'] = LEFT;
     var keypressTime;
     var lastKeypressTime;
 
-    //animateSprite(monster, ATTACK_FRAMES[LEFT]['FRAMES'], ATTACK, LEFT, ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET']);
+    animateSprite(monster, 'monster', ATTACK_FRAMES[LEFT]['FRAMES'], ATTACK, LEFT, ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET']);
 
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");
@@ -35,33 +39,34 @@ $(document).ready(function(){
             keypressTime = new Date().getTime();
             switch(e.which) {
                case KEYPRESS[KP_RUN]:
-                    if(action !== RUN) {
-                        run(direction);
+                    if(action['barbarian'] !== RUN) {
+                        run(direction['barbarian']);
                     }
                     break;
                 case KEYPRESS[KP_JUMP]:
                     if (action !== JUMP) {
-                        jump(direction);
+                        jump(direction['barbarian']);
                     }
                     break;
                 case KEYPRESS[KP_STOP]:
-                    action = stop(direction);
+                    stop(direction['barbarian']);
+                    action['barbarian'] = STOP;
                     break;
                 case KEYPRESS[KP_RIGHT]:
                     if (action !== WALK || direction !== RIGHT) {
-                        direction = RIGHT;
-                        walk(direction);
+                        direction['barbarian'] = RIGHT;
+                        walk(direction['barbarian']);
                     }
                     break;
                 case KEYPRESS[KP_LEFT]:
-                    if (action != WALK || direction !== LEFT) { 
-                        direction = LEFT;
-                        walk(direction); 
+                    if (action['barbarian'] != WALK || direction['barbarian'] !== LEFT) { 
+                        direction['barbarian'] = LEFT;
+                        walk(direction['barbarian']); 
                     }
                     break;
                 case KEYPRESS[KP_ATTACK]:
-                    if (action !== ATTACK) {
-                        attack(direction);
+                    if (action['barbarian'] !== ATTACK) {
+                        attack(direction['barbarian']);
                     }
                     break;
                 default: return; // exit this handler for other keys

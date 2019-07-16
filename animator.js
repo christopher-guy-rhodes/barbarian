@@ -83,7 +83,12 @@
                }
            } 
         }
-        console.log('broke out sprite:' + spriteName + ' action:' + action[spriteName] + ' ' + direction[spriteName]);
+
+        // jump actions might still be going on. They are the only action that moves but needs to terminate
+        if (action[spriteName] === JUMP) {
+            console.log('stop the barbarian!');
+            barbarian.stop();
+        }
     }
 
 

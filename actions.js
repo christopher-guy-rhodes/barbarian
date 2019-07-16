@@ -13,7 +13,7 @@ function attack(direction) {
  * @param direction the direction the barbarian is moving
  */
 function jump(direction) {
-    actionHelper(direction, false, JUMP_FRAMES, JUMP);
+    actionHelper(direction, false, JUMP_FRAMES, JUMP, 1, function() {console.log('callback')});
 }
 
 /**
@@ -57,7 +57,7 @@ function actionHelper(direction, isRunning, frames, requestedAction, times = 0) 
     var isRight = direction === RIGHT;
     if (typeof isRunning !== 'undefined') {
         isRunning ? isRight ? runRight() : runLeft()
-                  : isRight ? moveRight(barbarian) : moveLeft(barbarian);
+                  : isRight ? moveRight() : moveLeft();
     }
     
     animateSprite(barbarian, 'barbarian',  frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET'], times);

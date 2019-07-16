@@ -4,7 +4,7 @@
  * @param direction the direction the barbarian is moving
  */
 function attack(direction) {
-    actionHelper(direction, undefined, ATTACK_FRAMES, ATTACK);
+    actionHelper(direction, undefined, ATTACK_FRAMES, ATTACK, true);
 }
 
 /**
@@ -52,13 +52,25 @@ function stop(direction) {
     barbarian.stop();
 }
 
-function actionHelper(direction, isRunning, frames, requestedAction) {
+function actionHelper(direction, isRunning, frames, requestedAction, terminate = false) {
     barbarian.stop();
     var isRight = direction === RIGHT;
     if (typeof isRunning !== 'undefined') {
         isRunning ? isRight ? runRight() : runLeft()
-                  : isRight ? moveRight() : moveLeft();
+                  : isRight ? moveRight(barbarian) : moveLeft(barbarian);
     }
     
-    animateSprite(barbarian, 'barbarian',  frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET']);
+    animateSprite(barbarian, 'barbarian',  frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET'], terminate);
 }
+
+// TODP: break out into monster module
+function monsterAttack() {
+    var distance = 200;
+    console.log('monster offset:' + monster.offset().left);
+    animateSprite(monster, 'monster', WALK_FRAMES[LEFT]['FRAMES'], WALK, LEFT, WALK_FRAMES[LEFT]['HEIGHT_OFFSET'], true);
+    monster.animate({left: (monster.offset().left - distance) + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear', function() {
+        animateSprite(monster, 'monster', ATTACK_FRAMES[LEFT]['FRAMES'], ATTACK, LEFT, ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET'], true);
+    });
+}
+
+

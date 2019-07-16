@@ -23,7 +23,6 @@
         var distance = barbarian.offset().left;
         barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
     }
-
     /**
      * Make the barbarian run right 
      */
@@ -49,7 +48,7 @@
      * @requestedDirection The direction the sprite is to move
      @ @heightOffsetGridUnits the height offset for the sprite
      */
-    async function animateSprite(sprite, spriteName, path, requestedAction, requestedDirection, heightOffsetGridUnits) {
+    async function animateSprite(sprite, spriteName, path, requestedAction, requestedDirection, heightOffsetGridUnits, terminate = false) {
         action[spriteName] = requestedAction;
         direction[spriteName] = requestedDirection;
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
@@ -72,17 +71,16 @@
                action[spriteName] = STOP;
                break;
            }
-           // attacks don't terminate at the end of the screen but at the last frame
-           if(action[spriteName] === ATTACK && index >= path.length - 1 ) {
-               action[spriteName] = STOP;
-               break;
-           }
            await sleep(1000/SPRITE_FPS);
 
            // loop the sprite animation
-           if (index++ == path.length - 1) {
-               index = 0;
-           }
+           if (index++ == path.length) {
+               if (terminate === true) {
+                   break;
+               } else {
+                   index = 0;
+               }
+           } 
         }
         console.log('broke out sprite:' + spriteName + ' action:' + action[spriteName] + ' ' + direction[spriteName]);
     }

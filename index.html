@@ -27,7 +27,8 @@ $(document).ready(function(){
     var keypressTime;
     var lastKeypressTime;
 
-    animateSprite(monster, 'monster', ATTACK_FRAMES[LEFT]['FRAMES'], ATTACK, LEFT, ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET']);
+    //animateSprite(monster, 'monster', WALK_FRAMES[LEFT]['FRAMES'], WALK, LEFT, WALK_FRAMES[LEFT]['HEIGHT_OFFSET'], true);
+    monsterAttack();
 
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");

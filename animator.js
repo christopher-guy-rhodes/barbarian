@@ -48,12 +48,12 @@
      * @requestedDirection The direction the sprite is to move
      @ @heightOffsetGridUnits the height offset for the sprite
      */
-    async function animateSprite(sprite, spriteName, path, requestedAction, requestedDirection, heightOffsetGridUnits, terminate = false) {
+    async function animateSprite(sprite, spriteName, path, requestedAction, requestedDirection, heightOffsetGridUnits, times = 0) {
         action[spriteName] = requestedAction;
         direction[spriteName] = requestedDirection;
         var heightOffset = heightOffsetGridUnits * barbarian.height(); 
         var index = 0;
-        console.log('action:' + action[spriteName] + ' requestedAction:' + requestedAction +  ' direction:' + direction[spriteName] + ' requestedDirection:' + requestedDirection);
+        var iterations = times;
         while(action[spriteName] === requestedAction && direction[spriteName] === requestedDirection) {
            console.log('action:' + action[spriteName] + ' requestedAction:' + requestedAction +  ' direction:' + direction[spriteName] + ' requestedDirection:' + requestedDirection);
 	   var windowWidth = $( document ).width() - barbarian.width();
@@ -74,11 +74,12 @@
            await sleep(1000/SPRITE_FPS);
 
            // loop the sprite animation
-           if (index++ == path.length) {
-               if (terminate === true) {
-                   break;
-               } else {
+           index++;
+           if (index == path.length) {
+               if (times < 1 || --iterations > 0) {
                    index = 0;
+               } else {
+                   break;
                }
            } 
         }

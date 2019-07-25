@@ -55,7 +55,7 @@
         var index = 0;
         var iterations = times;
         while(action[spriteName] === requestedAction && direction[spriteName] === requestedDirection) {
-           console.log('action:' + action[spriteName] + ' requestedAction:' + requestedAction +  ' direction:' + direction[spriteName] + ' requestedDirection:' + requestedDirection);
+           //console.log('action:' + action[spriteName] + ' requestedAction:' + requestedAction +  ' direction:' + direction[spriteName] + ' requestedDirection:' + requestedDirection);
 	   var windowWidth = $( document ).width() - barbarian.width();
            var position = path[index];
 

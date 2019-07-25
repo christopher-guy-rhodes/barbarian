@@ -54,7 +54,7 @@ $(document).ready(function(){
                     action['barbarian'] = STOP;
                     break;
                 case KEYPRESS[KP_RIGHT]:
-                    if (action !== WALK || direction !== RIGHT) {
+                    if (action['barbarian'] !== WALK || direction['barbarian'] !== RIGHT) {
                         direction['barbarian'] = RIGHT;
                         walk(direction['barbarian']);
                     }

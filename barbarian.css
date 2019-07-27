@@ -3,6 +3,7 @@
     width: 400px;
     background-image: url(./sprites/sprite.png);
     position: absolute;
+    bottom: 12px;
 }
 .monster {
     height: 400px;
@@ -10,4 +11,13 @@
     background-image: url(./sprites/sprite.png);
     position: absolute;
     right: 0;
+    bottom: 12px;
+}
+
+html { 
+  background: url(http://localhost/background-1.png) no-repeat center center fixed; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }

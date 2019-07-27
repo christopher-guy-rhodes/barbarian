@@ -105,6 +105,10 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
         var barbarianAttackDistance = monster.offset().left - barbarian.offset().left;
         if (attacking && index == 2) { 
             if (barbarianAttackDistance < 200 && barbarianAttackTime < monsterAttackTime) {
+                death.css('left', sprite.offset().left); 
+                death.css('display', 'block');
+                await animate(death, 0, DEATH_FRAMES['FRAMES'], DEATH_FRAMES['HEIGHT_OFFSET'], false, 0, false);
+                death.css('display', 'none');
                 sprite.css('display','none');
                 sprite.stop();
             } else {

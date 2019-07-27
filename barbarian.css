@@ -13,6 +13,14 @@
     right: 0;
     bottom: 12px;
 }
+.death {
+    height: 800px;
+    width: 800px;
+    background-image: url(./sprites/death.png);
+    position: absolute;
+    bottom: 0;
+    display: none;
+}
 
 html { 
   background: url(http://localhost/background-1.png) no-repeat center center fixed; 

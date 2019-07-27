@@ -37,6 +37,12 @@ var KP_STOP = 'KP_STOP';
 var KP_ATTACK = 'KP_ATTACK';
 
 // Animation sequences
+var DEATH_FRAMES = {
+    //'FRAMES' : [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13], 
+    'FRAMES' : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 
+    'HEIGHT_OFFSET' : 0
+};
+
 var ATTACK_FRAMES = { 
     LEFT : {
         'FRAMES' : [47, 46, 45, 44, 43, 42, 41, 40],

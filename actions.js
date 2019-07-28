@@ -66,6 +66,8 @@ function actionHelper(direction, isRunning, frames, requestedAction, times = 0) 
 
 async function monsterAttack() {
 
+    //death.css('display', 'block');
+    //await animate(death, 0, DEATH_FRAMES['FRAMES'], DEATH_FRAMES['HEIGHT_OFFSET'], true, 0, false);
     await animate(monster, windowWidth, WALK_FRAMES[LEFT]['FRAMES'], WALK_FRAMES[LEFT]['HEIGHT_OFFSET'], true, 200);
     await animate(monster, 0, ATTACK_FRAMES[LEFT]['FRAMES'], ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET'], false, 0, true);
 }

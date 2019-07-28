@@ -123,11 +123,11 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
             console.log('not shopping');
         }
         await sleep(1000/SPRITE_FPS);
-        index++;
 
         if (index == frames.length ) {
             index = 0;
         }
+        index++;
     }
 
     sprite.stop();

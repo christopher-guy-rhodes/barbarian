@@ -116,7 +116,7 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
                 barbarian.stop();
             }
         }
-        if (index == frames.length - 1 && !repeat) {
+        if (index == frames.length && !repeat) {
             console.log('shopping');
             break;
         } else {

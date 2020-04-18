@@ -14,7 +14,6 @@ function attack(direction) {
  * @param direction the direction the barbarian is moving
  */
 function jump(direction) {
-    console.log('jumping. Direction:' + direction + ' JUMP_FRAMES:' + JUMP_FRAMES)
     actionHelper(direction, false, JUMP_FRAMES, JUMP, 1, function() {console.log('====> callback')});
 }
 

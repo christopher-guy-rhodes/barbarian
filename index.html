@@ -19,11 +19,12 @@ $(document).ready(function(){
     monster.css('background-position', -1*14*monster.width() + 'px ' + -1*monster.height() + 'px');
 
     windowWidth = $(document).width() - barbarian.width();
-    action = {};
+    action = {
+        'barbarian' : STOP,
+        'monster' : ATTACK
+    };
     direction = {};
-    action['barbarian'] = STOP;
     direction['barbarian'] = RIGHT;
-    action['monster'] = ATTACK;
     direction['monster'] = LEFT;
     monsterAttackTime = 9007199254740991;
     barbarianAttackTime = 9007199254740991;
@@ -35,7 +36,6 @@ $(document).ready(function(){
 
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");
-        console.log("new action, is the old one over?: %o", barbarian.is(':animated'));
 
         keypressTime = new Date().getTime();
 

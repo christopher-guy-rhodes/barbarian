@@ -84,9 +84,9 @@ async function animateSprite(sprite, spriteName, path, requestedAction, requeste
     }
 
     // if we reach this point it means it was a terminating sprite animation, stop the movement if a new action has not
-    // been started and reset the action so it can be repeated if desired
-    if (action[spriteName] === requestedAction) {
-        console.log('stop the barbarian! requested action is ' + requestedAction);
+    // been started and reset the action so it can be repeated if desired. An exception is walking where a direction
+    // change should not stop motion.
+    if (action[spriteName] !== WALK && action[spriteName] === requestedAction) {
         action[spriteName] = undefined;
         barbarian.stop();
     }

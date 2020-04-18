@@ -24,7 +24,7 @@
         barbarian.animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
     }
     /**
-     * Make the barbarian run right 
+     * Make the barbarian run right
      */
     function runRight() {
         var distance = (windowWidth - barbarian.offset().left);
@@ -32,7 +32,7 @@
     }
 
     /**
-     * Make the barbarian run left 
+     * Make the barbarian run left
      */
     function runLeft() {
         var distance = barbarian.offset().left;
@@ -51,11 +51,10 @@
 async function animateSprite(sprite, spriteName, path, requestedAction, requestedDirection, heightOffsetGridUnits, times = 0) {
     action[spriteName] = requestedAction;
     direction[spriteName] = requestedDirection;
-    var heightOffset = heightOffsetGridUnits * barbarian.height(); 
+    var heightOffset = heightOffsetGridUnits * barbarian.height();
     var index = 0;
     var iterations = times;
     while(action[spriteName] === requestedAction && direction[spriteName] === requestedDirection) {
-       //console.log('action:' + action[spriteName] + ' requestedAction:' + requestedAction +  ' direction:' + direction[spriteName] + ' requestedDirection:' + requestedDirection);
        var windowWidth = $( document ).width() - barbarian.width();
        var position = path[index];
 
@@ -81,12 +80,14 @@ async function animateSprite(sprite, spriteName, path, requestedAction, requeste
            } else {
                break;
            }
-       } 
+       }
     }
 
-    // jump actions might still be going on. They are the only action that moves but needs to terminate
-    if (action[spriteName] === JUMP) {
-        console.log('stop the barbarian!');
+    // if we reach this point it means it was a terminating sprite animation, stop the movement if a new action has not
+    // been started and reset the action so it can be repeated if desired
+    if (action[spriteName] === requestedAction) {
+        console.log('stop the barbarian! requested action is ' + requestedAction);
+        action[spriteName] = undefined;
         barbarian.stop();
     }
 }
@@ -95,7 +96,7 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
     var index = 0;
     sprite.animate({left: (sprite.offset().left - distance) + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
     while(true) {
-        
+
         frame = frames[index];
         sprite.css('background-position',(-1*frame*sprite.width()) + 'px ' + -1*sprite.height()*heightOffset + 'px');
         if (proximityStop > 0 && sprite.offset().left - barbarian.offset().left < proximityStop) {
@@ -103,9 +104,9 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
         }
 
         var barbarianAttackDistance = monster.offset().left - barbarian.offset().left;
-        if (attacking && index == 2) { 
+        if (attacking && index == 2) {
             if (barbarianAttackDistance < 200 && barbarianAttackTime < monsterAttackTime) {
-                death.css('left', sprite.offset().left - 180); 
+                death.css('left', sprite.offset().left - 180);
                 sprite.css('display','none');
                 death.css('display', 'block');
                 await animate(death, 0, DEATH_FRAMES['FRAMES'], DEATH_FRAMES['HEIGHT_OFFSET'], false, 0, false);
@@ -117,10 +118,7 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
             }
         }
         if (index == frames.length && !repeat) {
-            console.log('shopping');
             break;
-        } else {
-            console.log('not shopping');
         }
         await sleep(1000/SPRITE_FPS);
 

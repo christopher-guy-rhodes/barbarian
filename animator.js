@@ -94,18 +94,27 @@ async function animateSprite(sprite, spriteName, path, requestedAction, requeste
 
 async function animate(sprite, distance, frames, heightOffset, repeat = false, proximityStop = 0, attacking = false) {
     var index = 0;
-    sprite.animate({left: (sprite.offset().left - distance) + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
+    sprite.animate({left: (sprite.offset().left - distance) + 'px'}, distance / SPRITE_PIXELS_PER_SECOND  * 1000, 'linear');
     while(true) {
 
         frame = frames[index];
         sprite.css('background-position',(-1*frame*sprite.width()) + 'px ' + -1*sprite.height()*heightOffset + 'px');
         if (proximityStop > 0 && sprite.offset().left - barbarian.offset().left < proximityStop) {
+            monsterAttackTime = new Date().getTime();
             break;
         }
 
         var barbarianAttackDistance = monster.offset().left - barbarian.offset().left;
         if (attacking && index == 2) {
-            if (barbarianAttackDistance < 200 && barbarianAttackTime < monsterAttackTime) {
+            console.log('distance:' + barbarianAttackDistance + ' time:' + barbarianAttackTime + ' monster time:' + monsterAttackTime);
+
+            console.log('time monster:' + monsterAttackTime);
+            console.log('time barbarian:' + barbarianAttackTime);
+            console.log('difference:' + (monsterAttackTime - barbarianAttackTime)/1000);
+            var difference = (monsterAttackTime - barbarianAttackTime)/1000;
+            var validAttack = difference < 0.5;
+
+            if (validAttack && (barbarianAttackDistance > 200 && barbarianAttackDistance < 260) && barbarianAttackTime < monsterAttackTime) {
                 death.css('left', sprite.offset().left - 180);
                 sprite.css('display','none');
                 death.css('display', 'block');

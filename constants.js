@@ -1,7 +1,9 @@
 // The speed of the sprite movement in frames per second
 var SPRITE_FPS = 5;
+var SPRITE_FPS_MONSTER = 10;
 // The speed that a sprite moves
 var SPRITE_PIXELS_PER_SECOND = 150;
+var SPRITE_PIXELS_PER_SECOND_MONSTER = 300;
 // The number of grid columns for the sprite
 var GRID_COLUMNS = 8;
 
@@ -24,7 +26,7 @@ var ATTACK = 'ATTACK';
 var JUMP = 'JUMP';
 var WALK = 'WALK';
 
-// Directions 
+// Directions
 var LEFT = 'LEFT';
 var RIGHT = 'RIGHT';
 
@@ -38,11 +40,11 @@ var KP_ATTACK = 'KP_ATTACK';
 
 // Animation sequences
 var DEATH_FRAMES = {
-    'FRAMES' : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 
+    'FRAMES' : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     'HEIGHT_OFFSET' : 0
 };
 
-var ATTACK_FRAMES = { 
+var ATTACK_FRAMES = {
     LEFT : {
         'FRAMES' : [47, 46, 45, 44, 43, 42, 41, 40],
         'HEIGHT_OFFSET' : 5},
@@ -50,7 +52,7 @@ var ATTACK_FRAMES = {
         'FRAMES' :  [32, 33, 34, 35, 36, 37, 38, 39],
         'HEIGHT_OFFSET' : 4}};
 
-var JUMP_FRAMES = { 
+var JUMP_FRAMES = {
     LEFT : {
         'FRAMES' : [62, 61, 60, 59, 58, 57, 56 ],
         'HEIGHT_OFFSET' : 7},

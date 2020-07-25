@@ -98,9 +98,14 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
     while(true) {
 
         frame = frames[index];
+
+
         sprite.css('background-position',(-1*frame*sprite.width()) + 'px ' + -1*sprite.height()*heightOffset + 'px');
-        if (proximityStop > 0 && sprite.offset().left - barbarian.offset().left < proximityStop) {
+        jumpedAgo = new Date().getTime() - barbarianJumpTime;
+        if (!(jumpedAgo < 500 && jumpedAgo > 0) && proximityStop > 0 && sprite.offset().left - barbarian.offset().left < proximityStop) {
+            console.log('monster attacking')
             monsterAttackTime = new Date().getTime();
+            console.log('breaking due to proximity stop jump diff ' + (new Date().getTime() - barbarianJumpTime));
             break;
         }
 
@@ -112,24 +117,30 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
             console.log('time barbarian:' + barbarianAttackTime);
             console.log('difference:' + (monsterAttackTime - barbarianAttackTime)/1000);
             var difference = (monsterAttackTime - barbarianAttackTime)/1000;
-            var validAttack = difference < 0.5;
+            var jumpdifference = (monsterAttackTime - barbarianJumpTime)/1000;
+            var validAttack = difference < 0.9;
+            console.log('Jump difference is ' + jumpdifference);
 
-            if (validAttack && (barbarianAttackDistance > 200 && barbarianAttackDistance < 260) && barbarianAttackTime < monsterAttackTime) {
+            if (jumpdifference < 0.30 && jumpdifference > 0.1) {
+                console.log('jump avoidance');
+            } else if (validAttack && (barbarianAttackDistance > 180 && barbarianAttackDistance < 270) && barbarianAttackTime < monsterAttackTime) {
                 death.css('left', sprite.offset().left - 180);
                 sprite.css('display','none');
                 death.css('display', 'block');
                 await animate(death, 0, DEATH_FRAMES['FRAMES'], DEATH_FRAMES['HEIGHT_OFFSET'], false, 0, false);
                 death.css('display', 'none');
-                sprite.stop();
             } else {
-                barbarian.css('display','none');
+                console.log('barbarian dying');
+                //barbarian.css('display','none');
                 barbarian.stop();
+                action = STOP;
+                barbarian.delay(100).fadeOut();
             }
         }
         if (index == frames.length && !repeat) {
             break;
         }
-        await sleep(1000/SPRITE_FPS);
+        await sleep(1000/BOG_MONSTER_SPRITE_FPS);
 
         if (index == frames.length ) {
             index = 0;
@@ -137,7 +148,9 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
         index++;
     }
 
+    console.log('stopping');
     sprite.stop();
+    // this is when you fade the barbarian
 
 }
 

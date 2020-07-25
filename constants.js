@@ -44,6 +44,22 @@ var DEATH_FRAMES = {
     'HEIGHT_OFFSET' : 0
 };
 
+var BOG_MONSTER_SPRITE_FPS = 5;
+
+var BOG_MONSTER_WALK_FRAMES = {
+    LEFT : {
+        'FRAMES': [13, 12, 11, 10, 9, 8],
+        'HEIGHT_OFFSET': 1
+    }
+}
+
+var BOG_MONSTER_ATTACK_FRAMES = {
+    LEFT : {
+        'FRAMES': [31, 30, 29, 28, 27, 26, 25, 24],
+        'HEIGHT_OFFSET': 3
+    }
+}
+
 var ATTACK_FRAMES = {
     LEFT : {
         'FRAMES' : [47, 46, 45, 44, 43, 42, 41, 40],

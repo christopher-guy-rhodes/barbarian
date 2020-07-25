@@ -67,8 +67,9 @@ function actionHelper(direction, isRunning, frames, requestedAction, times = 0) 
 
 async function monsterAttack() {
 
-    //death.css('display', 'block');
-    //await animate(death, 0, DEATH_FRAMES['FRAMES'], DEATH_FRAMES['HEIGHT_OFFSET'], true, 0, false);
-    await animate(monster, windowWidth, BOG_MONSTER_WALK_FRAMES[LEFT]['FRAMES'], BOG_MONSTER_WALK_FRAMES[LEFT]['HEIGHT_OFFSET'], true, 350);
-    await animate(monster, windowWidth, BOG_MONSTER_ATTACK_FRAMES[LEFT]['FRAMES'], BOG_MONSTER_ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET'], false, 0, true);
+    var jumped = await animate(monster, windowWidth, BOG_MONSTER_WALK_FRAMES[LEFT]['FRAMES'], BOG_MONSTER_WALK_FRAMES[LEFT]['HEIGHT_OFFSET'], true, 350);
+    console.log('jumped:' + jumped);
+    if (!jumped) {
+        await animate(monster, windowWidth, BOG_MONSTER_ATTACK_FRAMES[LEFT]['FRAMES'], BOG_MONSTER_ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET'], false, 0, true);
+    }
 }

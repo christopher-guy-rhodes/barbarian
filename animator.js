@@ -95,18 +95,26 @@ async function animateSprite(sprite, spriteName, path, requestedAction, requeste
 async function animate(sprite, distance, frames, heightOffset, repeat = false, proximityStop = 0, attacking = false) {
     var index = 0;
     sprite.animate({left: (sprite.offset().left - distance) + 'px'}, distance / SPRITE_PIXELS_PER_SECOND  * 1000, 'linear');
+    // todo: make jump logic happen if param is passed in
+    var jumped = false;
     while(true) {
 
         frame = frames[index];
 
 
         sprite.css('background-position',(-1*frame*sprite.width()) + 'px ' + -1*sprite.height()*heightOffset + 'px');
-        jumpedAgo = new Date().getTime() - barbarianJumpTime;
-        if (!(jumpedAgo < 500 && jumpedAgo > 0) && proximityStop > 0 && sprite.offset().left - barbarian.offset().left < proximityStop) {
-            console.log('monster attacking')
+        if (proximityStop > 0 && sprite.offset().left - barbarian.offset().left < proximityStop) {
             monsterAttackTime = new Date().getTime();
-            console.log('breaking due to proximity stop jump diff ' + (new Date().getTime() - barbarianJumpTime));
-            break;
+            console.log('offset' + sprite.offset().left);
+            if (sprite.offset().left == 0) {
+                break;
+            } else if (jumped) {
+
+            } else if (action['barbarian'] == JUMP) {
+                jumped = true;
+            } else {
+                break;
+            }
         }
 
         var barbarianAttackDistance = monster.offset().left - barbarian.offset().left;
@@ -150,6 +158,7 @@ async function animate(sprite, distance, frames, heightOffset, repeat = false, p
 
     console.log('stopping');
     sprite.stop();
+    return jumped;
     // this is when you fade the barbarian
 
 }

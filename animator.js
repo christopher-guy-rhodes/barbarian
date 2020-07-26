@@ -49,28 +49,28 @@
  * @heightOffsetGridUnits the height offset for the sprite
  */
 async function animateSprite(sprite, path, requestedAction, requestedDirection, heightOffsetGridUnits, times = 0) {
-    action[sprite['name']] = requestedAction;
-    direction[sprite['name']] = requestedDirection;
+    sprite['action'] = requestedAction;
+    sprite['direction'] = requestedDirection;
     var heightOffset = heightOffsetGridUnits * sprite['sprite'].height();
     var index = 0;
     var iterations = times;
-    console.log('action ' + sprite['name'] + ' = ' + action[sprite['name']] + ' requested action = ' + requestedAction);
-    console.log('direction ' + sprite['name'] + ' = ' + direction[sprite['name']] + ' requested direct = ' + requestedDirection);
-    while(action[sprite['name']] === requestedAction && direction[sprite['name']] === requestedDirection) {
+    console.log('action ' + sprite['name'] + ' = ' + sprite['action'] + ' requested action = ' + requestedAction);
+    console.log('direction ' + sprite['name'] + ' = ' + sprite['direction'] + ' requested direct = ' + requestedDirection);
+    while(sprite['action'] === requestedAction && sprite['direction'] === requestedDirection) {
        var windowWidth = $( document ).width() - sprite['sprite'].width();
        var position = path[index];
 
        sprite['sprite'].css('background-position',(-1*position*sprite['sprite'].width()) + 'px ' + -1*heightOffset + 'px');
-       if (action[sprite['name']] === STOP) {
+       if (sprite['action'] === STOP) {
            break;
        }
-       if (direction[sprite['name']] === LEFT && sprite['sprite'].offset().left === 0) {
-           action[sprite['name']] = STOP;
+       if (sprite['direction'] === LEFT && sprite['sprite'].offset().left === 0) {
+           sprite['action'] = STOP;
            break;
        }
-       if (direction[sprite['name']] === RIGHT && sprite['sprite'].offset().left === windowWidth) {
-           console.log('direction is ' + direction[sprite['name']]);
-           action[sprite['name']] = STOP;
+       if (sprite['direction'] === RIGHT && sprite['sprite'].offset().left === windowWidth) {
+           console.log('direction is ' + sprite['direction']);
+           sprite['action'] = STOP;
            break;
        }
        await sleep(1000/SPRITE_FPS);
@@ -90,8 +90,8 @@ async function animateSprite(sprite, path, requestedAction, requestedDirection, 
     // if we reach this point it means it was a terminating sprite animation, stop the movement if a new action has not
     // been started and reset the action so it can be repeated if desired. An exception is walking where a direction
     // change should not stop motion.
-    if (action[sprite['name']] !== WALK && action[sprite['name']] === requestedAction) {
-        action[sprite['name']] = undefined;
+    if (sprite['action'] !== WALK && sprite['action'] === requestedAction) {
+        sprite['action'] = undefined;
         sprite['sprite'].stop();
     }
 }

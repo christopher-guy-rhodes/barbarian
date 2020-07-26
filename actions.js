@@ -3,9 +3,9 @@
  *
  * @param direction the direction the barbarian is moving
  */
-function attack(sprite, direction) {
+function attack(sprite) {
     barbarianAttackTime = new Date().getTime();
-    actionHelper(sprite, direction, undefined, ATTACK_FRAMES, ATTACK, 1);
+    actionHelper(sprite, ATTACK_FRAMES, ATTACK, 1);
 }
 
 /**
@@ -13,9 +13,9 @@ function attack(sprite, direction) {
  *
  * @param direction the direction the barbarian is moving
  */
-function jump(sprite, direction) {
+function jump(sprite) {
     barbarianJumpTime = new Date().getTime();
-    actionHelper(sprite, direction, false, JUMP_FRAMES, JUMP, 1);
+    actionHelper(sprite, JUMP_FRAMES, JUMP, 1);
 }
 
 /**
@@ -23,8 +23,8 @@ function jump(sprite, direction) {
  *
  * @param direction the direction the barbarian is moving
  */
-function run(sprite, direction) {
-    actionHelper(sprite, direction, true, RUN_FRAMES, RUN);
+function run(sprite) {
+    actionHelper(sprite, RUN_FRAMES, RUN);
 }
 
 /**
@@ -32,8 +32,8 @@ function run(sprite, direction) {
  *
  * @param direction the direction the barbarian is moving
  */
-function walk(sprite, direction) {
-    actionHelper(sprite, direction, false, WALK_FRAMES, WALK);
+function walk(sprite) {
+    actionHelper(sprite, WALK_FRAMES, WALK);
 }
 
 /**
@@ -42,8 +42,8 @@ function walk(sprite, direction) {
  * @param action The current action.
  * @returns The new action if the barbarian was moving, the unchanged action otherwise.
  */
-function stop(sprite, direction) {
-    var isRight = direction === RIGHT;
+function stop(sprite) {
+    var isRight = sprite['direction'] === RIGHT;
 
     var x = isRight ? (-1 * STOP_RIGHT_POSITION * sprite['sprite'].width())
                     : (-1 * STOP_LEFT_POSITION * sprite['sprite'].width());
@@ -54,13 +54,13 @@ function stop(sprite, direction) {
     sprite['sprite'].stop();
 }
 
-function actionHelper(sprite, direction, isRunning, frames, requestedAction, times = 0) {
+function actionHelper(sprite, frames, requestedAction, times = 0) {
     sprite['sprite'].stop();
-    var isRight = direction === RIGHT;
-    if (typeof isRunning !== 'undefined') {
-        isRunning ? isRight ? runRight(sprite) : runLeft(sprite)
-                  : isRight ? moveRight(sprite) : moveLeft(sprite);
+    var isRight = sprite['direction'] === RIGHT;
+    if (requestedAction !== ATTACK) {
+        (requestedAction === RUN) ? isRight ? runRight(sprite) : runLeft(sprite)
+                                  : isRight ? moveRight(sprite) : moveLeft(sprite);
     }
 
-    animateSprite(sprite, frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET'], times);
+    animateSprite(sprite, frames[sprite['direction']]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[sprite['direction']]['HEIGHT_OFFSET'], times);
 }

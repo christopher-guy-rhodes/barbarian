@@ -38,6 +38,11 @@ var KP_JUMP = 'KP_JUMP';
 var KP_STOP = 'KP_STOP';
 var KP_ATTACK = 'KP_ATTACK';
 
+// Sprites
+var BARBARIAN_SPRITE_NAME = 'barbarian';
+var MONSTER_SPRITE_NAME = 'monster';
+var DEATH_SPRITE_NAME = 'death';
+
 // Animation sequences
 var DEATH_FRAMES = {
     'FRAMES' : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],

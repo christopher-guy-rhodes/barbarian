@@ -22,8 +22,8 @@
     display: none;
 }
 
-html { 
-  background: url(http://localhost/background-1.png) no-repeat center center fixed; 
+html {
+  background: url(http://localhost/background-1.png) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;

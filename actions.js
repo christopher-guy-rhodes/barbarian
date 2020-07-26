@@ -3,9 +3,9 @@
  *
  * @param direction the direction the barbarian is moving
  */
-function attack(direction) {
+function attack(sprite, direction) {
     barbarianAttackTime = new Date().getTime();
-    actionHelper(direction, undefined, ATTACK_FRAMES, ATTACK, 1);
+    actionHelper(sprite, direction, undefined, ATTACK_FRAMES, ATTACK, 1);
 }
 
 /**
@@ -13,9 +13,9 @@ function attack(direction) {
  *
  * @param direction the direction the barbarian is moving
  */
-function jump(direction) {
+function jump(sprite, direction) {
     barbarianJumpTime = new Date().getTime();
-    actionHelper(direction, false, JUMP_FRAMES, JUMP, 1, function() {console.log('====> callback')});
+    actionHelper(sprite, direction, false, JUMP_FRAMES, JUMP, 1);
 }
 
 /**
@@ -23,8 +23,8 @@ function jump(direction) {
  *
  * @param direction the direction the barbarian is moving
  */
-function run(direction) {
-    actionHelper(direction, true, RUN_FRAMES, RUN);
+function run(sprite, direction) {
+    actionHelper(sprite, direction, true, RUN_FRAMES, RUN);
 }
 
 /**
@@ -32,8 +32,8 @@ function run(direction) {
  *
  * @param direction the direction the barbarian is moving
  */
-function walk(direction) {
-    actionHelper(direction, false, WALK_FRAMES, WALK);
+function walk(sprite, direction) {
+    actionHelper(sprite, direction, false, WALK_FRAMES, WALK);
 }
 
 /**
@@ -42,34 +42,25 @@ function walk(direction) {
  * @param action The current action.
  * @returns The new action if the barbarian was moving, the unchanged action otherwise.
  */
-function stop(direction) {
+function stop(sprite, direction) {
     var isRight = direction === RIGHT;
 
-    var x = isRight ? (-1 * STOP_RIGHT_POSITION * barbarian.width())
-                    : (-1 * STOP_LEFT_POSITION * barbarian.width());
+    var x = isRight ? (-1 * STOP_RIGHT_POSITION * sprite['sprite'].width())
+                    : (-1 * STOP_LEFT_POSITION * sprite['sprite'].width());
 
     var y = isRight ? (-1 * STOP_RIGHT_HEIGHT_OFFSET)
-                        : -1 * STOP_LEFT_HEIGHT_OFFSET * barbarian.height();
-    barbarian.css('background-position', x + 'px ' + y + 'px');
-    barbarian.stop();
+                        : -1 * STOP_LEFT_HEIGHT_OFFSET * sprite['sprite'].height();
+    sprite['sprite'].css('background-position', x + 'px ' + y + 'px');
+    sprite['sprite'].stop();
 }
 
-function actionHelper(direction, isRunning, frames, requestedAction, times = 0) {
-    barbarian.stop();
+function actionHelper(sprite, direction, isRunning, frames, requestedAction, times = 0) {
+    sprite['sprite'].stop();
     var isRight = direction === RIGHT;
     if (typeof isRunning !== 'undefined') {
-        isRunning ? isRight ? runRight() : runLeft()
-                  : isRight ? moveRight() : moveLeft();
+        isRunning ? isRight ? runRight(sprite) : runLeft(sprite)
+                  : isRight ? moveRight(sprite) : moveLeft(sprite);
     }
 
-    animateSprite(barbarian, 'barbarian',  frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET'], times);
-}
-
-async function monsterAttack() {
-
-    var jumped = await animate(monster, windowWidth, BOG_MONSTER_WALK_FRAMES[LEFT]['FRAMES'], BOG_MONSTER_WALK_FRAMES[LEFT]['HEIGHT_OFFSET'], true, 350);
-    console.log('jumped:' + jumped);
-    if (!jumped) {
-        await animate(monster, windowWidth, BOG_MONSTER_ATTACK_FRAMES[LEFT]['FRAMES'], BOG_MONSTER_ATTACK_FRAMES[LEFT]['HEIGHT_OFFSET'], false, 0, true);
-    }
+    animateSprite(sprite, frames[direction]['FRAMES'], requestedAction, isRight ? RIGHT : LEFT, frames[direction]['HEIGHT_OFFSET'], times);
 }

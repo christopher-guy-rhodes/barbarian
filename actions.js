@@ -5,20 +5,20 @@
  * @returns The new action if the barbarian was moving, the unchanged action otherwise.
  */
 function stop(sprite) {
-    var isRight = sprite['direction'] === RIGHT;
+    var isRight = sprite[DIRECTION] === RIGHT;
 
-    var x = isRight ? (-1 * STOP_RIGHT_POSITION * sprite['sprite'].width())
-                    : (-1 * STOP_LEFT_POSITION * sprite['sprite'].width());
+    var x = isRight ? (-1 * STOP_RIGHT_POSITION * sprite[SPRITE].width())
+                    : (-1 * STOP_LEFT_POSITION * sprite[SPRITE].width());
 
     var y = isRight ? (-1 * STOP_RIGHT_HEIGHT_OFFSET)
-                        : -1 * STOP_LEFT_HEIGHT_OFFSET * sprite['sprite'].height();
-    sprite['sprite'].css('background-position', x + 'px ' + y + 'px');
-    sprite['sprite'].stop();
+                        : -1 * STOP_LEFT_HEIGHT_OFFSET * sprite[SPRITE].height();
+    sprite[SPRITE].css('background-position', x + 'px ' + y + 'px');
+    sprite[SPRITE].stop();
 }
 
 function actionHelper(sprite, opponents, requestedAction, times = 0) {
-    sprite['sprite'].stop();
-    var isRight = sprite['direction'] === RIGHT;
+    sprite[SPRITE].stop();
+    var isRight = sprite[DIRECTION] === RIGHT;
     // TODO: barbarian doesn't move during attack but monsters do so this should probably an optional parameter
     if (requestedAction !== ATTACK) {
         (requestedAction === RUN) ? isRight ? runRight(sprite) : runLeft(sprite)

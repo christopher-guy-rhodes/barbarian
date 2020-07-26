@@ -1,14 +1,17 @@
 .barbarian {
+    border: 1px solid red;
     height: 400px;
     width: 400px;
     background-image: url(./sprites/sprite.png);
     position: absolute;
     bottom: 12px;
+    left: 0;
 }
 .monster {
+    border: 1px solid blue;
     height: 400px;
     width: 400px;
-    background-image: url(./sprites/sprite.png);
+    background-image: url(./sprites/monsters.png);
     position: absolute;
     right: 0;
     bottom: 12px;

@@ -65,7 +65,7 @@ var BOG_MONSTER_ATTACK_FRAMES = {
     }
 }
 
-var ATTACK_FRAMES = {
+var BARBARIAN_ATTACK_FRAMES = {
     LEFT : {
         'FRAMES' : [47, 46, 45, 44, 43, 42, 41, 40],
         'HEIGHT_OFFSET' : 5},
@@ -73,7 +73,7 @@ var ATTACK_FRAMES = {
         'FRAMES' :  [32, 33, 34, 35, 36, 37, 38, 39],
         'HEIGHT_OFFSET' : 4}};
 
-var JUMP_FRAMES = {
+var BARBARIAN_JUMP_FRAMES = {
     LEFT : {
         'FRAMES' : [62, 61, 60, 59, 58, 57, 56 ],
         'HEIGHT_OFFSET' : 7},
@@ -81,7 +81,7 @@ var JUMP_FRAMES = {
         'FRAMES' :  [48, 49, 50, 51, 52, 53, 54],
         'HEIGHT_OFFSET' : 6}};
 
-var RUN_FRAMES = {
+var BARBARIAN_RUN_FRAMES = {
     LEFT : {
         'FRAMES' : [24, 25, 26, 27, 28, 29],
         'HEIGHT_OFFSET' : 3},
@@ -89,7 +89,7 @@ var RUN_FRAMES = {
         'FRAMES' : [16, 17, 18, 19, 20, 21],
         'HEIGHT_OFFSET' : 2}};
 
-var WALK_FRAMES = {
+var BARBARIAN_WALK_FRAMES = {
     LEFT : {
         'FRAMES' :  [13, 12, 11, 10, 9, 8],
         'HEIGHT_OFFSET' : 1},
@@ -107,4 +107,31 @@ var KEYPRESS = {
     KP_JUMP   : 74
 };
 
+BARBARIAN_SPRITE = {
+    sprite : $(".barbarian"),
+    name : BARBARIAN_SPRITE_NAME,
+    action : STOP,
+    direction : RIGHT,
+    frames : {
+        ATTACK : BARBARIAN_ATTACK_FRAMES,
+        JUMP : BARBARIAN_JUMP_FRAMES,
+        RUN : BARBARIAN_RUN_FRAMES,
+        WALK : BARBARIAN_WALK_FRAMES
+    }
+};
+
+MONSTER_SPRITE = {
+    sprite : $(".monster"),
+    name : MONSTER_SPRITE_NAME,
+    action : WALK,
+    direction : LEFT,
+    frames : {
+        WALK : BOG_MONSTER_WALK_FRAMES
+    }
+};
+
+DEATH_SPRITE = {
+    sprite : $(".death"),
+    name : DEATH_SPRITE_NAME
+}
 

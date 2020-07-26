@@ -13,70 +13,51 @@ $(document).ready(function(){
     // Include action definitions
     $.getScript('http://localhost/actions.js', function() {
 
-    barbarianSprite = {
-        sprite : $(".barbarian"),
-        name : 'barbarian',
-        action : STOP,
-        direction : RIGHT
-    };
-    monsterSprite = {
-        sprite : $(".monster"),
-        name : 'monster',
-        action : WALK,
-        direction : LEFT
-    };
-    deathSprite = {
-        sprite : $(".death"),
-        name : 'death'
-    }
-
-    monsterSprite['sprite'].css('background-position',-1*14*monsterSprite['sprite'].width() + 'px ' + -1*monsterSprite['sprite'].height() + 'px');
-
-    windowWidth = $(document).width() - barbarianSprite['sprite'].width();
+    windowWidth = $(document).width() - BARBARIAN_SPRITE['sprite'].width();
     var keypressTime;
     var lastKeypressTime;
 
-    walk(monsterSprite, monsterSprite['direction']);
+    actionHelper(MONSTER_SPRITE, WALK);
 
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");
 
         keypressTime = new Date().getTime();
 
-        var uninterruptable = barbarianSprite['action'] === JUMP || barbarianSprite['action'] === ATTACK;
+        var uninterruptable = BARBARIAN_SPRITE['action'] === JUMP || BARBARIAN_SPRITE['action'] === ATTACK;
         if (!shouldThrottle(lastKeypressTime) && !uninterruptable) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
             switch(e.which) {
                 case KEYPRESS[KP_RUN]:
-                    if(barbarianSprite['action'] !== RUN) {
-                        run(barbarianSprite);
+                    if(BARBARIAN_SPRITE['action'] !== RUN) {
+                        actionHelper(BARBARIAN_SPRITE, RUN);
                     }
                     break;
                 case KEYPRESS[KP_JUMP]:
-                    if (barbarianSprite['action'] !== JUMP) {
-                        jump(barbarianSprite);
+                    if (BARBARIAN_SPRITE['action'] !== JUMP) {
+                        actionHelper(BARBARIAN_SPRITE, JUMP, 1);
                     }
                     break;
                 case KEYPRESS[KP_STOP]:
-                    stop(barbarianSprite);
-                    barbarianSprite['action'] = STOP;
+                    stop(BARBARIAN_SPRITE);
+                    BARBARIAN_SPRITE['action'] = STOP;
                     break;
                 case KEYPRESS[KP_RIGHT]:
-                    if (barbarianSprite['action'] !== WALK || barbarianSprite['direction'] !== RIGHT) {
-                        barbarianSprite['direction'] = RIGHT;
-                        walk(barbarianSprite);
+                    if (BARBARIAN_SPRITE['action'] !== WALK || BARBARIAN_SPRITE['direction'] !== RIGHT) {
+                        BARBARIAN_SPRITE['direction'] = RIGHT;
+                        actionHelper(BARBARIAN_SPRITE, WALK);
                     }
                     break;
                 case KEYPRESS[KP_LEFT]:
-                    if (barbarianSprite['action'] != WALK || barbarianSprite['direction'] !== LEFT) {
-                        barbarianSprite['direction'] = LEFT;
-                        walk(barbarianSprite);
+                    if (BARBARIAN_SPRITE['action'] != WALK || BARBARIAN_SPRITE['direction'] !== LEFT) {
+                        BARBARIAN_SPRITE['direction'] = LEFT;
+                        actionHelper(BARBARIAN_SPRITE, WALK);
                     }
                     break;
                 case KEYPRESS[KP_ATTACK]:
-                    if (barbarianSprite['action'] !== ATTACK) {
-                        attack(barbarianSprite);
+                    if (BARBARIAN_SPRITE['action'] !== ATTACK) {
+                        actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
                     }
                     break;
                 default: return; // exit this handler for other keys

@@ -17,7 +17,7 @@ $(document).ready(function(){
     var keypressTime;
     var lastKeypressTime;
 
-    actionHelper(MONSTER_SPRITE, WALK);
+    actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE], WALK);
 
     $(document).keydown(function(e) {
         var barbarian = $(".barbarian");
@@ -31,12 +31,12 @@ $(document).ready(function(){
             switch(e.which) {
                 case KEYPRESS[KP_RUN]:
                     if(BARBARIAN_SPRITE['action'] !== RUN) {
-                        actionHelper(BARBARIAN_SPRITE, RUN);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], RUN);
                     }
                     break;
                 case KEYPRESS[KP_JUMP]:
                     if (BARBARIAN_SPRITE['action'] !== JUMP) {
-                        actionHelper(BARBARIAN_SPRITE, JUMP, 1);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], JUMP, 1);
                     }
                     break;
                 case KEYPRESS[KP_STOP]:
@@ -46,18 +46,18 @@ $(document).ready(function(){
                 case KEYPRESS[KP_RIGHT]:
                     if (BARBARIAN_SPRITE['action'] !== WALK || BARBARIAN_SPRITE['direction'] !== RIGHT) {
                         BARBARIAN_SPRITE['direction'] = RIGHT;
-                        actionHelper(BARBARIAN_SPRITE, WALK);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK);
                     }
                     break;
                 case KEYPRESS[KP_LEFT]:
                     if (BARBARIAN_SPRITE['action'] != WALK || BARBARIAN_SPRITE['direction'] !== LEFT) {
                         BARBARIAN_SPRITE['direction'] = LEFT;
-                        actionHelper(BARBARIAN_SPRITE, WALK);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK);
                     }
                     break;
                 case KEYPRESS[KP_ATTACK]:
                     if (BARBARIAN_SPRITE['action'] !== ATTACK) {
-                        actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], ATTACK, 1);
                     }
                     break;
                 default: return; // exit this handler for other keys

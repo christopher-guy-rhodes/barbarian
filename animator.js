@@ -43,12 +43,13 @@
  * This method animates the position of the spite according to the path provided.
  *
  * @sprite The sprite to animate
- * @path The path that the sprite will take.
  * @requestedAction The action requested that is assicated with the path.
  * @requestedDirection The direction the sprite is to move
- * @heightOffsetGridUnits the height offset for the sprite
  */
-async function animateSprite(sprite, path, requestedAction, requestedDirection, heightOffsetGridUnits, times = 0) {
+async function animateSprite(sprite, requestedAction, requestedDirection, times = 0) {
+    var frames = sprite['frames'][requestedAction];
+    var path = frames[sprite['direction']]['FRAMES'];
+    var heightOffsetGridUnits = frames[sprite['direction']]['HEIGHT_OFFSET'];
     sprite['action'] = requestedAction;
     sprite['direction'] = requestedDirection;
     var heightOffset = heightOffsetGridUnits * sprite['sprite'].height();

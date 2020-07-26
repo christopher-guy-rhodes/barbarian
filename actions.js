@@ -19,16 +19,14 @@ function stop(sprite) {
 function actionHelper(sprite, requestedAction, times = 0) {
     sprite['sprite'].stop();
     var isRight = sprite['direction'] === RIGHT;
+    // TODO: barbarian doesn't move during attack but monsters do so this should probably an optional parameter
     if (requestedAction !== ATTACK) {
         (requestedAction === RUN) ? isRight ? runRight(sprite) : runLeft(sprite)
                                   : isRight ? moveRight(sprite) : moveLeft(sprite);
     }
 
-    var frames = sprite['frames'][requestedAction];
     animateSprite(sprite,
-        frames[sprite['direction']]['FRAMES'],
         requestedAction,
         isRight ? RIGHT : LEFT,
-        frames[sprite['direction']]['HEIGHT_OFFSET'],
         times);
 }

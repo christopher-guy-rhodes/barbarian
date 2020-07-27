@@ -187,3 +187,20 @@
     function getProximity(sprite, opponent) {
         return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
     }
+
+   async function monsterDeath(sprite) {
+       sprite[SPRITE].stop();
+       DEATH_SPRITE[SPRITE].css('left', sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2);
+       DEATH_SPRITE[SPRITE].css('display', 'block');
+
+       sprite[SPRITE].css('display', 'none');
+
+       var frames = DEATH_SPRITE[FRAMES][DEATH][UP][FRAMES]
+       for (var i = 0; i < frames.length; i++) {
+           var position = frames[i];
+           console.log('position');
+           DEATH_SPRITE[SPRITE].css('background-position',-1*(position*DEATH_SPRITE[SPRITE].width()) + 'px ' + '0px');
+           await sleep(1000 / DEATH_SPRITE[FPS]);
+       }
+       DEATH_SPRITE[SPRITE].css('display', 'none');
+   }

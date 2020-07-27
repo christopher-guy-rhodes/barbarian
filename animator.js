@@ -86,12 +86,13 @@
                 }
             } else {
                 if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
-                    if (sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left + sprite[SPRITE].width() < BARBARIAN_SPRITE[SPRITE].offset().left) {
-                        //console.log('turn monster around');
+                    if (sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left) {
+                        console.log(sprite[NAME] + ' turning around and walking a');
                         sprite[DIRECTION] = RIGHT;
                         actionHelper(sprite, opponents, WALK);
                         break;
-                    } else if (sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left - sprite[SPRITE].width() > BARBARIAN_SPRITE[SPRITE].offset().left) {
+                    } else if (sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left) {
+                        console.log(sprite[NAME] + ' turning around and walking b');
                         sprite[DIRECTION] = LEFT;
                         actionHelper(sprite, opponents, WALK);
                         break;

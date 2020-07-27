@@ -1,9 +1,9 @@
 // The speed of the sprite movement in frames per second
-var SPRITE_FPS = 5;
-var BOG_MONSTER_SPRITE_FPS = 5;
+var SPRITE_FPS = 2;
+var BOG_MONSTER_SPRITE_FPS = 2;
 // The speed that a sprite moves
-var SPRITE_PIXELS_PER_SECOND = 150;
-var BOG_MONSTER_PIXELS_PER_SECOND = 150;
+var SPRITE_PIXELS_PER_SECOND = 50;
+var BOG_MONSTER_PIXELS_PER_SECOND = 50;
 // The number of grid columns for the sprite
 var GRID_COLUMNS = 8;
 
@@ -72,7 +72,7 @@ var BOG_MONSTER_WALK_FRAMES = {
     },
     RIGHT : {
         FRAMES: [0, 1, 2, 3, 4, 5],
-        HEIGHT_OFFSET: 2
+        HEIGHT_OFFSET: 0
     }
 };
 

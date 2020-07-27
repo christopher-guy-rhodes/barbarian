@@ -78,17 +78,25 @@
                             actionHelper(sprite, opponents, ATTACK);
                             break main;
                         } else {
-                            console.log(sprite[NAME] + ' is attacking ' + opponent[NAME] +  ' and proximity is ' + getProximity(sprite, opponent));
-                            console.log(sprite[NAME] + ' is attacking');
+                            //console.log(sprite[NAME] + ' is attacking ' + opponent[NAME] +  ' and proximity is ' + getProximity(sprite, opponent));
+                            //console.log(sprite[NAME] + ' is attacking');
                         }
                         //sprite[ACTION] = ATTACK;
                     }
                 }
             } else {
-                if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] != WALK) {
-                    //sprite[ACTION] = WALK;
-                    actionHelper(sprite, opponents, WALK);
-                    break;
+                if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
+                    if (sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left + sprite[SPRITE].width() < BARBARIAN_SPRITE[SPRITE].offset().left) {
+                        //console.log('turn monster around');
+                        sprite[DIRECTION] = RIGHT;
+                        actionHelper(sprite, opponents, WALK);
+                        break;
+                    } else if (sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left - sprite[SPRITE].width() > BARBARIAN_SPRITE[SPRITE].offset().left) {
+                        sprite[DIRECTION] = LEFT;
+                        actionHelper(sprite, opponents, WALK);
+                        break;
+                    }
+
                 }
             }
 
@@ -119,7 +127,7 @@
         }
 
         // Action is over, reset state so the action can be repeated if desired
-        if (sprite[NAME] === BARBARIAN_SPRITE_NAME && sprite[ACTION] === requestedAction) {
+        if (sprite[ACTION] !== WALK && sprite[NAME] === BARBARIAN_SPRITE_NAME && sprite[ACTION] === requestedAction) {
             sprite[ACTION] = undefined;
             sprite[SPRITE].stop();
         }
@@ -142,14 +150,18 @@
     }
 
     function getOpponentsInProximity(sprite, opponents, proximityThreshold) {
-        console.log(sprite[NAME] + ' is moving ' + sprite[DIRECTION]);
         var attackers = [];
         for (var i = 0; i < opponents.length; i++) {
             var opponent = opponents[i];
-            //console.log('proximity:' + proximity);
             proximity = getProximity(sprite, opponent);
-            if (proximity > 0 && proximity < proximityThreshold) {
-                attackers.push(opponent);
+            if (sprite[DIRECTION] == 'LEFT') {
+                if (proximity > 0 && proximity < proximityThreshold) {
+                    attackers.push(opponent);
+                }
+            } else {
+                if (proximity < 0 && proximity > -1*proximityThreshold ) {
+                    attackers.push(opponent);
+                }
             }
         }
         return attackers;

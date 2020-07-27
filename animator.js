@@ -86,12 +86,26 @@
                 }
             } else {
                 if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
-                    if (sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left) {
+                    var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width() < BARBARIAN_SPRITE[SPRITE].offset().left;
+                    var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width() > BARBARIAN_SPRITE[SPRITE].offset().left;
+
+                    /*
+                    if (sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left === 0) {
+                        console.log('left:' + sprite[SPRITE].offset().left);
+                        console.log('need to turn around and walk');
+                        sprite[DIRECTION] = RIGHT;
+                        actionHelper(sprite, opponents, WALK);
+                    }
+
+                     */
+                    console.log(sprite[NAME] + ' going ' + sprite[DIRECTION] + ' left:' + sprite[SPRITE].offset().left + ' windowWidth:' + windowWidth);
+                    if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
                         console.log(sprite[NAME] + ' turning around and walking a');
                         sprite[DIRECTION] = RIGHT;
                         actionHelper(sprite, opponents, WALK);
                         break;
-                    } else if (sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left) {
+                    } else if (sprite[DIRECTION] === RIGHT && (isPassedRight || sprite[SPRITE].offset().left === windowWidth)) {
+                        console.log('direction right left:' + sprite[SPRITE].offset().left + ' windowWidth:' + windowWidth);
                         console.log(sprite[NAME] + ' turning around and walking b');
                         sprite[DIRECTION] = LEFT;
                         actionHelper(sprite, opponents, WALK);
@@ -110,10 +124,12 @@
             }
             if (hitLeftBoundry(sprite) || hitRightBoundry(sprite)) {
                 // Since we are stopping set the frame to the stop frame (1st frame when walking)
+                console.log('hit boundry');
                 renderSpriteFrame(sprite, 0, WALK);
                 sprite[ACTION] = STOP;
                 break;
             }
+
             await sleep(1000 / sprite[FPS]);
 
             // loop the sprite animation

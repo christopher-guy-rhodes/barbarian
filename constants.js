@@ -1,9 +1,9 @@
 // The speed of the sprite movement in frames per second
-var SPRITE_FPS = 2;
-var BOG_MONSTER_SPRITE_FPS = 2;
+var SPRITE_FPS = 5;
+var BOG_MONSTER_SPRITE_FPS = 5;
 // The speed that a sprite moves
-var SPRITE_PIXELS_PER_SECOND = 50;
-var BOG_MONSTER_PIXELS_PER_SECOND = 50;
+var SPRITE_PIXELS_PER_SECOND = 150;
+var BOG_MONSTER_PIXELS_PER_SECOND = 150;
 // The number of grid columns for the sprite
 var GRID_COLUMNS = 8;
 

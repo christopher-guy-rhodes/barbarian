@@ -1,5 +1,5 @@
 .barbarian {
-    border: 1px solid red;
+    border: 0px solid red;
     height: 400px;
     width: 400px;
     background-image: url(./sprites/sprite.png);
@@ -8,7 +8,7 @@
     left: 0;
 }
 .monster {
-    border: 1px solid red;
+    border: 0px solid red;
     height: 400px;
     width: 400px;
     background-image: url(./sprites/monsters.png);

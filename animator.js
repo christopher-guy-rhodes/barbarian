@@ -13,7 +13,7 @@
      */
     function moveRight(sprite) {
         var distance = windowWidth - sprite[SPRITE].offset().left;
-        sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
+        sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / sprite[PIXELS_PER_SECOND] * 1000, 'linear');
     }
 
     /**
@@ -21,14 +21,14 @@
      */
     function moveLeft(sprite) {
         var distance = sprite[SPRITE].offset().left;
-        sprite[SPRITE].animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND * 1000, 'linear');
+        sprite[SPRITE].animate({left: '0px'}, distance / sprite[PIXELS_PER_SECOND] * 1000, 'linear');
     }
     /**
      * Make the barbarian run right
      */
     function runRight(sprite) {
         var distance = (windowWidth - sprite[SPRITE].offset().left);
-        sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / SPRITE_PIXELS_PER_SECOND / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
+        sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / sprite[PIXELS_PER_SECOND] / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
     }
 
     /**
@@ -36,66 +36,94 @@
      */
     function runLeft(sprite) {
         var distance = sprite[SPRITE].offset().left;
-        sprite[SPRITE].animate({left: '0px'}, distance / SPRITE_PIXELS_PER_SECOND / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
+        sprite[SPRITE].animate({left: '0px'}, distance / sprite[PIXELS_PER_SECOND] / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
     }
 
-/**
- * This method animates the position of the spite according to the path provided.
- *
- * @sprite The sprite to animate
- * @requestedAction The action requested that is assicated with the path.
- * @requestedDirection The direction the sprite is to move
- */
-async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times = 0) {
-    var frames = sprite[FRAMES][requestedAction];
-    var path = frames[sprite[DIRECTION]][FRAMES];
-    var heightOffsetGridUnits = frames[sprite[DIRECTION]][HEIGHT_OFFSET];
+    /**
+    * This method animates the position of the spite according to the path provided.
+    *
+    * @sprite The sprite to animate
+    * @requestedAction The action requested that is assicated with the path.
+    * @requestedDirection The direction the sprite is to move
+    */
+    async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times = 0) {
+        var frames = sprite[FRAMES][requestedAction];
+        var path = frames[sprite[DIRECTION]][FRAMES];
+        var heightOffsetGridUnits = frames[sprite[DIRECTION]][HEIGHT_OFFSET];
 
-    sprite[ACTION] = requestedAction;
-    sprite[DIRECTION] = requestedDirection;
+        sprite[ACTION] = requestedAction;
+        sprite[DIRECTION] = requestedDirection;
 
-    var heightOffset = heightOffsetGridUnits * sprite[SPRITE].height();
-    var index = 0;
-    var iterations = times;
-    var windowWidth = $( document ).width() - sprite[SPRITE].width();
+        var heightOffset = heightOffsetGridUnits * sprite[SPRITE].height();
+        var index = 0;
+        var iterations = times;
+        var windowWidth = $(document).width() - sprite[SPRITE].width();
 
-    while(sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
+        //var attack = false;
+        main:
+        while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
-
-        if (isFighting(sprite, opponents)) {
-        }
-
-        var position = path[index];
-
-        renderSpriteFrame(sprite, position, requestedAction);
-        if (sprite[ACTION] === STOP) {
-            break;
-        }
-        if (hitLeftBoundry(sprite) || hitRightBoundry(sprite)) {
-            // Since we are stopping set the frame to the stop frame (1st frame when walking)
-            renderSpriteFrame(sprite, 0, WALK);
-            sprite[ACTION] = STOP;
-            break;
-        }
-        await sleep(1000/SPRITE_FPS);
-
-        // loop the sprite animation
-        index++;
-        if (index == path.length) {
-            if (times < 1 || --iterations > 0) {
-                index = 0;
+            var opponentsInProximity = getOpponentsInProximity(sprite, opponents, sprite[SPRITE].width());
+            if (opponentsInProximity.length > 0) {
+                for (var i = 0; i < opponentsInProximity.length; i++) {
+                    opponent = opponentsInProximity[i];
+                    if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+                    } else {
+                        //DEATH_SPRITE[SPRITE].css('display', 'block');
+                        //animateSprite(DEATH_SPRITE, [], DEATH, UP, 1);
+                        //attack = true;
+                        //console.log('set ' + sprite[NAME] + ' into attack mode');
+                        if (sprite[ACTION] !== ATTACK) {
+                            console.log(sprite[NAME] + ' launching an attack');
+                            actionHelper(sprite, opponents, ATTACK);
+                            break main;
+                        } else {
+                            console.log(sprite[NAME] + ' is attacking ' + opponent[NAME] +  ' and proximity is ' + getProximity(sprite, opponent));
+                            console.log(sprite[NAME] + ' is attacking');
+                        }
+                        //sprite[ACTION] = ATTACK;
+                    }
+                }
             } else {
+                if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] != WALK) {
+                    //sprite[ACTION] = WALK;
+                    actionHelper(sprite, opponents, WALK);
+                    break;
+                }
+            }
+
+
+            var position = path[index];
+
+            renderSpriteFrame(sprite, position, requestedAction);
+            if (sprite[ACTION] === STOP) {
                 break;
             }
-        }
-    }
+            if (hitLeftBoundry(sprite) || hitRightBoundry(sprite)) {
+                // Since we are stopping set the frame to the stop frame (1st frame when walking)
+                renderSpriteFrame(sprite, 0, WALK);
+                sprite[ACTION] = STOP;
+                break;
+            }
+            await sleep(1000 / sprite[FPS]);
 
-    // if we reach this point it means it was a terminating sprite animation, stop the movement if a new action has not
-    // been started and reset the action so it can be repeated if desired. An exception is walking where a direction
-    // change should not stop motion.
-    if (sprite[ACTION] === requestedAction) {
-        sprite[ACTION] = undefined;
-        sprite[SPRITE].stop();
+            // loop the sprite animation
+            index++;
+            if (index == path.length) {
+                if (times < 1 || --iterations > 0) {
+                    index = 0;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        // Action is over, reset state so the action can be repeated if desired
+        if (sprite[NAME] === BARBARIAN_SPRITE_NAME && sprite[ACTION] === requestedAction) {
+            sprite[ACTION] = undefined;
+            sprite[SPRITE].stop();
+        }
+
     }
 
     function renderSpriteFrame(sprite, position, requestedAction) {
@@ -113,16 +141,20 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
         return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth;
     }
 
-    function isFighting(sprite, opponents) {
-        for (i = 0; i < opponents.length; i++) {
+    function getOpponentsInProximity(sprite, opponents, proximityThreshold) {
+        console.log(sprite[NAME] + ' is moving ' + sprite[DIRECTION]);
+        var attackers = [];
+        for (var i = 0; i < opponents.length; i++) {
             var opponent = opponents[i];
-            var proximity = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
             //console.log('proximity:' + proximity);
-            if (proximity < sprite[SPRITE].width()) {
-                console.log(sprite[NAME] + 'is fighting opponent ' + opponent[NAME] + '!!');
-            } else {
-                console.log(sprite[NAME] + ' is not fighting');
+            proximity = getProximity(sprite, opponent);
+            if (proximity > 0 && proximity < proximityThreshold) {
+                attackers.push(opponent);
             }
         }
+        return attackers;
     }
-}
+
+    function getProximity(sprite, opponent) {
+        return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
+    }

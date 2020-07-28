@@ -75,19 +75,31 @@
                             var barbarianPosition = positionsAtAttack[sprite[NAME]];
                             var opponentPosition = positionsAtAttack[opponent[NAME]];
                             var diff = Math.abs(opponentPosition - barbarianPosition);
-                                console.log('diff:' + (opponentPosition - barbarianPosition));
-                                if (diff < 390 && diff > 325) {
-                                    var left = sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2;
-                                    left = barbarianPosition < opponentPosition ? left + 200 : left - 200;
-                                    console.log('performing monster death');
-                                    if (!dyingCache[opponent[NAME]]) {
-                                        dyingCache[opponent[NAME]] = true;
-                                        setTimeout(function () {
-                                            monsterDeath(opponent, left)
-                                        }, 500);
-                                        console.log('monster killed');
-                                    }
+                            console.log('diff:' + (opponentPosition - barbarianPosition));
+                            var facingAndGoodAttack = diff < 390 && diff > 325;
+                            // it is not passible to have a diff < 100 when facing. If it is a behing attack within
+                            // range it is a kill
+                            var notFacingAndGoodAttack = diff < 100;
+                            if (facingAndGoodAttack || notFacingAndGoodAttack) {
+                                var left = sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2;
+                                left = barbarianPosition < opponentPosition ? left + 200 : left - 200;
+                                console.log('performing monster death');
+                                if (!dyingCache[opponent[NAME]]) {
+                                    dyingCache[opponent[NAME]] = true;
+                                    setTimeout(function () {
+                                        monsterDeath(opponent, left)
+                                    }, 500);
+                                    console.log('monster killed');
                                 }
+                            } else {
+                                console.log('barbarian death');
+                                var distance = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left + 125);
+                                console.log('distance:' + distance);
+                                console.log('pps:' + opponent[PIXELS_PER_SECOND]);
+                                console.log('delay' + (1/opponent[PIXELS_PER_SECOND]*distance));
+                                var delay = 1/opponent[PIXELS_PER_SECOND]*distance*1000;
+                                setTimeout(function() {barbarianDeath(sprite)}, delay);
+                            }
                         }
 
                     } else {
@@ -204,4 +216,8 @@
        }
        DEATH_SPRITE[SPRITE].css('display', 'none');
        dyingCache[sprite[NAME]] = false;
+   }
+
+   function barbarianDeath(sprite) {
+        sprite[SPRITE].fadeOut("slow");
    }

@@ -16,7 +16,7 @@ function stop(sprite) {
     sprite[SPRITE].stop();
 }
 
-function actionHelper(sprite, opponents, requestedAction, times, positionsAtAttack = {}) {
+function actionHelper(sprite, opponents, requestedAction, times, positionsAtAttack, positionsAtJump) {
     sprite[SPRITE].stop();
 
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
@@ -30,7 +30,8 @@ function actionHelper(sprite, opponents, requestedAction, times, positionsAtAtta
         requestedAction,
         sprite[DIRECTION] === RIGHT ? RIGHT : LEFT,
         times,
-        positionsAtAttack);
+        positionsAtAttack,
+        positionsAtJump);
 }
 
 function move(sprite, requestedAction) {

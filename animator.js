@@ -48,7 +48,7 @@
     * @requestedAction The action requested that is assicated with the path.
     * @requestedDirection The direction the sprite is to move
     */
-    async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times, positionsAtAttack = {}) {
+    async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times, positionsAtAttack, positionsAtJump) {
         var frames = sprite[FRAMES][requestedAction];
         var path = frames[sprite[DIRECTION]][FRAMES];
         var heightOffsetGridUnits = frames[sprite[DIRECTION]][HEIGHT_OFFSET];
@@ -108,13 +108,27 @@
 
                     } else {
                         if (sprite[ACTION] !== ATTACK) {
-                            actionHelper(sprite, opponents, ATTACK, 0);
+                            console.log('positions at jump:' + Object.keys(positionsAtJump).length);
+                            actionHelper(sprite, opponents, ATTACK, 0, {}, positionsAtJump);
                             break main;
                         } else {
+                            if (Object.keys(positionsAtJump).length > 0) {
+                                console.log('possible jump override');
+                            } else {
+                                console.log('no jump data');
+                            }
                             var diff = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
-                            if (sprite[STATUS] === ALIVE && opponent[STATUS] === ALIVE && diff < 100) {
-                                console.log('both alive and diff is:' + diff);
-                                barbarianDeath(opponent);
+                            if (sprite[STATUS] === ALIVE && opponent[STATUS] === ALIVE && diff < 200) {
+                                if (!dyingCache[opponent[NAME]]) {
+                                    console.log('both alive and diff is:' + diff + ' action is ' + opponent[ACTION]);
+
+                                    if (Object.keys(positionsAtJump).length > 0) {
+                                        console.log('positions at jump');
+                                        console.log('positions at jump:' + positionsAtJump[opponent[NAME]]);
+                                    }
+                                    dyingCache[opponent[NAME]] = true;
+                                    barbarianDeath(opponent);
+                                }
                             }
                             //console.log('attacking ' + opponent[NAME]);
                             //console.log('has attacked?:' + Object.keys(positionsAtAttack).length);
@@ -128,11 +142,11 @@
 
                     if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
                         sprite[DIRECTION] = RIGHT;
-                        actionHelper(sprite, opponents, WALK, 0);
+                        actionHelper(sprite, opponents, WALK, 0, {}, {});
                         break;
                     } else if (sprite[DIRECTION] === RIGHT && (isPassedRight || sprite[SPRITE].offset().left === windowWidth)) {
                         sprite[DIRECTION] = LEFT;
-                        actionHelper(sprite, opponents, WALK, 0);
+                        actionHelper(sprite, opponents, WALK, 0, {}, {});
                         break;
                     }
 
@@ -233,4 +247,5 @@
        sprite[SPRITE].stop();
        sprite[STATUS] = DEAD;
        sprite[SPRITE].fadeOut("slow");
+       dyingCache[sprite[NAME]] = false;
    }

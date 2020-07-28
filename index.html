@@ -17,7 +17,7 @@ $(document).ready(function(){
     var keypressTime;
     var lastKeypressTime;
 
-    actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE], WALK, 0);
+    actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE], WALK, 0, {}, {});
 
     $(document).keydown(function(e) {
 
@@ -30,12 +30,12 @@ $(document).ready(function(){
             switch(e.which) {
                 case KEYPRESS[KP_RUN]:
                     if(BARBARIAN_SPRITE[ACTION] !== RUN) {
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], RUN, 0);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], RUN, 0, {}, {});
                     }
                     break;
                 case KEYPRESS[KP_JUMP]:
                     if (BARBARIAN_SPRITE[ACTION] !== JUMP) {
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE],  JUMP, 1);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE],  JUMP, 1, {}, getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE]));
                     }
                     break;
                 case KEYPRESS[KP_STOP]:
@@ -45,18 +45,18 @@ $(document).ready(function(){
                 case KEYPRESS[KP_RIGHT]:
                     if (BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) {
                         BARBARIAN_SPRITE[DIRECTION] = RIGHT;
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK, 0);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK, 0, {}, {});
                     }
                     break;
                 case KEYPRESS[KP_LEFT]:
                     if (BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) {
                         BARBARIAN_SPRITE[DIRECTION] = LEFT;
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK, 0);
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK, 0, {}, {});
                     }
                     break;
                 case KEYPRESS[KP_ATTACK]:
                     if (BARBARIAN_SPRITE[ACTION] !== ATTACK) {
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], ATTACK, 1, getPositionsAtAttack([BARBARIAN_SPRITE, MONSTER_SPRITE]));
+                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], ATTACK, 1, getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE]), {});
                     }
                     break;
                 default: return; // exit this handler for other keys
@@ -73,7 +73,7 @@ $(document).ready(function(){
         return elapsed < KEYPRESS_THROTTLE_DELAY;
     }
 
-    function getPositionsAtAttack(sprites) {
+    function getPositionsAtAction(sprites) {
         var positionsAtAttack = {};
         for (var i = 0; i < sprites.length; i++) {
             var sprite = sprites[i];

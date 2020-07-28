@@ -1,4 +1,6 @@
-   /**
+   dyingCache = {};
+
+    /**
      * Sleep helper method used to achieve desired frames per second for position change.
      *
      * @param ms The number of milliseconds to sleep.
@@ -46,7 +48,7 @@
     * @requestedAction The action requested that is assicated with the path.
     * @requestedDirection The direction the sprite is to move
     */
-    async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times = 0) {
+    async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times, positionsAtAttack = {}) {
         var frames = sprite[FRAMES][requestedAction];
         var path = frames[sprite[DIRECTION]][FRAMES];
         var heightOffsetGridUnits = frames[sprite[DIRECTION]][HEIGHT_OFFSET];
@@ -63,52 +65,52 @@
         main:
         while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
-            var opponentsInProximity = getOpponentsInProximity(sprite, opponents, sprite[SPRITE].width());
+            var opponentsInProximity = getOpponentsInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
             if (opponentsInProximity.length > 0) {
                 for (var i = 0; i < opponentsInProximity.length; i++) {
-                    opponent = opponentsInProximity[i];
+                    var opponent = opponentsInProximity[i];
                     if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+                        var spriteNames = Object.keys(positionsAtAttack);
+                        if (spriteNames.length > 0) {
+                            var barbarianPosition = positionsAtAttack[sprite[NAME]];
+                            var opponentPosition = positionsAtAttack[opponent[NAME]];
+                            var diff = Math.abs(opponentPosition - barbarianPosition);
+                                console.log('diff:' + (opponentPosition - barbarianPosition));
+                                if (diff < 390 && diff > 325) {
+                                    var left = sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2;
+                                    left = barbarianPosition < opponentPosition ? left + 200 : left - 200;
+                                    console.log('performing monster death');
+                                    if (!dyingCache[opponent[NAME]]) {
+                                        dyingCache[opponent[NAME]] = true;
+                                        setTimeout(function () {
+                                            monsterDeath(opponent, left)
+                                        }, 500);
+                                        console.log('monster killed');
+                                    }
+                                }
+                        }
+
                     } else {
-                        //DEATH_SPRITE[SPRITE].css('display', 'block');
-                        //animateSprite(DEATH_SPRITE, [], DEATH, UP, 1);
-                        //attack = true;
-                        //console.log('set ' + sprite[NAME] + ' into attack mode');
                         if (sprite[ACTION] !== ATTACK) {
-                            console.log(sprite[NAME] + ' launching an attack');
-                            actionHelper(sprite, opponents, ATTACK);
+                            actionHelper(sprite, opponents, ATTACK, 0);
                             break main;
                         } else {
-                            //console.log(sprite[NAME] + ' is attacking ' + opponent[NAME] +  ' and proximity is ' + getProximity(sprite, opponent));
-                            //console.log(sprite[NAME] + ' is attacking');
+
                         }
-                        //sprite[ACTION] = ATTACK;
                     }
                 }
             } else {
                 if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
-                    var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width() < BARBARIAN_SPRITE[SPRITE].offset().left;
-                    var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width() > BARBARIAN_SPRITE[SPRITE].offset().left;
+                    var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
+                    var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
 
-                    /*
-                    if (sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left === 0) {
-                        console.log('left:' + sprite[SPRITE].offset().left);
-                        console.log('need to turn around and walk');
-                        sprite[DIRECTION] = RIGHT;
-                        actionHelper(sprite, opponents, WALK);
-                    }
-
-                     */
-                    console.log(sprite[NAME] + ' going ' + sprite[DIRECTION] + ' left:' + sprite[SPRITE].offset().left + ' windowWidth:' + windowWidth);
                     if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
-                        console.log(sprite[NAME] + ' turning around and walking a');
                         sprite[DIRECTION] = RIGHT;
-                        actionHelper(sprite, opponents, WALK);
+                        actionHelper(sprite, opponents, WALK, 0);
                         break;
                     } else if (sprite[DIRECTION] === RIGHT && (isPassedRight || sprite[SPRITE].offset().left === windowWidth)) {
-                        console.log('direction right left:' + sprite[SPRITE].offset().left + ' windowWidth:' + windowWidth);
-                        console.log(sprite[NAME] + ' turning around and walking b');
                         sprite[DIRECTION] = LEFT;
-                        actionHelper(sprite, opponents, WALK);
+                        actionHelper(sprite, opponents, WALK, 0);
                         break;
                     }
 
@@ -124,7 +126,6 @@
             }
             if (hitLeftBoundry(sprite) || hitRightBoundry(sprite)) {
                 // Since we are stopping set the frame to the stop frame (1st frame when walking)
-                console.log('hit boundry');
                 renderSpriteFrame(sprite, 0, WALK);
                 sprite[ACTION] = STOP;
                 break;
@@ -188,9 +189,9 @@
         return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
     }
 
-   async function monsterDeath(sprite) {
+   async function monsterDeath(sprite, left) {
        sprite[SPRITE].stop();
-       DEATH_SPRITE[SPRITE].css('left', sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2);
+       DEATH_SPRITE[SPRITE].css('left', left);
        DEATH_SPRITE[SPRITE].css('display', 'block');
 
        sprite[SPRITE].css('display', 'none');
@@ -198,9 +199,9 @@
        var frames = DEATH_SPRITE[FRAMES][DEATH][UP][FRAMES]
        for (var i = 0; i < frames.length; i++) {
            var position = frames[i];
-           console.log('position');
            DEATH_SPRITE[SPRITE].css('background-position',-1*(position*DEATH_SPRITE[SPRITE].width()) + 'px ' + '0px');
            await sleep(1000 / DEATH_SPRITE[FPS]);
        }
        DEATH_SPRITE[SPRITE].css('display', 'none');
+       dyingCache[sprite[NAME]] = false;
    }

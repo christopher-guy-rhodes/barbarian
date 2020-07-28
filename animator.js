@@ -82,7 +82,7 @@
                             var notFacingAndGoodAttack = diff < 100;
                             if (facingAndGoodAttack || notFacingAndGoodAttack) {
                                 var left = sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2;
-                                left = barbarianPosition < opponentPosition ? left + 200 : left - 200;
+                                left = sprite[SPRITE].offset().left < opponent[SPRITE].offset().left ? left + 200 : left - 200;
                                 console.log('performing monster death');
                                 if (!dyingCache[opponent[NAME]]) {
                                     dyingCache[opponent[NAME]] = true;
@@ -92,6 +92,8 @@
                                     console.log('monster killed');
                                 }
                             } else {
+
+                                /*
                                 console.log('barbarian death');
                                 var distance = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left + 125);
                                 console.log('distance:' + distance);
@@ -99,6 +101,8 @@
                                 console.log('delay' + (1/opponent[PIXELS_PER_SECOND]*distance));
                                 var delay = 1/opponent[PIXELS_PER_SECOND]*distance*1000;
                                 setTimeout(function() {barbarianDeath(sprite)}, delay);
+
+                                 */
                             }
                         }
 
@@ -107,7 +111,13 @@
                             actionHelper(sprite, opponents, ATTACK, 0);
                             break main;
                         } else {
-
+                            var diff = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
+                            if (sprite[STATUS] === ALIVE && opponent[STATUS] === ALIVE && diff < 100) {
+                                console.log('both alive and diff is:' + diff);
+                                barbarianDeath(opponent);
+                            }
+                            //console.log('attacking ' + opponent[NAME]);
+                            //console.log('has attacked?:' + Object.keys(positionsAtAttack).length);
                         }
                     }
                 }
@@ -202,6 +212,7 @@
     }
 
    async function monsterDeath(sprite, left) {
+       sprite[STATUS] = DEAD;
        sprite[SPRITE].stop();
        DEATH_SPRITE[SPRITE].css('left', left);
        DEATH_SPRITE[SPRITE].css('display', 'block');
@@ -219,5 +230,7 @@
    }
 
    function barbarianDeath(sprite) {
-        sprite[SPRITE].fadeOut("slow");
+       sprite[SPRITE].stop();
+       sprite[STATUS] = DEAD;
+       sprite[SPRITE].fadeOut("slow");
    }

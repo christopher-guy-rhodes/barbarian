@@ -53,6 +53,7 @@ var KP_RUN = 'KP_RUN';
 var KP_JUMP = 'KP_JUMP';
 var KP_STOP = 'KP_STOP';
 var KP_ATTACK = 'KP_ATTACK';
+var POSITIONS = 'POSITIONS';
 
 // Sprites
 var BARBARIAN_SPRITE_NAME = 'BARBARIAN';
@@ -146,6 +147,10 @@ BARBARIAN_SPRITE = {
         JUMP : BARBARIAN_JUMP_FRAMES,
         RUN : BARBARIAN_RUN_FRAMES,
         WALK : BARBARIAN_WALK_FRAMES
+    },
+    POSITIONS : {
+        ATTACK : {},
+        JUMP : {}
     }
 };
 

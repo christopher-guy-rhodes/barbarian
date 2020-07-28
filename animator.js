@@ -48,7 +48,7 @@
     * @requestedAction The action requested that is assicated with the path.
     * @requestedDirection The direction the sprite is to move
     */
-    async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times, positionsAtAttack, positionsAtJump) {
+    async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times) {
         var frames = sprite[FRAMES][requestedAction];
         var path = frames[sprite[DIRECTION]][FRAMES];
         var heightOffsetGridUnits = frames[sprite[DIRECTION]][HEIGHT_OFFSET];
@@ -70,10 +70,10 @@
                 for (var i = 0; i < opponentsInProximity.length; i++) {
                     var opponent = opponentsInProximity[i];
                     if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
-                        var spriteNames = Object.keys(positionsAtAttack);
+                        var spriteNames = Object.keys(sprite[POSITIONS][ATTACK]);
                         if (spriteNames.length > 0) {
-                            var barbarianPosition = positionsAtAttack[sprite[NAME]];
-                            var opponentPosition = positionsAtAttack[opponent[NAME]];
+                            var barbarianPosition = sprite[POSITIONS][ATTACK][sprite[NAME]];
+                            var opponentPosition = sprite[POSITIONS][ATTACK][opponent[NAME]];
                             var diff = Math.abs(opponentPosition - barbarianPosition);
                             console.log('diff:' + (opponentPosition - barbarianPosition));
                             var facingAndGoodAttack = diff < 390 && diff > 325;
@@ -108,26 +108,26 @@
 
                     } else {
                         if (sprite[ACTION] !== ATTACK) {
-                            console.log('positions at jump:' + Object.keys(positionsAtJump).length);
-                            actionHelper(sprite, opponents, ATTACK, 0, {}, positionsAtJump);
+                            actionHelper(sprite, opponents, ATTACK, 0);
                             break main;
                         } else {
-                            if (Object.keys(positionsAtJump).length > 0) {
-                                console.log('possible jump override');
-                            } else {
-                                console.log('no jump data');
-                            }
                             var diff = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
                             if (sprite[STATUS] === ALIVE && opponent[STATUS] === ALIVE && diff < 200) {
                                 if (!dyingCache[opponent[NAME]]) {
                                     console.log('both alive and diff is:' + diff + ' action is ' + opponent[ACTION]);
 
-                                    if (Object.keys(positionsAtJump).length > 0) {
-                                        console.log('positions at jump');
-                                        console.log('positions at jump:' + positionsAtJump[opponent[NAME]]);
+                                    var isJumpEvaided = false;
+                                    if (Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
+                                        var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
+                                        console.log('diff at jump:' + jumpDiff);
+                                        if (opponent[ACTION] === JUMP && jumpDiff < 420 && jumpDiff > 240) {
+                                            isJumpEvaided = true;
+                                        }
                                     }
-                                    dyingCache[opponent[NAME]] = true;
-                                    barbarianDeath(opponent);
+                                    if (!isJumpEvaided) {
+                                        dyingCache[opponent[NAME]] = true;
+                                        barbarianDeath(opponent);
+                                    }
                                 }
                             }
                             //console.log('attacking ' + opponent[NAME]);
@@ -142,11 +142,11 @@
 
                     if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
                         sprite[DIRECTION] = RIGHT;
-                        actionHelper(sprite, opponents, WALK, 0, {}, {});
+                        actionHelper(sprite, opponents, WALK, 0);
                         break;
                     } else if (sprite[DIRECTION] === RIGHT && (isPassedRight || sprite[SPRITE].offset().left === windowWidth)) {
                         sprite[DIRECTION] = LEFT;
-                        actionHelper(sprite, opponents, WALK, 0, {}, {});
+                        actionHelper(sprite, opponents, WALK, 0);
                         break;
                     }
 

@@ -41,13 +41,6 @@
         sprite[SPRITE].animate({left: '0px'}, distance / sprite[PIXELS_PER_SECOND] / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
     }
 
-    /**
-    * This method animates the position of the spite according to the path provided.
-    *
-    * @sprite The sprite to animate
-    * @requestedAction The action requested that is assicated with the path.
-    * @requestedDirection The direction the sprite is to move
-    */
     async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times) {
         var frames = sprite[FRAMES][requestedAction];
         var path = frames[sprite[DIRECTION]][FRAMES];
@@ -65,47 +58,34 @@
         main:
         while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
-            var opponentsInProximity = getOpponentsInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
+            var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
             if (opponentsInProximity.length > 0) {
                 for (var i = 0; i < opponentsInProximity.length; i++) {
                     var opponent = opponentsInProximity[i];
                     if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
-                        var spriteNames = Object.keys(sprite[POSITIONS][ATTACK]);
-                        if (spriteNames.length > 0) {
-                            var barbarianPosition = sprite[POSITIONS][ATTACK][sprite[NAME]];
-                            var opponentPosition = sprite[POSITIONS][ATTACK][opponent[NAME]];
-                            var diff = Math.abs(opponentPosition - barbarianPosition);
-                            console.log('diff:' + (opponentPosition - barbarianPosition));
-                            var facingAndGoodAttack = diff < 390 && diff > 325;
-                            // it is not passible to have a diff < 100 when facing. If it is a behing attack within
-                            // range it is a kill
-                            var notFacingAndGoodAttack = diff < 100;
-                            if (facingAndGoodAttack || notFacingAndGoodAttack) {
+                        if (Object.keys(sprite[POSITIONS][ATTACK]).length > 0) {
+                            var distance = sprite[POSITIONS][ATTACK][opponent[NAME]] - sprite[POSITIONS][ATTACK][sprite[NAME]];
+
+                            var successfulTurnaroundAttackLeft = distance > -100 && distance < -0;// && sprite[DIRECTION] === LEFT;
+                            var successfulTurnaroundAttackRight = distance > 0 && distance < 100;// && sprite[DIRECTION] === RIGHT;
+                            var successfulTurnaroundAttack = successfulTurnaroundAttackLeft || successfulTurnaroundAttackRight;
+
+                            var successfulHeadonAttackLeft = distance > -390 && distance < -325;
+                            var successfulHeadonAttackRight = distance > 325 && distance < 390;
+                            var successfulHeadonAttack = successfulHeadonAttackLeft || successfulHeadonAttackRight;
+                            console.log('distance:' + distance);
+                            if (successfulTurnaroundAttack || successfulHeadonAttack) {
                                 var left = sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2;
                                 left = sprite[SPRITE].offset().left < opponent[SPRITE].offset().left ? left + 200 : left - 200;
-                                console.log('performing monster death');
                                 if (!dyingCache[opponent[NAME]]) {
                                     dyingCache[opponent[NAME]] = true;
                                     setTimeout(function () {
                                         monsterDeath(opponent, left)
-                                    }, 500);
+                                    }, 1800*(1/sprite[FPS]));
                                     console.log('monster killed');
                                 }
-                            } else {
-
-                                /*
-                                console.log('barbarian death');
-                                var distance = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left + 125);
-                                console.log('distance:' + distance);
-                                console.log('pps:' + opponent[PIXELS_PER_SECOND]);
-                                console.log('delay' + (1/opponent[PIXELS_PER_SECOND]*distance));
-                                var delay = 1/opponent[PIXELS_PER_SECOND]*distance*1000;
-                                setTimeout(function() {barbarianDeath(sprite)}, delay);
-
-                                 */
                             }
                         }
-
                     } else {
                         if (sprite[ACTION] !== ATTACK) {
                             actionHelper(sprite, opponents, ATTACK, 0);
@@ -114,24 +94,21 @@
                             var diff = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
                             if (sprite[STATUS] === ALIVE && opponent[STATUS] === ALIVE && diff < 200) {
                                 if (!dyingCache[opponent[NAME]]) {
-                                    console.log('both alive and diff is:' + diff + ' action is ' + opponent[ACTION]);
 
                                     var isJumpEvaided = false;
                                     if (Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
                                         var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
-                                        console.log('diff at jump:' + jumpDiff);
-                                        if (opponent[ACTION] === JUMP && jumpDiff < 420 && jumpDiff > 240) {
+                                        if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
                                             isJumpEvaided = true;
                                         }
                                     }
                                     if (!isJumpEvaided) {
                                         dyingCache[opponent[NAME]] = true;
                                         barbarianDeath(opponent);
+                                        break main;
                                     }
                                 }
                             }
-                            //console.log('attacking ' + opponent[NAME]);
-                            //console.log('has attacked?:' + Object.keys(positionsAtAttack).length);
                         }
                     }
                 }
@@ -203,24 +180,6 @@
         return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth;
     }
 
-    function getOpponentsInProximity(sprite, opponents, proximityThreshold) {
-        var attackers = [];
-        for (var i = 0; i < opponents.length; i++) {
-            var opponent = opponents[i];
-            proximity = getProximity(sprite, opponent);
-            if (sprite[DIRECTION] == 'LEFT') {
-                if (proximity > 0 && proximity < proximityThreshold) {
-                    attackers.push(opponent);
-                }
-            } else {
-                if (proximity < 0 && proximity > -1*proximityThreshold ) {
-                    attackers.push(opponent);
-                }
-            }
-        }
-        return attackers;
-    }
-
     function getProximity(sprite, opponent) {
         return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
     }
@@ -247,5 +206,4 @@
        sprite[SPRITE].stop();
        sprite[STATUS] = DEAD;
        sprite[SPRITE].fadeOut("slow");
-       dyingCache[sprite[NAME]] = false;
    }

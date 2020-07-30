@@ -8,6 +8,8 @@ $(document).ready(function(){
 
     // Include constants
     $.getScript('http://localhost/constants.js', function() {
+    // Include sprite definition
+    $.getScript('http://localhost/sprites.js', function() {
     // Include animation module
     $.getScript('http://localhost/animator.js', function() {
     // Include action definitions
@@ -84,7 +86,7 @@ $(document).ready(function(){
         return positionsAtAttack;
     }
 
-})})})});
+})})})})});
 </script>
 </head>
 <body>

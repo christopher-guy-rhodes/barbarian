@@ -62,51 +62,65 @@
             if (opponentsInProximity.length > 0) {
                 for (var i = 0; i < opponentsInProximity.length; i++) {
                     var opponent = opponentsInProximity[i];
-                    if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+                    if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
+                        // TODO: use thresholds in object
+                        var proximity = getProximity(sprite, opponent);
+                        console.log('proximity is:' + proximity + ' and direction is' + sprite[DIRECTION]);
+                        var attack = false;
+                        if (proximity > 0 && proximity < 225 && sprite[DIRECTION] === LEFT) {
+                            attack = true;
+                        }
+                        if (attack) {
+                            sprite[POSITIONS][ATTACK] = getPositionsAtAction(opponents);
+                            actionHelper(sprite, opponents, ATTACK, 0);
+                            break main;
+                        }
+                    }
+                    if (true || sprite[NAME] === BARBARIAN_SPRITE_NAME) {
                         if (Object.keys(sprite[POSITIONS][ATTACK]).length > 0) {
                             var distance = sprite[POSITIONS][ATTACK][opponent[NAME]] - sprite[POSITIONS][ATTACK][sprite[NAME]];
+                            console.log('sprite is:' + sprite[NAME] + ' distance is ' + distance);
+                            //var keys = Object.keys(sprite[POSITIONS][ATTACK]);
+                            //for (var i = 0; i < keys.length; i++) {
+                            //    var key = keys[i];
+                            //    console.log('sprite:' + key + ' position:' + sprite[POSITIONS][ATTACK][key]);
+                            //}
 
-                            var successfulTurnaroundAttackLeft = distance > -100 && distance < -0;// && sprite[DIRECTION] === LEFT;
-                            var successfulTurnaroundAttackRight = distance > 0 && distance < 100;// && sprite[DIRECTION] === RIGHT;
+                            var successfulTurnaroundAttackLeft = distance > -1*sprite[ATTACK_THRESHOLDS][TURNAROUND][MAX] &&
+                                                                 distance < -1*sprite[ATTACK_THRESHOLDS][TURNAROUND][MIN] &&
+                                                                 sprite[DIRECTION] === LEFT;
+                            var successfulTurnaroundAttackRight = distance > sprite[ATTACK_THRESHOLDS][TURNAROUND][MIN] &&
+                                                                  distance < sprite[ATTACK_THRESHOLDS][TURNAROUND][MAX] &&
+                                                                  sprite[DIRECTION] === RIGHT;
                             var successfulTurnaroundAttack = successfulTurnaroundAttackLeft || successfulTurnaroundAttackRight;
 
-                            var successfulHeadonAttackLeft = distance > -390 && distance < -325;
-                            var successfulHeadonAttackRight = distance > 325 && distance < 390;
+                            var successfulHeadonAttackLeft = distance > -1*sprite[ATTACK_THRESHOLDS][HEADON][MAX] &&
+                                                             distance < -1*sprite[ATTACK_THRESHOLDS][HEADON][MIN] &&
+                                                             sprite[DIRECTION] === LEFT;
+                            var successfulHeadonAttackRight = distance > sprite[ATTACK_THRESHOLDS][HEADON][MIN] &&
+                                                              distance < sprite[ATTACK_THRESHOLDS][HEADON][MAX] &&
+                                                              sprite[DIRECTION] === RIGHT;
                             var successfulHeadonAttack = successfulHeadonAttackLeft || successfulHeadonAttackRight;
-                            console.log('distance:' + distance);
+
                             if (successfulTurnaroundAttack || successfulHeadonAttack) {
-                                var left = sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2;
-                                left = sprite[SPRITE].offset().left < opponent[SPRITE].offset().left ? left + 200 : left - 200;
-                                if (!dyingCache[opponent[NAME]]) {
-                                    dyingCache[opponent[NAME]] = true;
-                                    setTimeout(function () {
-                                        monsterDeath(opponent, left)
-                                    }, 1800*(1/sprite[FPS]));
-                                    console.log('monster killed');
-                                }
+                                monsterDeath(opponent);
                             }
                         }
                     } else {
-                        if (sprite[ACTION] !== ATTACK) {
-                            actionHelper(sprite, opponents, ATTACK, 0);
-                            break main;
-                        } else {
-                            var diff = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
-                            if (sprite[STATUS] === ALIVE && opponent[STATUS] === ALIVE && diff < 200) {
-                                if (!dyingCache[opponent[NAME]]) {
+                        var diff = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
+                        if (sprite[STATUS] === ALIVE && opponent[STATUS] === ALIVE && diff < 200) {
+                            if (!dyingCache[opponent[NAME]]) {
 
-                                    var isJumpEvaided = false;
-                                    if (Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
-                                        var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
-                                        if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
-                                            isJumpEvaided = true;
-                                        }
+                                var isJumpEvaided = false;
+                                if (Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
+                                    var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
+                                    if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
+                                        isJumpEvaided = true;
                                     }
-                                    if (!isJumpEvaided) {
-                                        dyingCache[opponent[NAME]] = true;
-                                        barbarianDeath(opponent);
-                                        break main;
-                                    }
+                                }
+                                if (!isJumpEvaided) {
+                                    dyingCache[opponent[NAME]] = true;
+                                    barbarianDeath(opponent);
                                 }
                             }
                         }
@@ -184,10 +198,25 @@
         return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
     }
 
-   async function monsterDeath(sprite, left) {
-       sprite[STATUS] = DEAD;
+    function monsterDeath(sprite) {
+        if (!dyingCache[sprite[NAME]]) {
+            sprite[STATUS] = DEAD;
+            dyingCache[sprite[NAME]] = true;
+            if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+                barbarianDeath(sprite);
+            } else {
+                setTimeout(function () {
+                    animateDeath(sprite)
+                }, 1800 * (1 / sprite[FPS]));
+            }
+        }
+    }
+
+   async function animateDeath(sprite) {
+
+
        sprite[SPRITE].stop();
-       DEATH_SPRITE[SPRITE].css('left', left);
+       DEATH_SPRITE[SPRITE].css('left', sprite[SPRITE].offset().left - sprite[SPRITE].width()/2);
        DEATH_SPRITE[SPRITE].css('display', 'block');
 
        sprite[SPRITE].css('display', 'none');

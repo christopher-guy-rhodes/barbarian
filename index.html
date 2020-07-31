@@ -19,7 +19,7 @@ $(document).ready(function(){
     var keypressTime;
     var lastKeypressTime;
 
-    actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE], WALK, 0);
+    actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE, MONSTER_SPRITE], WALK, 0);
 
     $(document).keydown(function(e) {
 
@@ -77,14 +77,6 @@ $(document).ready(function(){
         return elapsed < KEYPRESS_THROTTLE_DELAY;
     }
 
-    function getPositionsAtAction(sprites) {
-        var positionsAtAttack = {};
-        for (var i = 0; i < sprites.length; i++) {
-            var sprite = sprites[i];
-            positionsAtAttack[sprite[NAME]] = sprite[SPRITE].offset().left;
-        }
-        return positionsAtAttack;
-    }
 
 })})})})});
 </script>

@@ -16,6 +16,16 @@ BARBARIAN_SPRITE = {
     POSITIONS : {
         ATTACK : {},
         JUMP : {}
+    },
+    ATTACK_THRESHOLDS : {
+        TURNAROUND : {
+            MIN : 0,
+            MAX : 100
+        },
+        HEADON : {
+            MIN : 325,
+            MAX : 390
+        }
     }
 };
 
@@ -31,6 +41,19 @@ MONSTER_SPRITE = {
     FRAMES : {
         WALK : BOG_MONSTER_WALK_FRAMES,
         ATTACK : BOG_MONSTER_ATTACK_FRAMES
+    },
+    POSITIONS : {
+        ATTACK : {}
+    },
+    ATTACK_THRESHOLDS : {
+        TURNAROUND : {
+            MIN : 0,
+            MAX : 100
+        },
+        HEADON : {
+            MIN : 200,
+            MAX : 390
+        }
     }
 };
 
@@ -64,3 +87,11 @@ function getSpritesInProximity(sprite, opponents, proximityThreshold) {
     return attackers;
 }
 
+function getPositionsAtAction(sprites) {
+    var positionsAtAttack = {};
+    for (var i = 0; i < sprites.length; i++) {
+        var sprite = sprites[i];
+        positionsAtAttack[sprite[NAME]] = sprite[SPRITE].offset().left;
+    }
+    return positionsAtAttack;
+}

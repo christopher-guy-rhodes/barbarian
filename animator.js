@@ -67,7 +67,7 @@
                         var proximity = getProximity(sprite, opponent);
                         console.log('proximity is:' + proximity + ' and direction is' + sprite[DIRECTION]);
                         var attack = false;
-                        if (proximity > 0 && proximity < 225 && sprite[DIRECTION] === LEFT) {
+                        if (proximity > 0 && proximity < 300 && sprite[DIRECTION] === LEFT) {
                             attack = true;
                         }
                         if (attack) {

@@ -51,7 +51,7 @@ MONSTER_SPRITE = {
             MAX : 100
         },
         HEADON : {
-            MIN : 200,
+            MIN : 100,
             MAX : 390
         }
     }

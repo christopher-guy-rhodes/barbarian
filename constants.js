@@ -24,6 +24,7 @@ var ACTION = 'ACTION';
 var DIRECTION = 'DIRECTION';
 var SPRITE = 'SPRITE';
 var FRAMES = 'FRAMES';
+var ANIMATION = 'ANIMATION';
 var NAME = 'NAME';
 var HEIGHT_OFFSET = 'HEIGHT_OFFSET';
 var FPS = 'FPS';
@@ -67,12 +68,22 @@ var DEATH_SPRITE_NAME = 'DEATH';
 
 // Animation sequences
 var DEATH_FRAMES = {
-    UP : {
-        FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        HEIGHT_OFFSET: 0
-    }
+    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    HEIGHT_OFFSET: 0,
+    FPS : BOG_MONSTER_SPRITE_FPS
 };
 
+var BARBARIAN_DEATH_FRAMES = {
+    RIGHT : {
+        FRAMES: [96, 97, 98, 99, 100],
+        HEIGHT_OFFSET: 12
+    },
+    LEFT : {
+        FRAMES : [108, 107, 106, 105, 104],
+        HEIGHT_OFFSET: 13
+    },
+    FPS : SPRITE_FPS
+}
 
 var BOG_MONSTER_WALK_FRAMES = {
     LEFT : {

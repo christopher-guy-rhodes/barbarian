@@ -19,9 +19,7 @@ function stop(sprite) {
 function actionHelper(sprite, opponents, requestedAction, times) {
     sprite[SPRITE].stop();
 
-    if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
-        move(sprite, requestedAction);
-    } else if (requestedAction !== ATTACK || sprite[HAS_MOVING_ATTACK]) {
+    if (requestedAction !== ATTACK || sprite[HAS_MOVING_ATTACK]) {
         move(sprite, requestedAction);
     }
 

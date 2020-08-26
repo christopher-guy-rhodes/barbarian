@@ -26,6 +26,10 @@ BARBARIAN_SPRITE = {
             MIN : 325,
             MAX : 390
         }
+    },
+    DEATH : {
+        SPRITE : $(".barbarian"),
+        ANIMATION : BARBARIAN_DEATH_FRAMES
     }
 };
 
@@ -54,10 +58,26 @@ MONSTER_SPRITE = {
             MIN : 100,
             MAX : 390
         }
+    },
+    DEATH : {
+        SPRITE : $(".death"),
+        ANIMATION : DEATH_FRAMES
     }
 };
 
 DEATH_SPRITE = {
+    SPRITE : $(".death"),
+    NAME : DEATH_SPRITE_NAME,
+    ACTION : DEATH,
+    DIRECTION : UP,
+    FPS : SPRITE_FPS,
+    PIXELS_PER_SECOND : SPRITE_PIXELS_PER_SECOND,
+    FRAMES : {
+        DEATH : DEATH_FRAMES
+    }
+}
+
+BARBARIAN_DEATH_SPRITE = {
     SPRITE : $(".death"),
     NAME : DEATH_SPRITE_NAME,
     ACTION : DEATH,

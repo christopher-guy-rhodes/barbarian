@@ -55,27 +55,30 @@
         var windowWidth = $(document).width() - sprite[SPRITE].width();
 
         //var attack = false;
+        var br = false;
         main:
         while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
+            if (sprite[STATUS] === DEAD) {
+                setTimeout(function () {
+                    br = true;
+                }, 1800 * (1 / sprite[FPS]));
+            }
+            if (br) {
+                break;
+            }
             var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
             if (opponentsInProximity.length > 0) {
                 for (var i = 0; i < opponentsInProximity.length; i++) {
                     var opponent = opponentsInProximity[i];
                     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
                         // TODO: use thresholds in object
-                        var proximity = getProximity(sprite, opponent);
-                        var attack = false;
-                        if (proximity > 0 && proximity < 300 && sprite[DIRECTION] === LEFT) {
-                            attack = true;
-                        }
-                        if (proximity < 0 && proximity > -300 && sprite[DIRECTION] === RIGHT) {
-                            attack = true;
-                        }
-                        if (attack) {
+                        var proximity = Math.abs(getProximity(sprite, opponent));
+                        if (proximity > 0 && proximity < 300) {
                             sprite[POSITIONS][ATTACK] = getPositionsAtAction(opponents);
                             actionHelper(sprite, opponents, ATTACK, 0);
                             break main;
+
                         }
                     }
                     if (Object.keys(sprite[POSITIONS][ATTACK]).length > 0) {
@@ -106,7 +109,7 @@
                         }
 
                         if (!isJumpEvaided && (successfulTurnaroundAttack || successfulHeadonAttack)) {
-                            monsterDeath(opponent);
+                            death(opponent);
                         }
                     }
                 }
@@ -182,7 +185,7 @@
         return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
     }
 
-    function monsterDeath(sprite) {
+    function death(sprite) {
         if (!dyingCache[sprite[NAME]]) {
             sprite[STATUS] = DEAD;
             dyingCache[sprite[NAME]] = true;
@@ -203,23 +206,33 @@
 
 
        sprite[SPRITE].stop();
-       DEATH_SPRITE[SPRITE].css('left', sprite[SPRITE].offset().left - sprite[SPRITE].width()/2);
-       DEATH_SPRITE[SPRITE].css('display', 'block');
+       sprite[STATUS] = DEAD;
+       sprite[DEATH][SPRITE].css('left', sprite[SPRITE].offset().left - sprite[SPRITE].width()/2);
+       sprite[DEATH][SPRITE].css('display', 'block');
 
        sprite[SPRITE].css('display', 'none');
 
-       var frames = DEATH_SPRITE[FRAMES][DEATH][UP][FRAMES]
+       var frames = sprite[DEATH][ANIMATION][FRAMES];
        for (var i = 0; i < frames.length; i++) {
            var position = frames[i];
-           DEATH_SPRITE[SPRITE].css('background-position',-1*(position*DEATH_SPRITE[SPRITE].width()) + 'px ' + '0px');
-           await sleep(1000 / DEATH_SPRITE[FPS]);
+           sprite[DEATH][SPRITE].css('background-position',-1*(position*sprite[DEATH][SPRITE].width()) + 'px ' + -1*sprite[DEATH][ANIMATION][HEIGHT_OFFSET]*sprite[SPRITE].height() + 'px');
+           await sleep(1000 / sprite[DEATH][ANIMATION][FPS]);
        }
-       DEATH_SPRITE[SPRITE].css('display', 'none');
+       sprite[DEATH][SPRITE].css('display', 'none');
        dyingCache[sprite[NAME]] = false;
    }
 
-   function barbarianDeath(sprite) {
+   async function barbarianDeath(sprite) {
        sprite[SPRITE].stop();
        sprite[STATUS] = DEAD;
-       sprite[SPRITE].fadeOut("slow");
+
+       console.log('==> dir:' + sprite[DIRECTION]);
+       var direction = sprite[DIRECTION];
+       var frames = sprite[DEATH][ANIMATION][direction][FRAMES];
+       for (var i = 0; i < frames.length; i++) {
+           var position = frames[i];
+           sprite[DEATH][SPRITE].css('background-position',-1*(position*sprite[DEATH][SPRITE].width()) + 'px ' + -1*sprite[DEATH][ANIMATION][direction][HEIGHT_OFFSET]*sprite[SPRITE].height() + 'px');
+           await sleep(1000 / sprite[DEATH][ANIMATION][FPS]);
+       }
+       //sprite[SPRITE].fadeOut("slow");
    }

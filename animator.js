@@ -1,5 +1,3 @@
-   dyingCache = {};
-
     /**
      * Sleep helper method used to achieve desired frames per second for position change.
      *
@@ -54,17 +52,16 @@
         var iterations = times;
         var windowWidth = $(document).width() - sprite[SPRITE].width();
 
-        //var attack = false;
-        var br = false;
+        var stopSpriteAnimation = false;
         main:
         while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
             if (sprite[STATUS] === DEAD) {
                 setTimeout(function () {
-                    br = true;
+                    stopSpriteAnimation = true;
                 }, 1800 * (1 / sprite[FPS]));
             }
-            if (br) {
+            if (stopSpriteAnimation) {
                 break;
             }
             var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
@@ -108,7 +105,7 @@
                             }
                         }
 
-                        if (!isJumpEvaided && (successfulTurnaroundAttack || successfulHeadonAttack)) {
+                        if (opponent[STATUS] !== DEAD && !isJumpEvaided && (successfulTurnaroundAttack || successfulHeadonAttack)) {
                             death(opponent);
                         }
                     }
@@ -186,47 +183,23 @@
     }
 
     function death(sprite) {
-        if (!dyingCache[sprite[NAME]]) {
-            sprite[STATUS] = DEAD;
-            dyingCache[sprite[NAME]] = true;
-            if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
-
-                setTimeout(function () {
-                    barbarianDeath(sprite)
-                }, 1800 * (1 / sprite[FPS]));
-            } else {
-                setTimeout(function () {
-                    animateDeath(sprite)
-                }, 1800 * (1 / sprite[FPS]));
-            }
-        }
+        sprite[STATUS] = DEAD;
+        setTimeout(function () {
+            animateDeath(sprite)
+        }, 1800 * (1 / sprite[FPS]));
     }
 
    async function animateDeath(sprite) {
 
-
        sprite[SPRITE].stop();
        sprite[STATUS] = DEAD;
-       sprite[DEATH][SPRITE].css('left', sprite[SPRITE].offset().left - sprite[SPRITE].width()/2);
-       sprite[DEATH][SPRITE].css('display', 'block');
 
-       sprite[SPRITE].css('display', 'none');
-
-       var frames = sprite[DEATH][ANIMATION][FRAMES];
-       for (var i = 0; i < frames.length; i++) {
-           var position = frames[i];
-           sprite[DEATH][SPRITE].css('background-position',-1*(position*sprite[DEATH][SPRITE].width()) + 'px ' + -1*sprite[DEATH][ANIMATION][HEIGHT_OFFSET]*sprite[SPRITE].height() + 'px');
-           await sleep(1000 / sprite[DEATH][ANIMATION][FPS]);
+       if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
+           sprite[DEATH][SPRITE].css('left', sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2);
+           sprite[DEATH][SPRITE].css('display', 'block');
+           sprite[SPRITE].css('display', 'none');
        }
-       sprite[DEATH][SPRITE].css('display', 'none');
-       dyingCache[sprite[NAME]] = false;
-   }
 
-   async function barbarianDeath(sprite) {
-       sprite[SPRITE].stop();
-       sprite[STATUS] = DEAD;
-
-       console.log('==> dir:' + sprite[DIRECTION]);
        var direction = sprite[DIRECTION];
        var frames = sprite[DEATH][ANIMATION][direction][FRAMES];
        for (var i = 0; i < frames.length; i++) {
@@ -234,5 +207,8 @@
            sprite[DEATH][SPRITE].css('background-position',-1*(position*sprite[DEATH][SPRITE].width()) + 'px ' + -1*sprite[DEATH][ANIMATION][direction][HEIGHT_OFFSET]*sprite[SPRITE].height() + 'px');
            await sleep(1000 / sprite[DEATH][ANIMATION][FPS]);
        }
-       //sprite[SPRITE].fadeOut("slow");
+
+       if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
+           sprite[DEATH][SPRITE].css('display', 'none');
+       }
    }

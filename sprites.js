@@ -65,30 +65,6 @@ MONSTER_SPRITE = {
     }
 };
 
-DEATH_SPRITE = {
-    SPRITE : $(".death"),
-    NAME : DEATH_SPRITE_NAME,
-    ACTION : DEATH,
-    DIRECTION : UP,
-    FPS : SPRITE_FPS,
-    PIXELS_PER_SECOND : SPRITE_PIXELS_PER_SECOND,
-    FRAMES : {
-        DEATH : DEATH_FRAMES
-    }
-}
-
-BARBARIAN_DEATH_SPRITE = {
-    SPRITE : $(".death"),
-    NAME : DEATH_SPRITE_NAME,
-    ACTION : DEATH,
-    DIRECTION : UP,
-    FPS : SPRITE_FPS,
-    PIXELS_PER_SECOND : SPRITE_PIXELS_PER_SECOND,
-    FRAMES : {
-        DEATH : DEATH_FRAMES
-    }
-}
-
 function getSpritesInProximity(sprite, opponents, proximityThreshold) {
     var attackers = [];
     for (var i = 0; i < opponents.length; i++) {

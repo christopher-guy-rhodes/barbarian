@@ -131,13 +131,13 @@
 
             var position = path[index];
 
-            renderSpriteFrame(sprite, position, requestedAction);
+            renderSpriteFrame(sprite, requestedAction, position);
             if (sprite[ACTION] === STOP) {
                 break;
             }
             if (hitLeftBoundry(sprite) || hitRightBoundry(sprite)) {
                 // Since we are stopping set the frame to the stop frame (1st frame when walking)
-                renderSpriteFrame(sprite, 0, WALK);
+                renderSpriteFrame(sprite, WALK, 0);
                 sprite[ACTION] = STOP;
                 break;
             }
@@ -163,11 +163,15 @@
 
     }
 
-    function renderSpriteFrame(sprite, position, requestedAction) {
-        var frames = sprite[FRAMES][requestedAction];
-        var heightOffsetGridUnits = frames[sprite[DIRECTION]][HEIGHT_OFFSET];
+    function renderSpriteFrame(sprite, requestedAction, position) {
+        var heightOffsetGridUnits = sprite[FRAMES][requestedAction][sprite[DIRECTION]][HEIGHT_OFFSET];
         var heightOffset = heightOffsetGridUnits * sprite[SPRITE].height();
         sprite[SPRITE].css('background-position',(-1*position*sprite[SPRITE].width()) + 'px ' + -1*heightOffset + 'px');
+    }
+
+    function renderDeathSpriteFrame(sprite, position) {
+        var heightOffset = sprite[DEATH][ANIMATION][sprite[DIRECTION]][HEIGHT_OFFSET] * sprite[DEATH][SPRITE].height();
+        sprite[DEATH][SPRITE].css('background-position',(-1*position*sprite[DEATH][SPRITE].width()) + 'px ' + -1*heightOffset + 'px');
     }
 
     function hitLeftBoundry(sprite) {
@@ -183,6 +187,7 @@
     }
 
     function death(sprite) {
+        console.log('==> death an action is ' + sprite[ACTION]);
         sprite[STATUS] = DEAD;
         setTimeout(function () {
             animateDeath(sprite)
@@ -201,10 +206,10 @@
        }
 
        var direction = sprite[DIRECTION];
-       var frames = sprite[DEATH][ANIMATION][direction][FRAMES];
-       for (var i = 0; i < frames.length; i++) {
-           var position = frames[i];
-           sprite[DEATH][SPRITE].css('background-position',-1*(position*sprite[DEATH][SPRITE].width()) + 'px ' + -1*sprite[DEATH][ANIMATION][direction][HEIGHT_OFFSET]*sprite[SPRITE].height() + 'px');
+       var frames = sprite[DEATH][ANIMATION];
+       for (var i = 0; i < frames[direction][FRAMES].length; i++) {
+           var position = frames[direction][FRAMES][i];
+           renderDeathSpriteFrame(sprite, position);
            await sleep(1000 / sprite[DEATH][ANIMATION][FPS]);
        }
 

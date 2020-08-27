@@ -26,7 +26,7 @@ $(document).ready(function(){
         keypressTime = new Date().getTime();
 
         var uninterruptable = BARBARIAN_SPRITE[ACTION] === JUMP || BARBARIAN_SPRITE[ACTION] === ATTACK;
-        if (!shouldThrottle(lastKeypressTime) && !uninterruptable) {
+        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && BARBARIAN_SPRITE[STATUS] !== DEAD) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
             switch(e.which) {

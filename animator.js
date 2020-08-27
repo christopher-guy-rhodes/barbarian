@@ -40,16 +40,12 @@
     }
 
     async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times) {
-        var frames = sprite[FRAMES][requestedAction];
-        var path = frames[sprite[DIRECTION]][FRAMES];
-        var heightOffsetGridUnits = frames[sprite[DIRECTION]][HEIGHT_OFFSET];
+        var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
 
         sprite[ACTION] = requestedAction;
         sprite[DIRECTION] = requestedDirection;
 
-        var heightOffset = heightOffsetGridUnits * sprite[SPRITE].height();
         var index = 0;
-        var iterations = times;
         var windowWidth = $(document).width() - sprite[SPRITE].width();
 
         var stopSpriteAnimation = false;
@@ -119,7 +115,7 @@
                         sprite[DIRECTION] = RIGHT;
                         actionHelper(sprite, opponents, WALK, 0);
                         break;
-                    } else if (sprite[DIRECTION] === RIGHT && (isPassedRight || sprite[SPRITE].offset().left === windowWidth)) {
+                    } else if (sprite[DIRECTION] === RIGHT && (isPassedRight || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
                         sprite[DIRECTION] = LEFT;
                         actionHelper(sprite, opponents, WALK, 0);
                         break;
@@ -147,7 +143,7 @@
             // loop the sprite animation
             index++;
             if (index == path.length) {
-                if (times < 1 || --iterations > 0) {
+                if (times < 1 || --times > 0) {
                     index = 0;
                 } else {
                     break;

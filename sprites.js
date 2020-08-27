@@ -29,7 +29,8 @@ BARBARIAN_SPRITE = {
     },
     DEATH : {
         SPRITE : $(".barbarian"),
-        ANIMATION : BARBARIAN_DEATH_FRAMES
+        ANIMATION : BARBARIAN_DEATH_FRAMES,
+        DELAY : 1800
     }
 };
 
@@ -61,7 +62,8 @@ MONSTER_SPRITE = {
     },
     DEATH : {
         SPRITE : $(".death"),
-        ANIMATION : DEATH_FRAMES
+        ANIMATION : DEATH_FRAMES,
+        DELAY : 1800
     }
 };
 

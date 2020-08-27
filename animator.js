@@ -46,16 +46,16 @@
         sprite[DIRECTION] = requestedDirection;
 
         var index = 0;
-        var windowWidth = $(document).width() - sprite[SPRITE].width();
 
         var stopSpriteAnimation = false;
         main:
         while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
+            // If the sprite has been killed dealay stopping the animation to let the action sequence complete
             if (sprite[STATUS] === DEAD) {
                 setTimeout(function () {
                     stopSpriteAnimation = true;
-                }, 1800 * (1 / sprite[FPS]));
+                }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
             }
             if (stopSpriteAnimation) {
                 break;
@@ -115,7 +115,8 @@
                         sprite[DIRECTION] = RIGHT;
                         actionHelper(sprite, opponents, WALK, 0);
                         break;
-                    } else if (sprite[DIRECTION] === RIGHT && (isPassedRight || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
+                    } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
+                        || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
                         sprite[DIRECTION] = LEFT;
                         actionHelper(sprite, opponents, WALK, 0);
                         break;

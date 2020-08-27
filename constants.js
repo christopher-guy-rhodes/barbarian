@@ -37,6 +37,7 @@ var TURNAROUND = 'TURNAROUND';
 var HEADON = 'HEADON';
 var MIN = 'MIN';
 var MAX = 'MAX';
+var DELAY = 'DELAY';
 
 // Actions
 var STOP = 'STOP';

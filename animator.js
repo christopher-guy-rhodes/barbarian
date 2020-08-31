@@ -102,6 +102,25 @@
                         }
 
                         if (opponent[STATUS] !== DEAD && !isJumpEvaided && (successfulTurnaroundAttack || successfulHeadonAttack)) {
+                            var spritePixelsPerSecond = sprite[PIXELS_PER_SECOND];
+                            if (sprite[ACTION] === RUN) {
+                                spritePixelsPerSecond = spritePixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
+                            }
+                            var opponentPixelsPerSecond = opponent[PIXELS_PER_SECOND];
+                            if (opponent[ACTION] === RUN) {
+                                opponentPixelsPerSecond = opponentPixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
+                            }
+                            var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
+                            if (sprite[DIRECTION] === opponent[DIRECTION]) {
+                                console.log('instant death because they are going in the same direction');
+                                opponent[DEATH][DELAY] = 2000;
+                            } else {
+                                var relativePps = opponentPixelsPerSecond + spritePixelsPerSecond;
+                                var delay = (separation / relativePps) * 1000;
+                                delay = 2000 + delay;
+                                console.log('==> relative pps: ' + relativePps  + ' separation:' + separation + ' delay:' + delay);
+                                opponent[DEATH][DELAY] = delay;
+                            }
                             death(opponent);
                         }
                     }
@@ -188,7 +207,7 @@
         sprite[STATUS] = DEAD;
         setTimeout(function () {
             animateDeath(sprite)
-        }, 1800 * (1 / sprite[FPS]));
+        }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
     }
 
    async function animateDeath(sprite) {

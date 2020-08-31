@@ -17,16 +17,16 @@ BARBARIAN_SPRITE = {
         ATTACK : {},
         JUMP : {}
     },
-    ATTACK_THRESHOLDS : {
-        TURNAROUND : {
+    ATTACK_THRESHOLDS : [
+        {
             MIN : 0,
             MAX : 100
         },
-        HEADON : {
+        {
             MIN : 325,
             MAX : 390
         }
-    },
+    ],
     DEATH : {
         SPRITE : $(".barbarian"),
         ANIMATION : BARBARIAN_DEATH_FRAMES,
@@ -50,16 +50,16 @@ MONSTER_SPRITE = {
     POSITIONS : {
         ATTACK : {}
     },
-    ATTACK_THRESHOLDS : {
-        TURNAROUND : {
+    ATTACK_THRESHOLDS : [
+        {
             MIN : 0,
             MAX : 100
         },
-        HEADON : {
+        {
             MIN : 100,
             MAX : 390
         }
-    },
+    ],
     DEATH : {
         SPRITE : $(".death"),
         ANIMATION : DEATH_FRAMES,

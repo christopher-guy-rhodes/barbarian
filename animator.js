@@ -39,6 +39,24 @@
         sprite[SPRITE].animate({left: '0px'}, distance / sprite[PIXELS_PER_SECOND] / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
     }
 
+    function isSuccessfulAttack(sprite, opponent) {
+        var distance = sprite[POSITIONS][ATTACK][opponent[NAME]] - sprite[POSITIONS][ATTACK][sprite[NAME]];
+
+        var thresholds = sprite[ATTACK_THRESHOLDS];
+        var successful = false;
+        for (var i = 0; i < thresholds.length; i++) {
+            var successfulTurnaround = sprite[DIRECTION] === LEFT &&
+                -1*thresholds[i][MIN] > distance > -1*thresholds[i][MAX];
+            var successfulHeadon = sprite[DIRECTION] === RIGHT &&
+                thresholds[i][MIN] > distance > thresholds[MAX] ;
+            if (successfulTurnaround || successfulHeadon) {
+                successful = true;
+                break;
+            }
+        }
+        return successful;
+    }
+
     async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times) {
         var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
 
@@ -75,24 +93,8 @@
                         }
                     }
                     if (Object.keys(sprite[POSITIONS][ATTACK]).length > 0) {
-                        var distance = sprite[POSITIONS][ATTACK][opponent[NAME]] - sprite[POSITIONS][ATTACK][sprite[NAME]];
 
-                        var successfulTurnaroundAttackLeft = distance > -1*sprite[ATTACK_THRESHOLDS][TURNAROUND][MAX] &&
-                                                             distance < -1*sprite[ATTACK_THRESHOLDS][TURNAROUND][MIN] &&
-                                                             sprite[DIRECTION] === LEFT;
-                        var successfulTurnaroundAttackRight = distance > sprite[ATTACK_THRESHOLDS][TURNAROUND][MIN] &&
-                                                              distance < sprite[ATTACK_THRESHOLDS][TURNAROUND][MAX] &&
-                                                              sprite[DIRECTION] === RIGHT;
-                        var successfulTurnaroundAttack = successfulTurnaroundAttackLeft || successfulTurnaroundAttackRight;
-
-                        var successfulHeadonAttackLeft = distance > -1*sprite[ATTACK_THRESHOLDS][HEADON][MAX] &&
-                                                         distance < -1*sprite[ATTACK_THRESHOLDS][HEADON][MIN] &&
-                                                         sprite[DIRECTION] === LEFT;
-                        var successfulHeadonAttackRight = distance > sprite[ATTACK_THRESHOLDS][HEADON][MIN] &&
-                                                          distance < sprite[ATTACK_THRESHOLDS][HEADON][MAX] &&
-                                                          sprite[DIRECTION] === RIGHT;
-                        var successfulHeadonAttack = successfulHeadonAttackLeft || successfulHeadonAttackRight;
-
+                        var successful = isSuccessfulAttack(sprite, opponent);
                         var isJumpEvaided = false;
                         if (opponent[POSITIONS][JUMP] && Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
                             var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
@@ -101,7 +103,7 @@
                             }
                         }
 
-                        if ((opponent[STATUS] !== DEAD && sprite[STATUS] !== DEAD) && !isJumpEvaided && (successfulTurnaroundAttack || successfulHeadonAttack)) {
+                        if ((opponent[STATUS] !== DEAD && sprite[STATUS] !== DEAD) && !isJumpEvaided && successful) {
                             var spritePixelsPerSecond = sprite[PIXELS_PER_SECOND];
                             if (sprite[ACTION] === STOP || (sprite[ACTION] === ATTACK && !sprite[HAS_MOVING_ATTACK])) {
                                 spritePixelsPerSecond = 0;
@@ -110,7 +112,7 @@
                                 spritePixelsPerSecond = spritePixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
                             }
                             var opponentPixelsPerSecond = opponent[PIXELS_PER_SECOND];
-                            if (opponent[ACTION] === STOP || (opponentgi[ACTION] === ATTACK && !opponent[HAS_MOVING_ATTACK])) {
+                            if (opponent[ACTION] === STOP || (opponent[ACTION] === ATTACK && !opponent[HAS_MOVING_ATTACK])) {
                                 opponentPixelsPerSecond = 0;
                             } else if (opponent[ACTION] === RUN) {
                                 opponentPixelsPerSecond = opponentPixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;

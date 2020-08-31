@@ -75,6 +75,104 @@
         return Object.keys(sprite[POSITIONS][ATTACK]).length > 0;
     }
 
+    function hasJumpEvaded(sprite, opponent) {
+        var isJumpEvaided = false;
+        if (opponent[POSITIONS][JUMP] && Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
+            var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
+            if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
+                isJumpEvaided = true;
+            }
+        }
+        return isJumpEvaided;
+    }
+
+    function areBothAlive(sprite, opponent) {
+        return opponent[STATUS] !== DEAD && sprite[STATUS] !== DEAD;
+    }
+
+    function getDeathDelay(sprite, opponent) {
+        var delay;
+        var spritePixelsPerSecond = sprite[PIXELS_PER_SECOND];
+        if (sprite[ACTION] === STOP || (sprite[ACTION] === ATTACK && !sprite[HAS_MOVING_ATTACK])) {
+            spritePixelsPerSecond = 0;
+
+        } else if (sprite[ACTION] === RUN) {
+            spritePixelsPerSecond = spritePixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
+        }
+        var opponentPixelsPerSecond = opponent[PIXELS_PER_SECOND];
+        if (opponent[ACTION] === STOP || (opponent[ACTION] === ATTACK && !opponent[HAS_MOVING_ATTACK])) {
+            opponentPixelsPerSecond = 0;
+        } else if (opponent[ACTION] === RUN) {
+            opponentPixelsPerSecond = opponentPixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
+        }
+        var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
+        if (sprite[DIRECTION] === opponent[DIRECTION]) {
+            console.log('instant death because they are going in the same direction');
+            delay = 2000;
+        } else {
+            console.log(sprite[NAME] + ' pps:' + spritePixelsPerSecond + ' ' + opponent[NAME] + ' pps:' + opponentPixelsPerSecond);
+            var relativePps = opponentPixelsPerSecond + spritePixelsPerSecond;
+            var delay = (separation / relativePps) * 1000;
+            delay = 2000 + delay;
+            console.log('==> relative pps: ' + relativePps  + ' separation:' + separation + ' delay:' + delay);
+        }
+        return delay;
+    }
+
+    function monsterTurnaround(sprite, opponents) {
+        var turned = false;
+        if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
+            var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
+            var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
+
+            if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
+                sprite[DIRECTION] = RIGHT;
+                actionHelper(sprite, opponents, WALK, 0);
+                turned = true;
+            } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
+                || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
+                sprite[DIRECTION] = LEFT;
+                actionHelper(sprite, opponents, WALK, 0);
+                turned = true;
+            }
+
+        }
+
+    }
+
+    function opponentDefeated(sprite, opponent) {
+        return hasAttacked(sprite) &&
+        !hasJumpEvaded(sprite, opponent) &&
+        areBothAlive(sprite, opponent) &&
+        isSuccessfulAttack(sprite, opponent);
+    }
+
+    function fightSequence(sprite, opponents) {
+        var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
+
+        for (var i = 0; i < opponentsInProximity.length; i++) {
+            var opponent = opponentsInProximity[i];
+            if (launchMonsterAttack(sprite, opponent, opponents)) {
+                return true;
+            }
+            if (opponentDefeated(sprite, opponent)) {
+                opponent[DEATH][DELAY] = getDeathDelay(sprite, opponent);
+                death(opponent);
+            }
+        }
+        return false;
+    }
+
+    function hitBoundry(sprite) {
+        if (hitLeftBoundry(sprite) || hitRightBoundry(sprite)) {
+            // Since we are stopping set the frame to the stop frame (1st frame when walking)
+            renderSpriteFrame(sprite, WALK, 0);
+            sprite[ACTION] = STOP;
+            return true;
+        }
+        return false;
+    }
+
     async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times) {
         var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
 
@@ -82,95 +180,23 @@
         sprite[DIRECTION] = requestedDirection;
 
         var index = 0;
+        var fightOver = false;
 
-        var stopSpriteAnimation = false;
-        main:
         while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
             // If the sprite has been killed delay stopping the animation to let the action sequence complete
             if (sprite[STATUS] === DEAD) {
                 setTimeout(function () {
-                    stopSpriteAnimation = true;
+                    fightOver = true;
                 }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
             }
-            if (stopSpriteAnimation) {
+            if(fightOver || fightSequence(sprite, opponents) || monsterTurnaround(sprite, opponents)) {
                 break;
             }
-            var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
-            for (var i = 0; i < opponentsInProximity.length; i++) {
-                var opponent = opponentsInProximity[i];
-                if (launchMonsterAttack(sprite, opponent, opponents)) {
-                    break main;
-                }
-                if (hasAttacked(sprite)) {
-
-                    var isJumpEvaided = false;
-                    if (opponent[POSITIONS][JUMP] && Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
-                        var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
-                        if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
-                            isJumpEvaided = true;
-                        }
-                    }
-
-                    if ((opponent[STATUS] !== DEAD && sprite[STATUS] !== DEAD) && !isJumpEvaided && isSuccessfulAttack(sprite, opponent)) {
-                        var spritePixelsPerSecond = sprite[PIXELS_PER_SECOND];
-                        if (sprite[ACTION] === STOP || (sprite[ACTION] === ATTACK && !sprite[HAS_MOVING_ATTACK])) {
-                            spritePixelsPerSecond = 0;
-
-                        } else if (sprite[ACTION] === RUN) {
-                            spritePixelsPerSecond = spritePixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
-                        }
-                        var opponentPixelsPerSecond = opponent[PIXELS_PER_SECOND];
-                        if (opponent[ACTION] === STOP || (opponent[ACTION] === ATTACK && !opponent[HAS_MOVING_ATTACK])) {
-                            opponentPixelsPerSecond = 0;
-                        } else if (opponent[ACTION] === RUN) {
-                            opponentPixelsPerSecond = opponentPixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
-                        }
-                        var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
-                        if (sprite[DIRECTION] === opponent[DIRECTION]) {
-                            console.log('instant death because they are going in the same direction');
-                            opponent[DEATH][DELAY] = 2000;
-                        } else {
-                            console.log(sprite[NAME] + ' pps:' + spritePixelsPerSecond + ' ' + opponent[NAME] + ' pps:' + opponentPixelsPerSecond);
-                            var relativePps = opponentPixelsPerSecond + spritePixelsPerSecond;
-                            var delay = (separation / relativePps) * 1000;
-                            delay = 2000 + delay;
-                            console.log('==> relative pps: ' + relativePps  + ' separation:' + separation + ' delay:' + delay);
-                            opponent[DEATH][DELAY] = delay;
-                        }
-                        death(opponent);
-                    }
-                }
-            }
-            if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
-                var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
-                var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
-
-                if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
-                    sprite[DIRECTION] = RIGHT;
-                    actionHelper(sprite, opponents, WALK, 0);
-                    break;
-                } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
-                    || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
-                    sprite[DIRECTION] = LEFT;
-                    actionHelper(sprite, opponents, WALK, 0);
-                    break;
-                }
-
-            }
-
-
 
             var position = path[index];
-
             renderSpriteFrame(sprite, requestedAction, position);
-            if (sprite[ACTION] === STOP) {
-                break;
-            }
-            if (hitLeftBoundry(sprite) || hitRightBoundry(sprite)) {
-                // Since we are stopping set the frame to the stop frame (1st frame when walking)
-                renderSpriteFrame(sprite, WALK, 0);
-                sprite[ACTION] = STOP;
+            if (sprite[ACTION] === STOP || hitBoundry(sprite)) {
                 break;
             }
 

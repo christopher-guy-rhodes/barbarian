@@ -101,13 +101,18 @@
                             }
                         }
 
-                        if (opponent[STATUS] !== DEAD && !isJumpEvaided && (successfulTurnaroundAttack || successfulHeadonAttack)) {
+                        if ((opponent[STATUS] !== DEAD && sprite[STATUS] !== DEAD) && !isJumpEvaided && (successfulTurnaroundAttack || successfulHeadonAttack)) {
                             var spritePixelsPerSecond = sprite[PIXELS_PER_SECOND];
-                            if (sprite[ACTION] === RUN) {
+                            if (sprite[ACTION] === STOP || (sprite[ACTION] === ATTACK && !sprite[HAS_MOVING_ATTACK])) {
+                                spritePixelsPerSecond = 0;
+
+                            } else if (sprite[ACTION] === RUN) {
                                 spritePixelsPerSecond = spritePixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
                             }
                             var opponentPixelsPerSecond = opponent[PIXELS_PER_SECOND];
-                            if (opponent[ACTION] === RUN) {
+                            if (opponent[ACTION] === STOP || (opponentgi[ACTION] === ATTACK && !opponent[HAS_MOVING_ATTACK])) {
+                                opponentPixelsPerSecond = 0;
+                            } else if (opponent[ACTION] === RUN) {
                                 opponentPixelsPerSecond = opponentPixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
                             }
                             var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
@@ -115,6 +120,7 @@
                                 console.log('instant death because they are going in the same direction');
                                 opponent[DEATH][DELAY] = 2000;
                             } else {
+                                console.log(sprite[NAME] + ' pps:' + spritePixelsPerSecond + ' ' + opponent[NAME] + ' pps:' + opponentPixelsPerSecond);
                                 var relativePps = opponentPixelsPerSecond + spritePixelsPerSecond;
                                 var delay = (separation / relativePps) * 1000;
                                 delay = 2000 + delay;

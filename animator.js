@@ -46,15 +46,33 @@
         var successful = false;
         for (var i = 0; i < thresholds.length; i++) {
             var successfulTurnaround = sprite[DIRECTION] === LEFT &&
-                -1*thresholds[i][MIN] > distance > -1*thresholds[i][MAX];
+                -1*thresholds[i][MIN] > distance &&
+                -1*thresholds[i][MAX] < distance;
             var successfulHeadon = sprite[DIRECTION] === RIGHT &&
-                thresholds[i][MIN] > distance > thresholds[MAX] ;
+                thresholds[i][MIN] < distance &&
+                thresholds[i][MAX] > distance ;
             if (successfulTurnaround || successfulHeadon) {
                 successful = true;
                 break;
             }
         }
         return successful;
+    }
+
+    function launchMonsterAttack(sprite, opponent, opponents) {
+        if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
+            var proximity = Math.abs(getProximity(sprite, opponent));
+            if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
+                sprite[POSITIONS][ATTACK] = getPositionsAtAction(opponents);
+                actionHelper(sprite, opponents, ATTACK, 0);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function hasAttacked(sprite) {
+        return Object.keys(sprite[POSITIONS][ATTACK]).length > 0;
     }
 
     async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times) {
@@ -69,7 +87,7 @@
         main:
         while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
-            // If the sprite has been killed dealay stopping the animation to let the action sequence complete
+            // If the sprite has been killed delay stopping the animation to let the action sequence complete
             if (sprite[STATUS] === DEAD) {
                 setTimeout(function () {
                     stopSpriteAnimation = true;
@@ -79,78 +97,68 @@
                 break;
             }
             var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
-            if (opponentsInProximity.length > 0) {
-                for (var i = 0; i < opponentsInProximity.length; i++) {
-                    var opponent = opponentsInProximity[i];
-                    if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
-                        // TODO: use thresholds in object
-                        var proximity = Math.abs(getProximity(sprite, opponent));
-                        if (proximity > 0 && proximity < 300) {
-                            sprite[POSITIONS][ATTACK] = getPositionsAtAction(opponents);
-                            actionHelper(sprite, opponents, ATTACK, 0);
-                            break main;
-
-                        }
-                    }
-                    if (Object.keys(sprite[POSITIONS][ATTACK]).length > 0) {
-
-                        var successful = isSuccessfulAttack(sprite, opponent);
-                        var isJumpEvaided = false;
-                        if (opponent[POSITIONS][JUMP] && Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
-                            var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
-                            if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
-                                isJumpEvaided = true;
-                            }
-                        }
-
-                        if ((opponent[STATUS] !== DEAD && sprite[STATUS] !== DEAD) && !isJumpEvaided && successful) {
-                            var spritePixelsPerSecond = sprite[PIXELS_PER_SECOND];
-                            if (sprite[ACTION] === STOP || (sprite[ACTION] === ATTACK && !sprite[HAS_MOVING_ATTACK])) {
-                                spritePixelsPerSecond = 0;
-
-                            } else if (sprite[ACTION] === RUN) {
-                                spritePixelsPerSecond = spritePixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
-                            }
-                            var opponentPixelsPerSecond = opponent[PIXELS_PER_SECOND];
-                            if (opponent[ACTION] === STOP || (opponent[ACTION] === ATTACK && !opponent[HAS_MOVING_ATTACK])) {
-                                opponentPixelsPerSecond = 0;
-                            } else if (opponent[ACTION] === RUN) {
-                                opponentPixelsPerSecond = opponentPixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
-                            }
-                            var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
-                            if (sprite[DIRECTION] === opponent[DIRECTION]) {
-                                console.log('instant death because they are going in the same direction');
-                                opponent[DEATH][DELAY] = 2000;
-                            } else {
-                                console.log(sprite[NAME] + ' pps:' + spritePixelsPerSecond + ' ' + opponent[NAME] + ' pps:' + opponentPixelsPerSecond);
-                                var relativePps = opponentPixelsPerSecond + spritePixelsPerSecond;
-                                var delay = (separation / relativePps) * 1000;
-                                delay = 2000 + delay;
-                                console.log('==> relative pps: ' + relativePps  + ' separation:' + separation + ' delay:' + delay);
-                                opponent[DEATH][DELAY] = delay;
-                            }
-                            death(opponent);
-                        }
-                    }
+            for (var i = 0; i < opponentsInProximity.length; i++) {
+                var opponent = opponentsInProximity[i];
+                if (launchMonsterAttack(sprite, opponent, opponents)) {
+                    break main;
                 }
-            } else {
-                if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
-                    var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
-                    var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
+                if (hasAttacked(sprite)) {
 
-                    if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
-                        sprite[DIRECTION] = RIGHT;
-                        actionHelper(sprite, opponents, WALK, 0);
-                        break;
-                    } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
-                        || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
-                        sprite[DIRECTION] = LEFT;
-                        actionHelper(sprite, opponents, WALK, 0);
-                        break;
+                    var isJumpEvaided = false;
+                    if (opponent[POSITIONS][JUMP] && Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
+                        var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
+                        if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
+                            isJumpEvaided = true;
+                        }
                     }
 
+                    if ((opponent[STATUS] !== DEAD && sprite[STATUS] !== DEAD) && !isJumpEvaided && isSuccessfulAttack(sprite, opponent)) {
+                        var spritePixelsPerSecond = sprite[PIXELS_PER_SECOND];
+                        if (sprite[ACTION] === STOP || (sprite[ACTION] === ATTACK && !sprite[HAS_MOVING_ATTACK])) {
+                            spritePixelsPerSecond = 0;
+
+                        } else if (sprite[ACTION] === RUN) {
+                            spritePixelsPerSecond = spritePixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
+                        }
+                        var opponentPixelsPerSecond = opponent[PIXELS_PER_SECOND];
+                        if (opponent[ACTION] === STOP || (opponent[ACTION] === ATTACK && !opponent[HAS_MOVING_ATTACK])) {
+                            opponentPixelsPerSecond = 0;
+                        } else if (opponent[ACTION] === RUN) {
+                            opponentPixelsPerSecond = opponentPixelsPerSecond * RUN_SPEED_INCREASE_FACTOR;
+                        }
+                        var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
+                        if (sprite[DIRECTION] === opponent[DIRECTION]) {
+                            console.log('instant death because they are going in the same direction');
+                            opponent[DEATH][DELAY] = 2000;
+                        } else {
+                            console.log(sprite[NAME] + ' pps:' + spritePixelsPerSecond + ' ' + opponent[NAME] + ' pps:' + opponentPixelsPerSecond);
+                            var relativePps = opponentPixelsPerSecond + spritePixelsPerSecond;
+                            var delay = (separation / relativePps) * 1000;
+                            delay = 2000 + delay;
+                            console.log('==> relative pps: ' + relativePps  + ' separation:' + separation + ' delay:' + delay);
+                            opponent[DEATH][DELAY] = delay;
+                        }
+                        death(opponent);
+                    }
                 }
             }
+            if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
+                var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
+                var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
+
+                if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
+                    sprite[DIRECTION] = RIGHT;
+                    actionHelper(sprite, opponents, WALK, 0);
+                    break;
+                } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
+                    || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
+                    sprite[DIRECTION] = LEFT;
+                    actionHelper(sprite, opponents, WALK, 0);
+                    break;
+                }
+
+            }
+
 
 
             var position = path[index];

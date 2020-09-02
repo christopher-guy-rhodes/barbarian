@@ -11,9 +11,9 @@ $(document).ready(function(){
     // Include sprite definition
     $.getScript('http://localhost/sprites.js', function() {
     // Include animation module
-    $.getScript('http://localhost/animator.js', function() {
+    $.getScript('http://localhost/fighting.js', function() {
     // Include action definitions
-    $.getScript('http://localhost/actions.js', function() {
+    $.getScript('http://localhost/animation.js', function() {
 
     windowWidth = $(document).width() - BARBARIAN_SPRITE[SPRITE].width();
     var keypressTime;
@@ -42,7 +42,7 @@ $(document).ready(function(){
                     }
                     break;
                 case KEYPRESS[KP_STOP]:
-                    stop(BARBARIAN_SPRITE);
+                    actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], STOP, 1)
                     BARBARIAN_SPRITE[ACTION] = STOP;
                     break;
                 case KEYPRESS[KP_RIGHT]:

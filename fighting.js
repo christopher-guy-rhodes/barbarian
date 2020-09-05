@@ -1,3 +1,5 @@
+var HEADON = 'HEADON';
+
 function isSuccessfulAttack(sprite, opponent) {
     var distance = sprite[POSITIONS][ATTACK][opponent[NAME]] - sprite[POSITIONS][ATTACK][sprite[NAME]];
 

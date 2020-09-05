@@ -15,7 +15,27 @@ $(document).ready(function(){
     // Include action definitions
     $.getScript('http://localhost/animation.js', function() {
 
-    windowWidth = $(document).width() - BARBARIAN_SPRITE[SPRITE].width();
+    var KEYPRESS_THROTTLE_DELAY = 200;
+    var KP_LEFT = 'KP_LEFT';
+    var KP_RIGHT = 'KP_RIGHT';
+    var KP_RUN = 'KP_RUN';
+    var KP_JUMP = 'KP_JUMP';
+    var KP_STOP = 'KP_STOP';
+    var KP_ATTACK = 'KP_ATTACK';
+
+    // Keypress event names
+    var KEYPRESS = {
+        KP_LEFT   : 37,
+        KP_RIGHT  : 39,
+        KP_ATTACK : 65,
+        KP_RUN    : 82,
+        KP_STOP   : 83,
+        KP_JUMP   : 74
+    };
+
+
+
+        windowWidth = $(document).width() - BARBARIAN_SPRITE[SPRITE].width();
     var keypressTime;
     var lastKeypressTime;
 

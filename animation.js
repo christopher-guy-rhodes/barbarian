@@ -1,17 +1,9 @@
-function stop(sprite) {
-    var isRight = sprite[DIRECTION] === RIGHT;
-    var x = -1 * (isRight ? sprite[STOP_POSITION][RIGHT] : sprite[STOP_POSITION][LEFT]) * sprite[SPRITE].width();
-    var y = isRight ? (-1 * sprite[STOP_POSITION][RIGHT_HEIGHT])
-                    : -1 * sprite[STOP_POSITION][LEFT_HEIGHT] * sprite[SPRITE].height();
-
-    sprite[SPRITE].css('background-position', x + 'px ' + y + 'px');
-    sprite[SPRITE].stop();
-}
+var RUN_SPEED_INCREASE_FACTOR = 1.5;
+var DEFAULT_DEATH_DELAY = 2000;
 
 function actionHelper(sprite, opponents, requestedAction, times) {
     sprite[SPRITE].stop();
 
-    console.log('requested action is:' + requestedAction);
     if (requestedAction === STOP) {
         sprite[CURRENT_PIXELS_PER_SECOND] = 0;
         stop(sprite);
@@ -35,6 +27,16 @@ function actionHelper(sprite, opponents, requestedAction, times) {
         times);
 }
 
+function stop(sprite) {
+    var isRight = sprite[DIRECTION] === RIGHT;
+    var x = -1 * (isRight ? sprite[STOP_POSITION][RIGHT] : sprite[STOP_POSITION][LEFT]) * sprite[SPRITE].width();
+    var y = isRight ? (-1 * sprite[STOP_POSITION][RIGHT_HEIGHT])
+        : -1 * sprite[STOP_POSITION][LEFT_HEIGHT] * sprite[SPRITE].height();
+
+    sprite[SPRITE].css('background-position', x + 'px ' + y + 'px');
+    sprite[SPRITE].stop();
+}
+
 function move(sprite, requestedAction) {
     var isRight = sprite[DIRECTION] === RIGHT;
     (requestedAction === RUN) ? isRight
@@ -48,37 +50,34 @@ function sleep(ms) {
 
 function moveRight(sprite) {
     var distance = windowWidth - sprite[SPRITE].offset().left;
-    sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / sprite[PIXELS_PER_SECOND] * 1000, 'linear');
+    sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function moveLeft(sprite) {
     var distance = sprite[SPRITE].offset().left;
-    sprite[SPRITE].animate({left: '0px'}, distance / sprite[PIXELS_PER_SECOND] * 1000, 'linear');
+    sprite[SPRITE].animate({left: '0px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function runRight(sprite) {
     var distance = (windowWidth - sprite[SPRITE].offset().left);
-    sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / sprite[PIXELS_PER_SECOND] / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
+    sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function runLeft(sprite) {
     var distance = sprite[SPRITE].offset().left;
-    sprite[SPRITE].animate({left: '0px'}, distance / sprite[PIXELS_PER_SECOND] / RUN_SPEED_INCREASE_FACTOR * 1000, 'linear');
+    sprite[SPRITE].animate({left: '0px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function getDeathDelay(sprite, opponent) {
-    var spritePixelsPerSecond = sprite[CURRENT_PIXELS_PER_SECOND];
-    var opponentPixelsPerSecond = opponent[CURRENT_PIXELS_PER_SECOND];
     var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
 
     var relativePps = sprite[DIRECTION] === opponent[DIRECTION]
-        ? Math.abs(opponentPixelsPerSecond - spritePixelsPerSecond)
-        : Math.abs(opponentPixelsPerSecond + spritePixelsPerSecond);
-    return DEFAULT_DEATH_DELAY + (separation / relativePps) * 1000;
+        ? opponent[CURRENT_PIXELS_PER_SECOND] - sprite[CURRENT_PIXELS_PER_SECOND]
+        : opponent[CURRENT_PIXELS_PER_SECOND] + sprite[CURRENT_PIXELS_PER_SECOND];
+    return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * 1000;
 }
 
 function monsterTurnaround(sprite, opponents) {
-    var turned = false;
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
         var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
         var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
@@ -86,16 +85,15 @@ function monsterTurnaround(sprite, opponents) {
         if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
             sprite[DIRECTION] = RIGHT;
             actionHelper(sprite, opponents, WALK, 0);
-            turned = true;
+            return true;
         } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
             || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
             sprite[DIRECTION] = LEFT;
             actionHelper(sprite, opponents, WALK, 0);
-            turned = true;
+            return true;
         }
-
     }
-
+    return false;
 }
 
 function hitBoundry(sprite) {

@@ -1,3 +1,7 @@
+// dimensions
+var SCREEN_HEIGHT = 800;
+var SCREEN_WIDTH = 1400;
+
 // labels
 var STOP_POSITION = 'STOP_POSITION';
 var RIGHT_HEIGHT = 'RIGHT_HEIGHT';

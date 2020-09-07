@@ -49,8 +49,8 @@ function sleep(ms) {
 }
 
 function moveRight(sprite) {
-    var distance = windowWidth - sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: windowWidth + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    var distance = windowWidth - sprite[SPRITE].offset().left - (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function moveLeft(sprite) {
@@ -59,8 +59,8 @@ function moveLeft(sprite) {
 }
 
 function runRight(sprite) {
-    var distance = (windowWidth - sprite[SPRITE].offset().left) + (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: windowWidth + (sprite[SPRITE].width() / 2) +  'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    var distance = (windowWidth - sprite[SPRITE].offset().left) - (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) +  'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function runLeft(sprite) {
@@ -101,8 +101,7 @@ function monsterTurnaround(sprite, opponents) {
 }
 
 async function advanceBackdrop(sprite) {
-    console.log('left is: ' + sprite[SPRITE].offset().left + ' window width:' + (windowWidth + sprite[SPRITE].width()));
-        var width = windowWidth + sprite[SPRITE].width();
+    var width = windowWidth;
     var buffer = 125;
     var pixelsPerSecond = 400;
     var pixelsPerFrame = 10;
@@ -110,6 +109,8 @@ async function advanceBackdrop(sprite) {
     var sleepPerIterationDuration = (1000 / pixelsPerSecond) * pixelsPerFrame;
     var numberOfIterations = width / pixelsPerFrame;
 
+    // Animate the sprite to move with the screen scroll. The animation should last as long as the screen scroll takes
+    // plus a small butter
     sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, (numberOfIterations * sleepPerIterationDuration) + buffer, 'linear');
 
     for (i = 0; i < numberOfIterations ; i++) {
@@ -199,8 +200,7 @@ function hitLeftBoundry(sprite) {
 }
 
 function hitRightBoundry(sprite) {
-    console.log('left:' + sprite[SPRITE].offset().left + ' window width:' + windowWidth);
-    return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth + sprite[SPRITE].width() / 2;
+    return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth - sprite[SPRITE].width() / 2;
 }
 
 function getProximity(sprite, opponent) {

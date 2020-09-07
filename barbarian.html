@@ -15,6 +15,10 @@ $(document).ready(function(){
     // Include action definitions
     $.getScript('http://localhost/animation.js', function() {
 
+    $(window).resize(function(){
+        window.resizeTo(SCREEN_WIDTH, SCREEN_HEIGHT);
+    });
+
     var KEYPRESS_THROTTLE_DELAY = 200;
     var KP_LEFT = 'KP_LEFT';
     var KP_RIGHT = 'KP_RIGHT';
@@ -35,7 +39,7 @@ $(document).ready(function(){
 
 
 
-    windowWidth = $(document).width() - BARBARIAN_SPRITE[SPRITE].width();
+    windowWidth = $(document).width();
     var keypressTime;
     var lastKeypressTime;
 

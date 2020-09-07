@@ -4,6 +4,8 @@
 <link rel="stylesheet" href="http://localhost/barbarian.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
+var screenNumber = 0;
+var canAdvance = false;
 $(document).ready(function(){
 
     // Include constants
@@ -15,9 +17,13 @@ $(document).ready(function(){
     // Include action definitions
     $.getScript('http://localhost/animation.js', function() {
 
+    // Don't allow screen resizing
     $(window).resize(function(){
         window.resizeTo(SCREEN_WIDTH, SCREEN_HEIGHT);
     });
+
+
+
 
     var KEYPRESS_THROTTLE_DELAY = 200;
     var KP_LEFT = 'KP_LEFT';

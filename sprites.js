@@ -68,8 +68,8 @@ BARBARIAN_SPRITE = {
             MAX : 100
         },
         {
-            MIN : 325,
-            MAX : 370
+            MIN : 270,
+            MAX : 330
         }
     ],
     DEATH : {

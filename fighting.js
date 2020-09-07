@@ -6,15 +6,16 @@ function isSuccessfulAttack(sprite, opponent) {
     var thresholds = sprite[ATTACK_THRESHOLDS];
     var successful = false;
     for (var i = 0; i < thresholds.length; i++) {
+
         var successfulTurnaround = sprite[DIRECTION] === LEFT &&
             -1*thresholds[i][MIN] > distance &&
             -1*thresholds[i][MAX] < distance;
         var successfulHeadon = sprite[DIRECTION] === RIGHT &&
             thresholds[i][MIN] < distance &&
             thresholds[i][MAX] > distance ;
+
         if (successfulTurnaround || successfulHeadon) {
             successful = true;
-            break;
         }
     }
     return successful;
@@ -68,6 +69,7 @@ function fightSequence(sprite, opponents) {
         if (opponentDefeated(sprite, opponent)) {
             opponent[DEATH][DELAY] = getDeathDelay(sprite, opponent);
             death(opponent);
+            canAdvance = true;
         }
     }
     return false;

@@ -82,10 +82,6 @@ function monsterTurnaround(sprite, opponents) {
         var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
         var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
 
-        console.log(sprite[NAME] + ' width/2:'  + (sprite[SPRITE].width()/2));
-        console.log(sprite[NAME] + ' doc width:' + ($(document).width() - sprite[SPRITE].width()));
-
-        console.log(sprite[NAME] + ' left:' + sprite[SPRITE].offset().left + ' =? ' + ($(document).width() - (sprite[SPRITE].width())));
         if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === -1*(sprite[SPRITE].width()/2))) {
             sprite[DIRECTION] = RIGHT;
             actionHelper(sprite, opponents, WALK, 0);
@@ -100,33 +96,59 @@ function monsterTurnaround(sprite, opponents) {
     return false;
 }
 
-async function advanceBackdrop(sprite) {
+async function advanceBackdrop(sprite, reverse = false) {
     var width = windowWidth;
-    var buffer = 125;
-    var pixelsPerSecond = 400;
+    var buffer = 0;
+    var pixelsPerSecond = 1500;
     var pixelsPerFrame = 10;
 
     var sleepPerIterationDuration = (1000 / pixelsPerSecond) * pixelsPerFrame;
     var numberOfIterations = width / pixelsPerFrame;
 
-    // Animate the sprite to move with the screen scroll. The animation should last as long as the screen scroll takes
-    // plus a small butter
-    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, (numberOfIterations * sleepPerIterationDuration) + buffer, 'linear');
-
+    // Animate the sprite to move with the screen scroll. The animation is set to take as long as the screen scroll takes
+    if (reverse) {
+        sprite[SPRITE].animate({left:  (windowWidth - sprite[SPRITE].width()/2) + 'px'}, (numberOfIterations * sleepPerIterationDuration) + buffer, 'linear');
+    } else {
+        sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, (numberOfIterations * sleepPerIterationDuration) + buffer, 'linear');
+    }
     for (i = 0; i < numberOfIterations ; i++) {
-        $('.backdrop').css('background-position', '-' + (i+1)*pixelsPerFrame + 'px');
+        if (reverse) {
+            $('.backdrop').css('background-position', '-' + (numberOfIterations*pixelsPerFrame - ((i+1)*pixelsPerFrame)) + 'px');
+        } else {
+            $('.backdrop').css('background-position', '-' + (i + 1) * pixelsPerFrame + 'px');
+        }
         await sleep(sleepPerIterationDuration);
     }
 }
 
 function hitBoundry(sprite) {
     var isRightBoundry = hitRightBoundry(sprite);
-    if (hitLeftBoundry(sprite) || isRightBoundry) {
-        console.log('hit right boundry');
-        // ==>
-        if (isRightBoundry && sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+    var isLeftBoundry = hitLeftBoundry(sprite);
+    if (isLeftBoundry || isRightBoundry) {
+        console.log('==> at boundry and position is' + sprite[SPRITE].offset().left + ' direction is ' + sprite[DIRECTION]);
+        if (sprite[SPRITE].offset().left === -1*sprite[SPRITE].width()/2 && screenNumber > 0) {
+            /*
+            var backgroundPosition = $('.backdrop').css('background-position').split(" ")[0];
+            backgroundPosition = backgroundPosition.substr(0, backgroundPosition.length - 2);
+            backgroundPosition = parseInt(backgroundPosition) + SCREEN_WIDTH;
+            console.log('==> turnback, background position is:' + backgroundPosition);
+            $('.backdrop').css('background-position', backgroundPosition + 'px');
+            sprite[SPRITE].css('left', (windowWidth - 200) + 'px');
+            //$('.backdrop').css('background-position');
+
+             */
+
+            canAdvance = true;
+            screenNumber--;
+            advanceBackdrop(sprite, true);
+        }
+        if (canAdvance && isRightBoundry && sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+            console.log(sprite[SPRITE].offset().left);
+            canAdvance = false;
+            screenNumber++;
             advanceBackdrop(sprite);
         }
+
 
         // Since we are stopping set the frame to the stop frame (1st frame when walking)
         renderSpriteFrame(sprite, WALK, 0);

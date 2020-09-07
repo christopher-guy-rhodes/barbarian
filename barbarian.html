@@ -6,6 +6,7 @@
 <script>
 var screenNumber = 0;
 var canAdvance = false;
+var scrolling = false;
 $(document).ready(function(){
 
     // Include constants
@@ -56,7 +57,7 @@ $(document).ready(function(){
         keypressTime = new Date().getTime();
 
         var uninterruptable = BARBARIAN_SPRITE[ACTION] === JUMP || BARBARIAN_SPRITE[ACTION] === ATTACK;
-        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && BARBARIAN_SPRITE[STATUS] !== DEAD) {
+        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && BARBARIAN_SPRITE[STATUS] !== DEAD && !scrolling) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
             switch(e.which) {

@@ -97,6 +97,7 @@ function monsterTurnaround(sprite, opponents) {
 }
 
 async function advanceBackdrop(sprite, reverse = false) {
+    scrolling = true;
     var width = windowWidth;
     var buffer = 0;
     var pixelsPerSecond = 1500;
@@ -119,6 +120,7 @@ async function advanceBackdrop(sprite, reverse = false) {
         }
         await sleep(sleepPerIterationDuration);
     }
+    scrolling = false;
 }
 
 function hitBoundry(sprite) {

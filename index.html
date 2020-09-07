@@ -1,110 +1,28 @@
-<!DOCTYPE html>
 <html>
-<head>
-<link rel="stylesheet" href="http://localhost/barbarian.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<script>
-$(document).ready(function(){
-
-    // Include constants
-    $.getScript('http://localhost/constants.js', function() {
-    // Include sprite definition
-    $.getScript('http://localhost/sprites.js', function() {
-    // Include animation module
-    $.getScript('http://localhost/fighting.js', function() {
-    // Include action definitions
-    $.getScript('http://localhost/animation.js', function() {
-
-    var KEYPRESS_THROTTLE_DELAY = 200;
-    var KP_LEFT = 'KP_LEFT';
-    var KP_RIGHT = 'KP_RIGHT';
-    var KP_RUN = 'KP_RUN';
-    var KP_JUMP = 'KP_JUMP';
-    var KP_STOP = 'KP_STOP';
-    var KP_ATTACK = 'KP_ATTACK';
-
-    // Keypress event names
-    var KEYPRESS = {
-        KP_LEFT   : 37,
-        KP_RIGHT  : 39,
-        KP_ATTACK : 65,
-        KP_RUN    : 82,
-        KP_STOP   : 83,
-        KP_JUMP   : 74
-    };
-
-
-
-        windowWidth = $(document).width() - BARBARIAN_SPRITE[SPRITE].width();
-    var keypressTime;
-    var lastKeypressTime;
-
-    actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE, MONSTER_SPRITE], WALK, 0);
-
-    $(document).keydown(function(e) {
-
-        keypressTime = new Date().getTime();
-
-        var uninterruptable = BARBARIAN_SPRITE[ACTION] === JUMP || BARBARIAN_SPRITE[ACTION] === ATTACK;
-        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && BARBARIAN_SPRITE[STATUS] !== DEAD) {
-            lastKeypressTime = keypressTime;
-            keypressTime = new Date().getTime();
-            switch(e.which) {
-                case KEYPRESS[KP_RUN]:
-                    if(BARBARIAN_SPRITE[ACTION] !== RUN) {
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], RUN, 0);
-                    }
-                    break;
-                case KEYPRESS[KP_JUMP]:
-                    if (BARBARIAN_SPRITE[ACTION] !== JUMP) {
-                        BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE]);
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE],  JUMP, 1);
-                    }
-                    break;
-                case KEYPRESS[KP_STOP]:
-                    actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], STOP, 1)
-                    BARBARIAN_SPRITE[ACTION] = STOP;
-                    break;
-                case KEYPRESS[KP_RIGHT]:
-                    if (BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) {
-                        BARBARIAN_SPRITE[DIRECTION] = RIGHT;
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK, 0);
-                    }
-                    break;
-                case KEYPRESS[KP_LEFT]:
-                    if (BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) {
-                        BARBARIAN_SPRITE[DIRECTION] = LEFT;
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK, 0);
-                    }
-                    break;
-                case KEYPRESS[KP_ATTACK]:
-                    if (BARBARIAN_SPRITE[ACTION] !== ATTACK) {
-                        BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE]);
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], ATTACK, 1);
-                    }
-                    break;
-                default: return; // exit this handler for other keys
-            }
-        }
-        e.preventDefault(); // prevent the default action (scroll / move caret)
-    });
-
-    function shouldThrottle(lastKeypressTime) {
-        var elapsed = KEYPRESS_THROTTLE_DELAY;
-        if (typeof lastKeypressTime !== undefined) {
-            elapsed = new Date().getTime() - lastKeypressTime
-        }
-        return elapsed < KEYPRESS_THROTTLE_DELAY;
-    }
-
-
-})})})})});
-</script>
-</head>
-<body>
-<div class="barbarian"></div>
-<div class="monster"></div>
-<div class="death"></div>
-</body>
+    <head>
+        <title>Barbarian</title>
+ 
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ 
+        <script type="text/javascript">
+            var windowSize = "width=1400,height=800,scrollbars=no";
+ 
+            $(document).ready(function(){
+                $('.newWindow').click(function (event){
+ 
+                    var url = $(this).attr("href");
+                    var windowName = "popUp";//$(this).attr("name");
+ 
+                    window.open(url, windowName, windowSize);
+ 
+                    event.preventDefault();
+ 
+                });
+            });
+        </script>
+    </head>
+ 
+    <body>
+        <a href="/barbarian.html" class="newWindow" >Launch Barbarian</a>
+    </body>
 </html>
-

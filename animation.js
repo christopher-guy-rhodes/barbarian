@@ -49,23 +49,23 @@ function sleep(ms) {
 }
 
 function moveRight(sprite) {
-    var distance = windowWidth - sprite[SPRITE].offset().left;
-    sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    var distance = windowWidth - sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: windowWidth + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function moveLeft(sprite) {
-    var distance = sprite[SPRITE].offset().left;
-    sprite[SPRITE].animate({left: '0px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    var distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function runRight(sprite) {
-    var distance = (windowWidth - sprite[SPRITE].offset().left);
-    sprite[SPRITE].animate({left: windowWidth + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    var distance = (windowWidth - sprite[SPRITE].offset().left) + (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: windowWidth + (sprite[SPRITE].width() / 2) +  'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function runLeft(sprite) {
-    var distance = sprite[SPRITE].offset().left;
-    sprite[SPRITE].animate({left: '0px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    var distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
 }
 
 function getDeathDelay(sprite, opponent) {
@@ -82,12 +82,16 @@ function monsterTurnaround(sprite, opponents) {
         var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
         var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
 
-        if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === 0)) {
+        console.log(sprite[NAME] + ' width/2:'  + (sprite[SPRITE].width()/2));
+        console.log(sprite[NAME] + ' doc width:' + ($(document).width() - sprite[SPRITE].width()));
+
+        console.log(sprite[NAME] + ' left:' + sprite[SPRITE].offset().left + ' =? ' + ($(document).width() - (sprite[SPRITE].width())));
+        if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === -1*(sprite[SPRITE].width()/2))) {
             sprite[DIRECTION] = RIGHT;
             actionHelper(sprite, opponents, WALK, 0);
             return true;
         } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
-            || sprite[SPRITE].offset().left === $(document).width() - sprite[SPRITE].width())) {
+            || sprite[SPRITE].offset().left === $(document).width() - (sprite[SPRITE].width()))) {
             sprite[DIRECTION] = LEFT;
             actionHelper(sprite, opponents, WALK, 0);
             return true;
@@ -96,8 +100,33 @@ function monsterTurnaround(sprite, opponents) {
     return false;
 }
 
+async function advanceBackdrop(sprite) {
+    console.log('left is: ' + sprite[SPRITE].offset().left + ' window width:' + (windowWidth + sprite[SPRITE].width()));
+        var width = windowWidth + sprite[SPRITE].width();
+    var buffer = 125;
+    var pixelsPerSecond = 400;
+    var pixelsPerFrame = 10;
+
+    var sleepPerIterationDuration = (1000 / pixelsPerSecond) * pixelsPerFrame;
+    var numberOfIterations = width / pixelsPerFrame;
+
+    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, (numberOfIterations * sleepPerIterationDuration) + buffer, 'linear');
+
+    for (i = 0; i < numberOfIterations ; i++) {
+        $('.backdrop').css('background-position', '-' + (i+1)*pixelsPerFrame + 'px');
+        await sleep(sleepPerIterationDuration);
+    }
+}
+
 function hitBoundry(sprite) {
-    if (hitLeftBoundry(sprite) || hitRightBoundry(sprite)) {
+    var isRightBoundry = hitRightBoundry(sprite);
+    if (hitLeftBoundry(sprite) || isRightBoundry) {
+        console.log('hit right boundry');
+        // ==>
+        if (isRightBoundry && sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+            advanceBackdrop(sprite);
+        }
+
         // Since we are stopping set the frame to the stop frame (1st frame when walking)
         renderSpriteFrame(sprite, WALK, 0);
         sprite[ACTION] = STOP;
@@ -166,11 +195,12 @@ function renderDeathSpriteFrame(sprite, position) {
 }
 
 function hitLeftBoundry(sprite) {
-    return sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left === 0;
+    return sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left === (-1*sprite[SPRITE].width() / 2);
 }
 
 function hitRightBoundry(sprite) {
-    return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth;
+    console.log('left:' + sprite[SPRITE].offset().left + ' window width:' + windowWidth);
+    return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth + sprite[SPRITE].width() / 2;
 }
 
 function getProximity(sprite, opponent) {
@@ -178,7 +208,6 @@ function getProximity(sprite, opponent) {
 }
 
 function death(sprite) {
-    console.log('==> death an action is ' + sprite[ACTION]);
     sprite[STATUS] = DEAD;
     setTimeout(function () {
         animateDeath(sprite)

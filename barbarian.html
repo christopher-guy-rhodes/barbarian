@@ -50,7 +50,13 @@ $(document).ready(function(){
     var keypressTime;
     var lastKeypressTime;
 
-    actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE, MONSTER_SPRITE], WALK, 0);
+    screenNumber = 1;
+    $('.backdrop').css('background-position', '-1400px');
+    $('.monster').css('display','none');
+
+    if (screenNumber === 0) {
+        actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE, MONSTER_SPRITE], WALK, 0);
+    }
 
     $(document).keydown(function(e) {
 
@@ -114,6 +120,8 @@ $(document).ready(function(){
 </head>
 <body>
 <div class="backdrop">
+    <div class="marker_left"></div>
+    <div class="marker_right"></div>
     <div class="barbarian"></div>
     <div class="monster"></div>
     <div class="death"></div>

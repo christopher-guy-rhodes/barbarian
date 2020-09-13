@@ -24,6 +24,26 @@
     display: none;
 }
 
+.marker_left {
+    opacity: 50%;
+    height: 400px;
+    width: 400px;
+    background-image: url(./sprites/sprite.png);
+    position: absolute;
+    bottom: 12px;
+    left: -20px;
+}
+
+.marker_right {
+    opacity: 50%;
+    height: 400px;
+    width: 400px;
+    background-image: url(./sprites/sprite.png);
+    position: absolute;
+    bottom: 12px;
+    left: 10px;
+}
+
 .backdrop {
     background-image: url(http://localhost/background-1.png);
     width: 1400px;

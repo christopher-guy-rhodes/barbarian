@@ -31,10 +31,10 @@ BARBARIAN_SPRITE = {
     FRAMES : {
         ATTACK : {
             LEFT : {
-                FRAMES : [47, 46, 45, 44, 43, 42, 41, 40],
+                FRAMES : [7, 6, 5, 4, 3, 2, 1, 0],
                 HEIGHT_OFFSET : 5},
             RIGHT : {
-                FRAMES :  [32, 33, 34, 35, 36, 37, 38, 39],
+                FRAMES :  [0, 1, 2, 3, 4, 5, 6, 7],
                 HEIGHT_OFFSET : 4}},
         JUMP : {
             LEFT : {
@@ -56,7 +56,14 @@ BARBARIAN_SPRITE = {
                 HEIGHT_OFFSET : 1},
             RIGHT : {
                 FRAMES : [1, 2, 3, 4, 5, 6],
-                HEIGHT_OFFSET : 0}}
+                HEIGHT_OFFSET : 0}},
+        FALL : {
+            LEFT: {
+                FRAMES : [0, 1, 2, 3],
+                HEIGHT_OFFSET : 15},
+            RIGHT: {
+                FRAMES : [3, 2, 1, 0],
+                HEIGHT_OFFSET: 14}}
     },
     POSITIONS : {
         ATTACK : {},
@@ -144,6 +151,19 @@ MONSTER_SPRITE = {
         SPRITE : $(".death"),
         ANIMATION : DEATH_FRAMES,
         DELAY : 1800
+    }
+};
+
+SCREENS = {
+    1 :  {
+        RIGHT : [
+            {LEFT: 100, HEIGHT: 82, JUMP_RANGE : [-20, 10]},
+            {LEFT: 400, HEIGHT: 164, JUMP_RANGE : [200, 400]}
+        ],
+        LEFT : [
+            {LEFT: 100, HEIGHT: 12},
+            {LEFT: 400, HEIGHT: 82}
+        ]
     }
 };
 

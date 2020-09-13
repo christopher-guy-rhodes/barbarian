@@ -129,17 +129,6 @@ function hitBoundry(sprite) {
     if (isLeftBoundry || isRightBoundry) {
         console.log('==> at boundry and position is' + sprite[SPRITE].offset().left + ' direction is ' + sprite[DIRECTION]);
         if (sprite[SPRITE].offset().left === -1*sprite[SPRITE].width()/2 && screenNumber > 0) {
-            /*
-            var backgroundPosition = $('.backdrop').css('background-position').split(" ")[0];
-            backgroundPosition = backgroundPosition.substr(0, backgroundPosition.length - 2);
-            backgroundPosition = parseInt(backgroundPosition) + SCREEN_WIDTH;
-            console.log('==> turnback, background position is:' + backgroundPosition);
-            $('.backdrop').css('background-position', backgroundPosition + 'px');
-            sprite[SPRITE].css('left', (windowWidth - 200) + 'px');
-            //$('.backdrop').css('background-position');
-
-             */
-
             canAdvance = true;
             screenNumber--;
             advanceBackdrop(sprite, true);
@@ -150,7 +139,6 @@ function hitBoundry(sprite) {
             screenNumber++;
             advanceBackdrop(sprite);
         }
-
 
         // Since we are stopping set the frame to the stop frame (1st frame when walking)
         renderSpriteFrame(sprite, WALK, 0);
@@ -169,8 +157,47 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
     var index = 0;
     var fightOver = false;
 
+    main:
     while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
+        if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+            if (SCREENS[screenNumber]) {
+                var obstacles = SCREENS[screenNumber];
+                for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
+                    var obstacle = obstacles[sprite[DIRECTION]][i];
+                    var left = sprite[SPRITE].offset().left;
+                    var isPassedBoundry = false;
+                    console.log('considering:' + obstacle[LEFT] + ' distance: ' + pixelsFromObsticle);
+                    var pixelsFromObsticle = Math.abs(obstacle[LEFT] - left);
+                    if (pixelsFromObsticle > 50) {
+                        continue;
+                    }
+                    if (sprite[DIRECTION] === RIGHT) {
+                        isPassedBoundry = left >= obstacle[LEFT];
+                    } else {
+                        isPassedBoundry = left <= obstacle[LEFT];
+                    }
+                    if (isPassedBoundry && sprite[SPRITE].css('bottom') !== obstacle[HEIGHT] + 'px') {
+                        var bottom = sprite[SPRITE].css('bottom');
+                        bottom = bottom.substring(0, bottom.length - 2);
+                        console.log('obstacle: ' + obstacle[LEFT] + ' obstacle height:' + obstacle[HEIGHT] + ' bottom ' + bottom);
+                        var isDownhill = obstacle[HEIGHT] <= bottom;
+                        console.log('isDownhill:' + isDownhill);
+                        console.log("==> jump actions: %o", sprite[POSITIONS][JUMP]);
+                        var jumpPosition = sprite[POSITIONS][JUMP][BARBARIAN_SPRITE_NAME];
+                        if (isDownhill || obstacle[JUMP_RANGE] && (jumpPosition > obstacle[JUMP_RANGE][0] && jumpPosition < obstacle[JUMP_RANGE][1])) {
+                            sprite[SPRITE].css('bottom', obstacle[HEIGHT] + 'px');
+                        } else {
+                            console.log('stopping');
+                            actionHelper(sprite, opponents, STOP, 1);
+                            break main;
+                        }
+                    }
+                    console.log('left:' + left + ' obstacle left:' + obstacle['left']);
+
+                }
+            }
+        }
         // If the sprite has been killed delay stopping the animation to let the action sequence complete
         if (sprite[STATUS] === DEAD) {
             setTimeout(function () {

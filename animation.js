@@ -212,7 +212,12 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
                             //console.log('stopping');
                             if (obstacle[FAIL_ACTION] === FALL) {
                                 console.log('==> FALL!');
+                                // use action helper to make sure the action changes etc
+                                sprite[ACTION] = FALL;
+                                stop(sprite);
+                                console.log('sleeping 4s');
                                 animateFall(sprite);
+
                             } else {
                                 actionHelper(sprite, opponents, obstacle[FAIL_ACTION], 1);
                             }

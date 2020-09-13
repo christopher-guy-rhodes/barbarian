@@ -48,6 +48,17 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function fall(sprite) {
+    var bottom = sprite[SPRITE].css('bottom');
+    bottom = bottom.substring(0, bottom.length - 2);
+    console.log('==> bottome is ' + bottom + ' pixels away');
+    var distance = parseInt(bottom) + (sprite[SPRITE].height() / 2);
+    console.log('==> distance is ' + distance);
+    console.log('==> height:' + sprite[SPRITE].height() + ' time:' + (distance/sprite[PIXELS_PER_SECOND] * 1000));
+    //sprite[SPRITE].animate({bottom: -1*sprite[SPRITE].height() / 2}, distance / sprite[PIXELS_PER_SECOND] * 1000, 'linear');
+    sprite[SPRITE].animate({bottom: -1*200}, distance / FALLING_PIXELS_PER_SECOND * 1000,  'linear');
+}
+
 function moveRight(sprite) {
     var distance = windowWidth - sprite[SPRITE].offset().left - (sprite[SPRITE].width() / 2);
     sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
@@ -166,34 +177,49 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
                 for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
                     var obstacle = obstacles[sprite[DIRECTION]][i];
                     var left = sprite[SPRITE].offset().left;
+                    console.log("==> left:" + left);
                     var isPassedBoundry = false;
-                    console.log('considering:' + obstacle[LEFT] + ' distance: ' + pixelsFromObsticle);
                     var pixelsFromObsticle = Math.abs(obstacle[LEFT] - left);
+
                     if (pixelsFromObsticle > 50) {
                         continue;
                     }
+                    console.log('considering:' + obstacle[LEFT] + ' distance: ' + pixelsFromObsticle);
+
                     if (sprite[DIRECTION] === RIGHT) {
                         isPassedBoundry = left >= obstacle[LEFT];
                     } else {
                         isPassedBoundry = left <= obstacle[LEFT];
                     }
-                    if (isPassedBoundry && sprite[SPRITE].css('bottom') !== obstacle[HEIGHT] + 'px') {
+                    if (isPassedBoundry /*&& sprite[SPRITE].css('bottom') !== obstacle[HEIGHT] + 'px'*/) {
+                        console.log('===> passed boundry');
                         var bottom = sprite[SPRITE].css('bottom');
                         bottom = bottom.substring(0, bottom.length - 2);
-                        console.log('obstacle: ' + obstacle[LEFT] + ' obstacle height:' + obstacle[HEIGHT] + ' bottom ' + bottom);
-                        var isDownhill = obstacle[HEIGHT] <= bottom;
-                        console.log('isDownhill:' + isDownhill);
-                        console.log("==> jump actions: %o", sprite[POSITIONS][JUMP]);
-                        var jumpPosition = sprite[POSITIONS][JUMP][BARBARIAN_SPRITE_NAME];
-                        if (isDownhill || obstacle[JUMP_RANGE] && (jumpPosition > obstacle[JUMP_RANGE][0] && jumpPosition < obstacle[JUMP_RANGE][1])) {
+                        //console.log('obstacle: ' + obstacle[LEFT] + ' obstacle height:' + obstacle[HEIGHT] + ' bottom ' + bottom);
+                        var isDownhill = obstacle[HEIGHT] <= bottom && obstacle[OBSTACLE_TYPE] !== PIT;
+                        console.log("==> obstacle %o", obstacle)
+                        console.log('==> obstacleType: ' + obstacle[OBSTACLE_TYPE] + ' isDownhill' + isDownhill);
+                        //console.log('isDownhill:' + isDownhill);
+                        //console.log("==> jump actions: %o", sprite[POSITIONS][JUMP]);
+                        var actionPosition = sprite[POSITIONS][JUMP][BARBARIAN_SPRITE_NAME];
+
+                        var jumpPosition = actionPosition ? actionPosition[LEFT] : undefined;
+                        var jumpedAgo = actionPosition ? new Date().getTime() - actionPosition[TIMESTAMP] : 100000;
+                        if (isDownhill || (obstacle[JUMP_RANGE] && (jumpedAgo < 1000 && jumpPosition > obstacle[JUMP_RANGE][0] && jumpPosition < obstacle[JUMP_RANGE][1]))) {
+
                             sprite[SPRITE].css('bottom', obstacle[HEIGHT] + 'px');
                         } else {
-                            console.log('stopping');
-                            actionHelper(sprite, opponents, STOP, 1);
+                            //console.log('stopping');
+                            if (obstacle[FAIL_ACTION] === FALL) {
+                                console.log('==> FALL!');
+                                animateFall(sprite);
+                            } else {
+                                actionHelper(sprite, opponents, obstacle[FAIL_ACTION], 1);
+                            }
                             break main;
                         }
                     }
-                    console.log('left:' + left + ' obstacle left:' + obstacle['left']);
+                    //console.log('left:' + left + ' obstacle left:' + obstacle['left']);
 
                 }
             }
@@ -263,6 +289,20 @@ function death(sprite) {
     setTimeout(function () {
         animateDeath(sprite)
     }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
+}
+
+async function animateFall(sprite) {
+    sprite[SPRITE].stop();
+    sprite[STATUS] = DEAD;
+
+    fall(sprite);
+    var direction = sprite[DIRECTION];
+    var frames = sprite[FRAMES][FALL][direction][FRAMES];
+    for(var i = 0; i < frames.length; i++) {
+        renderSpriteFrame(sprite, FALL, frames[i])
+        await sleep(1000 / sprite[FPS]);
+    }
+    console.log("==> fall frames %o", frames);
 }
 
 async function animateDeath(sprite) {

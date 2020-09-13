@@ -25,23 +25,25 @@
 }
 
 .marker_left {
+    display: block;
     opacity: 50%;
     height: 400px;
     width: 400px;
     background-image: url(./sprites/sprite.png);
     position: absolute;
-    bottom: 12px;
-    left: -20px;
+    bottom:164px;
+    left: 750px;
 }
 
 .marker_right {
+    display: block;
     opacity: 50%;
     height: 400px;
     width: 400px;
     background-image: url(./sprites/sprite.png);
     position: absolute;
-    bottom: 12px;
-    left: 10px;
+    bottom: 164px;
+    left: 780px;
 }
 
 .backdrop {

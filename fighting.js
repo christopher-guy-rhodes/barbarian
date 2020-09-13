@@ -1,7 +1,7 @@
 var HEADON = 'HEADON';
 
 function isSuccessfulAttack(sprite, opponent) {
-    var distance = sprite[POSITIONS][ATTACK][opponent[NAME]] - sprite[POSITIONS][ATTACK][sprite[NAME]];
+    var distance = sprite[POSITIONS][ATTACK][opponent[NAME]][LEFT] - sprite[POSITIONS][ATTACK][sprite[NAME]][LEFT];
 
     var thresholds = sprite[ATTACK_THRESHOLDS];
     var successful = false;
@@ -39,7 +39,7 @@ function hasAttacked(sprite) {
 function hasJumpEvaded(sprite, opponent) {
     var isJumpEvaided = false;
     if (opponent[POSITIONS][JUMP] && Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
-        var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]] - opponent[POSITIONS][JUMP][sprite[NAME]]);
+        var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]][LEFT] - opponent[POSITIONS][JUMP][sprite[NAME]][LEFT]);
         if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
             isJumpEvaided = true;
         }

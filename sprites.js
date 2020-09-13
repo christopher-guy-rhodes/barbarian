@@ -1,4 +1,5 @@
 var SPRITE_FPS = 5;
+var FALLING_PIXELS_PER_SECOND = 300;
 var BOG_MONSTER_SPRITE_FPS = 5;
 var BOG_MONSTER_PIXELS_PER_SECOND = 150;
 var STOP_RIGHT_POSITION = 0;
@@ -59,10 +60,10 @@ BARBARIAN_SPRITE = {
                 HEIGHT_OFFSET : 0}},
         FALL : {
             LEFT: {
-                FRAMES : [0, 1, 2, 3],
+                FRAMES : [3, 2, 1, 0],
                 HEIGHT_OFFSET : 15},
             RIGHT: {
-                FRAMES : [3, 2, 1, 0],
+                FRAMES : [0, 1, 2, 3],
                 HEIGHT_OFFSET: 14}}
     },
     POSITIONS : {
@@ -157,12 +158,13 @@ MONSTER_SPRITE = {
 SCREENS = {
     1 :  {
         RIGHT : [
-            {LEFT: 100, HEIGHT: 82, JUMP_RANGE : [-20, 10]},
-            {LEFT: 400, HEIGHT: 164, JUMP_RANGE : [200, 400]}
+            {LEFT: 100, OBSTACLE_TYPE : ELEVATION, HEIGHT: 82, FAIL_ACTION : STOP, JUMP_RANGE : [-20, 10]},
+            {LEFT: 400, OBSTACLE_TYPE : ELEVATION, HEIGHT: 164, FAIL_ACTION : STOP, JUMP_RANGE : [200, 400]},
+            {LEFT: 800, OBSTACLE_TYPE : PIT, HEIGHT: 164, FAIL_ACTION : FALL, JUMP_RANGE : [750, 780]}
         ],
         LEFT : [
-            {LEFT: 100, HEIGHT: 12},
-            {LEFT: 400, HEIGHT: 82}
+            {LEFT: 100, OBSTACLE_TYPE : ELEVATION, HEIGHT: 12},
+            {LEFT: 400, OBSTACLE_TYPE : ELEVATION, HEIGHT: 82}
         ]
     }
 };
@@ -189,7 +191,10 @@ function getPositionsAtAction(sprites) {
     var positionsAtAttack = {};
     for (var i = 0; i < sprites.length; i++) {
         var sprite = sprites[i];
-        positionsAtAttack[sprite[NAME]] = sprite[SPRITE].offset().left;
+        positionsAtAttack[sprite[NAME]] = {
+            LEFT : sprite[SPRITE].offset().left,
+            DIRECTION : sprite[DIRECTION],
+            TIMESTAMP : new Date().getTime()};
     }
     return positionsAtAttack;
 }

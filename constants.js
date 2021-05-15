@@ -44,6 +44,7 @@ var JUMP = 'JUMP';
 var WALK = 'WALK';
 var HAS_MOVING_ATTACK = 'HAS_MOVING_ATTACK';
 var DEATH = 'DEATH';
+var SIT = 'SIT';
 var ATTACK_PROXIMITY = 300;
 
 // Directions
@@ -53,4 +54,5 @@ var RIGHT = 'RIGHT';
 // Sprites
 var BARBARIAN_SPRITE_NAME = 'BARBARIAN';
 var MONSTER_SPRITE_NAME = 'MONSTER';
+var DOG_SPRITE_NAME = 'DOG';
 

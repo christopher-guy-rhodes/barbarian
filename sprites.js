@@ -2,6 +2,8 @@ var SPRITE_FPS = 5;
 var FALLING_PIXELS_PER_SECOND = 300;
 var BOG_MONSTER_SPRITE_FPS = 5;
 var BOG_MONSTER_PIXELS_PER_SECOND = 150;
+var DOG_SPRITE_FPS = 5;
+var DOG_PIXELS_PER_SECOND = 150;
 var STOP_RIGHT_POSITION = 0;
 var STOP_LEFT_POSITION = 6;
 var STOP_RIGHT_HEIGHT_OFFSET = 0;
@@ -103,6 +105,49 @@ BARBARIAN_SPRITE = {
     }
 };
 
+DOG_SPRITE = {
+    SPRITE : $('.dog'),
+    NAME : DOG_SPRITE_NAME,
+    ACTION : SIT,
+    DIRECTION : LEFT,
+    HAS_MOVING_ATTACK : true,
+    FPS : DOG_SPRITE_FPS,
+    PIXELS_PER_SECOND : DOG_PIXELS_PER_SECOND,
+    CURRENT_PIXELS_PER_SECOND : 0,
+    STATUS : ALIVE,
+    FRAMES : {
+        SIT : {
+            LEFT : {
+                FRAMES: [3, 2, 1, 0],
+                HEIGHT_OFFSET : 1
+            },
+            RIGHT : {
+                FRAMES : [0, 1, 2, 3],
+                HEIGHT_OFFSET : 0
+            }
+        }
+    },
+    POSITIONS : {
+        ATTACK : {}
+    },
+    ATTACK_THRESHOLDS : [
+        {
+            MIN : 0,
+            MAX : 100
+        },
+        {
+            MIN : 100,
+            MAX : 390
+        }
+    ],
+    DEATH : {
+        SPRITE : $(".death"),
+        ANIMATION : DEATH_FRAMES,
+        DELAY : 1800
+    }
+
+}
+
 MONSTER_SPRITE = {
     SPRITE : $(".monster"),
     NAME : MONSTER_SPRITE_NAME,
@@ -158,7 +203,7 @@ MONSTER_SPRITE = {
 SCREENS = {
     1 :  {
         RIGHT : [
-            {LEFT: 100, OBSTACLE_TYPE : ELEVATION, HEIGHT: 82, FAIL_ACTION : STOP, JUMP_RANGE : [-100, 100]},
+            {LEFT: 50, OBSTACLE_TYPE : ELEVATION, HEIGHT: 82, FAIL_ACTION : STOP, JUMP_RANGE : [-100, 100]},
             {LEFT: 400, OBSTACLE_TYPE : ELEVATION, HEIGHT: 164, FAIL_ACTION : STOP, JUMP_RANGE : [200, 400]},
             {LEFT: 800, OBSTACLE_TYPE : PIT, HEIGHT: 164, FAIL_ACTION : FALL, JUMP_RANGE : [710, 830]}
         ],

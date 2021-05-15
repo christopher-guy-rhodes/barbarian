@@ -50,12 +50,20 @@ $(document).ready(function(){
     var keypressTime;
     var lastKeypressTime;
 
+    // skip to screen 1
     screenNumber = 1;
     $('.backdrop').css('background-position', '-1400px');
     $('.monster').css('display','none');
+    $('.bridge').css('display', 'block');
 
     if (screenNumber === 0) {
         actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE, MONSTER_SPRITE], WALK, 0);
+    } else if (screenNumber === 1) {
+        // animate dog to its current position so that the left offset is set
+        DOG_SPRITE[SPRITE].animate({left: 1100}, 1000, 'linear');
+        DOG_SPRITE[SPRITE].css('display', 'block');
+        actionHelper(DOG_SPRITE, [BARBARIAN_SPRITE, DOG_SPRITE], SIT, 0);
+
     }
 
     $(document).keydown(function(e) {
@@ -122,8 +130,10 @@ $(document).ready(function(){
 <div class="backdrop">
     <div class="marker_left"></div>
     <div class="marker_right"></div>
+    <div class="bridge"></div>
     <div class="barbarian"></div>
     <div class="monster"></div>
+    <div class="dog"></div>
     <div class="death"></div>
 </div>
 </body>

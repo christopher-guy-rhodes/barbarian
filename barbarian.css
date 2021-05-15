@@ -6,6 +6,7 @@
     bottom: 12px;
     left: -200px;
 }
+
 .monster {
     border: 0px solid red;
     height: 400px;
@@ -15,6 +16,19 @@
     right: 0;
     bottom: 12px;
 }
+
+.dog {
+    border: 0px solid red;
+    height: 400px;
+    width: 400px;
+    background-image: url(./sprites/dog.png);
+    background-position: -1200px -400px;
+    position: absolute;
+    left: 1100px;
+    bottom: 164px;
+    display: none;
+}
+
 .death {
     height: 800px;
     width: 800px;
@@ -24,8 +38,19 @@
     display: none;
 }
 
+.bridge {
+    height: 800px;
+    width: 800px;
+    background-image: url(./sprites/bridge.png);
+    background-repeat: no-repeat;
+    position: absolute;
+    bottom: -284px;
+    display: none;
+    left: 980px;
+}
+
 .marker_left {
-    display: block;
+    display: none;
     opacity: 50%;
     height: 400px;
     width: 400px;
@@ -37,7 +62,7 @@
 }
 
 .marker_right {
-    display: block;
+    display: none;
     opacity: 50%;
     height: 400px;
     width: 400px;

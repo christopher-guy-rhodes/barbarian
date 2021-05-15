@@ -16,7 +16,7 @@ function actionHelper(sprite, opponents, requestedAction, times) {
         sprite[CURRENT_PIXELS_PER_SECOND] = sprite[PIXELS_PER_SECOND];
     }
 
-    if (requestedAction !== ATTACK || sprite[HAS_MOVING_ATTACK]) {
+    if (requestedAction !== SIT && (requestedAction !== ATTACK || sprite[HAS_MOVING_ATTACK])) {
         move(sprite, requestedAction);
     }
 
@@ -51,10 +51,7 @@ function sleep(ms) {
 function fall(sprite) {
     var bottom = sprite[SPRITE].css('bottom');
     bottom = bottom.substring(0, bottom.length - 2);
-    console.log('==> bottome is ' + bottom + ' pixels away');
     var distance = parseInt(bottom) + (sprite[SPRITE].height() / 2);
-    console.log('==> distance is ' + distance);
-    console.log('==> height:' + sprite[SPRITE].height() + ' time:' + (distance/sprite[PIXELS_PER_SECOND] * 1000));
     //sprite[SPRITE].animate({bottom: -1*sprite[SPRITE].height() / 2}, distance / sprite[PIXELS_PER_SECOND] * 1000, 'linear');
     sprite[SPRITE].animate({bottom: -1*200}, distance / FALLING_PIXELS_PER_SECOND * 1000,  'linear');
 }
@@ -138,16 +135,19 @@ function hitBoundry(sprite) {
     var isRightBoundry = hitRightBoundry(sprite);
     var isLeftBoundry = hitLeftBoundry(sprite);
     if (isLeftBoundry || isRightBoundry) {
-        console.log('==> at boundry and position is' + sprite[SPRITE].offset().left + ' direction is ' + sprite[DIRECTION]);
         if (sprite[SPRITE].offset().left === -1*sprite[SPRITE].width()/2 && screenNumber > 0) {
             canAdvance = true;
             screenNumber--;
             advanceBackdrop(sprite, true);
         }
         if (canAdvance && isRightBoundry && sprite[NAME] === BARBARIAN_SPRITE_NAME) {
-            console.log(sprite[SPRITE].offset().left);
             canAdvance = false;
             screenNumber++;
+
+            if (screenNumber == 2) {
+                $('.bridge').display('block');
+            }
+
             advanceBackdrop(sprite);
         }
 
@@ -160,6 +160,7 @@ function hitBoundry(sprite) {
 }
 
 async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times) {
+
     var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
 
     sprite[ACTION] = requestedAction;
@@ -177,14 +178,12 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
                 for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
                     var obstacle = obstacles[sprite[DIRECTION]][i];
                     var left = sprite[SPRITE].offset().left;
-                    console.log("==> left:" + left);
                     var isPassedBoundry = false;
                     var pixelsFromObsticle = Math.abs(obstacle[LEFT] - left);
 
                     if (pixelsFromObsticle > 50) {
                         continue;
                     }
-                    console.log('considering:' + obstacle[LEFT] + ' distance: ' + pixelsFromObsticle);
 
                     if (sprite[DIRECTION] === RIGHT) {
                         isPassedBoundry = left >= obstacle[LEFT];
@@ -192,15 +191,9 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
                         isPassedBoundry = left <= obstacle[LEFT];
                     }
                     if (isPassedBoundry /*&& sprite[SPRITE].css('bottom') !== obstacle[HEIGHT] + 'px'*/) {
-                        console.log('===> passed boundry');
                         var bottom = sprite[SPRITE].css('bottom');
                         bottom = bottom.substring(0, bottom.length - 2);
-                        //console.log('obstacle: ' + obstacle[LEFT] + ' obstacle height:' + obstacle[HEIGHT] + ' bottom ' + bottom);
                         var isDownhill = obstacle[HEIGHT] <= bottom && obstacle[OBSTACLE_TYPE] !== PIT;
-                        console.log("==> obstacle %o", obstacle)
-                        console.log('==> obstacleType: ' + obstacle[OBSTACLE_TYPE] + ' isDownhill' + isDownhill);
-                        //console.log('isDownhill:' + isDownhill);
-                        //console.log("==> jump actions: %o", sprite[POSITIONS][JUMP]);
                         var actionPosition = sprite[POSITIONS][JUMP][BARBARIAN_SPRITE_NAME];
 
                         var jumpPosition = actionPosition ? actionPosition[LEFT] : undefined;
@@ -209,13 +202,10 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
 
                             sprite[SPRITE].css('bottom', obstacle[HEIGHT] + 'px');
                         } else {
-                            //console.log('stopping');
                             if (obstacle[FAIL_ACTION] === FALL) {
-                                console.log('==> FALL!');
                                 // use action helper to make sure the action changes etc
                                 sprite[ACTION] = FALL;
                                 stop(sprite);
-                                console.log('sleeping 4s');
                                 animateFall(sprite);
 
                             } else {
@@ -224,8 +214,6 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
                             break main;
                         }
                     }
-                    //console.log('left:' + left + ' obstacle left:' + obstacle['left']);
-
                 }
             }
         }
@@ -237,6 +225,12 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
         }
         if(fightOver || fightSequence(sprite, opponents) || monsterTurnaround(sprite, opponents)) {
             break;
+        }
+
+        if (sprite[NAME] === BARBARIAN_SPRITE_NAME && screenNumber == 1 && $('.bridge').css('display') === 'block' &&
+                sprite[SPRITE].offset().left >= 700) {
+            //$('.bridge').css('display', 'none');
+            $('.bridge').animate({bottom: '-450px'}, 500, 'linear');
         }
 
         renderSpriteFrame(sprite, requestedAction, path[index]);
@@ -283,10 +277,6 @@ function hitLeftBoundry(sprite) {
 
 function hitRightBoundry(sprite) {
     return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth - sprite[SPRITE].width() / 2;
-}
-
-function getProximity(sprite, opponent) {
-    return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
 }
 
 function death(sprite) {

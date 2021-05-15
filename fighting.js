@@ -24,6 +24,8 @@ function isSuccessfulAttack(sprite, opponent) {
 function launchMonsterAttack(sprite, opponent, opponents) {
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
         var proximity = Math.abs(getProximity(sprite, opponent));
+        console.log(sprite[NAME] + ' left:' + sprite[SPRITE].offset().left + ' ' + opponent[NAME] + ' left:' + opponent[SPRITE].offset().left);
+        console.log('==> proximity is:' + proximity);
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
             sprite[POSITIONS][ATTACK] = getPositionsAtAction(opponents);
             actionHelper(sprite, opponents, ATTACK, 0);
@@ -32,6 +34,13 @@ function launchMonsterAttack(sprite, opponent, opponents) {
     }
     return false;
 }
+
+function getProximity(sprite, opponent) {
+    return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
+}
+
+
+
 function hasAttacked(sprite) {
     return Object.keys(sprite[POSITIONS][ATTACK]).length > 0;
 }

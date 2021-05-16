@@ -165,8 +165,13 @@ DOG_SPRITE = {
         SPRITE : $(".death"),
         ANIMATION : DEATH_FRAMES,
         DELAY : 1800
+    },
+    STOP_POSITION : {
+        RIGHT : 0,
+        LEFT: 3,
+        RIGHT_HEIGHT : 0,
+        LEFT_HEIGHT: 1
     }
-
 }
 
 MONSTER_SPRITE = {

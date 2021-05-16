@@ -82,7 +82,8 @@ $(document).ready(function(){
                     break;
                 case KEYPRESS[KP_JUMP]:
                     if (BARBARIAN_SPRITE[ACTION] !== JUMP) {
-                        BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE]);
+                        // TODO: only include monsters that are in the screen
+                        BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE]);
                         actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE],  JUMP, 1);
                     }
                     break;
@@ -104,7 +105,8 @@ $(document).ready(function(){
                     break;
                 case KEYPRESS[KP_ATTACK]:
                     if (BARBARIAN_SPRITE[ACTION] !== ATTACK) {
-                        BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE]);
+                        // TODO: only include monsters that are in the screen
+                        BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE]);
                         actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], ATTACK, 1);
                     }
                     break;

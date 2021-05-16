@@ -125,10 +125,31 @@ DOG_SPRITE = {
                 FRAMES : [0, 1, 2, 3],
                 HEIGHT_OFFSET : 0
             }
+        },
+        ATTACK : {
+            LEFT : {
+                FRAMES: [4, 3, 2, 1, 0],
+                HEIGHT_OFFSET : 3
+            },
+            RIGHT : {
+                FRAMES : [0, 1, 2, 3, 4],
+                HEIGHT_OFFSET : 2
+            }
+        },
+        WALK : {
+            LEFT : {
+                FRAMES: [4, 3, 2, 1, 0],
+                HEIGHT_OFFSET : 3
+            },
+            RIGHT : {
+                FRAMES : [0, 1, 2, 3, 4],
+                HEIGHT_OFFSET : 2
+            }
         }
     },
     POSITIONS : {
-        ATTACK : {}
+        ATTACK : {},
+        JUMP : {}
     },
     ATTACK_THRESHOLDS : [
         {
@@ -204,7 +225,7 @@ SCREENS = {
     1 :  {
         RIGHT : [
             {LEFT: 50, OBSTACLE_TYPE : ELEVATION, HEIGHT: 82, FAIL_ACTION : STOP, JUMP_RANGE : [-100, 100]},
-            {LEFT: 400, OBSTACLE_TYPE : ELEVATION, HEIGHT: 164, FAIL_ACTION : STOP, JUMP_RANGE : [200, 400]},
+            {LEFT: 400, OBSTACLE_TYPE : ELEVATION, HEIGHT: 164, FAIL_ACTION : STOP, JUMP_RANGE : [200, 450]},
             {LEFT: 800, OBSTACLE_TYPE : PIT, HEIGHT: 164, FAIL_ACTION : FALL, JUMP_RANGE : [710, 830]}
         ],
         LEFT : [

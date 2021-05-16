@@ -91,11 +91,13 @@ function monsterTurnaround(sprite, opponents) {
         var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
 
         if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === -1*(sprite[SPRITE].width()/2))) {
+            console.log('==> monster turnaround 1');
             sprite[DIRECTION] = RIGHT;
             actionHelper(sprite, opponents, WALK, 0);
             return true;
         } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
             || sprite[SPRITE].offset().left === $(document).width() - (sprite[SPRITE].width()))) {
+            console.log('==> monster turnaround 2');
             sprite[DIRECTION] = LEFT;
             actionHelper(sprite, opponents, WALK, 0);
             return true;
@@ -163,8 +165,13 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
 
     var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
 
+
     sprite[ACTION] = requestedAction;
     sprite[DIRECTION] = requestedDirection;
+
+    console.log('==> animating ' + sprite[NAME] + ' with ' + requestedAction);
+    console.log('==> action ' + sprite[ACTION] + ' requestedAction ' + requestedAction + ' direction ' + sprite[DIRECTION] +  ' requested direction ' + requestedDirection);
+
 
     var index = 0;
     var fightOver = false;
@@ -224,6 +231,7 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
             }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
         }
         if(fightOver || fightSequence(sprite, opponents) || monsterTurnaround(sprite, opponents)) {
+            console.log('==> bailed here');
             break;
         }
 
@@ -297,7 +305,6 @@ async function animateFall(sprite) {
         renderSpriteFrame(sprite, FALL, frames[i])
         await sleep(1000 / sprite[FPS]);
     }
-    console.log("==> fall frames %o", frames);
 }
 
 async function animateDeath(sprite) {

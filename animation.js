@@ -90,6 +90,14 @@ function monsterTurnaround(sprite, opponents) {
         var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
         var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
 
+        if (hitRightBoundry(sprite)) {
+            if (sprite[DIRECTION] === RIGHT) {
+                isPassedRight = true;
+            } else {
+                isPassedLeft = true;
+            }
+        }
+
         if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === -1*(sprite[SPRITE].width()/2))) {
             console.log('==> monster turnaround 1');
             sprite[DIRECTION] = RIGHT;

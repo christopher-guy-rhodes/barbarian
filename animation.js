@@ -189,47 +189,45 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
     main:
     while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
-        if (true || sprite[NAME] === BARBARIAN_SPRITE_NAME) {
-            if (SCREENS[screenNumber]) {
-                var obstacles = SCREENS[screenNumber];
-                for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
-                    var obstacle = obstacles[sprite[DIRECTION]][i];
-                    var left = sprite[SPRITE].offset().left;
-                    var isPassedBoundry = false;
-                    var pixelsFromObsticle = Math.abs(obstacle[LEFT] - left);
+        if (SCREENS[screenNumber]) {
+            var obstacles = SCREENS[screenNumber];
+            for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
+                var obstacle = obstacles[sprite[DIRECTION]][i];
+                var left = sprite[SPRITE].offset().left;
+                var isPassedBoundry = false;
+                var pixelsFromObsticle = Math.abs(obstacle[LEFT] - left);
 
-                    if (pixelsFromObsticle > 50) {
-                        continue;
-                    }
+                if (pixelsFromObsticle > 50) {
+                    continue;
+                }
 
-                    if (sprite[DIRECTION] === RIGHT) {
-                        isPassedBoundry = left >= obstacle[LEFT];
-                    } else {
-                        isPassedBoundry = left <= obstacle[LEFT];
-                    }
-                    if (isPassedBoundry /*&& sprite[SPRITE].css('bottom') !== obstacle[HEIGHT] + 'px'*/) {
-                        var bottom = sprite[SPRITE].css('bottom');
-                        bottom = bottom.substring(0, bottom.length - 2);
-                        var isDownhill = obstacle[HEIGHT] <= bottom && obstacle[OBSTACLE_TYPE] !== PIT;
-                        var actionPosition = sprite[POSITIONS][JUMP][BARBARIAN_SPRITE_NAME];
+                if (sprite[DIRECTION] === RIGHT) {
+                    isPassedBoundry = left >= obstacle[LEFT];
+                } else {
+                    isPassedBoundry = left <= obstacle[LEFT];
+                }
+                if (isPassedBoundry /*&& sprite[SPRITE].css('bottom') !== obstacle[HEIGHT] + 'px'*/) {
+                    var bottom = sprite[SPRITE].css('bottom');
+                    bottom = bottom.substring(0, bottom.length - 2);
+                    var isDownhill = obstacle[HEIGHT] <= bottom && obstacle[OBSTACLE_TYPE] !== PIT;
+                    var actionPosition = sprite[POSITIONS][JUMP][BARBARIAN_SPRITE_NAME];
 
-                        var jumpPosition = actionPosition ? actionPosition[LEFT] : undefined;
-                        var jumpedAgo = actionPosition ? new Date().getTime() - actionPosition[TIMESTAMP] : 100000;
-                        if (isDownhill || (obstacle[JUMP_RANGE] && (jumpedAgo < 1000 && jumpPosition > obstacle[JUMP_RANGE][0] && jumpPosition < obstacle[JUMP_RANGE][1]))) {
+                    var jumpPosition = actionPosition ? actionPosition[LEFT] : undefined;
+                    var jumpedAgo = actionPosition ? new Date().getTime() - actionPosition[TIMESTAMP] : 100000;
+                    var isMonster = sprite[NAME] !== BARBARIAN_SPRITE_NAME;
+                    if (isMonster || isDownhill || (obstacle[JUMP_RANGE] && (jumpedAgo < 1000 && jumpPosition > obstacle[JUMP_RANGE][0] && jumpPosition < obstacle[JUMP_RANGE][1]))) {
+                        sprite[SPRITE].css('bottom', obstacle[HEIGHT] + 'px');
+                    } else if (sprite[NAME] === BARBARIAN_SPRITE_NAME)  {
+                        if (obstacle[FAIL_ACTION] === FALL) {
+                            // use action helper to make sure the action changes etc
+                            sprite[ACTION] = FALL;
+                            stop(sprite);
+                            animateFall(sprite);
 
-                            sprite[SPRITE].css('bottom', obstacle[HEIGHT] + 'px');
                         } else {
-                            if (obstacle[FAIL_ACTION] === FALL) {
-                                // use action helper to make sure the action changes etc
-                                sprite[ACTION] = FALL;
-                                stop(sprite);
-                                animateFall(sprite);
-
-                            } else {
-                                actionHelper(sprite, opponents, obstacle[FAIL_ACTION], 1);
-                            }
-                            break main;
+                            actionHelper(sprite, opponents, obstacle[FAIL_ACTION], 1);
                         }
+                        break main;
                     }
                 }
             }

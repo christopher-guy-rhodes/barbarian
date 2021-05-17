@@ -46,7 +46,6 @@ function hasAttacked(sprite) {
 function hasJumpEvaded(sprite, opponent) {
     var isJumpEvaided = false;
     if (opponent[POSITIONS][JUMP] && Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
-        console.log('==> failure opponent[' + POSITIONS + '][' + JUMP + '][' + sprite[NAME] + '][' + LEFT + ']');
         var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]][LEFT] - opponent[POSITIONS][JUMP][sprite[NAME]][LEFT]);
         if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
             isJumpEvaided = true;

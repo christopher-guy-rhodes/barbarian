@@ -24,7 +24,7 @@
     background-image: url(./sprites/dog.png);
     background-position: -1200px -400px;
     position: absolute;
-    left: 1100px;
+    left:800px;
     bottom: 164px;
     display: none;
 }

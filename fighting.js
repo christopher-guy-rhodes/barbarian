@@ -28,7 +28,7 @@ function launchMonsterAttack(sprite, opponent, opponents) {
         var proximity = Math.abs(getProximity(sprite, opponent));
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
             sprite[POSITIONS][ATTACK] = getPositionsAtAction(opponents);
-            actionHelper(sprite, opponents, ATTACK, 0);
+            actionHelper(sprite, ATTACK, 0);
             return true;
         }
     }

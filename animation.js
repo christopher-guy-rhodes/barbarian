@@ -1,7 +1,7 @@
 var RUN_SPEED_INCREASE_FACTOR = 1.5;
 var DEFAULT_DEATH_DELAY = 2000;
 
-function actionHelper(sprite, opponents, requestedAction, times) {
+function actionHelper(sprite, requestedAction, times) {
     sprite[SPRITE].stop();
 
     if (requestedAction === STOP) {
@@ -21,7 +21,6 @@ function actionHelper(sprite, opponents, requestedAction, times) {
     }
 
     animateSprite(sprite,
-        opponents,
         requestedAction,
         sprite[DIRECTION] === RIGHT ? RIGHT : LEFT,
         times);
@@ -100,12 +99,12 @@ function monsterTurnaround(sprite, opponents) {
 
         if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === -1*(sprite[SPRITE].width()/2))) {
             sprite[DIRECTION] = RIGHT;
-            actionHelper(sprite, opponents, WALK, 0);
+            actionHelper(sprite, WALK, 0);
             return true;
         } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
             || sprite[SPRITE].offset().left === $(document).width() - (sprite[SPRITE].width()))) {
             sprite[DIRECTION] = LEFT;
-            actionHelper(sprite, opponents, WALK, 0);
+            actionHelper(sprite, WALK, 0);
             return true;
         }
     }
@@ -146,7 +145,7 @@ async function advanceBackdrop(sprite, reverse = false) {
         DOG_SPRITE[SPRITE].animate({left: 1100}, 1000, 'linear');
         DOG_SPRITE[SPRITE].css('display', 'block');
         $('.bridge').css('display', 'block');
-        actionHelper(DOG_SPRITE, [BARBARIAN_SPRITE, DOG_SPRITE], SIT, 0);
+        actionHelper(DOG_SPRITE, SIT, 0);
     }
 
     scrolling = false;
@@ -180,11 +179,9 @@ function hitBoundry(sprite) {
     return false;
 }
 
-async function animateSprite(sprite, opponents, requestedAction, requestedDirection, times) {
+async function animateSprite(sprite, requestedAction, requestedDirection, times) {
 
     var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
-
-    opponents = SCREENS[screenNumber][OPPONENTS];
 
     sprite[ACTION] = requestedAction;
     sprite[DIRECTION] = requestedDirection;
@@ -231,7 +228,7 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
                             animateFall(sprite);
 
                         } else {
-                            actionHelper(sprite, SCREENS[screenNumber][OPPONENTS], obstacle[FAIL_ACTION], 1);
+                            actionHelper(sprite, obstacle[FAIL_ACTION], 1);
                         }
                         break main;
                     }

@@ -57,7 +57,7 @@ $(document).ready(function(){
     //$('.bridge').css('display', 'block');
 
     if (screenNumber === 0) {
-        actionHelper(MONSTER_SPRITE, [BARBARIAN_SPRITE, MONSTER_SPRITE], WALK, 0);
+        actionHelper(MONSTER_SPRITE, WALK, 0);
     }/* else if (screenNumber === 1) {
         // TODO: get rid of this, just for debugging
         $('.backdrop').css('background-position', '-1400px');
@@ -65,7 +65,7 @@ $(document).ready(function(){
         DOG_SPRITE[SPRITE].animate({left: 1100}, 1000, 'linear');
         DOG_SPRITE[SPRITE].css('display', 'block');
         $('.bridge').css('display', 'block');
-        actionHelper(DOG_SPRITE, [BARBARIAN_SPRITE, DOG_SPRITE], SIT, 0);
+        actionHelper(DOG_SPRITE, SIT, 0);
     }*/
 
     $(document).keydown(function(e) {
@@ -79,37 +79,37 @@ $(document).ready(function(){
             switch(e.which) {
                 case KEYPRESS[KP_RUN]:
                     if(BARBARIAN_SPRITE[ACTION] !== RUN) {
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], RUN, 0);
+                        actionHelper(BARBARIAN_SPRITE, RUN, 0);
                     }
                     break;
                 case KEYPRESS[KP_JUMP]:
                     if (BARBARIAN_SPRITE[ACTION] !== JUMP) {
                         // TODO: only include monsters that are in the screen
                         BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE]);
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE],  JUMP, 1);
+                        actionHelper(BARBARIAN_SPRITE, JUMP, 1);
                     }
                     break;
                 case KEYPRESS[KP_STOP]:
-                    actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], STOP, 1)
+                    actionHelper(BARBARIAN_SPRITE, STOP, 1)
                     BARBARIAN_SPRITE[ACTION] = STOP;
                     break;
                 case KEYPRESS[KP_RIGHT]:
                     if (BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) {
                         BARBARIAN_SPRITE[DIRECTION] = RIGHT;
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK, 0);
+                        actionHelper(BARBARIAN_SPRITE, WALK, 0);
                     }
                     break;
                 case KEYPRESS[KP_LEFT]:
                     if (BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) {
                         BARBARIAN_SPRITE[DIRECTION] = LEFT;
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], WALK, 0);
+                        actionHelper(BARBARIAN_SPRITE, WALK, 0);
                     }
                     break;
                 case KEYPRESS[KP_ATTACK]:
                     if (BARBARIAN_SPRITE[ACTION] !== ATTACK) {
                         // TODO: only include monsters that are in the screen
                         BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE]);
-                        actionHelper(BARBARIAN_SPRITE, [MONSTER_SPRITE], ATTACK, 1);
+                        actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
                     }
                     break;
                 default: return; // exit this handler for other keys

@@ -136,6 +136,14 @@ async function advanceBackdrop(sprite, reverse = false) {
         }
         await sleep(sleepPerIterationDuration);
     }
+
+    if (screenNumber == 1) {
+        DOG_SPRITE[SPRITE].animate({left: 1100}, 1000, 'linear');
+        DOG_SPRITE[SPRITE].css('display', 'block');
+        $('.bridge').css('display', 'block');
+        actionHelper(DOG_SPRITE, [BARBARIAN_SPRITE, DOG_SPRITE], SIT, 0);
+    }
+
     scrolling = false;
 }
 

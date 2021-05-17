@@ -122,6 +122,11 @@ async function advanceBackdrop(sprite, reverse = false) {
     var sleepPerIterationDuration = (1000 / pixelsPerSecond) * pixelsPerFrame;
     var numberOfIterations = width / pixelsPerFrame;
 
+    if (screenNumber !== 1) {
+        $('.bridge').css('display', 'none');
+        DOG_SPRITE[SPRITE].css('display', 'none');
+    }
+
     // Animate the sprite to move with the screen scroll. The animation is set to take as long as the screen scroll takes
     if (reverse) {
         sprite[SPRITE].animate({left:  (windowWidth - sprite[SPRITE].width()/2) + 'px'}, (numberOfIterations * sleepPerIterationDuration) + buffer, 'linear');
@@ -179,6 +184,7 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
 
     var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
 
+    opponents = SCREENS[screenNumber][OPPONENTS];
 
     sprite[ACTION] = requestedAction;
     sprite[DIRECTION] = requestedDirection;
@@ -189,8 +195,8 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
     main:
     while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
-        if (SCREENS[screenNumber]) {
-            var obstacles = SCREENS[screenNumber];
+        if (SCREENS[screenNumber][OBSTACLES]) {
+            var obstacles = SCREENS[screenNumber][OBSTACLES];
             for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
                 var obstacle = obstacles[sprite[DIRECTION]][i];
                 var left = sprite[SPRITE].offset().left;
@@ -225,7 +231,7 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
                             animateFall(sprite);
 
                         } else {
-                            actionHelper(sprite, opponents, obstacle[FAIL_ACTION], 1);
+                            actionHelper(sprite, SCREENS[screenNumber][OPPONENTS], obstacle[FAIL_ACTION], 1);
                         }
                         break main;
                     }
@@ -238,7 +244,12 @@ async function animateSprite(sprite, opponents, requestedAction, requestedDirect
                 fightOver = true;
             }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
         }
-        if(fightOver || fightSequence(sprite, opponents) || monsterTurnaround(sprite, opponents)) {
+
+        if (!SCREENS[screenNumber][OPPONENTS].includes(sprite)) {
+            break;
+        }
+
+        if(fightOver || fightSequence(sprite, SCREENS[screenNumber][OPPONENTS]) || monsterTurnaround(sprite, SCREENS[screenNumber][OPPONENTS])) {
             break;
         }
 

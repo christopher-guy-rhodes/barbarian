@@ -35,6 +35,8 @@ var MIN = 'MIN';
 var MAX = 'MAX';
 var DELAY = 'DELAY';
 var POSITIONS = 'POSITIONS';
+var OBSTACLES = 'OBSTACLES';
+var OPPONENTS = 'OPPONENTS';
 
 // Actions
 var STOP = 'STOP';

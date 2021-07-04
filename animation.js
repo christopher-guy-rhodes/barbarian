@@ -141,12 +141,15 @@ async function advanceBackdrop(sprite, reverse = false) {
         await sleep(sleepPerIterationDuration);
     }
 
-    if (screenNumber == 1) {
+    if (screenNumber == 1 && DOG_SPRITE[STATUS] != DEAD) {
         DOG_SPRITE[SPRITE].animate({left: 1100}, 1000, 'linear');
         DOG_SPRITE[SPRITE].css('display', 'block');
         $('.bridge').css('display', 'block');
         actionHelper(DOG_SPRITE, SIT, 0);
     }
+
+    BARBARIAN_SPRITE[POSITIONS][ATTACK] = {};
+    BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
 
     scrolling = false;
 }
@@ -162,13 +165,11 @@ function hitBoundry(sprite) {
         }
         if (canAdvance && isRightBoundry && sprite[NAME] === BARBARIAN_SPRITE_NAME) {
             canAdvance = false;
-            screenNumber++;
 
-            if (screenNumber == 2) {
-                $('.bridge').display('block');
+            if (screenNumber < 1) {
+                screenNumber++;
+                advanceBackdrop(sprite);
             }
-
-            advanceBackdrop(sprite);
         }
 
         // Since we are stopping set the frame to the stop frame (1st frame when walking)
@@ -310,6 +311,7 @@ function death(sprite) {
 }
 
 async function animateFall(sprite) {
+    console.log(sprite[NAME] + ' is falling');
     sprite[SPRITE].stop();
     sprite[STATUS] = DEAD;
 

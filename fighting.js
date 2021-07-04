@@ -1,7 +1,6 @@
 var HEADON = 'HEADON';
 
 function isSuccessfulAttack(sprite, opponent) {
-    console.log('==> sprite name ' + sprite[NAME]);
     var distance = sprite[POSITIONS][ATTACK][opponent[NAME]][LEFT] - sprite[POSITIONS][ATTACK][sprite[NAME]][LEFT];
 
     var thresholds = sprite[ATTACK_THRESHOLDS];
@@ -23,7 +22,6 @@ function isSuccessfulAttack(sprite, opponent) {
 }
 
 function launchMonsterAttack(sprite, opponent, opponents) {
-    console.log('==> launching monster attack for opponent:' + opponent[NAME]);
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
         var proximity = Math.abs(getProximity(sprite, opponent));
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
@@ -76,6 +74,7 @@ function fightSequence(sprite, opponents) {
             return true;
         }
         if (opponentDefeated(sprite, opponent)) {
+            console.log('opponent ' + opponent[NAME]  + ' defeated');
             opponent[DEATH][DELAY] = getDeathDelay(sprite, opponent);
             death(opponent);
             canAdvance = true;

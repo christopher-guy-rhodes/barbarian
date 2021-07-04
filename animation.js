@@ -206,6 +206,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             var obstacles = SCREENS[screenNumber][OBSTACLES];
             for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
                 var obstacle = obstacles[sprite[DIRECTION]][i];
+
                 var pixelsFromObsticle = Math.abs(obstacle[LEFT] - sprite[SPRITE].offset().left);
 
                 if (pixelsFromObsticle > 50) {

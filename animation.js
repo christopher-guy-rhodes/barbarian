@@ -189,13 +189,34 @@ function isPastBoundry(sprite, obstacle) {
     return false;
 }
 
-function isObstacleFarAway(sprite, obstacle) {
+function isObstacleClose(sprite, obstacle) {
     var pixelsFromObsticle = Math.abs(obstacle[LEFT] - sprite[SPRITE].offset().left);
 
-    if (pixelsFromObsticle > 50) {
+    if (pixelsFromObsticle <= 50) {
         return true;
     }
     return false;
+}
+
+function isDownhill(sprite, obstacle) {
+    return obstacle[HEIGHT] <= sprite[SPRITE].css('bottom').substring(0, sprite[SPRITE].css('bottom').length - 2)
+        && obstacle[OBSTACLE_TYPE] !== PIT;
+}
+
+function avoidedObstacleWithJump(sprite, obstacle) {
+    var actionPosition = sprite[POSITIONS][JUMP][BARBARIAN_SPRITE_NAME];
+    var jumpedAgo = actionPosition ? new Date().getTime() - actionPosition[TIMESTAMP] : 100000;
+    var jumpPosition = actionPosition ? actionPosition[LEFT] : undefined;
+    return obstacle[JUMP_RANGE] && (jumpedAgo < 1000 && jumpPosition > obstacle[JUMP_RANGE][0] &&
+        jumpPosition < obstacle[JUMP_RANGE][1]);
+}
+
+function isMonster(sprite) {
+    return sprite[NAME] !== BARBARIAN_SPRITE_NAME;
+}
+
+function moveSpriteToHeight(sprite, height) {
+    sprite[SPRITE].css('bottom', height + 'px');
 }
 
 async function animateSprite(sprite, requestedAction, requestedDirection, times) {
@@ -216,21 +237,14 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
                 var obstacle = obstacles[sprite[DIRECTION]][i];
 
-                if (isObstacleFarAway(sprite, obstacle)) {
+                if (!isObstacleClose(sprite, obstacle)) {
                     continue;
                 }
 
                 if (isPastBoundry(sprite, obstacle)) {
-                    var bottom = sprite[SPRITE].css('bottom');
-                    bottom = bottom.substring(0, bottom.length - 2);
-                    var isDownhill = obstacle[HEIGHT] <= bottom && obstacle[OBSTACLE_TYPE] !== PIT;
-                    var actionPosition = sprite[POSITIONS][JUMP][BARBARIAN_SPRITE_NAME];
 
-                    var jumpPosition = actionPosition ? actionPosition[LEFT] : undefined;
-                    var jumpedAgo = actionPosition ? new Date().getTime() - actionPosition[TIMESTAMP] : 100000;
-                    var isMonster = sprite[NAME] !== BARBARIAN_SPRITE_NAME;
-                    if (isMonster || isDownhill || (obstacle[JUMP_RANGE] && (jumpedAgo < 1000 && jumpPosition > obstacle[JUMP_RANGE][0] && jumpPosition < obstacle[JUMP_RANGE][1]))) {
-                        sprite[SPRITE].css('bottom', obstacle[HEIGHT] + 'px');
+                    if (isMonster(sprite) || isDownhill(sprite, obstacle) || avoidedObstacleWithJump(sprite, obstacle)) {
+                        moveSpriteToHeight(sprite, obstacle[HEIGHT]);
                     } else if (sprite[NAME] === BARBARIAN_SPRITE_NAME)  {
                         if (obstacle[FAIL_ACTION] === FALL) {
                             // use action helper to make sure the action changes etc

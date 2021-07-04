@@ -180,6 +180,15 @@ function hitBoundry(sprite) {
     return false;
 }
 
+function isPastBoundry(sprite, obstacle) {
+    if (sprite[DIRECTION] === RIGHT) {
+        return sprite[SPRITE].offset().left >= obstacle[LEFT];
+    } else {
+        return sprite[SPRITE].offset().left <= obstacle[LEFT];
+    }
+    return false;
+}
+
 async function animateSprite(sprite, requestedAction, requestedDirection, times) {
 
     var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
@@ -197,20 +206,13 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             var obstacles = SCREENS[screenNumber][OBSTACLES];
             for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
                 var obstacle = obstacles[sprite[DIRECTION]][i];
-                var left = sprite[SPRITE].offset().left;
-                var isPassedBoundry = false;
-                var pixelsFromObsticle = Math.abs(obstacle[LEFT] - left);
+                var pixelsFromObsticle = Math.abs(obstacle[LEFT] - sprite[SPRITE].offset().left);
 
                 if (pixelsFromObsticle > 50) {
                     continue;
                 }
 
-                if (sprite[DIRECTION] === RIGHT) {
-                    isPassedBoundry = left >= obstacle[LEFT];
-                } else {
-                    isPassedBoundry = left <= obstacle[LEFT];
-                }
-                if (isPassedBoundry /*&& sprite[SPRITE].css('bottom') !== obstacle[HEIGHT] + 'px'*/) {
+                if (isPastBoundry(sprite, obstacle)) {
                     var bottom = sprite[SPRITE].css('bottom');
                     bottom = bottom.substring(0, bottom.length - 2);
                     var isDownhill = obstacle[HEIGHT] <= bottom && obstacle[OBSTACLE_TYPE] !== PIT;

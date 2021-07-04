@@ -8,11 +8,18 @@ function isSuccessfulAttack(sprite, opponent) {
     for (var i = 0; i < thresholds.length; i++) {
 
         var successfulTurnaround = sprite[DIRECTION] === LEFT &&
-            -1*thresholds[i][MIN] > distance &&
-            -1*thresholds[i][MAX] < distance;
+            -1 * thresholds[i][MIN] > distance &&
+            -1 * thresholds[i][MAX] < distance;
         var successfulHeadon = sprite[DIRECTION] === RIGHT &&
             thresholds[i][MIN] < distance &&
-            thresholds[i][MAX] > distance ;
+            thresholds[i][MAX] > distance;
+        if (successfulHeadon) {
+            console.log('success: sprite: ' + sprite[NAME] + ' min: ' + thresholds[i][MIN] + ' < ' + distance + ' max: ' + thresholds[i][MAX] + ' > ' + distance);
+        }
+
+        if (successfulTurnaround)  {
+            console.log('success: sprite: ' + sprite[NAME] + ' min: ' + -1*thresholds[i][MIN] + ' > ' + distance + ' max: ' + -1*thresholds[i][MAX] + ' < ' + distance);
+        }
 
         if (successfulTurnaround || successfulHeadon) {
             successful = true;

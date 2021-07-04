@@ -153,7 +153,7 @@ DOG_SPRITE = {
     },
     ATTACK_THRESHOLDS : [
         {
-            MIN : 15,
+            MIN : 0,
             MAX : 100
         },
         {

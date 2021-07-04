@@ -47,7 +47,7 @@ var WALK = 'WALK';
 var HAS_MOVING_ATTACK = 'HAS_MOVING_ATTACK';
 var DEATH = 'DEATH';
 var SIT = 'SIT';
-var ATTACK_PROXIMITY = 300;
+var ATTACK_PROXIMITY = 320;
 
 // Directions
 var LEFT = 'LEFT';

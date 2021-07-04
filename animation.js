@@ -189,6 +189,15 @@ function isPastBoundry(sprite, obstacle) {
     return false;
 }
 
+function isObstacleFarAway(sprite, obstacle) {
+    var pixelsFromObsticle = Math.abs(obstacle[LEFT] - sprite[SPRITE].offset().left);
+
+    if (pixelsFromObsticle > 50) {
+        return true;
+    }
+    return false;
+}
+
 async function animateSprite(sprite, requestedAction, requestedDirection, times) {
 
     var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
@@ -207,9 +216,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             for (var i = 0; i < obstacles[sprite[DIRECTION]].length; i++) {
                 var obstacle = obstacles[sprite[DIRECTION]][i];
 
-                var pixelsFromObsticle = Math.abs(obstacle[LEFT] - sprite[SPRITE].offset().left);
-
-                if (pixelsFromObsticle > 50) {
+                if (isObstacleFarAway(sprite, obstacle)) {
                     continue;
                 }
 

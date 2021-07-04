@@ -13,9 +13,11 @@ $(document).ready(function(){
     $.getScript('http://localhost/constants.js', function() {
     // Include sprite definition
     $.getScript('http://localhost/sprites.js', function() {
-    // Include animation module
+    // INclude the obstacles module
+    $.getScript('http://localhost/obstacles.js', function() {
+    // Include the fighting module
     $.getScript('http://localhost/fighting.js', function() {
-    // Include action definitions
+    // Include animation module
     $.getScript('http://localhost/animation.js', function() {
 
     // Don't allow screen resizing
@@ -133,7 +135,7 @@ $(document).ready(function(){
     }
 
 
-})})})})});
+})})})})})});
 </script>
 </head>
 <body>

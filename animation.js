@@ -8,6 +8,11 @@ function actionHelper(sprite, requestedAction, times) {
         sprite[CURRENT_PIXELS_PER_SECOND] = 0;
         stop(sprite);
         return;
+    } else if (requestedAction === FALL) {
+        sprite[ACTION] = FALL;
+        stop(sprite);
+        animateFall(sprite);
+        return;
     } else if ((requestedAction === ATTACK && !sprite[HAS_MOVING_ATTACK])) {
         sprite[CURRENT_PIXELS_PER_SECOND] = 0;
     } else if (requestedAction === RUN) {
@@ -194,33 +199,12 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
     var index = 0;
     var fightOver = false;
 
-    main:
     while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
 
-        for (const obstacle of getObstacles(sprite)) {
-
-            if (!isObstacleClose(sprite, obstacle)) {
-                continue;
-            }
-
-            if (isPastBoundry(sprite, obstacle)) {
-
-                if (isMonster(sprite) || isDownhill(sprite, obstacle) || avoidedObstacleWithJump(sprite, obstacle)) {
-                    moveSpriteToHeight(sprite, obstacle[HEIGHT]);
-                } else if (!isMonster(sprite)) {
-                    if (getFailAction(obstacle) === FALL) {
-                        // use action helper to make sure the action changes etc
-                        sprite[ACTION] = FALL;
-                        stop(sprite);
-                        animateFall(sprite);
-
-                    } else {
-                        actionHelper(sprite, getFailAction(obstacle), 1);
-                    }
-                    break main;
-                }
-            }
+        if (handleObstacles(sprite, getObstacles(sprite))) {
+            break;
         }
+
         // If the sprite has been killed delay stopping the animation to let the action sequence complete
         if (sprite[STATUS] === DEAD) {
             setTimeout(function () {

@@ -38,7 +38,30 @@ function getFailAction(obstacle) {
 }
 
 function getObstacles(sprite) {
-    var obstacles = SCREENS[screenNumber][OBSTACLES];
-    obstacles = obstacles === undefined ? {LEFT: [], RIGHT: []} : obstacles;
-    return obstacles[sprite[DIRECTION]];
+    var obstacleObj = SCREENS[screenNumber][OBSTACLES];
+    obstacleObj = obstacleObj === undefined ? {LEFT: [], RIGHT: []} : obstacleObj;
+    var obstacles = obstacleObj[sprite[DIRECTION]];
+
+    var result = [];
+    for (const obstacle of obstacles) {
+        if (isObstacleClose(sprite, obstacle)) {
+            result.push(obstacle);
+        }
+    }
+
+    return result;
+}
+
+function handleObstacles(sprite, obstacle) {
+    for (const obstacle of getObstacles(sprite)) {
+        if (isPastBoundry(sprite, obstacle)) {
+            if (isMonster(sprite) || isDownhill(sprite, obstacle) || avoidedObstacleWithJump(sprite, obstacle)) {
+                moveSpriteToHeight(sprite, obstacle[HEIGHT]);
+            } else {
+                actionHelper(sprite, getFailAction(obstacle), 1);
+                return true;
+            }
+        }
+    }
+    return false;
 }

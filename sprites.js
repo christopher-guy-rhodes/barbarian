@@ -158,7 +158,7 @@ DOG_SPRITE = {
         },
         {
             MIN : 100,
-            MAX : 370
+            MAX : 315
         }
     ],
     DEATH : {

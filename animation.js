@@ -5,7 +5,7 @@ function actionHelper(sprite, requestedAction, times) {
     sprite[SPRITE].stop();
 
     if (requestedAction === STOP) {
-        sprite[CURRENT_PIXELS_PER_SECOND] = 0;
+        sprite['currentPixelsPerSecond'] = 0;
         stop(sprite);
         return;
     } else if (requestedAction === FALL) {
@@ -14,11 +14,11 @@ function actionHelper(sprite, requestedAction, times) {
         animateFall(sprite);
         return;
     } else if ((requestedAction === ATTACK && !sprite[HAS_MOVING_ATTACK])) {
-        sprite[CURRENT_PIXELS_PER_SECOND] = 0;
+        sprite['currentPixelsPerSecond'] = 0;
     } else if (requestedAction === RUN) {
-        sprite[CURRENT_PIXELS_PER_SECOND] = sprite[PIXELS_PER_SECOND] * RUN_SPEED_INCREASE_FACTOR;
+        sprite['currentPixelsPerSecond'] = sprite[PIXELS_PER_SECOND] * RUN_SPEED_INCREASE_FACTOR;
     } else {
-        sprite[CURRENT_PIXELS_PER_SECOND] = sprite[PIXELS_PER_SECOND];
+        sprite['currentPixelsPerSecond'] = sprite[PIXELS_PER_SECOND];
     }
 
     if (requestedAction !== SIT && (requestedAction !== ATTACK || sprite[HAS_MOVING_ATTACK])) {
@@ -62,30 +62,30 @@ function fall(sprite) {
 
 function moveRight(sprite) {
     var distance = windowWidth - sprite[SPRITE].offset().left - (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function moveLeft(sprite) {
     var distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function runRight(sprite) {
     var distance = (windowWidth - sprite[SPRITE].offset().left) - (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) +  'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) +  'px'}, distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function runLeft(sprite) {
     var distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite[CURRENT_PIXELS_PER_SECOND] * 1000, 'linear');
+    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function getDeathDelay(sprite, opponent) {
     var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
 
     var relativePps = sprite[DIRECTION] === opponent[DIRECTION]
-        ? opponent[CURRENT_PIXELS_PER_SECOND] - sprite[CURRENT_PIXELS_PER_SECOND]
-        : opponent[CURRENT_PIXELS_PER_SECOND] + sprite[CURRENT_PIXELS_PER_SECOND];
+        ? opponent['currentPixelsPerSecond'] - sprite['currentPixelsPerSecond']
+        : opponent['currentPixelsPerSecond'] + sprite['currentPixelsPerSecond'];
     return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * 1000;
 }
 
@@ -185,10 +185,6 @@ function hitBoundry(sprite) {
     return false;
 }
 
-function isMonster(sprite) {
-    return sprite[NAME] !== BARBARIAN_SPRITE_NAME;
-}
-
 async function animateSprite(sprite, requestedAction, requestedDirection, times) {
 
     var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
@@ -199,11 +195,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
     var index = 0;
     var fightOver = false;
 
-    while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection) {
-
-        if (handleObstacles(sprite, getObstacles(sprite))) {
-            break;
-        }
+    while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection && index < path.length) {
 
         // If the sprite has been killed delay stopping the animation to let the action sequence complete
         if (sprite[STATUS] === DEAD) {
@@ -212,41 +204,29 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
         }
 
-        if (!SCREENS[screenNumber][OPPONENTS].includes(sprite)) {
-            break;
+        // If the action starts a new animation or the current one should terminate break out of the loop
+        if (handleObstacles(sprite, getObstacles(sprite)) ||
+            !isSpriteCurrentOpponent(sprite) ||
+            fightOver ||
+            fightSequence(sprite, SCREENS[screenNumber][OPPONENTS]) ||
+            monsterTurnaround(sprite, SCREENS[screenNumber][OPPONENTS]) ||
+            hitBoundry(sprite)) {
+                break;
         }
 
-        if(fightOver || fightSequence(sprite, SCREENS[screenNumber][OPPONENTS]) || monsterTurnaround(sprite, SCREENS[screenNumber][OPPONENTS])) {
-            break;
-        }
-
-        if (sprite[NAME] === BARBARIAN_SPRITE_NAME && screenNumber == 1 && $('.bridge').css('display') === 'block' &&
-                sprite[SPRITE].offset().left >= 700) {
-            //$('.bridge').css('display', 'none');
-            $('.bridge').animate({bottom: '-450px'}, 500, 'linear');
-        }
-
-        renderSpriteFrame(sprite, requestedAction, path[index]);
-
-        if (sprite[ACTION] === STOP || hitBoundry(sprite)) {
-            break;
-        }
-
+        renderSpriteFrame(sprite, requestedAction, path[index++]);
         await sleep(1000 / sprite[FPS]);
 
         // loop the sprite animation
-        index++;
         if (index == path.length) {
-            if (times < 1 || --times > 0) {
+            if (times === 0 || --times > 0) {
                 index = 0;
-            } else {
-                break;
             }
         }
     }
 
-    // Action is over, reset state so the action can be repeated if desired
-    if (sprite[ACTION] !== WALK && sprite[NAME] === BARBARIAN_SPRITE_NAME && sprite[ACTION] === requestedAction) {
+    // Action is over, reset state so the action can be executed again if desired
+    if (!isMonster(sprite) && sprite[ACTION] === requestedAction) {
         sprite[ACTION] = undefined;
         sprite[SPRITE].stop();
     }

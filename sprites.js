@@ -28,7 +28,7 @@ BARBARIAN_SPRITE = {
     DIRECTION : RIGHT,
     HAS_MOVING_ATTACK: false,
     FPS : SPRITE_FPS,
-    CURRENT_PIXELS_PER_SECOND: 0,
+    currentPixelsPerSecond: 0,
     PIXELS_PER_SECOND : 150,
     STATUS : ALIVE,
     FRAMES : {
@@ -113,7 +113,7 @@ DOG_SPRITE = {
     HAS_MOVING_ATTACK : true,
     FPS : DOG_SPRITE_FPS,
     PIXELS_PER_SECOND : DOG_PIXELS_PER_SECOND,
-    CURRENT_PIXELS_PER_SECOND : 0,
+    currentPixelsPerSecond : 0,
     STATUS : ALIVE,
     FRAMES : {
         SIT : {
@@ -158,7 +158,7 @@ DOG_SPRITE = {
         },
         {
             MIN : 100,
-            MAX : 390
+            MAX : 370
         }
     ],
     DEATH : {
@@ -182,7 +182,7 @@ MONSTER_SPRITE = {
     HAS_MOVING_ATTACK : true,
     FPS: BOG_MONSTER_SPRITE_FPS,
     PIXELS_PER_SECOND : BOG_MONSTER_PIXELS_PER_SECOND,
-    CURRENT_PIXELS_PER_SECOND: BOG_MONSTER_PIXELS_PER_SECOND,
+    currentPixelsPerSecond: BOG_MONSTER_PIXELS_PER_SECOND,
     STATUS : ALIVE,
     FRAMES : {
         WALK : {
@@ -275,4 +275,12 @@ function getPositionsAtAction(sprites) {
             TIMESTAMP : new Date().getTime()};
     }
     return positionsAtAttack;
+}
+
+function isMonster(sprite) {
+    return sprite[NAME] !== BARBARIAN_SPRITE_NAME;
+}
+
+function isSpriteCurrentOpponent(sprite) {
+    return SCREENS[screenNumber][OPPONENTS].includes(sprite);
 }

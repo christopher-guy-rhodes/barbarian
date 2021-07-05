@@ -1,13 +1,12 @@
-
 async function animateSprite(sprite, requestedAction, requestedDirection, times) {
 
-    var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
+    const path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
 
     sprite[ACTION] = requestedAction;
     sprite[DIRECTION] = requestedDirection;
 
-    var index = 0;
-    var fightOver = false;
+    let index = 0;
+    let fightOver = false;
 
     while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection && index < path.length) {
 
@@ -40,7 +39,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
     }
 
     // Action is over, reset state so the action can be executed again if desired
-    if (spite[ACTION] != WALK && !isMonster(sprite) && sprite[ACTION] === requestedAction) {
+    if (sprite[ACTION] != WALK && !isMonster(sprite) && sprite[ACTION] === requestedAction) {
         sprite[ACTION] = undefined;
         sprite[SPRITE].stop();
     }
@@ -77,19 +76,43 @@ function actionHelper(sprite, requestedAction, times) {
         times);
 }
 
+async function advanceBackdrop(sprite, reverse = false) {
+    const sleepPerIterationDuration = (ADVANCE_SCREEN_SCROLL_DURATION / ADVANCE_SCREEN_PIXELS_PER_SECOND) * ADVANCE_SCREEN_PIXELS_PER_FRAME;
+    const numberOfIterations = windowWidth / ADVANCE_SCREEN_PIXELS_PER_FRAME;
+
+    initializeScreen();
+
+    // Animate the sprite to move with the screen scroll. The animation is set to take as long as the screen scroll takes
+    if (reverse) {
+        sprite[SPRITE].animate({left:  (windowWidth - sprite[SPRITE].width()/2) + 'px'}, (numberOfIterations * sleepPerIterationDuration), 'linear');
+    } else {
+        sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, (numberOfIterations * sleepPerIterationDuration), 'linear');
+    }
+    for (let i = 0; i < numberOfIterations ; i++) {
+        if (reverse) {
+            $('.backdrop').css('background-position', '-' + (numberOfIterations*ADVANCE_SCREEN_PIXELS_PER_FRAME - ((i+1)*ADVANCE_SCREEN_PIXELS_PER_FRAME)) + 'px');
+        } else {
+            $('.backdrop').css('background-position', '-' + (i + 1) * ADVANCE_SCREEN_PIXELS_PER_FRAME + 'px');
+        }
+        await sleep(sleepPerIterationDuration);
+    }
+    startMonsterAttacks();
+    resetBarbarianActions();
+}
+
 function stop(sprite) {
-    var isRight = sprite[DIRECTION] === RIGHT;
-    var x = -1 * (isRight ? sprite[STOP_POSITION][RIGHT]
-                          : sprite[STOP_POSITION][LEFT]) * sprite[SPRITE].width();
-    var y = isRight ? (-1 * sprite[STOP_POSITION][RIGHT_HEIGHT])
-                    : -1 * sprite[STOP_POSITION][LEFT_HEIGHT] * sprite[SPRITE].height();
+    const isRight = sprite[DIRECTION] === RIGHT;
+    const x = -1 * (isRight ? sprite[STOP_POSITION][RIGHT]
+        : sprite[STOP_POSITION][LEFT]) * sprite[SPRITE].width();
+    const y = isRight ? (-1 * sprite[STOP_POSITION][RIGHT_HEIGHT])
+        : -1 * sprite[STOP_POSITION][LEFT_HEIGHT] * sprite[SPRITE].height();
 
     sprite[SPRITE].css('background-position', x + 'px ' + y + 'px');
     sprite[SPRITE].stop();
 }
 
 function move(sprite, requestedAction) {
-    var isRight = sprite[DIRECTION] === RIGHT;
+    const isRight = sprite[DIRECTION] === RIGHT;
     (requestedAction === RUN) ? isRight
         ? runRight(sprite) : runLeft(sprite)
         : isRight ? moveRight(sprite) : moveLeft(sprite);
@@ -100,110 +123,100 @@ function sleep(ms) {
 }
 
 function fall(sprite) {
-    var bottom = sprite[SPRITE].css('bottom').substring(0, sprite[SPRITE].css('bottom').length - 2);
-    var distance = parseInt(bottom) + (sprite[SPRITE].height() / 2);
+    const bottom = sprite[SPRITE].css('bottom').substring(0, sprite[SPRITE].css('bottom').length - 2);
+    const distance = parseInt(bottom) + (sprite[SPRITE].height() / 2);
     sprite[SPRITE].animate({bottom: -1*200}, distance / FALLING_PIXELS_PER_SECOND * 1000,  'linear');
 }
 
 function moveRight(sprite) {
-    var distance = windowWidth - sprite[SPRITE].offset().left - (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
+    const distance = windowWidth - sprite[SPRITE].offset().left - (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) + 'px'},
+        distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function moveLeft(sprite) {
-    var distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
+    const distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'},
+        distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function runRight(sprite) {
-    var distance = (windowWidth - sprite[SPRITE].offset().left) - (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) +  'px'}, distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
+    const distance = (windowWidth - sprite[SPRITE].offset().left) - (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) +  'px'},
+        distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function runLeft(sprite) {
-    var distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
+    const distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
+    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'},
+        distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function getDeathDelay(sprite, opponent) {
-    var separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
+    const separation = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
 
-    var relativePps = sprite[DIRECTION] === opponent[DIRECTION]
+    const relativePps = sprite[DIRECTION] === opponent[DIRECTION]
         ? opponent['currentPixelsPerSecond'] - sprite['currentPixelsPerSecond']
         : opponent['currentPixelsPerSecond'] + sprite['currentPixelsPerSecond'];
     return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * 1000;
 }
 
 function monsterTurnaround(sprite, opponents) {
-    if (isMonster(sprite)) {
-        var isPassedLeft = sprite[DIRECTION] === LEFT &&
-            sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left ||
-            hitLeftBoundry(sprite);
-        var isPassedRight = sprite[DIRECTION] === RIGHT &&
-            sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left ||
-            hitRightBoundry(sprite);
-
-        if (isPassedLeft) {
-            sprite[DIRECTION] = RIGHT;
-            actionHelper(sprite, WALK, 0);
-            return true;
-        } else if (isPassedRight) {
-            sprite[DIRECTION] = LEFT;
-            actionHelper(sprite, WALK, 0);
-            return true;
-        }
+    if (!isMonster(sprite)) {
+        return false;
     }
-    return false;
+
+    const isPassedLeft = sprite[DIRECTION] === LEFT &&
+        sprite[SPRITE].offset().left + sprite[SPRITE].width() * 1.5 < BARBARIAN_SPRITE[SPRITE].offset().left ||
+        hitLeftBoundry(sprite);
+    const isPassedRight = sprite[DIRECTION] === RIGHT &&
+        sprite[SPRITE].offset().left - sprite[SPRITE].width() * 1.5 > BARBARIAN_SPRITE[SPRITE].offset().left ||
+        hitRightBoundry(sprite);
+
+    if (isPassedLeft || isPassedRight) {
+        sprite[DIRECTION] = isPassedLeft ? RIGHT : LEFT;
+        actionHelper(sprite, WALK, 0);
+        return true;
+    } else {
+        return false;
+    }
 }
 
-async function advanceBackdrop(sprite, reverse = false) {
-    scrolling = true;
-    var width = windowWidth;
-    var buffer = 0;
-    var pixelsPerSecond = 1500;
-    var pixelsPerFrame = 10;
-
-    var sleepPerIterationDuration = (1000 / pixelsPerSecond) * pixelsPerFrame;
-    var numberOfIterations = width / pixelsPerFrame;
-
+function initializeScreen() {
     if (screenNumber !== 1) {
         $('.bridge').css('display', 'none');
         DOG_SPRITE[SPRITE].css('display', 'none');
     }
 
-    // Animate the sprite to move with the screen scroll. The animation is set to take as long as the screen scroll takes
-    if (reverse) {
-        sprite[SPRITE].animate({left:  (windowWidth - sprite[SPRITE].width()/2) + 'px'}, (numberOfIterations * sleepPerIterationDuration) + buffer, 'linear');
-    } else {
-        sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, (numberOfIterations * sleepPerIterationDuration) + buffer, 'linear');
-    }
-    for (i = 0; i < numberOfIterations ; i++) {
-        if (reverse) {
-            $('.backdrop').css('background-position', '-' + (numberOfIterations*pixelsPerFrame - ((i+1)*pixelsPerFrame)) + 'px');
-        } else {
-            $('.backdrop').css('background-position', '-' + (i + 1) * pixelsPerFrame + 'px');
-        }
-        await sleep(sleepPerIterationDuration);
-    }
+}
 
+function startMonsterAttacks() {
+    if (screenNumber === 0) {
+        actionHelper(MONSTER_SPRITE, WALK, 0);
+    }
     if (screenNumber == 1 && DOG_SPRITE[STATUS] != DEAD) {
-        DOG_SPRITE[SPRITE].animate({left: 1100}, 1000, 'linear');
+        DOG_SPRITE[SPRITE].animate({left: 1100}, ADVANCE_SCREEN_SCROLL_DURATION, 'linear');
         DOG_SPRITE[SPRITE].css('display', 'block');
         $('.bridge').css('display', 'block');
         actionHelper(DOG_SPRITE, SIT, 0);
     }
+}
 
+function resetBarbarianActions() {
     BARBARIAN_SPRITE[POSITIONS][ATTACK] = {};
     BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
-
-    scrolling = false;
 }
 
 function hitBoundry(sprite) {
-    var isRightBoundry = hitRightBoundry(sprite);
-    var isLeftBoundry = hitLeftBoundry(sprite);
+    const isRightBoundry = hitRightBoundry(sprite);
+    const isLeftBoundry = hitLeftBoundry(sprite);
+
+    if (!isLeftBoundry && !isRightBoundry) {
+        return false;
+    }
+
     if (isLeftBoundry || isRightBoundry) {
-        if (sprite[SPRITE].offset().left === -1*sprite[SPRITE].width()/2 && screenNumber > 0) {
+        if (isLeftBoundry && screenNumber > 0) {
             canAdvance = true;
             screenNumber--;
             advanceBackdrop(sprite, true);
@@ -227,14 +240,15 @@ function hitBoundry(sprite) {
 
 
 function renderSpriteFrame(sprite, requestedAction, position) {
-    var heightOffsetGridUnits = sprite[FRAMES][requestedAction][sprite[DIRECTION]][HEIGHT_OFFSET];
-    var heightOffset = heightOffsetGridUnits * sprite[SPRITE].height();
+    const heightOffsetGridUnits = sprite[FRAMES][requestedAction][sprite[DIRECTION]][HEIGHT_OFFSET];
+    const heightOffset = heightOffsetGridUnits * sprite[SPRITE].height();
     sprite[SPRITE].css('background-position',(-1*position*sprite[SPRITE].width()) + 'px ' + -1*heightOffset + 'px');
 }
 
 function renderDeathSpriteFrame(sprite, position) {
-    var heightOffset = sprite[DEATH][ANIMATION][sprite[DIRECTION]][HEIGHT_OFFSET] * sprite[DEATH][SPRITE].height();
-    sprite[DEATH][SPRITE].css('background-position',(-1*position*sprite[DEATH][SPRITE].width()) + 'px ' + -1*heightOffset + 'px');
+    const heightOffset = sprite[DEATH][ANIMATION][sprite[DIRECTION]][HEIGHT_OFFSET] * sprite[DEATH][SPRITE].height();
+    sprite[DEATH][SPRITE].css('background-position',
+        (-1*position*sprite[DEATH][SPRITE].width()) + 'px ' + -1*heightOffset + 'px');
 }
 
 function hitLeftBoundry(sprite) {
@@ -258,8 +272,8 @@ async function animateFall(sprite) {
     sprite[STATUS] = DEAD;
 
     fall(sprite);
-    var direction = sprite[DIRECTION];
-    var frames = sprite[FRAMES][FALL][direction][FRAMES];
+    const direction = sprite[DIRECTION];
+    const frames = sprite[FRAMES][FALL][direction][FRAMES];
     for(var i = 0; i < frames.length; i++) {
         renderSpriteFrame(sprite, FALL, frames[i])
         await sleep(1000 / sprite[FPS]);
@@ -277,10 +291,10 @@ async function animateDeath(sprite) {
         sprite[SPRITE].css('display', 'none');
     }
 
-    var direction = sprite[DIRECTION];
-    var frames = sprite[DEATH][ANIMATION];
-    for (var i = 0; i < frames[direction][FRAMES].length; i++) {
-        var position = frames[direction][FRAMES][i];
+    const direction = sprite[DIRECTION];
+    const frames = sprite[DEATH][ANIMATION];
+    for (let i = 0; i < frames[direction][FRAMES].length; i++) {
+        const position = frames[direction][FRAMES][i];
         renderDeathSpriteFrame(sprite, position);
         await sleep(1000 / sprite[DEATH][ANIMATION][FPS]);
     }

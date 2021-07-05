@@ -1,5 +1,51 @@
-var RUN_SPEED_INCREASE_FACTOR = 1.5;
-var DEFAULT_DEATH_DELAY = 2000;
+
+async function animateSprite(sprite, requestedAction, requestedDirection, times) {
+
+    var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
+
+    sprite[ACTION] = requestedAction;
+    sprite[DIRECTION] = requestedDirection;
+
+    var index = 0;
+    var fightOver = false;
+
+    while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection && index < path.length) {
+
+        // If the sprite has been killed delay stopping the animation to let the action sequence complete
+        if (isDead(sprite)) {
+            setTimeout(function () {
+                fightOver = true;
+            }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
+        }
+
+        // If the action starts a new animation or the current one should terminate break out of the loop
+        if (handleObstacles(sprite, getObstacles(sprite)) ||
+            !isSpriteCurrentOpponent(sprite) ||
+            fightOver ||
+            fightSequence(sprite, SCREENS[screenNumber][OPPONENTS]) ||
+            monsterTurnaround(sprite, SCREENS[screenNumber][OPPONENTS]) ||
+            hitBoundry(sprite)) {
+            break;
+        }
+
+        renderSpriteFrame(sprite, requestedAction, path[index++]);
+        await sleep(1000 / sprite[FPS]);
+
+        if (index == path.length) {
+            // If times is 0 we loop infinitely, if times is set decrement it and keep looping
+            if (times === 0 || --times > 0) {
+                index = 0;
+            }
+        }
+    }
+
+    // Action is over, reset state so the action can be executed again if desired
+    if (spite[ACTION] != WALK && !isMonster(sprite) && sprite[ACTION] === requestedAction) {
+        sprite[ACTION] = undefined;
+        sprite[SPRITE].stop();
+    }
+
+}
 
 function actionHelper(sprite, requestedAction, times) {
     sprite[SPRITE].stop();
@@ -33,9 +79,10 @@ function actionHelper(sprite, requestedAction, times) {
 
 function stop(sprite) {
     var isRight = sprite[DIRECTION] === RIGHT;
-    var x = -1 * (isRight ? sprite[STOP_POSITION][RIGHT] : sprite[STOP_POSITION][LEFT]) * sprite[SPRITE].width();
+    var x = -1 * (isRight ? sprite[STOP_POSITION][RIGHT]
+                          : sprite[STOP_POSITION][LEFT]) * sprite[SPRITE].width();
     var y = isRight ? (-1 * sprite[STOP_POSITION][RIGHT_HEIGHT])
-        : -1 * sprite[STOP_POSITION][LEFT_HEIGHT] * sprite[SPRITE].height();
+                    : -1 * sprite[STOP_POSITION][LEFT_HEIGHT] * sprite[SPRITE].height();
 
     sprite[SPRITE].css('background-position', x + 'px ' + y + 'px');
     sprite[SPRITE].stop();
@@ -53,10 +100,8 @@ function sleep(ms) {
 }
 
 function fall(sprite) {
-    var bottom = sprite[SPRITE].css('bottom');
-    bottom = bottom.substring(0, bottom.length - 2);
+    var bottom = sprite[SPRITE].css('bottom').substring(0, sprite[SPRITE].css('bottom').length - 2);
     var distance = parseInt(bottom) + (sprite[SPRITE].height() / 2);
-    //sprite[SPRITE].animate({bottom: -1*sprite[SPRITE].height() / 2}, distance / sprite[PIXELS_PER_SECOND] * 1000, 'linear');
     sprite[SPRITE].animate({bottom: -1*200}, distance / FALLING_PIXELS_PER_SECOND * 1000,  'linear');
 }
 
@@ -90,24 +135,19 @@ function getDeathDelay(sprite, opponent) {
 }
 
 function monsterTurnaround(sprite, opponents) {
-    if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
-        var isPassedLeft = sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left;
-        var isPassedRight = sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left;
+    if (isMonster(sprite)) {
+        var isPassedLeft = sprite[DIRECTION] === LEFT &&
+            sprite[SPRITE].offset().left + sprite[SPRITE].width()*1.5 < BARBARIAN_SPRITE[SPRITE].offset().left ||
+            hitLeftBoundry(sprite);
+        var isPassedRight = sprite[DIRECTION] === RIGHT &&
+            sprite[SPRITE].offset().left - sprite[SPRITE].width()*1.5 > BARBARIAN_SPRITE[SPRITE].offset().left ||
+            hitRightBoundry(sprite);
 
-        if (hitRightBoundry(sprite)) {
-            if (sprite[DIRECTION] === RIGHT) {
-                isPassedRight = true;
-            } else {
-                isPassedLeft = true;
-            }
-        }
-
-        if (sprite[DIRECTION] === LEFT && (isPassedLeft || sprite[SPRITE].offset().left === -1*(sprite[SPRITE].width()/2))) {
+        if (isPassedLeft) {
             sprite[DIRECTION] = RIGHT;
             actionHelper(sprite, WALK, 0);
             return true;
-        } else if (sprite[DIRECTION] === RIGHT && (isPassedRight
-            || sprite[SPRITE].offset().left === $(document).width() - (sprite[SPRITE].width()))) {
+        } else if (isPassedRight) {
             sprite[DIRECTION] = LEFT;
             actionHelper(sprite, WALK, 0);
             return true;
@@ -185,53 +225,6 @@ function hitBoundry(sprite) {
     return false;
 }
 
-async function animateSprite(sprite, requestedAction, requestedDirection, times) {
-
-    var path = sprite[FRAMES][requestedAction][sprite[DIRECTION]][FRAMES];
-
-    sprite[ACTION] = requestedAction;
-    sprite[DIRECTION] = requestedDirection;
-
-    var index = 0;
-    var fightOver = false;
-
-    while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection && index < path.length) {
-
-        // If the sprite has been killed delay stopping the animation to let the action sequence complete
-        if (sprite[STATUS] === DEAD) {
-            setTimeout(function () {
-                fightOver = true;
-            }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
-        }
-
-        // If the action starts a new animation or the current one should terminate break out of the loop
-        if (handleObstacles(sprite, getObstacles(sprite)) ||
-            !isSpriteCurrentOpponent(sprite) ||
-            fightOver ||
-            fightSequence(sprite, SCREENS[screenNumber][OPPONENTS]) ||
-            monsterTurnaround(sprite, SCREENS[screenNumber][OPPONENTS]) ||
-            hitBoundry(sprite)) {
-                break;
-        }
-
-        renderSpriteFrame(sprite, requestedAction, path[index++]);
-        await sleep(1000 / sprite[FPS]);
-
-        // loop the sprite animation
-        if (index == path.length) {
-            if (times === 0 || --times > 0) {
-                index = 0;
-            }
-        }
-    }
-
-    // Action is over, reset state so the action can be executed again if desired
-    if (!isMonster(sprite) && sprite[ACTION] === requestedAction) {
-        sprite[ACTION] = undefined;
-        sprite[SPRITE].stop();
-    }
-
-}
 
 function renderSpriteFrame(sprite, requestedAction, position) {
     var heightOffsetGridUnits = sprite[FRAMES][requestedAction][sprite[DIRECTION]][HEIGHT_OFFSET];

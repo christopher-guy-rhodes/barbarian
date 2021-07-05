@@ -281,6 +281,10 @@ function isMonster(sprite) {
     return sprite[NAME] !== BARBARIAN_SPRITE_NAME;
 }
 
+function isDead(sprite) {
+    return sprite[STATUS] === DEAD;
+}
+
 function isSpriteCurrentOpponent(sprite) {
     return SCREENS[screenNumber][OPPONENTS].includes(sprite);
 }

@@ -28,7 +28,6 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
         }
 
         renderSpriteFrame(sprite, requestedAction, path[index++]);
-        console.log('pause:' + pause);
         await sleep(1000 / sprite[FPS]);
 
         if (index == path.length) {

@@ -1,9 +1,14 @@
 var HEADON = 'HEADON';
 
 function isSuccessfulAttack(sprite, opponent) {
-    var distance = sprite[POSITIONS][ATTACK][opponent[NAME]][LEFT] - sprite[POSITIONS][ATTACK][sprite[NAME]][LEFT];
+    let distance = sprite[POSITIONS][ATTACK][opponent[NAME]][LEFT] - sprite[POSITIONS][ATTACK][sprite[NAME]][LEFT];
 
-    var thresholds = sprite[ATTACK_THRESHOLDS];
+    var thresholds;
+    if (!isMonster(sprite)) {
+        thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
+    } else {
+        thresholds = sprite[ATTACK_THRESHOLDS];
+    }
     var successful = false;
     for (var i = 0; i < thresholds.length; i++) {
 
@@ -13,6 +18,7 @@ function isSuccessfulAttack(sprite, opponent) {
         var successfulHeadon = sprite[DIRECTION] === RIGHT &&
             thresholds[i][MIN] < distance &&
             thresholds[i][MAX] > distance;
+        /*
         if (successfulHeadon) {
             console.log('success: sprite: ' + sprite[NAME] + ' min: ' + thresholds[i][MIN] + ' < ' + distance + ' max: ' + thresholds[i][MAX] + ' > ' + distance);
         }
@@ -20,6 +26,7 @@ function isSuccessfulAttack(sprite, opponent) {
         if (successfulTurnaround)  {
             console.log('success: sprite: ' + sprite[NAME] + ' min: ' + -1*thresholds[i][MIN] + ' > ' + distance + ' max: ' + -1*thresholds[i][MAX] + ' < ' + distance);
         }
+        */
 
         if (successfulTurnaround || successfulHeadon) {
             successful = true;

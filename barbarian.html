@@ -38,17 +38,21 @@ $(document).ready(function(){
     var KP_ATTACK = 'KP_ATTACK';
     var KP_PAUSE = 'KP_PAUSE';
     var KP_SPACE = 'KP_SPACE';
+    var KP_CONTROLS = 'KP_CONTROLS';
+    var KP_MAIN = 'KP_MAIN';
 
     // Keypress event names
     var KEYPRESS = {
-        KP_LEFT   : 37,
-        KP_RIGHT  : 39,
-        KP_ATTACK : 65,
-        KP_RUN    : 82,
-        KP_STOP   : 83,
-        KP_JUMP   : 74,
-        KP_PAUSE  : 80,
-        KP_SPACE  : 32,
+        KP_LEFT     : 37,
+        KP_RIGHT    : 39,
+        KP_ATTACK   : 65,
+        KP_RUN      : 82,
+        KP_STOP     : 83,
+        KP_JUMP     : 74,
+        KP_PAUSE    : 80,
+        KP_SPACE    : 32,
+        KP_CONTROLS : 67,
+        KP_MAIN     : 77
     };
 
 
@@ -68,7 +72,7 @@ $(document).ready(function(){
     $('.bridge').css('display', 'block');
     actionHelper(DOG_SPRITE, SIT, 0);
     */
-    startMonsterAttacks();
+    renderSpriteFrame(MONSTER_SPRITE, WALK, 0);
 
     $(document).keydown(function(e) {
 
@@ -81,11 +85,26 @@ $(document).ready(function(){
 
             if (!pause || e.which === KEYPRESS[KP_PAUSE]) {
                 switch (e.which) {
+                    case KEYPRESS[KP_CONTROLS]:
+                        if (isDead(BARBARIAN_SPRITE)) {
+                            $('.start_message').css('display', 'none');
+                            $('.controls_message').css('display', 'block');
+                        }
+                        break;
+                    case KEYPRESS[KP_MAIN]:
+                        if (isDead(BARBARIAN_SPRITE)) {
+                            $('.start_message').css('display', 'block');
+                            $('.controls_message').css('display', 'none');
+                        }
+                        break;
                     case KEYPRESS[KP_SPACE]:
+                        startMonsterAttacks();
+                        $('.barbarian').css('display', 'block');
                         BARBARIAN_SPRITE[STATUS] = ALIVE;
                         stop(BARBARIAN_SPRITE);
                         actionHelper(BARBARIAN_SPRITE, WALK, 0);
                         $('.start_message').css('display', 'none');
+                        $('.controls_message').css('display', 'none');
                         break;
                     case KEYPRESS[KP_PAUSE]:
                         if (pause) {
@@ -169,7 +188,24 @@ $(document).ready(function(){
     <div class="dog"></div>
     <div class="death"></div>
     <div class="pause_message"><h2>Paused</h2></div>
-    <div class="start_message"><h2>Press [SpaceBar]</h2></div>
+    <div class="start_message">
+        <h1>Barbarian!</h1>
+        <p>
+            Press <strong>[spacebar]</strong> to begin<br/>
+            Press <strong>c</strong> to see controls
+        </p>
+    </div>
+    <div class="controls_message">
+        <h1>Control menu</h1>
+        <p>
+            <strong><-</strong> Left<br/>
+            <strong>-></strong> Right<br/>
+            &nbsp;<strong>A</strong> Attack<br/>
+            &nbsp;<strong>J</strong> Jump<br/>
+            &nbsp;<strong>R</strong> Run<br/><br/>
+            Press <strong>M</strong> for main menu
+        </p>
+    </div>
 </div>
 </body>
 </html>

@@ -93,10 +93,19 @@
 .start_message {
     display: block;
     position: absolute;
-    color: red;
-    left: 613px;
+    color: darkred;
+    left: 625px;
     height: 0;
-    bottom: 400px;
+    bottom: 600px;
+}
+
+.controls_message {
+    display: none;
+    position: absolute;
+    color: darkred;
+    left: 600px;
+    height: 0;
+    bottom: 600px;
 }
 
 body {

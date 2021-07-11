@@ -272,7 +272,9 @@ function death(sprite) {
     sprite[STATUS] = DEAD;
     setTimeout(function () {
         animateDeath(sprite);
-        $('.start_message').css('display', 'block');
+        if (!isMonster(sprite)) {
+            $('.start_message').css('display', 'block');
+        }
     }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
 }
 

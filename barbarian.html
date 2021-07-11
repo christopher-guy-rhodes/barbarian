@@ -81,54 +81,61 @@ $(document).ready(function(){
                 BARBARIAN_SPRITE[STATUS] = ALIVE;
             }
 
-            switch(e.which) {
-                case KEYPRESS[KP_PAUSE]:
-                    if (pause) {
-                        pause = false;
-                        actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
-                        startMonsterAttacks();
-                    } else {
-                        console.log('pausing');
-                        console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
-                        pause = true;
-                    }
-                    break;
-                case KEYPRESS[KP_RUN]:
-                    if(BARBARIAN_SPRITE[ACTION] !== RUN) {
-                        actionHelper(BARBARIAN_SPRITE, RUN, 0);
-                    }
-                    break;
-                case KEYPRESS[KP_JUMP]:
-                    if (BARBARIAN_SPRITE[ACTION] !== JUMP) {
-                        // TODO: only include monsters that are in the screen
-                        BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
-                        actionHelper(BARBARIAN_SPRITE, JUMP, 1);
-                    }
-                    break;
-                case KEYPRESS[KP_STOP]:
-                    actionHelper(BARBARIAN_SPRITE, STOP, 1)
-                    BARBARIAN_SPRITE[ACTION] = STOP;
-                    break;
-                case KEYPRESS[KP_RIGHT]:
-                    if (BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) {
-                        BARBARIAN_SPRITE[DIRECTION] = RIGHT;
-                        actionHelper(BARBARIAN_SPRITE, WALK, 0);
-                    }
-                    break;
-                case KEYPRESS[KP_LEFT]:
-                    if (BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) {
-                        BARBARIAN_SPRITE[DIRECTION] = LEFT;
-                        actionHelper(BARBARIAN_SPRITE, WALK, 0);
-                    }
-                    break;
-                case KEYPRESS[KP_ATTACK]:
-                    if (BARBARIAN_SPRITE[ACTION] !== ATTACK) {
-                        // TODO: only include monsters that are in the screen
-                        BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
-                        actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
-                    }
-                    break;
-                default: return; // exit this handler for other keys
+            if (!pause || e.which === KEYPRESS[KP_PAUSE]) {
+                switch (e.which) {
+                    case KEYPRESS[KP_PAUSE]:
+                        if (pause) {
+                            console.log('unpausing');
+                            console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
+                            $('.pause_message').css('display', 'none');
+                            pause = false;
+                            actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
+                            startMonsterAttacks();
+                        } else {
+                            $('.pause_message').css('display', 'block');
+                            console.log('pausing');
+                            console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
+                            pause = true;
+                        }
+                        break;
+                    case KEYPRESS[KP_RUN]:
+                        if (BARBARIAN_SPRITE[ACTION] !== RUN) {
+                            actionHelper(BARBARIAN_SPRITE, RUN, 0);
+                        }
+                        break;
+                    case KEYPRESS[KP_JUMP]:
+                        if (BARBARIAN_SPRITE[ACTION] !== JUMP) {
+                            // TODO: only include monsters that are in the screen
+                            BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
+                            actionHelper(BARBARIAN_SPRITE, JUMP, 1);
+                        }
+                        break;
+                    case KEYPRESS[KP_STOP]:
+                        actionHelper(BARBARIAN_SPRITE, STOP, 1)
+                        BARBARIAN_SPRITE[ACTION] = STOP;
+                        break;
+                    case KEYPRESS[KP_RIGHT]:
+                        if (BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) {
+                            BARBARIAN_SPRITE[DIRECTION] = RIGHT;
+                            actionHelper(BARBARIAN_SPRITE, WALK, 0);
+                        }
+                        break;
+                    case KEYPRESS[KP_LEFT]:
+                        if (BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) {
+                            BARBARIAN_SPRITE[DIRECTION] = LEFT;
+                            actionHelper(BARBARIAN_SPRITE, WALK, 0);
+                        }
+                        break;
+                    case KEYPRESS[KP_ATTACK]:
+                        if (BARBARIAN_SPRITE[ACTION] !== ATTACK) {
+                            // TODO: only include monsters that are in the screen
+                            BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
+                            actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
+                        }
+                        break;
+                    default:
+                        return; // exit this handler for other keys
+                }
             }
         }
         e.preventDefault(); // prevent the default action (scroll / move caret)
@@ -155,6 +162,7 @@ $(document).ready(function(){
     <div class="monster"></div>
     <div class="dog"></div>
     <div class="death"></div>
+    <div class="pause_message"><h2>Paused</h2></div>
 </div>
 </body>
 </html>

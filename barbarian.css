@@ -81,6 +81,15 @@
     bottom: 0;
 }
 
+.pause_message {
+    display: none;
+    position: absolute;
+    color: red;
+    left: 670px;
+    height: 0;
+    bottom: 400px;
+}
+
 body {
     margin: 0px;
 }

@@ -7,6 +7,7 @@
 var screenNumber = 0;
 var canAdvance = false;
 var scrolling = false;
+var pause = false;
 $(document).ready(function(){
 
     // Include constants
@@ -35,6 +36,7 @@ $(document).ready(function(){
     var KP_JUMP = 'KP_JUMP';
     var KP_STOP = 'KP_STOP';
     var KP_ATTACK = 'KP_ATTACK';
+    var KP_PAUSE = 'KP_PAUSE';
 
     // Keypress event names
     var KEYPRESS = {
@@ -43,7 +45,8 @@ $(document).ready(function(){
         KP_ATTACK : 65,
         KP_RUN    : 82,
         KP_STOP   : 83,
-        KP_JUMP   : 74
+        KP_JUMP   : 74,
+        KP_PAUSE  : 80,
     };
 
 
@@ -74,6 +77,17 @@ $(document).ready(function(){
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
             switch(e.which) {
+                case KEYPRESS[KP_PAUSE]:
+                    if (pause) {
+                        pause = false;
+                        actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
+                        startMonsterAttacks();
+                    } else {
+                        console.log('pausing');
+                        console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
+                        pause = true;
+                    }
+                    break;
                 case KEYPRESS[KP_RUN]:
                     if(BARBARIAN_SPRITE[ACTION] !== RUN) {
                         actionHelper(BARBARIAN_SPRITE, RUN, 0);

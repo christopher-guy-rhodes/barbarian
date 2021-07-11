@@ -18,7 +18,8 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
         }
 
         // If the action starts a new animation or the current one should terminate break out of the loop
-        if (handleObstacles(sprite, getObstacles(sprite)) ||
+        if (pause ||
+            handleObstacles(sprite, getObstacles(sprite)) ||
             !isSpriteCurrentOpponent(sprite) ||
             fightOver ||
             fightSequence(sprite, SCREENS[screenNumber][OPPONENTS]) ||
@@ -39,7 +40,9 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
     }
 
     // Action is over, reset state so the action can be executed again if desired
-    if (sprite[ACTION] != WALK && !isMonster(sprite) && sprite[ACTION] === requestedAction) {
+    if (pause) {
+        sprite[SPRITE].stop();
+    }else if (sprite[ACTION] != WALK && !isMonster(sprite) && sprite[ACTION] === requestedAction) {
         sprite[ACTION] = undefined;
         sprite[SPRITE].stop();
     }

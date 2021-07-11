@@ -24,7 +24,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             fightOver ||
             fightSequence(sprite, SCREENS[screenNumber][OPPONENTS]) ||
             monsterTurnaround(sprite, SCREENS[screenNumber][OPPONENTS]) ||
-            hitBoundry(sprite)) {
+            handleBoundry(sprite)) {
             break;
         }
 
@@ -128,7 +128,13 @@ function sleep(ms) {
 function fall(sprite) {
     const bottom = sprite[SPRITE].css('bottom').substring(0, sprite[SPRITE].css('bottom').length - 2);
     const distance = parseInt(bottom) + (sprite[SPRITE].height() / 2);
-    sprite[SPRITE].animate({bottom: -1*200}, distance / FALLING_PIXELS_PER_SECOND * 1000,  'linear');
+
+
+    sprite[SPRITE].animate({bottom: 0}, distance / FALLING_PIXELS_PER_SECOND * 1000,  'linear');
+
+    setTimeout(function () {
+        sprite[SPRITE].css('display', 'none');
+    }, distance / FALLING_PIXELS_PER_SECOND * 1000) ;
 }
 
 function moveRight(sprite) {
@@ -210,7 +216,9 @@ function resetBarbarianActions() {
     BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
 }
 
-function hitBoundry(sprite) {
+
+
+function handleBoundry(sprite) {
     const isRightBoundry = hitRightBoundry(sprite);
     const isLeftBoundry = hitLeftBoundry(sprite);
 
@@ -220,14 +228,12 @@ function hitBoundry(sprite) {
 
     if (isLeftBoundry || isRightBoundry) {
         if (isLeftBoundry && screenNumber > 0) {
-            canAdvance = true;
             screenNumber--;
             advanceBackdrop(sprite, true);
         }
-        if (canAdvance && isRightBoundry && sprite[NAME] === BARBARIAN_SPRITE_NAME) {
-            canAdvance = false;
+        if (isRightBoundry && sprite[NAME] === BARBARIAN_SPRITE_NAME) {
 
-            if (screenNumber < 1) {
+            if (screenNumber < 1 && areAllMonstersDeadOnScreen()) {
                 screenNumber++;
                 advanceBackdrop(sprite);
             }
@@ -285,6 +291,7 @@ async function animateFall(sprite) {
 
 async function animateDeath(sprite) {
 
+    console.log('animating death for ' + sprite[NAME]);
     sprite[SPRITE].stop();
     sprite[STATUS] = DEAD;
 

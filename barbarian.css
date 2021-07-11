@@ -39,12 +39,12 @@
 }
 
 .bridge {
-    height: 800px;
-    width: 800px;
+    height: 48px;
+    width: 149px;
     background-image: url(./sprites/bridge.png);
     background-repeat: no-repeat;
     position: absolute;
-    bottom: -284px;
+    bottom: 116px;
     display: none;
     left: 980px;
 }

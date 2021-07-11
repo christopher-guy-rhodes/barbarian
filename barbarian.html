@@ -73,9 +73,14 @@ $(document).ready(function(){
         keypressTime = new Date().getTime();
 
         var uninterruptable = BARBARIAN_SPRITE[ACTION] === JUMP || BARBARIAN_SPRITE[ACTION] === ATTACK;
-        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && BARBARIAN_SPRITE[STATUS] !== DEAD && !scrolling) {
+        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && !scrolling) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
+
+            if (isDead(BARBARIAN_SPRITE)) {
+                BARBARIAN_SPRITE[STATUS] = ALIVE;
+            }
+
             switch(e.which) {
                 case KEYPRESS[KP_PAUSE]:
                     if (pause) {
@@ -96,7 +101,7 @@ $(document).ready(function(){
                 case KEYPRESS[KP_JUMP]:
                     if (BARBARIAN_SPRITE[ACTION] !== JUMP) {
                         // TODO: only include monsters that are in the screen
-                        BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE]);
+                        BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                         actionHelper(BARBARIAN_SPRITE, JUMP, 1);
                     }
                     break;
@@ -119,7 +124,7 @@ $(document).ready(function(){
                 case KEYPRESS[KP_ATTACK]:
                     if (BARBARIAN_SPRITE[ACTION] !== ATTACK) {
                         // TODO: only include monsters that are in the screen
-                        BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction([BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE]);
+                        BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                         actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
                     }
                     break;

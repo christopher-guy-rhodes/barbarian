@@ -79,6 +79,21 @@ function opponentDefeated(sprite, opponent) {
         isSuccessfulAttack(sprite, opponent);
 }
 
+function areAllMonstersDeadOnScreen() {
+    console.log('have all the monsters in screen ' + screenNumber + ' been defeated ');
+    for (const spr of SCREENS[screenNumber][OPPONENTS]) {
+        if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
+            continue;
+        }
+        if (spr[STATUS] === ALIVE) {
+            return false;
+        }
+        console.log(spr[NAME] + ' has status:' + spr[STATUS]);
+    }
+    return true;
+
+}
+
 function fightSequence(sprite, opponents) {
     var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
 
@@ -91,7 +106,6 @@ function fightSequence(sprite, opponents) {
             console.log('opponent ' + opponent[NAME]  + ' defeated');
             opponent[DEATH][DELAY] = getDeathDelay(sprite, opponent);
             death(opponent);
-            canAdvance = true;
         }
     }
     return false;

@@ -57,7 +57,11 @@ function handleObstacles(sprite, obstacle) {
     if (sprite[NAME] === BARBARIAN_SPRITE_NAME && screenNumber == 1 && $('.bridge').css('display') === 'block' &&
         sprite[SPRITE].offset().left >= 700) {
         //$('.bridge').css('display', 'none');
-        $('.bridge').animate({bottom: '-450px'}, 500, 'linear');
+        $('.bridge').animate({bottom: '0px'}, 300, 'linear');
+
+        setTimeout(function () {
+            $('.bridge').css('display', 'none')
+        }, 300);
     }
 
     for (const obstacle of getObstacles(sprite)) {

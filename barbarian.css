@@ -90,6 +90,15 @@
     bottom: 400px;
 }
 
+.start_message {
+    display: block;
+    position: absolute;
+    color: red;
+    left: 613px;
+    height: 0;
+    bottom: 400px;
+}
+
 body {
     margin: 0px;
 }

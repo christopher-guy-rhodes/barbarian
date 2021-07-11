@@ -30,7 +30,7 @@ BARBARIAN_SPRITE = {
     FPS : SPRITE_FPS,
     currentPixelsPerSecond: 0,
     PIXELS_PER_SECOND : 150,
-    STATUS : ALIVE,
+    STATUS : DEAD,
     FRAMES : {
         ATTACK : {
             LEFT : {

@@ -37,6 +37,7 @@ $(document).ready(function(){
     var KP_STOP = 'KP_STOP';
     var KP_ATTACK = 'KP_ATTACK';
     var KP_PAUSE = 'KP_PAUSE';
+    var KP_SPACE = 'KP_SPACE';
 
     // Keypress event names
     var KEYPRESS = {
@@ -47,6 +48,7 @@ $(document).ready(function(){
         KP_STOP   : 83,
         KP_JUMP   : 74,
         KP_PAUSE  : 80,
+        KP_SPACE  : 32,
     };
 
 
@@ -79,6 +81,12 @@ $(document).ready(function(){
 
             if (!pause || e.which === KEYPRESS[KP_PAUSE]) {
                 switch (e.which) {
+                    case KEYPRESS[KP_SPACE]:
+                        BARBARIAN_SPRITE[STATUS] = ALIVE;
+                        stop(BARBARIAN_SPRITE);
+                        actionHelper(BARBARIAN_SPRITE, WALK, 0);
+                        $('.start_message').css('display', 'none');
+                        break;
                     case KEYPRESS[KP_PAUSE]:
                         if (pause) {
                             console.log('unpausing');
@@ -95,35 +103,37 @@ $(document).ready(function(){
                         }
                         break;
                     case KEYPRESS[KP_RUN]:
-                        if (BARBARIAN_SPRITE[ACTION] !== RUN) {
+                        if (BARBARIAN_SPRITE[ACTION] !== RUN && BARBARIAN_SPRITE[STATUS] !== DEAD) {
                             actionHelper(BARBARIAN_SPRITE, RUN, 0);
                         }
                         break;
                     case KEYPRESS[KP_JUMP]:
-                        if (BARBARIAN_SPRITE[ACTION] !== JUMP) {
+                        if (BARBARIAN_SPRITE[ACTION] !== JUMP && BARBARIAN_SPRITE[STATUS] !== DEAD) {
                             // TODO: only include monsters that are in the screen
                             BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, JUMP, 1);
                         }
                         break;
                     case KEYPRESS[KP_STOP]:
-                        actionHelper(BARBARIAN_SPRITE, STOP, 1)
-                        BARBARIAN_SPRITE[ACTION] = STOP;
+                        if (BARBARIAN_SPRITE[STATUS] !== DEAD) {
+                            actionHelper(BARBARIAN_SPRITE, STOP, 1)
+                            BARBARIAN_SPRITE[ACTION] = STOP;
+                        }
                         break;
                     case KEYPRESS[KP_RIGHT]:
-                        if (BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) {
+                        if ((BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) && BARBARIAN_SPRITE[STATUS] !== DEAD) {
                             BARBARIAN_SPRITE[DIRECTION] = RIGHT;
                             actionHelper(BARBARIAN_SPRITE, WALK, 0);
                         }
                         break;
                     case KEYPRESS[KP_LEFT]:
-                        if (BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) {
+                        if ((BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) && BARBARIAN_SPRITE[STATUS] !== DEAD) {
                             BARBARIAN_SPRITE[DIRECTION] = LEFT;
                             actionHelper(BARBARIAN_SPRITE, WALK, 0);
                         }
                         break;
                     case KEYPRESS[KP_ATTACK]:
-                        if (BARBARIAN_SPRITE[ACTION] !== ATTACK) {
+                        if (BARBARIAN_SPRITE[ACTION] !== ATTACK && BARBARIAN_SPRITE[STATUS] !== DEAD) {
                             // TODO: only include monsters that are in the screen
                             BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
@@ -159,6 +169,7 @@ $(document).ready(function(){
     <div class="dog"></div>
     <div class="death"></div>
     <div class="pause_message"><h2>Paused</h2></div>
+    <div class="start_message"><h2>Press [SpaceBar]</h2></div>
 </div>
 </body>
 </html>

@@ -73,7 +73,7 @@ $(document).ready(function(){
         keypressTime = new Date().getTime();
 
         var uninterruptable = BARBARIAN_SPRITE[ACTION] === JUMP || BARBARIAN_SPRITE[ACTION] === ATTACK;
-        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && !scrolling && !isDead(BARBARIAN_SPRITE)) {
+        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && !scrolling) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
 

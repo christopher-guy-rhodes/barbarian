@@ -293,7 +293,6 @@ async function animateDeath(sprite) {
 
     console.log('animating death for ' + sprite[NAME]);
     sprite[SPRITE].stop();
-    sprite[STATUS] = DEAD;
 
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
         sprite[DEATH][SPRITE].css('left', sprite[SPRITE].offset().left - sprite[SPRITE].width() / 2);

@@ -81,6 +81,7 @@ $(document).ready(function(){
         keypressTime = new Date().getTime();
 
         var uninterruptable = BARBARIAN_SPRITE[ACTION] === JUMP || BARBARIAN_SPRITE[ACTION] === ATTACK;
+        console.log("==> throttle delay:" + KEYPRESS_THROTTLE_DELAY);
         if (!shouldThrottle(lastKeypressTime) && !uninterruptable && !scrolling) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
@@ -104,19 +105,35 @@ $(document).ready(function(){
                     case KEYPRESS[KP_SPACE]:
                         if (isDead(BARBARIAN_SPRITE)) {
                             BARBARIAN_SPRITE[STATUS] = ALIVE;
+                            MONSTER_SPRITE[STATUS] = ALIVE;
+                            DOG_SPRITE[STATUS] = ALIVE;
                             BARBARIAN_SPRITE[ACTION] = undefined;
+                            MONSTER_SPRITE[POSITIONS][ATTACK] = {};
+                            MONSTER_SPRITE[POSITIONS][JUMP] = {};
+                            BARBARIAN_SPRITE[POSITIONS][ATTACK] = {};
+                            BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
+                            DOG_SPRITE[POSITIONS][ATTACK] = {};
+                            DOG_SPRITE[POSITIONS][JUMP] = {};
+                            renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
+
                             // start monster attacks if there are no lives left
                             if (lives < 1) {
                                 lives = 3;
+                                screenNumber = 0;
+                                $('.barbarian').css('display', 'block');
+                                $('.barbarian').css('bottom', '12px');
+                                $('.bridge').css('bottom', '116px');
+                                $('.barbarian').css('left', '-200px');
+                                $('.dog').css('display','none');
+                                $('.dog').css('left', '300px');
+                                $('.bridge').css('display', 'none');
+                                $('.monster').css('display', 'block')
+                                $('.backdrop').css('background-position', '0px');
                                 $('.game_over').css('display', 'none');
                                 $('.monster').css('left', '1000px');
-                                $('.barbarian').css('left', '-200px');
-                                MONSTER_SPRITE[POSITIONS][ATTACK] = {};
-                                MONSTER_SPRITE[POSITIONS][JUMP] = {};
-                                BARBARIAN_SPRITE[POSITIONS][ATTACK] = {};
-                                BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
+                                $('.life1').css('display', 'block');
+                                $('.life2').css('display', 'block');
 
-                                renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
                             } else {
                                 $('.life' + lives).css('display', 'none');
                                 $('.start_message').css('display', 'none');
@@ -146,14 +163,12 @@ $(document).ready(function(){
                         }
                         break;
                     case KEYPRESS[KP_RUN]:
-                        console.log('death delta is ' + (new Date().getTime() - BARBARIAN_SPRITE[DEATH_TIME]));
                         if (BARBARIAN_SPRITE[ACTION] !== RUN && isAliveOrJustDied()) {
                             actionHelper(BARBARIAN_SPRITE, RUN, 0);
                         }
                         break;
                     case KEYPRESS[KP_JUMP]:
                         if (BARBARIAN_SPRITE[ACTION] !== JUMP && isAliveOrJustDied()) {
-                            // TODO: only include monsters that are in the screen
                             BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, JUMP, 1);
                         }
@@ -194,7 +209,12 @@ $(document).ready(function(){
     function shouldThrottle(lastKeypressTime) {
         var elapsed = KEYPRESS_THROTTLE_DELAY;
         if (typeof lastKeypressTime !== undefined) {
-            elapsed = new Date().getTime() - lastKeypressTime
+            elapsed = new Date().getTime() - lastKeypressTime;
+        }
+        if (elapsed < KEYPRESS_THROTTLE_DELAY) {
+            console.log('throttling ' + (elapsed < KEYPRESS_THROTTLE_DELAY));
+        } else {
+            console.log('not throttling');
         }
         return elapsed < KEYPRESS_THROTTLE_DELAY;
     }
@@ -220,14 +240,14 @@ $(document).ready(function(){
         <h1>Game Over</h1>
         <p>
             Press <strong>[spacebar]</strong> to play again<br/>
-            Press <strong>c</strong> to see controls
+            Press <strong>C</strong> to see controls
         </p>
     </div>
     <div class="start_message">
         <h1>Barbarian!</h1>
         <p>
             Press <strong>[spacebar]</strong> to play<br/>
-            Press <strong>c</strong> to see controls
+            Press <strong>C</strong> to see controls
         </p>
     </div>
     <div class="controls_message">

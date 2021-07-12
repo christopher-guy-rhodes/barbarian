@@ -287,7 +287,7 @@ function hitRightBoundry(sprite) {
 function handleDeath(sprite) {
     sprite[DEATH_TIME] = new Date().getTime();
     sprite[STATUS] = DEAD;
-    if (!isMonster(sprite)) {
+    if (!isMonster(sprite) && lives > 0) {
         lives--;
     }
 }
@@ -307,11 +307,16 @@ function death(sprite) {
 }
 
 function isAliveOrJustDied() {
-    return !isDead(BARBARIAN_SPRITE) || new Date().getTime() - BARBARIAN_SPRITE[DEATH_TIME] < 500;
+    return !isDead(BARBARIAN_SPRITE) || isJustDied();
+}
+
+function isJustDied() {
+    return new Date().getTime() - BARBARIAN_SPRITE[DEATH_TIME] < 500;;
 }
 
 async function animateFall(sprite) {
     sprite[SPRITE].stop();
+    lives = 0;
     handleDeath(sprite);
     if (!isMonster(sprite) && lives < 1) {
         $('.game_over').css('display', 'block');

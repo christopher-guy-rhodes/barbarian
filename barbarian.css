@@ -90,6 +90,15 @@
     bottom: 400px;
 }
 
+.game_over {
+    display: none;
+    position: absolute;
+    color: red;
+    left: 625px;
+    height: 0;
+    bottom: 600px;
+}
+
 .start_message {
     display: block;
     position: absolute;
@@ -106,6 +115,34 @@
     left: 600px;
     height: 0;
     bottom: 600px;
+}
+
+.lives {
+    position: absolute;
+}
+
+.life1 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 694px;
+    left: 5px;
+}
+
+.life2 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 694px;
+    left: 42px;
+}
+
+.life3 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 694px;
+    left: 79px;
 }
 
 body {

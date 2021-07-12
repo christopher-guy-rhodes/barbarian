@@ -8,6 +8,7 @@ var screenNumber = 0;
 var canAdvance = false;
 var scrolling = false;
 var pause = false;
+var lives = 3;
 $(document).ready(function(){
 
     // Include constants
@@ -73,6 +74,7 @@ $(document).ready(function(){
     actionHelper(DOG_SPRITE, SIT, 0);
     */
     renderSpriteFrame(MONSTER_SPRITE, WALK, 0);
+    //startMonsterAttacks();
 
     $(document).keydown(function(e) {
 
@@ -88,71 +90,94 @@ $(document).ready(function(){
                     case KEYPRESS[KP_CONTROLS]:
                         if (isDead(BARBARIAN_SPRITE)) {
                             $('.start_message').css('display', 'none');
+                            $('.game_over').css('display', 'none');
                             $('.controls_message').css('display', 'block');
                         }
                         break;
                     case KEYPRESS[KP_MAIN]:
                         if (isDead(BARBARIAN_SPRITE)) {
                             $('.start_message').css('display', 'block');
+                            $('.game_over').css('display', 'none');
                             $('.controls_message').css('display', 'none');
                         }
                         break;
                     case KEYPRESS[KP_SPACE]:
-                        startMonsterAttacks();
-                        $('.barbarian').css('display', 'block');
-                        BARBARIAN_SPRITE[STATUS] = ALIVE;
-                        stop(BARBARIAN_SPRITE);
-                        actionHelper(BARBARIAN_SPRITE, WALK, 0);
-                        $('.start_message').css('display', 'none');
-                        $('.controls_message').css('display', 'none');
+                        if (isDead(BARBARIAN_SPRITE)) {
+                            BARBARIAN_SPRITE[STATUS] = ALIVE;
+                            BARBARIAN_SPRITE[ACTION] = undefined;
+                            // start monster attacks if there are no lives left
+                            if (lives < 1) {
+                                lives = 3;
+                                $('.game_over').css('display', 'none');
+                                $('.monster').css('left', '1000px');
+                                $('.barbarian').css('left', '-200px');
+                                MONSTER_SPRITE[POSITIONS][ATTACK] = {};
+                                MONSTER_SPRITE[POSITIONS][JUMP] = {};
+                                BARBARIAN_SPRITE[POSITIONS][ATTACK] = {};
+                                BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
+
+                                renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
+                            } else {
+                                $('.life' + lives).css('display', 'none');
+                                $('.start_message').css('display', 'none');
+                                $('.controls_message').css('display', 'none');
+                            }
+                            startMonsterAttacks();
+
+                            $('.start_message').css('display', 'none');
+                            actionHelper(BARBARIAN_SPRITE, STOP, 0);
+                        }
                         break;
                     case KEYPRESS[KP_PAUSE]:
-                        if (pause) {
-                            console.log('unpausing');
-                            console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
-                            $('.pause_message').css('display', 'none');
-                            pause = false;
-                            actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
-                            startMonsterAttacks();
-                        } else {
-                            $('.pause_message').css('display', 'block');
-                            console.log('pausing');
-                            console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
-                            pause = true;
+                        if (!isDead(BARBARIAN_SPRITE)) {
+                            if (pause) {
+                                console.log('unpausing');
+                                console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
+                                $('.pause_message').css('display', 'none');
+                                pause = false;
+                                actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
+                                startMonsterAttacks();
+                            } else {
+                                $('.pause_message').css('display', 'block');
+                                console.log('pausing');
+                                console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
+                                pause = true;
+                            }
                         }
                         break;
                     case KEYPRESS[KP_RUN]:
-                        if (BARBARIAN_SPRITE[ACTION] !== RUN && BARBARIAN_SPRITE[STATUS] !== DEAD) {
+                        console.log('death delta is ' + (new Date().getTime() - BARBARIAN_SPRITE[DEATH_TIME]));
+                        if (BARBARIAN_SPRITE[ACTION] !== RUN && isAliveOrJustDied()) {
                             actionHelper(BARBARIAN_SPRITE, RUN, 0);
                         }
                         break;
                     case KEYPRESS[KP_JUMP]:
-                        if (BARBARIAN_SPRITE[ACTION] !== JUMP && BARBARIAN_SPRITE[STATUS] !== DEAD) {
+                        if (BARBARIAN_SPRITE[ACTION] !== JUMP && isAliveOrJustDied()) {
                             // TODO: only include monsters that are in the screen
                             BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, JUMP, 1);
                         }
                         break;
                     case KEYPRESS[KP_STOP]:
-                        if (BARBARIAN_SPRITE[STATUS] !== DEAD) {
+                        if (isAliveOrJustDied()) {
                             actionHelper(BARBARIAN_SPRITE, STOP, 1)
                             BARBARIAN_SPRITE[ACTION] = STOP;
                         }
                         break;
                     case KEYPRESS[KP_RIGHT]:
-                        if ((BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) && BARBARIAN_SPRITE[STATUS] !== DEAD) {
+                        if ((BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== RIGHT) && isAliveOrJustDied()) {
                             BARBARIAN_SPRITE[DIRECTION] = RIGHT;
                             actionHelper(BARBARIAN_SPRITE, WALK, 0);
                         }
                         break;
                     case KEYPRESS[KP_LEFT]:
-                        if ((BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) && BARBARIAN_SPRITE[STATUS] !== DEAD) {
+                        if ((BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) && isAliveOrJustDied()) {
                             BARBARIAN_SPRITE[DIRECTION] = LEFT;
                             actionHelper(BARBARIAN_SPRITE, WALK, 0);
                         }
                         break;
                     case KEYPRESS[KP_ATTACK]:
-                        if (BARBARIAN_SPRITE[ACTION] !== ATTACK && BARBARIAN_SPRITE[STATUS] !== DEAD) {
+                        if (BARBARIAN_SPRITE[ACTION] !== ATTACK && isAliveOrJustDied()) {
                             // TODO: only include monsters that are in the screen
                             BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
@@ -180,6 +205,9 @@ $(document).ready(function(){
 </head>
 <body>
 <div class="backdrop">
+    <img class="life1" src="./sprites/player_icon.png"></img>
+    <img class="life2" src="./sprites/player_icon.png"></img>
+    <img class="life3" src="./sprites/player_icon.png"></img>
     <div class="marker_left"></div>
     <div class="marker_right"></div>
     <div class="bridge"></div>
@@ -188,10 +216,17 @@ $(document).ready(function(){
     <div class="dog"></div>
     <div class="death"></div>
     <div class="pause_message"><h2>Paused</h2></div>
+    <div class="game_over">
+        <h1>Game Over</h1>
+        <p>
+            Press <strong>[spacebar]</strong> to play again<br/>
+            Press <strong>c</strong> to see controls
+        </p>
+    </div>
     <div class="start_message">
         <h1>Barbarian!</h1>
         <p>
-            Press <strong>[spacebar]</strong> to begin<br/>
+            Press <strong>[spacebar]</strong> to play<br/>
             Press <strong>c</strong> to see controls
         </p>
     </div>
@@ -203,6 +238,7 @@ $(document).ready(function(){
             &nbsp;<strong>A</strong> Attack<br/>
             &nbsp;<strong>J</strong> Jump<br/>
             &nbsp;<strong>R</strong> Run<br/><br/>
+            &nbsp;<strong>P</strong> Pause<br/><br/>
             Press <strong>M</strong> for main menu
         </p>
     </div>

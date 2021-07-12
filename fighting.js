@@ -103,7 +103,6 @@ function fightSequence(sprite, opponents) {
             return true;
         }
         if (opponentDefeated(sprite, opponent)) {
-            console.log('opponent ' + opponent[NAME]  + ' defeated');
             opponent[DEATH][DELAY] = getDeathDelay(sprite, opponent);
             death(opponent);
         }

@@ -31,6 +31,7 @@ BARBARIAN_SPRITE = {
     currentPixelsPerSecond: 0,
     PIXELS_PER_SECOND : 150,
     STATUS : DEAD,
+    DEATH_TIME: 0,
     FRAMES : {
         ATTACK : {
             LEFT : {
@@ -105,6 +106,7 @@ DOG_SPRITE = {
     PIXELS_PER_SECOND : DOG_PIXELS_PER_SECOND,
     currentPixelsPerSecond : 0,
     STATUS : ALIVE,
+    DEATH_TIME: 0,
     FRAMES : {
         SIT : {
             LEFT : {
@@ -184,6 +186,7 @@ MONSTER_SPRITE = {
     PIXELS_PER_SECOND : BOG_MONSTER_PIXELS_PER_SECOND,
     currentPixelsPerSecond: BOG_MONSTER_PIXELS_PER_SECOND,
     STATUS : ALIVE,
+    DEATH_TIME: 0,
     FRAMES : {
         WALK : {
             LEFT : {

@@ -206,7 +206,7 @@ MONSTER_SPRITE = {
     },
     BARBARIAN_ATTACK_THRESHOLDS : {
         MIN: 0,
-        MAX: 200
+        MAX: 110
     },
     DEATH : {
         SPRITE : $(".death"),

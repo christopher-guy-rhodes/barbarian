@@ -104,8 +104,16 @@ $(document).ready(function(){
                     case KEYPRESS[KP_SPACE]:
                         if (isDead(BARBARIAN_SPRITE)) {
                             BARBARIAN_SPRITE[STATUS] = ALIVE;
-                            MONSTER_SPRITE[STATUS] = ALIVE;
-                            DOG_SPRITE[STATUS] = ALIVE;
+
+                            for (spr of SCREENS[screenNumber][OPPONENTS]) {
+                                if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
+                                    continue;
+                                }
+                                spr[STATUS] = ALIVE;
+                                spr[SPRITE].css('display', 'block');
+                            }
+
+
                             BARBARIAN_SPRITE[ACTION] = undefined;
                             MONSTER_SPRITE[POSITIONS][ATTACK] = {};
                             MONSTER_SPRITE[POSITIONS][JUMP] = {};

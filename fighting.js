@@ -74,6 +74,7 @@ function areAllMonstersDeadOnScreen() {
             continue;
         }
         if (spr[STATUS] === ALIVE) {
+            console.log(spr[NAME] + ' is not dead');
             return false;
         }
         console.log(spr[NAME] + ' has status:' + spr[STATUS]);

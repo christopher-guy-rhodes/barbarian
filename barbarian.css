@@ -1,5 +1,5 @@
 .barbarian {
-    //border: 1px solid red;
+    /*border: 1px solid red;*/
     height: 400px;
     width: 400px;
     background-image: url(./sprites/sprite.png);
@@ -122,7 +122,7 @@
     height: 43px;
     width: 35px;
     position: absolute;
-    bottom: 750px;
+    bottom: 690px;
     left: 5px;
 }
 
@@ -130,12 +130,12 @@
     height: 43px;
     width: 35px;
     position: absolute;
-    bottom: 750px;
+    bottom: 690px;
     left: 42px;
 }
 
 .debug_sprite_left {
-    display: none;
+    display: block;
     border: 1px solid red;
     height: 0px;
     width: 0px;
@@ -145,22 +145,12 @@
 }
 
 .debug_opponent_left {
-    display: none;
+    display: block;
     border: 1px solid blue;
     height: 0px;
     width: 0px;
     position: absolute;
     bottom: 694px;
-    left: 4px;
-}
-
-.debug_distance {
-    display: none;
-    border: 3px solid green;
-    height: 0px;
-    width: 0px;
-    position: absolute;
-    bottom: 688px;
     left: 4px;
 }
 

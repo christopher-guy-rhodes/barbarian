@@ -24,7 +24,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             }, 2 * BARBARIAN_SPRITE[DEATH][DELAY] * (1 / sprite[FPS]));
         }
 
-        debug(sprite, SCREENS[screenNumber][OPPONENTS]);
+        highlightAttackRango(sprite, SCREENS[screenNumber][OPPONENTS]);
 
         // If the action starts a new animation or the current one should terminate break out of the loop
         if (pause ||
@@ -59,12 +59,29 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
 
 }
 
-function debug(sprite, opponents) {
+function highlightAttackRango(sprite, opponents) {
     //console.log('==> debugging ' + sprite[NAME]);
     if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
         for (var opponent of opponents) {
             if (opponent[NAME] == BARBARIAN_SPRITE_NAME) {
                 continue;
+            }
+
+            var thresholds;
+            //if (!isMonster(sprite)) {
+                thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
+            //} else {
+            //    thresholds = sprite[ATTACK_THRESHOLDS];
+           // }
+
+            let sprite_left = sprite[SPRITE].offset().left;
+            let opponent_left = opponent[SPRITE].offset().left;
+            let distance = Math.abs(sprite_left - opponent_left);
+
+            if (!isDead(sprite) && (distance >= thresholds[MIN] - 100) && (distance <= thresholds[MAX] + 100)) {
+                opponent[SPRITE].css('filter','brightness(300%)');
+            } else {
+                opponent[SPRITE].css('filter','brightness(100%');
             }
             //console.log('==> opponent ' + opponent[NAME]);
         }

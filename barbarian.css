@@ -135,7 +135,7 @@
 }
 
 .debug_sprite_left {
-    display: block;
+    display: none;
     border: 1px solid red;
     height: 0px;
     width: 0px;
@@ -145,7 +145,7 @@
 }
 
 .debug_opponent_left {
-    display: block;
+    display: none;
     border: 1px solid blue;
     height: 0px;
     width: 0px;

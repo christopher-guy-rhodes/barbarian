@@ -15,9 +15,9 @@ function isSuccessfulAttack(sprite, opponent) {
 
     console.log(sprite[NAME] + '\'s distance is ' + distance + ' min:' + thresholds[MIN] + ' max:' + thresholds[MAX]);
     if (successful = distance >= thresholds[MIN] && distance <= thresholds[MAX]) {
-        $('.debug_sprite_left').css('left', sprite_left + 'px');
-        $('.debug_opponent_left').css('left', opponent_left + 'px');
-        console.log(sprite[NAME] + " defeated " + opponent[NAME]);
+        //$('.debug_sprite_left').css('left', sprite_left + 'px');
+        //$('.debug_opponent_left').css('left', opponent_left + 'px');
+        //console.log(sprite[NAME] + " defeated " + opponent[NAME]);
         return true;
     }
     return false;

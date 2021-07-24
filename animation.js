@@ -248,7 +248,7 @@ function startMonsterAttacks() {
         //DOG_SPRITE[SPRITE].animate({left: 1100}, ADVANCE_SCREEN_SCROLL_DURATION, 'linear');
         DOG_SPRITE[SPRITE].css('display', 'block');
         $('.bridge').css('display', 'block');
-        actionHelper(DOG_SPRITE, SIT, 0);
+        actionHelper(DOG_SPRITE, lives < 3 ? ATTACK : SIT, 0);
     }
 }
 

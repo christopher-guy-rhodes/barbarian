@@ -143,26 +143,14 @@ DOG_SPRITE = {
         ATTACK : {},
         JUMP : {}
     },
-    ATTACK_THRESHOLDS : [
-        {
-            MIN : 0,
-            MAX : 100
-        },
-        {
-            MIN : 100,
-            MAX : 315
-        }
-    ],
-    BARBARIAN_ATTACK_THRESHOLDS : [
-        {
-            MIN : 30,
-            MAX : 100
-        },
-        {
-            MIN : 270,
-            MAX : 320
-        }
-    ],
+    ATTACK_THRESHOLDS : {
+        MIN : 30,
+        MAX : 100
+    },
+    BARBARIAN_ATTACK_THRESHOLDS : {
+        MIN : 0,
+        MAX : 200
+    },
     DEATH : {
         SPRITE : $(".death"),
         ANIMATION : DEATH_FRAMES,
@@ -212,26 +200,14 @@ MONSTER_SPRITE = {
     POSITIONS : {
         ATTACK : {}
     },
-    ATTACK_THRESHOLDS : [
-        {
-            MIN : 0,
-            MAX : 100
-        },
-        {
-            MIN : 100,
-            MAX : 315
-        }
-    ],
-    BARBARIAN_ATTACK_THRESHOLDS : [
-        {
-            MIN : 30,
-            MAX : 100
-        },
-        {
-            MIN : 270,
-            MAX : 320
-        }
-    ],
+    ATTACK_THRESHOLDS : {
+        MIN : 30,
+        MAX : 100
+    },
+    BARBARIAN_ATTACK_THRESHOLDS : {
+        MIN: 0,
+        MAX: 200
+    },
     DEATH : {
         SPRITE : $(".death"),
         ANIMATION : DEATH_FRAMES,

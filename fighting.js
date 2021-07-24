@@ -1,7 +1,9 @@
 var HEADON = 'HEADON';
 
 function isSuccessfulAttack(sprite, opponent) {
-    let distance = sprite[POSITIONS][ATTACK][opponent[NAME]][LEFT] - sprite[POSITIONS][ATTACK][sprite[NAME]][LEFT];
+    let sprite_left = sprite[SPRITE].offset().left;
+    let opponent_left = opponent[SPRITE].offset().left;
+    let distance = Math.abs(sprite_left - opponent_left);
 
     var thresholds;
     if (!isMonster(sprite)) {
@@ -10,29 +12,15 @@ function isSuccessfulAttack(sprite, opponent) {
         thresholds = sprite[ATTACK_THRESHOLDS];
     }
     var successful = false;
-    for (var i = 0; i < thresholds.length; i++) {
 
-        var successfulTurnaround = sprite[DIRECTION] === LEFT &&
-            -1 * thresholds[i][MIN] > distance &&
-            -1 * thresholds[i][MAX] < distance;
-        var successfulHeadon = sprite[DIRECTION] === RIGHT &&
-            thresholds[i][MIN] < distance &&
-            thresholds[i][MAX] > distance;
-        /*
-        if (successfulHeadon) {
-            console.log('success: sprite: ' + sprite[NAME] + ' min: ' + thresholds[i][MIN] + ' < ' + distance + ' max: ' + thresholds[i][MAX] + ' > ' + distance);
-        }
-
-        if (successfulTurnaround)  {
-            console.log('success: sprite: ' + sprite[NAME] + ' min: ' + -1*thresholds[i][MIN] + ' > ' + distance + ' max: ' + -1*thresholds[i][MAX] + ' < ' + distance);
-        }
-        */
-
-        if (successfulTurnaround || successfulHeadon) {
-            successful = true;
-        }
+    console.log(sprite[NAME] + '\'s distance is ' + distance + ' min:' + thresholds[MIN] + ' max:' + thresholds[MAX]);
+    if (successful = distance >= thresholds[MIN] && distance <= thresholds[MAX]) {
+        $('.debug_sprite_left').css('left', sprite_left + 'px');
+        $('.debug_opponent_left').css('left', opponent_left + 'px');
+        console.log(sprite[NAME] + " defeated " + opponent[NAME]);
+        return true;
     }
-    return successful;
+    return false;
 }
 
 function launchMonsterAttack(sprite, opponent, opponents) {
@@ -53,8 +41,8 @@ function getProximity(sprite, opponent) {
 
 
 
-function hasAttacked(sprite) {
-    return Object.keys(sprite[POSITIONS][ATTACK]).length > 0;
+function isAttacking(sprite) {
+    return sprite[ACTION] === ATTACK;
 }
 
 function hasJumpEvaded(sprite, opponent) {
@@ -73,7 +61,7 @@ function areBothAlive(sprite, opponent) {
 }
 
 function opponentDefeated(sprite, opponent) {
-    return hasAttacked(sprite) &&
+    return isAttacking(sprite) &&
         !hasJumpEvaded(sprite, opponent) &&
         areBothAlive(sprite, opponent) &&
         isSuccessfulAttack(sprite, opponent);

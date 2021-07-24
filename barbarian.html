@@ -81,7 +81,6 @@ $(document).ready(function(){
         keypressTime = new Date().getTime();
 
         var uninterruptable = BARBARIAN_SPRITE[ACTION] === JUMP || BARBARIAN_SPRITE[ACTION] === ATTACK;
-        console.log("==> throttle delay:" + KEYPRESS_THROTTLE_DELAY);
         if (!shouldThrottle(lastKeypressTime) && !uninterruptable && !scrolling) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
@@ -193,7 +192,6 @@ $(document).ready(function(){
                         break;
                     case KEYPRESS[KP_ATTACK]:
                         if (BARBARIAN_SPRITE[ACTION] !== ATTACK && isAliveOrJustDied()) {
-                            // TODO: only include monsters that are in the screen
                             BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
                         }
@@ -211,11 +209,6 @@ $(document).ready(function(){
         if (typeof lastKeypressTime !== undefined) {
             elapsed = new Date().getTime() - lastKeypressTime;
         }
-        if (elapsed < KEYPRESS_THROTTLE_DELAY) {
-            console.log('throttling ' + (elapsed < KEYPRESS_THROTTLE_DELAY));
-        } else {
-            console.log('not throttling');
-        }
         return elapsed < KEYPRESS_THROTTLE_DELAY;
     }
 
@@ -227,7 +220,9 @@ $(document).ready(function(){
 <div class="backdrop">
     <img class="life1" src="./sprites/player_icon.png"></img>
     <img class="life2" src="./sprites/player_icon.png"></img>
-    <img class="life3" src="./sprites/player_icon.png"></img>
+    <div class="debug_sprite_left"></div>
+    <div class="debug_opponent_left"></div>
+    <div class="debug_distance"></div>
     <div class="marker_left"></div>
     <div class="marker_right"></div>
     <div class="bridge"></div>

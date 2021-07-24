@@ -9,16 +9,13 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
     let fightOver = false;
     let gameOver = false;
 
-    if (sprite[NAME] == BARBARIAN_SPRITE_NAME) {
-        console.log("==> requestedAction for " + sprite[NAME] + ":" + requestedAction);
-    }
     while (sprite[ACTION] === requestedAction && sprite[DIRECTION] === requestedDirection && index < path.length) {
 
         // If the sprite has been killed delay stopping the animation to let the action sequence complete
         if (isDead(sprite)) {
-            setTimeout(function () {
+            //setTimeout(function () {
                 fightOver = true;
-            }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
+            //}, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
         }
 
         if (lives < 1) {
@@ -26,6 +23,8 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
                 gameOver = true;
             }, 2 * BARBARIAN_SPRITE[DEATH][DELAY] * (1 / sprite[FPS]));
         }
+
+        debug(sprite, SCREENS[screenNumber][OPPONENTS]);
 
         // If the action starts a new animation or the current one should terminate break out of the loop
         if (pause ||
@@ -36,9 +35,6 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             fightSequence(sprite, SCREENS[screenNumber][OPPONENTS]) ||
             monsterTurnaround(sprite, SCREENS[screenNumber][OPPONENTS]) ||
             handleBoundry(sprite)) {
-            if (sprite[NAME] == BARBARIAN_SPRITE_NAME) {
-                console.log("==> requestedAction for " + sprite[NAME] + ":" + requestedAction + " and we bailed. fight over:" + fightOver);
-            }
             break;
         }
 
@@ -61,6 +57,18 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
         sprite[SPRITE].stop();
     }
 
+}
+
+function debug(sprite, opponents) {
+    //console.log('==> debugging ' + sprite[NAME]);
+    if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
+        for (var opponent of opponents) {
+            if (opponent[NAME] == BARBARIAN_SPRITE_NAME) {
+                continue;
+            }
+            //console.log('==> opponent ' + opponent[NAME]);
+        }
+    }
 }
 
 function actionHelper(sprite, requestedAction, times) {
@@ -294,7 +302,7 @@ function handleDeath(sprite) {
 
 function death(sprite) {
     handleDeath(sprite);
-    setTimeout(function () {
+    //setTimeout(function () {
         animateDeath(sprite);
         if (!isMonster(sprite) && lives > 0) {
             $('.start_message').css('display', 'block');
@@ -303,7 +311,7 @@ function death(sprite) {
             console.log('lives is ' + lives + ' and that is less than 1');
             $('.game_over').css('display', 'block');
         }
-    }, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
+    //}, sprite[DEATH][DELAY] * (1 / sprite[FPS]));
 }
 
 function isAliveOrJustDied() {

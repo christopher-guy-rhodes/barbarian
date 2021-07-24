@@ -125,6 +125,10 @@ $(document).ready(function(){
 
                             // start monster attacks if there are no lives left
                             if (lives < 1) {
+
+                                MONSTER_SPRITE[STATUS] = ALIVE;
+                                DOG_SPRITE[STATUS] = ALIVE;
+
                                 lives = 3;
                                 screenNumber = 0;
                                 $('.barbarian').css('display', 'block');

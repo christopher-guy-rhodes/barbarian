@@ -70,9 +70,14 @@ function handleObstacles(sprite, obstacle) {
                 moveSpriteToHeight(sprite, obstacle[HEIGHT]);
             } else {
                 actionHelper(sprite, getFailAction(obstacle), 1);
-                return true;
+                console.log('==> hit boundry');
+                // Allow barbarian to attack at boundary
+                if (sprite[ACTION] !== ATTACK) {
+                    return true;
+                }
             }
         }
     }
+
     return false;
 }

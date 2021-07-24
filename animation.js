@@ -78,7 +78,7 @@ function highlightAttackRango(sprite, opponents) {
             let opponent_left = opponent[SPRITE].offset().left;
             let distance = Math.abs(sprite_left - opponent_left);
 
-            if (!isDead(sprite) && (distance >= thresholds[MIN] - 100) && (distance <= thresholds[MAX] + 100)) {
+            if (!isDead(sprite) && (distance >= thresholds[MIN] - 100) && (distance <= thresholds[MAX] + 150)) {
                 opponent[SPRITE].css('filter','brightness(300%)');
             } else {
                 opponent[SPRITE].css('filter','brightness(100%');

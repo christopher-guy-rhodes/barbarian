@@ -178,6 +178,7 @@ function fall(sprite) {
 
     setTimeout(function () {
         sprite[SPRITE].css('display', 'none');
+        sprite[ACTION] = STOP;
     }, distance / FALLING_PIXELS_PER_SECOND * 1000) ;
 }
 

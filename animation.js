@@ -130,9 +130,9 @@ async function advanceBackdrop(sprite, reverse = false) {
     // Animate the sprite to move with the screen scroll. The animation is set to take as long as the screen scroll takes
     scrolling = true;
     if (reverse) {
-        sprite[SPRITE].animate({left:  (windowWidth - sprite[SPRITE].width()/2) + 'px'}, (numberOfIterations * sleepPerIterationDuration), 'linear');
+        sprite[SPRITE].animate({left:  (windowWidth - sprite[SPRITE].width()) + 'px'}, (numberOfIterations * sleepPerIterationDuration), 'linear');
     } else {
-        sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'}, (numberOfIterations * sleepPerIterationDuration), 'linear');
+        sprite[SPRITE].animate({left: '0px'}, (numberOfIterations * sleepPerIterationDuration), 'linear');
     }
     for (let i = 0; i < numberOfIterations ; i++) {
         if (reverse) {
@@ -182,26 +182,26 @@ function fall(sprite) {
 }
 
 function moveRight(sprite) {
-    const distance = windowWidth - sprite[SPRITE].offset().left - (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) + 'px'},
+    const distance = windowWidth - sprite[SPRITE].offset().left - (sprite[SPRITE].width());
+    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width()) + 'px'},
         distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function moveLeft(sprite) {
-    const distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'},
+    const distance = sprite[SPRITE].offset().left;
+    sprite[SPRITE].animate({left: '0px'},
         distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function runRight(sprite) {
-    const distance = (windowWidth - sprite[SPRITE].offset().left) - (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width() / 2) +  'px'},
+    const distance = (windowWidth - sprite[SPRITE].offset().left) - (sprite[SPRITE].width());
+    sprite[SPRITE].animate({left: windowWidth - (sprite[SPRITE].width()) +  'px'},
         distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
 function runLeft(sprite) {
-    const distance = sprite[SPRITE].offset().left + (sprite[SPRITE].width() / 2);
-    sprite[SPRITE].animate({left: '-' + (sprite[SPRITE].width() / 2) + 'px'},
+    const distance = sprite[SPRITE].offset().left;
+    sprite[SPRITE].animate({left: '0px'},
         distance / sprite['currentPixelsPerSecond'] * 1000, 'linear');
 }
 
@@ -315,11 +315,11 @@ function renderDeathSpriteFrame(sprite, position) {
 }
 
 function hitLeftBoundry(sprite) {
-    return sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left === (-1*sprite[SPRITE].width() / 2);
+    return sprite[DIRECTION] === LEFT && sprite[SPRITE].offset().left === 0;
 }
 
 function hitRightBoundry(sprite) {
-    return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth - sprite[SPRITE].width() / 2;
+    return sprite[DIRECTION] === RIGHT && sprite[SPRITE].offset().left === windowWidth - sprite[SPRITE].width();
 }
 
 function handleDeath(sprite) {

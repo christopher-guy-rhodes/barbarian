@@ -263,7 +263,7 @@ function startMonsterAttacks() {
         audio.play();
         setTimeout(function() {
             audio.pause();
-        }, 3400);
+        }, 4000);
 
         $('.bridge').css('display', 'block');
         if (DOG_SPRITE[STATUS] != DEAD) {

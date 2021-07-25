@@ -340,6 +340,13 @@ function death(sprite) {
         animateDeath(sprite);
         if (!isMonster(sprite) && lives > 0) {
             $('.start_message').css('display', 'block');
+        } else {
+            var audio = new Audio('/sounds/fire.mp3');
+            audio.play();
+            setTimeout(function() {
+                audio.pause();
+            }, 3000);
+
         }
         if (!isMonster(sprite) && lives < 1) {
             console.log('lives is ' + lives + ' and that is less than 1');

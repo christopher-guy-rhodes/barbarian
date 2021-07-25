@@ -227,6 +227,10 @@ $(document).ready(function(){
                         break;
                     case KEYPRESS[KP_ATTACK]:
                         if (BARBARIAN_SPRITE[ACTION] !== ATTACK && isAliveOrJustDied()) {
+
+                            var audio = new Audio('/sounds/grunt.mp3');
+                            audio.play();
+
                             BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
                         }

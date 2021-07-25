@@ -10,6 +10,7 @@ var scrolling = false;
 var pause = false;
 var lives = 3;
 var hints = true;
+var theme = new Audio('/sounds/theme.mp3');
 $(document).ready(function(){
 
     // Include constants
@@ -80,6 +81,10 @@ $(document).ready(function(){
     //startMonsterAttacks();
 
     $(document).keydown(function(e) {
+
+        theme.play();
+        theme.loop = true;
+
 
         keypressTime = new Date().getTime();
 
@@ -234,6 +239,8 @@ $(document).ready(function(){
                                 audio.pause();
                             }, 800);
 
+
+
                             BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
                         }
@@ -295,6 +302,7 @@ $(document).ready(function(){
             This is a twist on a game I played as a kid. I created sprites from YouTube videos,<br/>
             animated them and created my own version of game. Enjoy!<br/><br/>
             Artwork and concept from Barbarian by Psygnosis<br/><br/>
+            Theme Sond: Death Of Rexor (Conan The Barbarian/Soundtrack Version)<br/><br/>
             Press <strong>[spacebar]</strong> to play<br/>
             Press <strong>C</strong> to see controls
         </p>

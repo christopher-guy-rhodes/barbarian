@@ -9,6 +9,7 @@ var canAdvance = false;
 var scrolling = false;
 var pause = false;
 var lives = 3;
+var hints = true;
 $(document).ready(function(){
 
     // Include constants
@@ -41,6 +42,7 @@ $(document).ready(function(){
     var KP_SPACE = 'KP_SPACE';
     var KP_CONTROLS = 'KP_CONTROLS';
     var KP_MAIN = 'KP_MAIN';
+    var KP_HINTS = 'KP_HINTS';
 
     // Keypress event names
     var KEYPRESS = {
@@ -53,7 +55,8 @@ $(document).ready(function(){
         KP_PAUSE    : 80,
         KP_SPACE    : 32,
         KP_CONTROLS : 67,
-        KP_MAIN     : 77
+        KP_MAIN     : 77,
+        KP_HINTS    : 72
     };
 
 
@@ -136,7 +139,7 @@ $(document).ready(function(){
                                 $('.bridge').css('bottom', '116px');
                                 $('.barbarian').css('left', '-200px');
                                 $('.dog').css('display','none');
-                                $('.dog').css('left', '300px');
+                                $('.dog').css('left', '850px');
                                 $('.bridge').css('display', 'none');
                                 $('.monster').css('display', 'block')
                                 $('.backdrop').css('background-position', '0px');
@@ -144,6 +147,7 @@ $(document).ready(function(){
                                 $('.monster').css('left', '1000px');
                                 $('.life1').css('display', 'block');
                                 $('.life2').css('display', 'block');
+                                $('.demo_over_message').css('display', 'none');
 
                             } else {
                                 $('.life' + lives).css('display', 'none');
@@ -172,6 +176,22 @@ $(document).ready(function(){
                                 pause = true;
                             }
                         }
+                        break;
+                    case KEYPRESS[KP_HINTS]:
+                        console.log('==> hints togged');
+                            if (hints) {
+                                $('.hints_message_on').css('display', 'none');
+                                $('.hints_message_off').css('display', 'block');
+                                hints = false;
+                            } else {
+                                $('.hints_message_on').css('display', 'block');
+                                $('.hints_message_off').css('display', 'none');
+                                hints = true;
+                            }
+                            setTimeout(function () {
+                                $('.hints_message_off').css('display', 'none');
+                                $('.hints_message_on').css('display', 'none');
+                            }, 2000);
                         break;
                     case KEYPRESS[KP_RUN]:
                         if (BARBARIAN_SPRITE[ACTION] !== RUN && isAliveOrJustDied()) {
@@ -243,6 +263,14 @@ $(document).ready(function(){
     <div class="dog"></div>
     <div class="death"></div>
     <div class="pause_message"><h2>Paused</h2></div>
+    <div class="hints_message_off"><h2>Hints Off</h2></div>
+    <div class="hints_message_on"><h2>Hints On</h2></div>
+    <div class="demo_over_message">
+        <h1>Thank you for planing this demo!</h1>
+        <p>
+            Press <strong>[spacebar]</strong> to play again<br/>
+        </p>
+    </div>
     <div class="game_over">
         <h1>Game Over</h1>
         <p>
@@ -262,10 +290,12 @@ $(document).ready(function(){
         <p>
             <strong><-</strong> Left<br/>
             <strong>-></strong> Right<br/>
-            &nbsp;<strong>A</strong> Attack<br/>
-            &nbsp;<strong>J</strong> Jump<br/>
-            &nbsp;<strong>R</strong> Run<br/><br/>
-            &nbsp;<strong>P</strong> Pause<br/><br/>
+            <strong>A</strong> Attack<br/>
+            <strong>J</strong> Jump<br/>
+            <strong>R</strong> Run<br/><br/>
+            <strong>P</strong> Pause<br/>
+            <string>H</string> Hints Toggle</string><br/>
+
             Press <strong>M</strong> for main menu
         </p>
     </div>

@@ -25,8 +25,8 @@
     background-image: url(./sprites/dog.png);
     background-position: -1200px -400px;
     position: absolute;
-    left:300px;
-    bottom: 82px;
+    left:850px;
+    bottom: 160px;
     display: none;
 }
 
@@ -83,9 +83,27 @@
 }
 
 .pause_message {
+     display: none;
+     position: absolute;
+     color: red;
+     left: 670px;
+     height: 0;
+     bottom: 400px;
+}
+
+.hints_message_on {
     display: none;
     position: absolute;
-    color: red;
+    color: green;
+    left: 670px;
+    height: 0;
+    bottom: 400px;
+}
+
+.hints_message_off {
+    display: none;
+    position: absolute;
+    color: green;
     left: 670px;
     height: 0;
     bottom: 400px;
@@ -114,6 +132,15 @@
     position: absolute;
     color: darkred;
     left: 600px;
+    height: 0;
+    bottom: 630px;
+}
+
+.demo_over_message {
+    display: none;
+    position: absolute;
+    color: green;
+    left: 485px;
     height: 0;
     bottom: 600px;
 }

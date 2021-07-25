@@ -24,7 +24,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             }, 2 * BARBARIAN_SPRITE[DEATH][DELAY] * (1 / sprite[FPS]));
         }
 
-        highlightAttackRango(sprite, SCREENS[screenNumber][OPPONENTS]);
+        highlightAttackRange(sprite, SCREENS[screenNumber][OPPONENTS]);
 
         // If the action starts a new animation or the current one should terminate break out of the loop
         if (pause ||
@@ -59,7 +59,10 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
 
 }
 
-function highlightAttackRango(sprite, opponents) {
+function highlightAttackRange(sprite, opponents) {
+    if (!hints) {
+        return;
+    }
     //console.log('==> debugging ' + sprite[NAME]);
     if (sprite[NAME] === BARBARIAN_SPRITE_NAME) {
         for (var opponent of opponents) {
@@ -263,20 +266,30 @@ function handleBoundry(sprite) {
     const isRightBoundry = hitRightBoundry(sprite);
     const isLeftBoundry = hitLeftBoundry(sprite);
 
+    console.log('handling boundry');
     if (!isLeftBoundry && !isRightBoundry) {
         return false;
     }
 
     if (isLeftBoundry || isRightBoundry) {
+        console.log('hit boundry');
         if (isLeftBoundry && screenNumber > 0) {
             screenNumber--;
             advanceBackdrop(sprite, true);
         }
         if (isRightBoundry && sprite[NAME] === BARBARIAN_SPRITE_NAME) {
-
-            if (screenNumber < 1 && areAllMonstersDeadOnScreen()) {
+            console.log('right boundry');
+            if (screenNumber < 2 && areAllMonstersDeadOnScreen()) {
                 screenNumber++;
-                advanceBackdrop(sprite);
+                if (screenNumber < 2) {
+                    advanceBackdrop(sprite);
+                }
+            }
+            if (screenNumber == 2) {
+                $('.demo_over_message').css('display', 'block');
+                lives = 0;
+                BARBARIAN_SPRITE[STATUS] = DEAD;
+                screenNumber = 0;
             }
         }
 

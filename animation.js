@@ -355,6 +355,11 @@ function death(sprite) {
         animateDeath(sprite);
         if (!isMonster(sprite) && lives > 0) {
             $('.start_message').css('display', 'block');
+            var audio = new Audio('/sounds/grunt.mp3');
+            audio.play();
+            setTimeout(function() {
+                audio.pause();
+            }, 800);
         } else {
             var audio = new Audio('/sounds/fire.mp3');
             audio.play();

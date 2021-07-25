@@ -230,6 +230,9 @@ $(document).ready(function(){
 
                             var audio = new Audio('/sounds/grunt.mp3');
                             audio.play();
+                            setTimeout(function() {
+                                audio.pause();
+                            }, 800);
 
                             BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, ATTACK, 1);

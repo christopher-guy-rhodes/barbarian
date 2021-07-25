@@ -246,10 +246,25 @@ function initializeScreen() {
 
 function startMonsterAttacks() {
     if (screenNumber === 0) {
+
+        var audio = new Audio('/sounds/monster.mp3');
+        audio.play();
+        setTimeout(function() {
+            audio.pause();
+        }, 3400);
+
         actionHelper(MONSTER_SPRITE, WALK, 0);
     }
 
     if (screenNumber == 1) {
+
+        // ==>
+        var audio = new Audio('/sounds/growl.mp3');
+        audio.play();
+        setTimeout(function() {
+            audio.pause();
+        }, 3400);
+
         $('.bridge').css('display', 'block');
         if (DOG_SPRITE[STATUS] != DEAD) {
             DOG_SPRITE[SPRITE].css('left', '850px');
@@ -370,6 +385,12 @@ async function animateFall(sprite) {
     if (!isMonster(sprite) && lives < 1) {
         $('.game_over').css('display', 'block');
     }
+
+    var audio = new Audio('/sounds/fall.mp3');
+    audio.play();
+    setTimeout(function() {
+        audio.pause();
+    }, 3400);
 
     fall(sprite);
     const direction = sprite[DIRECTION];

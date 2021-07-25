@@ -247,11 +247,15 @@ function startMonsterAttacks() {
     if (screenNumber === 0) {
         actionHelper(MONSTER_SPRITE, WALK, 0);
     }
-    if (screenNumber == 1 && DOG_SPRITE[STATUS] != DEAD) {
-        //DOG_SPRITE[SPRITE].animate({left: 1100}, ADVANCE_SCREEN_SCROLL_DURATION, 'linear');
-        DOG_SPRITE[SPRITE].css('display', 'block');
+
+    if (screenNumber == 1) {
         $('.bridge').css('display', 'block');
-        actionHelper(DOG_SPRITE, lives < 3 ? ATTACK : SIT, 0);
+        if (DOG_SPRITE[STATUS] != DEAD) {
+            DOG_SPRITE[SPRITE].css('left', '850px');
+            DOG_SPRITE[SPRITE].css('bottom', '160px');
+            DOG_SPRITE[SPRITE].css('display', 'block');
+            actionHelper(DOG_SPRITE, lives < 3 ? ATTACK : SIT, 0);
+        }
     }
 }
 
@@ -266,7 +270,6 @@ function handleBoundry(sprite) {
     const isRightBoundry = hitRightBoundry(sprite);
     const isLeftBoundry = hitLeftBoundry(sprite);
 
-    console.log('handling boundry');
     if (!isLeftBoundry && !isRightBoundry) {
         return false;
     }

@@ -144,12 +144,12 @@ DOG_SPRITE = {
         JUMP : {}
     },
     ATTACK_THRESHOLDS : {
-        MIN : 10,
+        MIN : 0,
         MAX : 100
     },
     BARBARIAN_ATTACK_THRESHOLDS : {
         MIN : 0,
-        MAX : 110
+        MAX : 115
     },
     DEATH : {
         SPRITE : $(".death"),
@@ -201,12 +201,12 @@ MONSTER_SPRITE = {
         ATTACK : {}
     },
     ATTACK_THRESHOLDS : {
-        MIN : 10,
+        MIN : 0,
         MAX : 100
     },
     BARBARIAN_ATTACK_THRESHOLDS : {
         MIN: 0,
-        MAX: 110
+        MAX: 100
     },
     DEATH : {
         SPRITE : $(".death"),

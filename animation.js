@@ -237,9 +237,12 @@ function monsterTurnaround(sprite, opponents) {
 }
 
 function initializeScreen() {
-    if (screenNumber !== 1) {
-        $('.bridge').css('display', 'none');
+
+    if (screenNumber == 1) {
+        DOG_SPRITE[STATUS] = DEAD;
+    } else {
         DOG_SPRITE[SPRITE].css('display', 'none');
+        $('.bridge').css('display', 'none');
     }
 
 }
@@ -255,7 +258,12 @@ function startMonsterAttacks() {
             }, 3400);
         }
 
-        actionHelper(MONSTER_SPRITE, WALK, 0);
+        console.log('starting monster walk and it is ' + MONSTER_SPRITE[STATUS] + ' and ' + MONSTER_SPRITE[ACTION]);
+        if (MONSTER_SPRITE[STATUS] == DEAD) {
+            $('.monster').css('display', 'block');
+            MONSTER_SPRITE[STATUS] = ALIVE;
+            actionHelper(MONSTER_SPRITE, WALK, 0);
+        }
     }
 
     if (screenNumber == 1) {
@@ -269,12 +277,13 @@ function startMonsterAttacks() {
         }
 
         $('.bridge').css('display', 'block');
-        if (DOG_SPRITE[STATUS] != DEAD) {
-            DOG_SPRITE[SPRITE].css('left', '850px');
-            DOG_SPRITE[SPRITE].css('bottom', '160px');
+        if (DOG_SPRITE[STATUS] == DEAD) {
+
+            DOG_SPRITE[STATUS] = ALIVE;
             DOG_SPRITE[SPRITE].css('display', 'block');
             actionHelper(DOG_SPRITE, SIT, 0);
         }
+
     }
 }
 

@@ -121,6 +121,7 @@ $(document).ready(function(){
                         if (isDead(BARBARIAN_SPRITE)) {
                             BARBARIAN_SPRITE[STATUS] = ALIVE;
 
+                            /*
                             for (spr of SCREENS[screenNumber][OPPONENTS]) {
                                 if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
                                     continue;
@@ -128,6 +129,8 @@ $(document).ready(function(){
                                 spr[STATUS] = ALIVE;
                                 spr[SPRITE].css('display', 'block');
                             }
+
+                             */
 
 
                             BARBARIAN_SPRITE[ACTION] = undefined;
@@ -142,8 +145,8 @@ $(document).ready(function(){
                             // start monster attacks if there are no lives left
                             if (lives < 1) {
 
-                                MONSTER_SPRITE[STATUS] = ALIVE;
-                                DOG_SPRITE[STATUS] = ALIVE;
+                                MONSTER_SPRITE[STATUS] = DEAD;
+                                DOG_SPRITE[STATUS] = DEAD;
 
                                 lives = 3;
                                 screenNumber = 0;

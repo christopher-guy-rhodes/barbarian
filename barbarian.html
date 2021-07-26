@@ -119,7 +119,10 @@ $(document).ready(function(){
                         break;
                     case KEYPRESS[KP_SPACE]:
                         if (isDead(BARBARIAN_SPRITE)) {
-                            BARBARIAN_SPRITE[STATUS] = ALIVE;
+                            // Wait a bit to let the death sequence complete in case it is still going
+                            setTimeout(function () {
+                                BARBARIAN_SPRITE[STATUS] = ALIVE;
+                            }, 500);
 
                             /*
                             for (spr of SCREENS[screenNumber][OPPONENTS]) {

@@ -180,7 +180,9 @@ $(document).ready(function(){
                                 console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
                                 $('.pause_message').css('display', 'none');
                                 pause = false;
-                                actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
+                                if (BARBARIAN_SPRITE[ACTION] !== undefined) {
+                                    actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
+                                }
                                 startMonsterAttacks();
                             } else {
                                 $('.pause_message').css('display', 'block');

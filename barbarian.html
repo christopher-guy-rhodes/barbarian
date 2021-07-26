@@ -87,9 +87,10 @@ $(document).ready(function(){
 
     $(document).keydown(function(e) {
 
-        //theme.play();
-        //theme.loop = true;
-
+        if (sound) {
+            theme.play();
+            theme.loop = true;
+        }
 
         keypressTime = new Date().getTime();
 
@@ -218,10 +219,12 @@ $(document).ready(function(){
                             $('.sound_message_on').css('display', 'none');
                             $('.sound_message_off').css('display', 'block');
                             sound = false;
+                            theme.pause();
                         } else {
                             $('.sound_message_on').css('display', 'block');
                             $('.sound_message_off').css('display', 'none');
                             sound = true;
+                            theme.play();
                         }
                         setTimeout(function () {
                             $('.sound_message_off').css('display', 'none');

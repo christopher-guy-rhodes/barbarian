@@ -14,7 +14,7 @@
     width: 400px;
     background-image: url(./sprites/monsters.png);
     position: absolute;
-    right: 0;
+    left: 850px;
     bottom: 12px;
 }
 

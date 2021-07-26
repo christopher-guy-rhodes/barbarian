@@ -238,8 +238,14 @@ function monsterTurnaround(sprite, opponents) {
 
 function initializeScreen() {
 
+    if (screenNumber == 0) {
+        $('.monster').css('left', '850px');
+    }
     if (screenNumber == 1) {
         DOG_SPRITE[STATUS] = DEAD;
+        DOG_SPRITE[SPRITE].css('left', '850px');
+        DOG_SPRITE[SPRITE].css('bottom', '160px');
+
     } else {
         DOG_SPRITE[SPRITE].css('display', 'none');
         $('.bridge').css('display', 'none');

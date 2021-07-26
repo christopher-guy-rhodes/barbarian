@@ -10,7 +10,10 @@ var scrolling = false;
 var pause = false;
 var lives = 3;
 var hints = true;
-var theme = new Audio('/sounds/theme.mp3');
+var sound = true;
+if (sound) {
+    var theme = new Audio('/sounds/theme.mp3');
+}
 $(document).ready(function(){
 
     // Include constants
@@ -44,6 +47,7 @@ $(document).ready(function(){
     var KP_CONTROLS = 'KP_CONTROLS';
     var KP_MAIN = 'KP_MAIN';
     var KP_HINTS = 'KP_HINTS';
+    var KP_SOUND = 'KP_SOUND';
 
     // Keypress event names
     var KEYPRESS = {
@@ -57,7 +61,8 @@ $(document).ready(function(){
         KP_SPACE    : 32,
         KP_CONTROLS : 67,
         KP_MAIN     : 77,
-        KP_HINTS    : 72
+        KP_HINTS    : 72,
+        KP_SOUND    : 83
     };
 
 
@@ -82,8 +87,8 @@ $(document).ready(function(){
 
     $(document).keydown(function(e) {
 
-        theme.play();
-        theme.loop = true;
+        //theme.play();
+        //theme.loop = true;
 
 
         keypressTime = new Date().getTime();
@@ -186,8 +191,10 @@ $(document).ready(function(){
                         }
                         break;
                     case KEYPRESS[KP_HINTS]:
-                        console.log('==> hints togged');
-                            if (hints) {
+                        $('.sound_message_on').css('display', 'none');
+                        $('.sound_message_off').css('display', 'none');
+
+                        if (hints) {
                                 $('.hints_message_on').css('display', 'none');
                                 $('.hints_message_off').css('display', 'block');
                                 hints = false;
@@ -199,7 +206,25 @@ $(document).ready(function(){
                             setTimeout(function () {
                                 $('.hints_message_off').css('display', 'none');
                                 $('.hints_message_on').css('display', 'none');
-                            }, 2000);
+                            }, 3000);
+                        break;
+                    case KEYPRESS[KP_SOUND]:
+                        $('.hints_message_on').css('display', 'none');
+                        $('.hints_message_off').css('display', 'none');
+
+                        if (sound) {
+                            $('.sound_message_on').css('display', 'none');
+                            $('.sound_message_off').css('display', 'block');
+                            sound = false;
+                        } else {
+                            $('.sound_message_on').css('display', 'block');
+                            $('.sound_message_off').css('display', 'none');
+                            sound = true;
+                        }
+                        setTimeout(function () {
+                            $('.sound_message_off').css('display', 'none');
+                            $('.sound_message_on').css('display', 'none');
+                        }, 3000);
                         break;
                     case KEYPRESS[KP_RUN]:
                         if (BARBARIAN_SPRITE[ACTION] !== RUN && isAliveOrJustDied()) {
@@ -233,11 +258,13 @@ $(document).ready(function(){
                     case KEYPRESS[KP_ATTACK]:
                         if (BARBARIAN_SPRITE[ACTION] !== ATTACK && isAliveOrJustDied()) {
 
-                            var audio = new Audio('/sounds/grunt.mp3');
-                            audio.play();
-                            setTimeout(function() {
-                                audio.pause();
-                            }, 800);
+                            if (sound) {
+                                var audio = new Audio('/sounds/grunt.mp3');
+                                audio.play();
+                                setTimeout(function () {
+                                    audio.pause();
+                                }, 800);
+                            }
 
 
 
@@ -282,6 +309,8 @@ $(document).ready(function(){
     <div class="pause_message"><h2>Paused</h2></div>
     <div class="hints_message_off"><h2>Hints Off</h2></div>
     <div class="hints_message_on"><h2>Hints On</h2></div>
+    <div class="sound_message_off"><h2>Sound Off</h2></div>
+    <div class="sound_message_on"><h2>Sound On</h2></div>
     <div class="demo_over_message">
         <h1>Thank you for playing this demo!</h1>
         <p>
@@ -314,9 +343,10 @@ $(document).ready(function(){
             <strong>-></strong> Right<br/>
             <strong>A</strong> Attack<br/>
             <strong>J</strong> Jump<br/>
-            <strong>R</strong> Run<br/><br/>
+            <strong>R</strong> Run<br/>
             <strong>P</strong> Pause<br/>
-            <string>H</string> Hints Toggle</string><br/>
+            <strong>H</strong> Hints Toggle<br/>
+            <strong>S</strong> Sound Toggle<br/><br/>
 
             Press <strong>M</strong> for main menu
         </p>

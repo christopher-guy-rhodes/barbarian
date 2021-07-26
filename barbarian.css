@@ -109,6 +109,24 @@
     bottom: 400px;
 }
 
+.sound_message_on {
+    display: none;
+    position: absolute;
+    color: green;
+    left: 670px;
+    height: 0;
+    bottom: 400px;
+}
+
+.sound_message_off {
+    display: none;
+    position: absolute;
+    color: green;
+    left: 670px;
+    height: 0;
+    bottom: 400px;
+}
+
 .game_over {
     display: none;
     position: absolute;
@@ -133,7 +151,7 @@
     color: darkred;
     left: 600px;
     height: 0;
-    bottom: 630px;
+    bottom: 670px;
 }
 
 .demo_over_message {

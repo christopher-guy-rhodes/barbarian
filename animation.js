@@ -247,23 +247,26 @@ function initializeScreen() {
 function startMonsterAttacks() {
     if (screenNumber === 0) {
 
-        var audio = new Audio('/sounds/monster.mp3');
-        audio.play();
-        setTimeout(function() {
-            audio.pause();
-        }, 3400);
+        if (sound) {
+            var audio = new Audio('/sounds/monster.mp3');
+            audio.play();
+            setTimeout(function () {
+                audio.pause();
+            }, 3400);
+        }
 
         actionHelper(MONSTER_SPRITE, WALK, 0);
     }
 
     if (screenNumber == 1) {
 
-        // ==>
-        var audio = new Audio('/sounds/growl.mp3');
-        audio.play();
-        setTimeout(function() {
-            audio.pause();
-        }, 4000);
+        if (sound) {
+            var audio = new Audio('/sounds/growl.mp3');
+            audio.play();
+            setTimeout(function () {
+                audio.pause();
+            }, 4000);
+        }
 
         $('.bridge').css('display', 'block');
         if (DOG_SPRITE[STATUS] != DEAD) {
@@ -355,17 +358,21 @@ function death(sprite) {
         animateDeath(sprite);
         if (!isMonster(sprite) && lives > 0) {
             $('.start_message').css('display', 'block');
-            var audio = new Audio('/sounds/grunt.mp3');
-            audio.play();
-            setTimeout(function() {
-                audio.pause();
-            }, 800);
+            if (sound) {
+                var audio = new Audio('/sounds/grunt.mp3');
+                audio.play();
+                setTimeout(function () {
+                    audio.pause();
+                }, 800);
+            }
         } else {
-            var audio = new Audio('/sounds/fire.mp3');
-            audio.play();
-            setTimeout(function() {
-                audio.pause();
-            }, 3000);
+            if (sound) {
+                var audio = new Audio('/sounds/fire.mp3');
+                audio.play();
+                setTimeout(function () {
+                    audio.pause();
+                }, 3000);
+            }
 
         }
         if (!isMonster(sprite) && lives < 1) {

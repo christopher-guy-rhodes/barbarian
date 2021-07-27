@@ -66,3 +66,34 @@ var BARBARIAN_SPRITE_NAME = 'BARBARIAN';
 var MONSTER_SPRITE_NAME = 'MONSTER';
 var DOG_SPRITE_NAME = 'DOG';
 
+// Keypress events
+var KEYPRESS_THROTTLE_DELAY = 200;
+var KP_LEFT = 'KP_LEFT';
+var KP_RIGHT = 'KP_RIGHT';
+var KP_RUN = 'KP_RUN';
+var KP_JUMP = 'KP_JUMP';
+var KP_STOP = 'KP_STOP';
+var KP_ATTACK = 'KP_ATTACK';
+var KP_PAUSE = 'KP_PAUSE';
+var KP_SPACE = 'KP_SPACE';
+var KP_CONTROLS = 'KP_CONTROLS';
+var KP_MAIN = 'KP_MAIN';
+var KP_HINTS = 'KP_HINTS';
+var KP_SOUND = 'KP_SOUND';
+
+// Keypress event names
+var KEYPRESS = {
+    KP_LEFT     : 37,
+    KP_RIGHT    : 39,
+    KP_ATTACK   : 65,
+    KP_RUN      : 82,
+    KP_STOP     : 83,
+    KP_JUMP     : 74,
+    KP_PAUSE    : 80,
+    KP_SPACE    : 32,
+    KP_CONTROLS : 67,
+    KP_MAIN     : 77,
+    KP_HINTS    : 72,
+    KP_SOUND    : 88
+};
+

@@ -2,7 +2,7 @@
 <html>
 <head>
 <link rel="stylesheet" href="/barbarian.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/jquery.min.js"></script>
 <script>
 var screenNumber = 0;
 var canAdvance = false;
@@ -10,14 +10,14 @@ var scrolling = false;
 var pause = false;
 var lives = 3;
 var hints = true;
-var sound = true
-if (sound) {
-    var theme = new Audio('/sounds/theme.mp3');
-}
+var sound = true;
+var theme;
 $(document).ready(function(){
 
     // Include constants
     $.getScript('/constants.js', function() {
+    // Include sound module
+    $.getScript('/sound.js', function() {
     // Include sprite definition
     $.getScript('/sprites.js', function() {
     // INclude the obstacles module
@@ -27,70 +27,23 @@ $(document).ready(function(){
     // Include animation module
     $.getScript('/animation.js', function() {
 
+    initializeThemeSong();
+
+
     // Don't allow screen resizing
     $(window).resize(function(){
         window.resizeTo(SCREEN_WIDTH, SCREEN_HEIGHT);
     });
 
-
-
-
-    var KEYPRESS_THROTTLE_DELAY = 200;
-    var KP_LEFT = 'KP_LEFT';
-    var KP_RIGHT = 'KP_RIGHT';
-    var KP_RUN = 'KP_RUN';
-    var KP_JUMP = 'KP_JUMP';
-    var KP_STOP = 'KP_STOP';
-    var KP_ATTACK = 'KP_ATTACK';
-    var KP_PAUSE = 'KP_PAUSE';
-    var KP_SPACE = 'KP_SPACE';
-    var KP_CONTROLS = 'KP_CONTROLS';
-    var KP_MAIN = 'KP_MAIN';
-    var KP_HINTS = 'KP_HINTS';
-    var KP_SOUND = 'KP_SOUND';
-
-    // Keypress event names
-    var KEYPRESS = {
-        KP_LEFT     : 37,
-        KP_RIGHT    : 39,
-        KP_ATTACK   : 65,
-        KP_RUN      : 82,
-        KP_STOP     : 83,
-        KP_JUMP     : 74,
-        KP_PAUSE    : 80,
-        KP_SPACE    : 32,
-        KP_CONTROLS : 67,
-        KP_MAIN     : 77,
-        KP_HINTS    : 72,
-        KP_SOUND    : 88
-    };
-
-
-
     windowWidth = $(document).width();
     var keypressTime;
     var lastKeypressTime;
 
-    // skip to screen 1
-    /*
-    screenNumber = 1;
-    $('.backdrop').css('background-position', '-1400px');
-    $('.monster').css('display','none');
-    $('.bridge').css('display', 'block');
-    DOG_SPRITE[SPRITE].animate({left: 1100}, 1000, 'linear');
-    DOG_SPRITE[SPRITE].css('display', 'block');
-    $('.bridge').css('display', 'block');
-    actionHelper(DOG_SPRITE, SIT, 0);
-    */
     renderSpriteFrame(MONSTER_SPRITE, WALK, 0);
-    //startMonsterAttacks();
 
     $(document).keydown(function(e) {
 
-        if (sound && !pause) {
-            theme.play();
-            theme.loop = true;
-        }
+        startThemeSong();
 
         keypressTime = new Date().getTime();
 
@@ -143,6 +96,7 @@ $(document).ready(function(){
                             BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
                             DOG_SPRITE[POSITIONS][ATTACK] = {};
                             DOG_SPRITE[POSITIONS][JUMP] = {};
+                            BARBARIAN_SPRITE[DIRECTION] = RIGHT;
                             renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
 
                             // start monster attacks if there are no lives left
@@ -191,17 +145,13 @@ $(document).ready(function(){
                                     actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
                                 }
                                 startMonsterAttacks(true);
-                                if (sound) {
-                                    theme.play();
-                                }
+                                unpauseThemeSong();
                             } else {
                                 $('.pause_message').css('display', 'block');
                                 console.log('pausing');
                                 console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
                                 pause = true;
-                                if (sound) {
-                                    theme.pause();
-                                }
+                                pauseThemeSong();
                             }
                         }
                         break;
@@ -275,15 +225,7 @@ $(document).ready(function(){
                     case KEYPRESS[KP_ATTACK]:
                         if (BARBARIAN_SPRITE[ACTION] !== ATTACK && isAliveOrJustDied()) {
 
-                            if (sound) {
-                                var audio = new Audio('/sounds/grunt.mp3');
-                                audio.play();
-                                setTimeout(function () {
-                                    audio.pause();
-                                }, 800);
-                            }
-
-
+                            playGruntSound();
 
                             BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
@@ -306,7 +248,7 @@ $(document).ready(function(){
     }
 
 
-})})})})})});
+})})})})})})});
 </script>
 </head>
 <body>

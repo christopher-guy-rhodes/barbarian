@@ -10,7 +10,7 @@ var scrolling = false;
 var pause = false;
 var lives = 3;
 var hints = true;
-var sound = true;
+var sound = true
 if (sound) {
     var theme = new Audio('/sounds/theme.mp3');
 }
@@ -87,7 +87,7 @@ $(document).ready(function(){
 
     $(document).keydown(function(e) {
 
-        if (sound) {
+        if (sound && !pause) {
             theme.play();
             theme.loop = true;
         }
@@ -190,12 +190,18 @@ $(document).ready(function(){
                                 if (BARBARIAN_SPRITE[ACTION] !== undefined) {
                                     actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
                                 }
-                                startMonsterAttacks();
+                                startMonsterAttacks(true);
+                                if (sound) {
+                                    theme.play();
+                                }
                             } else {
                                 $('.pause_message').css('display', 'block');
                                 console.log('pausing');
                                 console.log('barbarian action:' + BARBARIAN_SPRITE[ACTION]);
                                 pause = true;
+                                if (sound) {
+                                    theme.pause();
+                                }
                             }
                         }
                         break;

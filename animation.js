@@ -255,7 +255,7 @@ function initializeScreen() {
 
 }
 
-function startMonsterAttacks() {
+function startMonsterAttacks(force = false) {
     if (screenNumber === 0) {
 
         if (sound) {
@@ -267,7 +267,7 @@ function startMonsterAttacks() {
         }
 
         console.log('starting monster walk and it is ' + MONSTER_SPRITE[STATUS] + ' and ' + MONSTER_SPRITE[ACTION]);
-        if (MONSTER_SPRITE[STATUS] == DEAD) {
+        if (MONSTER_SPRITE[STATUS] == DEAD || force) {
             $('.monster').css('display', 'block');
             MONSTER_SPRITE[STATUS] = ALIVE;
             actionHelper(MONSTER_SPRITE, WALK, 0);
@@ -285,7 +285,7 @@ function startMonsterAttacks() {
         }
 
         $('.bridge').css('display', 'block');
-        if (DOG_SPRITE[STATUS] == DEAD) {
+        if (DOG_SPRITE[STATUS] == DEAD || force) {
 
             DOG_SPRITE[STATUS] = ALIVE;
             DOG_SPRITE[SPRITE].css('display', 'block');

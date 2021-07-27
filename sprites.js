@@ -69,10 +69,6 @@ BARBARIAN_SPRITE = {
                 FRAMES : [0, 1, 2, 3],
                 HEIGHT_OFFSET: 14}}
     },
-    POSITIONS : {
-        ATTACK : {},
-        JUMP : {}
-    },
     DEATH : {
         SPRITE : $(".barbarian"),
         ANIMATION : {
@@ -139,10 +135,6 @@ DOG_SPRITE = {
             }
         }
     },
-    POSITIONS : {
-        ATTACK : {},
-        JUMP : {}
-    },
     ATTACK_THRESHOLDS : {
         MIN : 0,
         MAX : 100
@@ -197,9 +189,6 @@ MONSTER_SPRITE = {
             }
         }
     },
-    POSITIONS : {
-        ATTACK : {}
-    },
     ATTACK_THRESHOLDS : {
         MIN : 0,
         MAX : 100
@@ -223,7 +212,7 @@ SCREENS = {
         OBSTACLES: {
             RIGHT: [
                 {LEFT: 50, OBSTACLE_TYPE: ELEVATION, HEIGHT: 82, FAIL_ACTION: STOP, JUMP_RANGE: [-100, 100]},
-                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, HEIGHT: 164, FAIL_ACTION: STOP, JUMP_RANGE: [200, 450]},
+                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, HEIGHT: 164, FAIL_ACTION: STOP, JUMP_RANGE: [400, 430]},
                 {LEFT: 800, OBSTACLE_TYPE: PIT, HEIGHT: 164, FAIL_ACTION: FALL, JUMP_RANGE: [710, 830]}
             ],
             LEFT: [
@@ -252,18 +241,6 @@ function getSpritesInProximity(sprite, opponents, proximityThreshold) {
         }
     }
     return attackers;
-}
-
-function getPositionsAtAction(sprites) {
-    var positionsAtAttack = {};
-    for (var i = 0; i < sprites.length; i++) {
-        var sprite = sprites[i];
-        positionsAtAttack[sprite[NAME]] = {
-            LEFT : sprite[SPRITE].offset().left,
-            DIRECTION : sprite[DIRECTION],
-            TIMESTAMP : new Date().getTime()};
-    }
-    return positionsAtAttack;
 }
 
 function isMonster(sprite) {

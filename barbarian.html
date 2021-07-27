@@ -88,12 +88,6 @@ $(document).ready(function(){
 
 
                             BARBARIAN_SPRITE[ACTION] = undefined;
-                            MONSTER_SPRITE[POSITIONS][ATTACK] = {};
-                            MONSTER_SPRITE[POSITIONS][JUMP] = {};
-                            BARBARIAN_SPRITE[POSITIONS][ATTACK] = {};
-                            BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
-                            DOG_SPRITE[POSITIONS][ATTACK] = {};
-                            DOG_SPRITE[POSITIONS][JUMP] = {};
                             BARBARIAN_SPRITE[DIRECTION] = RIGHT;
                             renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
 
@@ -198,7 +192,6 @@ $(document).ready(function(){
                         break;
                     case KEYPRESS[KP_JUMP]:
                         if (BARBARIAN_SPRITE[ACTION] !== JUMP && isAliveOrJustDied()) {
-                            BARBARIAN_SPRITE[POSITIONS][JUMP] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, JUMP, 1);
                         }
                         break;
@@ -225,7 +218,6 @@ $(document).ready(function(){
 
                             playGruntSound();
 
-                            BARBARIAN_SPRITE[POSITIONS][ATTACK] = getPositionsAtAction(SCREENS[screenNumber][OPPONENTS]);
                             actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
                         }
                         break;

@@ -144,7 +144,6 @@ async function advanceBackdrop(sprite, reverse = false) {
     }
     scrolling = false;
     startMonsterAttacks();
-    resetBarbarianActions();
 }
 
 function stop(sprite) {
@@ -294,12 +293,6 @@ function startMonsterAttacks(force = false) {
 
     }
 }
-
-function resetBarbarianActions() {
-    BARBARIAN_SPRITE[POSITIONS][ATTACK] = {};
-    BARBARIAN_SPRITE[POSITIONS][JUMP] = {};
-}
-
 
 
 function handleBoundry(sprite) {

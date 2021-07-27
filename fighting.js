@@ -27,7 +27,6 @@ function launchMonsterAttack(sprite, opponent, opponents) {
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
         var proximity = Math.abs(getProximity(sprite, opponent));
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
-            sprite[POSITIONS][ATTACK] = getPositionsAtAction(opponents);
             actionHelper(sprite, ATTACK, 0);
             return true;
         }
@@ -47,11 +46,16 @@ function isAttacking(sprite) {
 
 function hasJumpEvaded(sprite, opponent) {
     var isJumpEvaided = false;
-    if (opponent[POSITIONS][JUMP] && Object.keys(opponent[POSITIONS][JUMP]).length > 0) {
-        var jumpDiff = Math.abs(opponent[POSITIONS][JUMP][opponent[NAME]][LEFT] - opponent[POSITIONS][JUMP][sprite[NAME]][LEFT]);
-        if (opponent[ACTION] === JUMP && jumpDiff < 400 && jumpDiff > 240) {
-            isJumpEvaided = true;
-        }
+
+    let sprite_left = sprite[SPRITE].offset().left;
+    let opponent_left = opponent[SPRITE].offset().left;
+    let distance = Math.abs(sprite_left - opponent_left);
+
+    if (opponent[ACTION] === JUMP  && distance < 70 && distance > 15) {
+        console.log(opponent[NAME] + ' jumped and the distance is ' + distance);
+        isJumpEvaided = true;
+    } else {
+        console.log('FAIL:' + opponent[NAME] + ' ' + opponent[ACTION] + 'ed   and the distance is ' + distance);
     }
     return isJumpEvaided;
 }

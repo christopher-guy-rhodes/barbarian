@@ -97,3 +97,10 @@ var KEYPRESS = {
     KP_SOUND    : 88
 };
 
+// Messages
+var CONTROL_MESSAGE = $('.controls_message');
+var START_MESSAGE = $('.start_message');
+var GAME_OVER_MESSAGE = $('.game_over');
+var DEMO_OVER_MESSAGE = $('.demo_over_message');
+
+var MESSAGES = [CONTROL_MESSAGE, START_MESSAGE, GAME_OVER_MESSAGE, DEMO_OVER_MESSAGE];

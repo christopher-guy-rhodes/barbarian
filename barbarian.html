@@ -4,18 +4,20 @@
 <link rel="stylesheet" href="/barbarian.css">
 <script src="/jquery.min.js"></script>
 <script>
-var screenNumber = 0;
-var canAdvance = false;
-var scrolling = false;
-var pause = false;
-var lives = 3;
-var hints = true;
-var sound = true;
-var theme;
+let screenNumber = 0;
+let canAdvance = false;
+let scrolling = false;
+let pause = false;
+let lives = 3;
+let hints = true;
+let sound = true;
+let theme;
 $(document).ready(function(){
 
     // Include constants
     $.getScript('/constants.js', function() {
+    // Include util module
+    $.getScript('/util.js', function() {
     // Include sound module
     $.getScript('/sound.js', function() {
     // Include sprite definition
@@ -36,8 +38,8 @@ $(document).ready(function(){
     });
 
     windowWidth = $(document).width();
-    var keypressTime;
-    var lastKeypressTime;
+    let keypressTime;
+    let lastKeypressTime;
 
     renderSpriteFrame(MONSTER_SPRITE, WALK, 0);
 
@@ -47,8 +49,10 @@ $(document).ready(function(){
 
         keypressTime = new Date().getTime();
 
-        var uninterruptable = BARBARIAN_SPRITE[ACTION] === JUMP || BARBARIAN_SPRITE[ACTION] === ATTACK || BARBARIAN_SPRITE[ACTION] == FALL;
-        if (!shouldThrottle(lastKeypressTime) && !uninterruptable && !scrolling) {
+        let isInterruptable = BARBARIAN_SPRITE[ACTION] === JUMP ||
+                              BARBARIAN_SPRITE[ACTION] === ATTACK ||
+                              BARBARIAN_SPRITE[ACTION] == FALL;
+        if (!shouldThrottle(lastKeypressTime) && !isInterruptable && !scrolling) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
 
@@ -56,18 +60,12 @@ $(document).ready(function(){
                 switch (e.which) {
                     case KEYPRESS[KP_CONTROLS]:
                         if (isDead(BARBARIAN_SPRITE)) {
-                            $('.start_message').css('display', 'none');
-                            $('.game_over').css('display', 'none');
-                            $('.controls_message').css('display', 'block');
-                            $('.demo_over_message').css('display', 'none');
+                            showMessage(CONTROL_MESSAGE);
                         }
                         break;
                     case KEYPRESS[KP_MAIN]:
                         if (isDead(BARBARIAN_SPRITE)) {
-                            $('.start_message').css('display', 'block');
-                            $('.game_over').css('display', 'none');
-                            $('.controls_message').css('display', 'none');
-                            $('.demo_over_message').css('display', 'none');
+                            showMessage(START_MESSAGE);
                         }
                         break;
                     case KEYPRESS[KP_SPACE]:
@@ -248,7 +246,7 @@ $(document).ready(function(){
     }
 
 
-})})})})})})});
+})})})})})})})});
 </script>
 </head>
 <body>

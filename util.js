@@ -1,0 +1,15 @@
+function showMessage(element) {
+    element.css('display', 'block');
+
+    // Hide the other messages that are not being displayed
+    for (e of MESSAGES) {
+        if (e == element) {
+            continue;
+        }
+        e.css('display', 'none');
+    }
+}
+
+function hideMessage(element) {
+    element.css('display', 'none');
+}

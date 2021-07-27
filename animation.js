@@ -415,11 +415,13 @@ async function animateFall(sprite) {
         $('.game_over').css('display', 'block');
     }
 
-    var audio = new Audio('/sounds/fall.mp3');
-    audio.play();
-    setTimeout(function() {
-        audio.pause();
-    }, 3400);
+    if (sound) {
+        var audio = new Audio('/sounds/fall.mp3');
+        audio.play();
+        setTimeout(function () {
+            audio.pause();
+        }, 3400);
+    }
 
     fall(sprite);
     const direction = sprite[DIRECTION];

@@ -427,7 +427,9 @@ async function animateFall(sprite) {
 
 async function animateDeath(sprite) {
 
-    console.log('animating death for ' + sprite[NAME]);
+    if (!isMonster(sprite)) {
+        barbarianDying = true;
+    }
     sprite[SPRITE].stop();
 
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
@@ -446,5 +448,8 @@ async function animateDeath(sprite) {
 
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME) {
         sprite[DEATH][SPRITE].css('display', 'none');
+    }
+    if (!isMonster(sprite)) {
+        barbarianDying = false;
     }
 }

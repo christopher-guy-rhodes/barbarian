@@ -12,6 +12,7 @@ let lives = 3;
 let hints = true;
 let sound = true;
 let theme;
+let barbarianDying = false;
 $(document).ready(function(){
 
     // Include constants
@@ -30,7 +31,6 @@ $(document).ready(function(){
     $.getScript('/animation.js', function() {
 
     initializeThemeSong();
-
 
     // Don't allow screen resizing
     $(window).resize(function(){
@@ -52,40 +52,22 @@ $(document).ready(function(){
         let isInterruptable = BARBARIAN_SPRITE[ACTION] === JUMP ||
                               BARBARIAN_SPRITE[ACTION] === ATTACK ||
                               BARBARIAN_SPRITE[ACTION] == FALL;
-        if (!shouldThrottle(lastKeypressTime) && !isInterruptable && !scrolling) {
+        if (!shouldThrottle(lastKeypressTime) && !isInterruptable && !scrolling && !barbarianDying) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
 
             if (!pause || e.which === KEYPRESS[KP_PAUSE]) {
                 switch (e.which) {
                     case KEYPRESS[KP_CONTROLS]:
-                        if (isDead(BARBARIAN_SPRITE)) {
-                            showMessage(CONTROL_MESSAGE);
-                        }
+                        isDead(BARBARIAN_SPRITE) && showMessage(CONTROL_MESSAGE);
                         break;
                     case KEYPRESS[KP_MAIN]:
-                        if (isDead(BARBARIAN_SPRITE)) {
-                            showMessage(START_MESSAGE);
-                        }
+                        isDead(BARBARIAN_SPRITE) && showMessage(START_MESSAGE);
                         break;
                     case KEYPRESS[KP_SPACE]:
                         if (isDead(BARBARIAN_SPRITE)) {
-                            // Wait a bit to let the death sequence complete in case it is still going
-                            setTimeout(function () {
-                                BARBARIAN_SPRITE[STATUS] = ALIVE;
-                            }, 500);
 
-                            /*
-                            for (spr of SCREENS[screenNumber][OPPONENTS]) {
-                                if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
-                                    continue;
-                                }
-                                spr[STATUS] = ALIVE;
-                                spr[SPRITE].css('display', 'block');
-                            }
-
-                             */
-
+                            BARBARIAN_SPRITE[STATUS] = ALIVE;
 
                             BARBARIAN_SPRITE[ACTION] = undefined;
                             BARBARIAN_SPRITE[DIRECTION] = RIGHT;

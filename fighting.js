@@ -13,7 +13,6 @@ function isSuccessfulAttack(sprite, opponent) {
     }
     var successful = false;
 
-    console.log(sprite[NAME] + '\'s distance is ' + distance + ' min:' + thresholds[MIN] + ' max:' + thresholds[MAX]);
     if (successful = distance >= thresholds[MIN] && distance <= thresholds[MAX]) {
         //$('.debug_sprite_left').css('left', sprite_left + 'px');
         //$('.debug_opponent_left').css('left', opponent_left + 'px');
@@ -52,10 +51,7 @@ function hasJumpEvaded(sprite, opponent) {
     let distance = Math.abs(sprite_left - opponent_left);
 
     if (opponent[ACTION] === JUMP  && distance < 70 && distance > 15) {
-        console.log(opponent[NAME] + ' jumped and the distance is ' + distance);
         isJumpEvaided = true;
-    } else {
-        console.log('FAIL:' + opponent[NAME] + ' ' + opponent[ACTION] + 'ed   and the distance is ' + distance);
     }
     return isJumpEvaided;
 }

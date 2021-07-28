@@ -169,18 +169,22 @@ function handleSoundKeypress() {
 }
 
 function handleRunKeypress() {
-    getAction(BARBARIAN_SPRITE) !== RUN && isAliveOrJustDied() &&
-    actionHelper(BARBARIAN_SPRITE, RUN, 0);
+    if (getAction(BARBARIAN_SPRITE) !== RUN && isAliveOrJustDied()) {
+        actionHelper(BARBARIAN_SPRITE, RUN, 0);
+    }
 }
 
 function handleJumpKeypress() {
-    getAction(BARBARIAN_SPRITE) !== JUMP && isAliveOrJustDied() &&
-    actionHelper(BARBARIAN_SPRITE, JUMP, 1);
+    if (getAction(BARBARIAN_SPRITE) !== JUMP && isAliveOrJustDied()) {
+        actionHelper(BARBARIAN_SPRITE, JUMP, 1);
+    }
 }
 
 function handleStopKeypress() {
-    isAliveOrJustDied() && actionHelper(BARBARIAN_SPRITE, STOP, 1) &&
-    setAction(BARBARIAN_SPRITE, STOP);
+    if (isAliveOrJustDied()) {
+        actionHelper(BARBARIAN_SPRITE, STOP, 1);
+        setAction(BARBARIAN_SPRITE, STOP);
+    }
 }
 
 function handleRightKeypress() {

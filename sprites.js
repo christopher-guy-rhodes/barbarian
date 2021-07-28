@@ -254,3 +254,43 @@ function isDead(sprite) {
 function isSpriteCurrentOpponent(sprite) {
     return SCREENS[screenNumber][OPPONENTS].includes(sprite);
 }
+
+function show(sprite) {
+    sprite.css('display', 'block');
+}
+
+function hide(sprite) {
+    sprite.css('display', 'none');
+}
+
+function setBottom(sprite, bottom) {
+    sprite.css('bottom', bottom + 'px')
+}
+
+function setLeft(sprite, left) {
+    sprite.css('left', left + 'px')
+}
+
+function setStatus(sprite, status) {
+    sprite[STATUS] = status;
+}
+
+function getAction(sprite) {
+    return sprite[ACTION];
+}
+
+function setAction(sprite, action) {
+    sprite[ACTION] = action;
+}
+
+function getDirection(sprite) {
+    return sprite[DIRECTION];
+}
+
+function setDirection(sprite, direction) {
+    sprite[DIRECTION] = direction;
+}
+
+function setBackgroundPosition(sprite, backgroundPosition) {
+    sprite.css('background-position', backgroundPosition + 'px')
+}

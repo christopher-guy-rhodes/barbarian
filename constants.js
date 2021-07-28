@@ -103,3 +103,18 @@ var GAME_OVER_MESSAGE = $('.game_over');
 var DEMO_OVER_MESSAGE = $('.demo_over_message');
 
 var MESSAGES = [CONTROL_MESSAGE, START_MESSAGE, GAME_OVER_MESSAGE, DEMO_OVER_MESSAGE];
+
+// Elements
+var BRIDGE = $('.bridge');
+var BACKDROP = $('.backdrop');
+var GAME_OVER_MESSAGE = $('.game_over');
+var DEMO_OVER_MESSAGE = $('.demo_over_message');
+var START_MESSAGE = $('.start_message');
+var CONTROL_MESSAGE = $('.controls_message');
+var SOUND_ON_MESSAGE = $('.sound_message_on');
+var SOUND_OFF_MESSAGE = $('.sound_message_off');
+var HINTS_ON_MESSAGE = $('.hints_message_on');
+var HINTS_OFF_MESSAGE = $('.hints_message_off');
+var PAUSE_MESSAGE = $('.pause_message');
+var LIFE1 = $('.life1');
+var LIFE2 = $('.life2');

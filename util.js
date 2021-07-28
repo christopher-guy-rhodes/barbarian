@@ -13,3 +13,4 @@ function showMessage(element) {
 function hideMessage(element) {
     element.css('display', 'none');
 }
+

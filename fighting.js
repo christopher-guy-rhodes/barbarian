@@ -50,8 +50,11 @@ function hasJumpEvaded(sprite, opponent) {
     let opponent_left = opponent[SPRITE].offset().left;
     let distance = Math.abs(sprite_left - opponent_left);
 
-    if (opponent[ACTION] === JUMP  && distance < 70 && distance > 15) {
+    if (opponent[ACTION] === JUMP  && distance < 100 && distance > 15) {
         isJumpEvaided = true;
+        console.log('distance:' + distance + ' is between 15 and 100');
+    } else {
+        console.log('distance:' + distance + ' is not between 15 and 100');
     }
     return isJumpEvaided;
 }
@@ -92,6 +95,7 @@ function fightSequence(sprite, opponents) {
             return true;
         }
         if (opponentDefeated(sprite, opponent)) {
+            console.log(sprite[NAME] + ' defeated ' + opponent[NAME]);
             opponent[DEATH][DELAY] = getDeathDelay(sprite, opponent);
             death(opponent);
         }

@@ -271,6 +271,10 @@ function setLeft(sprite, left) {
     sprite.css('left', left + 'px')
 }
 
+function getStatus(sprite) {
+    return sprite[STATUS];
+}
+
 function setStatus(sprite, status) {
     sprite[STATUS] = status;
 }
@@ -293,4 +297,82 @@ function setDirection(sprite, direction) {
 
 function setBackgroundPosition(sprite, backgroundPosition) {
     sprite.css('background-position', backgroundPosition + 'px')
+}
+
+function stopSpriteMovement(sprite) {
+    sprite.stop();
+}
+
+function getName(sprite) {
+    return sprite[NAME];
+}
+
+function highlight(sprite) {
+    sprite.css('filter','brightness(300%)');
+}
+
+function unhighlight(sprite) {
+    sprite.css('filter','brightness(100%)');
+}
+
+function getPixelsPerSecond(sprite) {
+    return sprite[PIXELS_PER_SECOND];
+}
+
+function setCurrentPixelsPerSecond(sprite, value) {
+    sprite['currentPixelsPerSecond'] = value;
+    console.log('==> value is:' + value);
+}
+
+function getCurrentPixelsPerSecond(sprite) {
+    return sprite['currentPixelsPerSecond'];
+}
+
+function hasMovingAttack(sprite) {
+    return sprite[HAS_MOVING_ATTACK];
+}
+
+function getRightStopPosition(sprite) {
+    return sprite[STOP_POSITION][RIGHT];
+}
+
+function getLeftStopPosition(sprite) {
+    return sprite[STOP_POSITION][LEFT];
+}
+
+
+function getWidth(sprite) {
+    return sprite.width();
+}
+
+function getHeight(sprite) {
+    return sprite.height();
+}
+
+function getRightHeightStopPosition(sprite) {
+    return sprite[STOP_POSITION][RIGHT_HEIGHT];
+}
+
+function getLeftHeightStopPosition(sprite) {
+    return sprite[STOP_POSITION][LEFT_HEIGHT];
+}
+
+function getLeft(sprite) {
+    return sprite.offset().left;
+}
+
+function getBottom(sprite) {
+    return sprite.css('bottom');
+}
+
+function setSpriteBackgroundPosition(sprite, x, y) {
+    sprite.css('background-position', x + 'px ' + y + 'px');
+}
+
+function setDeathTime(sprite, time) {
+    sprite[DEATH_TIME] = time;
+}
+
+function getDeathTime(sprite) {
+    return sprite[DEATH_TIME];
 }

@@ -118,3 +118,8 @@ var HINTS_OFF_MESSAGE = $('.hints_message_off');
 var PAUSE_MESSAGE = $('.pause_message');
 var LIFE1 = $('.life1');
 var LIFE2 = $('.life2');
+
+var HIGHLIGHT_BUFFER = 150;
+var MILLISECONDS_PER_SECOND = 1000;
+var PASSING_MULTIPLIER = 1.5;
+var JUST_DIED_THRESHOLD = 500;

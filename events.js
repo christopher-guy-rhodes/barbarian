@@ -1,7 +1,7 @@
 function resetBarbarianPosition() {
     show(BARBARIAN_SPRITE[SPRITE]);
     setBottom(BARBARIAN_SPRITE[SPRITE], 12);
-    setLeft(BARBARIAN_SPRITE[SPRITE], '-200');
+    setLeft(BARBARIAN_SPRITE[SPRITE], 0);
 }
 
 function resetBridgePosition() {
@@ -26,6 +26,10 @@ function getLives() {
 
 function isScrolling() {
     return scrolling;
+}
+
+function setScrolling(value) {
+    scrolling = value;
 }
 
 function isBarbarianDying() {
@@ -58,6 +62,10 @@ function setSound(status) {
 
 function setLives(number) {
     lives = number;
+}
+
+function getScreenNumber() {
+    return screenNumber;
 }
 
 function setScreenNumber(number) {
@@ -206,4 +214,8 @@ function handleAttackKeypress() {
         playGruntSound();
         actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
     }
+}
+
+function setBarbarianDying(value) {
+    barbarianDying = value;
 }

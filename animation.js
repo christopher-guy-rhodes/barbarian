@@ -112,7 +112,6 @@ async function advanceBackdrop(sprite, reverse = false) {
     const sleepPerIterationDuration = (ADVANCE_SCREEN_SCROLL_DURATION / ADVANCE_SCREEN_PIXELS_PER_SECOND) * ADVANCE_SCREEN_PIXELS_PER_FRAME;
     const numberOfIterations = windowWidth / ADVANCE_SCREEN_PIXELS_PER_FRAME;
 
-    initializeScreen();
 
     // Animate the sprite to move with the screen scroll. The animation is set to take as long as the screen scroll takes
     setScrolling(true);
@@ -130,6 +129,7 @@ async function advanceBackdrop(sprite, reverse = false) {
         await sleep(sleepPerIterationDuration);
     }
     setScrolling(false);
+    initializeScreen();
     startMonsterAttacks();
 }
 
@@ -222,40 +222,37 @@ function monsterTurnaround(sprite, opponents) {
 }
 
 function initializeScreen() {
-    if (screenNumber == 0) {
-        setLeft(MONSTER_SPRITE[SPRITE], 850);
-        unhighlight(MONSTER_SPRITE[SPRITE]);
+    let artifacts = SCREENS[getScreenNumber()][ARTIFACTS];
+    if (artifacts !== undefined) {
+        for (artifact of artifacts) {
+            show(artifact);
+        }
     }
-    if (screenNumber == 1) {
-        DOG_SPRITE[STATUS] = DEAD;
-        setLeft(DOG_SPRITE[SPRITE], '850');
-        setBottom(DOG_SPRITE[SPRITE], 160);
-        unhighlight(DOG_SPRITE[SPRITE]);
-    } else {
-        hide(DOG_SPRITE[SPRITE]);
-        hide(BRIDGE);
+
+    let monsterSprites = filterBarBarbarianSprite(SCREENS[getScreenNumber()][OPPONENTS]);
+
+    for (let monsterSprite of monsterSprites) {
+        setLeft(monsterSprite[SPRITE], getResetLeft(monsterSprite));
+        unhighlight(monsterSprite[SPRITE]);
+        setBottom(monsterSprite[SPRITE], getResetBottom(monsterSprites));
+        setStatus(monsterSprite, DEAD);
     }
 }
 
 function startMonsterAttacks(force = false) {
-    if (getScreenNumber() === 0) {
-        playMonsterSound();
-        if (getStatus(MONSTER_SPRITE) == DEAD || force) {
-            show(MONSTER_SPRITE[SPRITE]);
-            setStatus(MONSTER_SPRITE, ALIVE);
-            actionHelper(MONSTER_SPRITE, WALK, 0);
+    let monsterSprites = filterBarBarbarianSprite(SCREENS[getScreenNumber()][OPPONENTS]);
+
+    for (let monsterSprite of monsterSprites) {
+        playSound(getSound(monsterSprite));
+
+        if (getStatus(monsterSprite) === DEAD || force) {
+            show(monsterSprite[SPRITE]);
+            setStatus(monsterSprite, ALIVE);
+            actionHelper(monsterSprite, getDefaultAction(monsterSprite), 0);
         }
     }
 
-    if (getScreenNumber() === 1) {
-        playGrowlSound();
-        show(BRIDGE);
-        if (getStatus(DOG_SPRITE) == DEAD || force) {
-            setStatus(DOG_SPRITE, ALIVE);
-            show(DOG_SPRITE[SPRITE]);
-            actionHelper(DOG_SPRITE, SIT, 0);
-        }
-    }
+
 }
 
 function handleBoundry(sprite) {
@@ -278,7 +275,7 @@ function handleBoundry(sprite) {
             }
         }
         if (getScreenNumber() == 2) {
-            hide(DEMO_OVER_MESSAGE);
+            show(DEMO_OVER_MESSAGE);
             setLives(0);
             setStatus(BARBARIAN_SPRITE, DEAD);
             setScreenNumber(0);
@@ -348,7 +345,7 @@ async function animateFall(sprite) {
     stopSpriteMovement(sprite[SPRITE]);
     setLives(0);
     handleDeath(sprite);
-    if (!isMonster(sprite) && getLivees() < 1) {
+    if (!isMonster(sprite) && getLives() < 1) {
         show(GAME_OVER_MESSAGE);
     }
 

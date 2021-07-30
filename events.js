@@ -1,23 +1,6 @@
-function resetBarbarianPosition() {
-    show(BARBARIAN_SPRITE[SPRITE]);
-    setBottom(BARBARIAN_SPRITE[SPRITE], 12);
-    setLeft(BARBARIAN_SPRITE[SPRITE], 0);
-}
-
 function resetBridgePosition() {
     setBottom(BRIDGE, '116');
     hide(BRIDGE);
-}
-
-function resetDogPosition() {
-    hide(DOG_SPRITE[SPRITE]);
-    setLeft(DOG_SPRITE[SPRITE], '850');
-    setBottom(DOG_SPRITE[SPRITE], 160);
-}
-
-function resetMonsterPosition() {
-    show(MONSTER_SPRITE[SPRITE]);
-    setLeft(MONSTER_SPRITE[SPRITE], '850');
 }
 
 function getLives() {
@@ -30,10 +13,6 @@ function isScrolling() {
 
 function setScrolling(value) {
     scrolling = value;
-}
-
-function isBarbarianDying() {
-    return barbarianDying;
 }
 
 function isHints() {
@@ -73,36 +52,37 @@ function setScreenNumber(number) {
 }
 
 function resetGame() {
-    setStatus(MONSTER_SPRITE, DEAD);
-    setStatus(DOG_SPRITE, DEAD);
-    setLives(3);
-    setScreenNumber(0);
-    resetBarbarianPosition();
-    resetBridgePosition();
-    resetDogPosition();
-    resetMonsterPosition();
-    setBackgroundPosition(BACKDROP, 0);
-    hide(GAME_OVER_MESSAGE);
-    show(LIFE1);
-    show(LIFE2);
-    hide(GAME_OVER_MESSAGE);
+    renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
+    setAction(BARBARIAN_SPRITE, undefined);
+    setDirection(BARBARIAN_SPRITE, RIGHT);
+    if (getLives() < 1) {
+        setLives(3);
+        setScreenNumber(0);
+        resetBridgePosition();
+
+        for (const sprite of SPRITES) {
+            setDisplay(sprite[SPRITE], getResetDisplay(sprite));
+            setLeft(sprite[SPRITE], getResetLeft(sprite));
+            setBottom(sprite[SPRITE], getResetBottom(sprite));
+            setStatus(sprite, getResetStatus(sprite));
+        }
+
+        setBackgroundPosition(BACKDROP, 0);
+        hide(GAME_OVER_MESSAGE);
+        show(LIFE1);
+        show(LIFE2);
+        hide(DEMO_OVER_MESSAGE);
+    } else {
+        setStatus(BARBARIAN_SPRITE, ALIVE);
+        hide($('.life' + getLives()));
+        hide(CONTROL_MESSAGE);
+    }
 }
 
 function handleSpaceKeypress() {
     if (isDead(BARBARIAN_SPRITE)) {
+        resetGame();
 
-        BARBARIAN_SPRITE[STATUS] = ALIVE;
-        BARBARIAN_SPRITE[ACTION] = undefined;
-        BARBARIAN_SPRITE[DIRECTION] = RIGHT;
-        renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
-
-        // start monster attacks if there are no lives left
-        if (getLives() < 1) {
-            resetGame();
-        } else {
-            hide($('.life' + getLives()));
-            hide(CONTROL_MESSAGE);
-        }
         hide(START_MESSAGE);
         startMonsterAttacks();
         actionHelper(BARBARIAN_SPRITE, STOP, 0);
@@ -110,7 +90,7 @@ function handleSpaceKeypress() {
 }
 
 function shouldThrottle(lastKeypressTime) {
-    var elapsed = KEYPRESS_THROTTLE_DELAY;
+    let elapsed = KEYPRESS_THROTTLE_DELAY;
     if (typeof lastKeypressTime !== undefined) {
         elapsed = new Date().getTime() - lastKeypressTime;
     }
@@ -123,15 +103,15 @@ function handlePauseKeypress() {
             hide(PAUSE_MESSAGE);
             setPaused(false);
             if (getAction(BARBARIAN_SPRITE) !== undefined) {
-                actionHelper(BARBARIAN_SPRITE, BARBARIAN_SPRITE[ACTION], 0);
+                actionHelper(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
             }
             startMonsterAttacks(true);
-            unpauseThemeSong();
+            setThemeSongPauseState(false);
         } else {
             $('.pause_message').css('display', 'block');
             show(PAUSE_MESSAGE);
             setPaused(true);
-            pauseThemeSong();
+            setThemeSongPauseState(true);
         }
     }
 }
@@ -140,40 +120,27 @@ function handleHintsKeypress() {
     hide(SOUND_ON_MESSAGE);
     hide(SOUND_OFF_MESSAGE);
 
-    if (isHints()) {
-        hide(HINTS_ON_MESSAGE);
-        show(HINTS_OFF_MESSAGE);
-        setHints(false);
-    } else {
-        show(HINTS_ON_MESSAGE);
-        hide(HINTS_OFF_MESSAGE);
-        setHints(true);
-    }
+    hide(isHints() ? HINTS_ON_MESSAGE : HINTS_OFF_MESSAGE);
+    show(isHints() ? HINTS_OFF_MESSAGE : HINTS_ON_MESSAGE);
+    setHints(!isHints());
+
     setTimeout(function () {
-        hide(HINTS_ON_MESSAGE);
-        hide(HINTS_OFF_MESSAGE);
-    }, 3000);
+        hide(isHints() ? HINTS_ON_MESSAGE : HINTS_OFF_MESSAGE);
+    }, TOGGLE_MESSAGE_TIME);
 }
 
 function handleSoundKeypress() {
     hide(HINTS_ON_MESSAGE);
     hide(HINTS_OFF_MESSAGE);
 
-    if (isSound()) {
-        hide(SOUND_ON_MESSAGE);
-        show(SOUND_OFF_MESSAGE);
-        setSound(false);
-        pauseThemeSong();
-    } else {
-        show(SOUND_ON_MESSAGE);
-        hide(SOUND_OFF_MESSAGE);
-        setSound(true);
-        unpauseThemeSong();
-    }
+    hide(isSound() ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE);
+    show(isSound() ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE);
+    setSound(!isSound());
+    setThemeSongPauseState(isSound());
+
     setTimeout(function () {
-        hide(SOUND_OFF_MESSAGE);
-        hide(SOUND_ON_MESSAGE);
-    }, 3000);
+        hide(isSound() ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE);
+    }, TOGGLE_MESSAGE_TIME);
 }
 
 function handleRunKeypress() {
@@ -219,3 +186,9 @@ function handleAttackKeypress() {
 function setBarbarianDying(value) {
     barbarianDying = value;
 }
+
+function isBarbarianDying() {
+    return barbarianDying;
+}
+
+

@@ -14,3 +14,12 @@ function hideMessage(element) {
     element.css('display', 'none');
 }
 
+function filterBarBarbarianSprite(sprites) {
+    let result = [];
+    for (let sprite of sprites) {
+        if (isMonster(sprite)) {
+            result.push(sprite);
+        }
+    }
+    return result;
+}

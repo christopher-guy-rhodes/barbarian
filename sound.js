@@ -11,25 +11,18 @@ function startThemeSong() {
     }
 }
 
-function playMonsterSound() {
-    if (isSound()) {
-        let audio = new Audio('/sounds/monster.mp3');
-        audio.play();
-        setTimeout(function () {
-            audio.pause();
-        }, 3400);
-    }
+function playSound(soundPath) {
+    let audio = new Audio(soundPath);
+    audio.play();
 }
 
-function pauseThemeSong() {
+function setThemeSongPauseState(state) {
     if (sound) {
-        theme.pause();
-    }
-}
-
-function unpauseThemeSong() {
-    if (sound) {
-        theme.play();
+        if (state) {
+            theme.pause();
+        } else {
+            theme.play();
+        }
     }
 }
 

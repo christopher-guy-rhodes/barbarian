@@ -52,9 +52,6 @@ function hasJumpEvaded(sprite, opponent) {
 
     if (opponent[ACTION] === JUMP  && distance < 100 && distance > 15) {
         isJumpEvaided = true;
-        console.log('distance:' + distance + ' is between 15 and 100');
-    } else {
-        console.log('distance:' + distance + ' is not between 15 and 100');
     }
     return isJumpEvaided;
 }

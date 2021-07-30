@@ -89,7 +89,11 @@ BARBARIAN_SPRITE = {
         LEFT: STOP_LEFT_POSITION,
         RIGHT_HEIGHT : STOP_RIGHT_HEIGHT_OFFSET,
         LEFT_HEIGHT: STOP_LEFT_HEIGHT_OFFSET
-    }
+    },
+    RESET_LEFT: 0,
+    RESET_BOTTOM: 12,
+    RESET_DISPLAY: 'block',
+    RESET_STATUS: ALIVE
 };
 
 DOG_SPRITE = {
@@ -153,7 +157,13 @@ DOG_SPRITE = {
         LEFT: 3,
         RIGHT_HEIGHT : 0,
         LEFT_HEIGHT: 1
-    }
+    },
+    DEFAULT_ACTION: SIT,
+    SOUND: '/sounds/growl.mp3',
+    RESET_LEFT: 850,
+    RESET_BOTTOM: 160,
+    RESET_DISPLAY: 'none',
+    RESET_STATUS: DEAD
 }
 
 MONSTER_SPRITE = {
@@ -201,8 +211,16 @@ MONSTER_SPRITE = {
         SPRITE : $(".death"),
         ANIMATION : DEATH_FRAMES,
         DELAY : 1800
-    }
+    },
+    SOUND: '/sounds/monster.mp3',
+    DEFAULT_ACTION: WALK,
+    RESET_LEFT: 850,
+    RESET_BOTTOM: 12,
+    RESET_DISPLAY: 'block',
+    RESET_STATUS: DEAD
 };
+
+SPRITES = [BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE];
 
 SCREENS = {
     0 : {
@@ -221,7 +239,8 @@ SCREENS = {
                 {LEFT: 950, OBSTACLE_TYPE: PIT, HEIGHT: 164, FAIL_ACTION: FALL, JUMP_RANGE: [880, 1000]}
             ]
         },
-        OPPONENTS: [DOG_SPRITE, BARBARIAN_SPRITE]
+        OPPONENTS: [DOG_SPRITE, BARBARIAN_SPRITE],
+        ARTIFACTS: [BRIDGE],
     }
 };
 
@@ -255,6 +274,10 @@ function isSpriteCurrentOpponent(sprite) {
     return SCREENS[screenNumber][OPPONENTS].includes(sprite);
 }
 
+function setDisplay(sprite, display) {
+    sprite.css('display', display);
+}
+
 function show(sprite) {
     sprite.css('display', 'block');
 }
@@ -281,6 +304,10 @@ function setStatus(sprite, status) {
 
 function getAction(sprite) {
     return sprite[ACTION];
+}
+
+function getSound(sprite) {
+    return sprite[SOUND];
 }
 
 function setAction(sprite, action) {
@@ -321,7 +348,6 @@ function getPixelsPerSecond(sprite) {
 
 function setCurrentPixelsPerSecond(sprite, value) {
     sprite['currentPixelsPerSecond'] = value;
-    console.log('==> value is:' + value);
 }
 
 function getCurrentPixelsPerSecond(sprite) {
@@ -375,4 +401,24 @@ function setDeathTime(sprite, time) {
 
 function getDeathTime(sprite) {
     return sprite[DEATH_TIME];
+}
+
+function getDefaultAction(sprite) {
+    return sprite[DEFAULT_ACTION];
+}
+
+function getResetLeft(sprite) {
+    return sprite[RESET_LEFT];
+}
+
+function getResetBottom(sprite) {
+    return sprite[RESET_BOTTOM];
+}
+
+function getResetStatus(sprite) {
+    return sprite[RESET_STATUS];
+}
+
+function getResetDisplay(sprite) {
+    return sprite[RESET_DISPLAY];
 }

@@ -93,7 +93,7 @@ function handleSpaceKeypress() {
 
         hide(START_MESSAGE);
         startMonsterAttacks();
-        animateHelper(BARBARIAN_SPRITE, STOP, 0);
+        performAction(BARBARIAN_SPRITE, STOP, 0);
     }
 }
 
@@ -103,7 +103,7 @@ function handlePauseKeypress() {
             hide(PAUSE_MESSAGE);
             setPaused(false);
             if (getAction(BARBARIAN_SPRITE) !== undefined) {
-                animateHelper(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
+                performAction(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
             }
             startMonsterAttacks(true);
             setThemeSongPauseState(false);
@@ -147,13 +147,13 @@ function handleSoundKeypress() {
 
 function handleRunKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== RUN && isAliveOrJustDied()) {
-        animateHelper(BARBARIAN_SPRITE, RUN, 0);
+        performAction(BARBARIAN_SPRITE, RUN, 0);
     }
 }
 
 function handleJumpKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== JUMP && isAliveOrJustDied()) {
-        animateHelper(BARBARIAN_SPRITE, JUMP, 1);
+        performAction(BARBARIAN_SPRITE, JUMP, 1);
     }
 }
 
@@ -166,14 +166,14 @@ function handleStopKeypress() {
 function handleRightKeypress() {
     if ((getAction(BARBARIAN_SPRITE) !== WALK || getDirection(BARBARIAN_SPRITE) !== RIGHT) && isAliveOrJustDied()) {
         setDirection(BARBARIAN_SPRITE, RIGHT);
-        animateHelper(BARBARIAN_SPRITE, WALK, 0);
+        performAction(BARBARIAN_SPRITE, WALK, 0);
     }
 }
 
 function handleLeftKeypress() {
     if ((BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) && isAliveOrJustDied()) {
         setDirection(BARBARIAN_SPRITE, LEFT);
-        animateHelper(BARBARIAN_SPRITE, WALK, 0);
+        performAction(BARBARIAN_SPRITE, WALK, 0);
     }
 }
 
@@ -181,7 +181,7 @@ function handleAttackKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== ATTACK && isAliveOrJustDied()) {
         stopSpriteMovement(BARBARIAN_SPRITE);
         playGruntSound();
-        animateHelper(BARBARIAN_SPRITE, ATTACK, 1);
+        performAction(BARBARIAN_SPRITE, ATTACK, 1);
     }
 }
 

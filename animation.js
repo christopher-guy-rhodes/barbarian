@@ -32,17 +32,16 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
         // If the action starts a new animation or the current one should terminate break out of the loop
         if (isPaused() ||
             gameOver ||
-            handleObstacles(sprite, getObstacles(sprite)) ||
+            handleObstacles(sprite) ||
             !isSpriteCurrentOpponent(sprite) ||
             isDead(sprite) ||
-            fightSequence(sprite, getOpponents()) ||
+            fightSequence(sprite) ||
             monsterTurnaround(sprite) ||
             handleBoundary(sprite)) {
             break;
         }
 
         renderSpriteFrame(sprite, requestedAction, frames[index++]);
-        console.log('==> fps for' + sprite[NAME] + ' action:' + requestedAction + ' is ' +  getFps(sprite, requestedAction));
         await sleep(MILLISECONDS_PER_SECOND / getFps(sprite, requestedAction));
 
         if (index === frames.length) {
@@ -62,13 +61,46 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
     }
 }
 
-function animateHelper(sprite, action, times) {
+async function animateFall(sprite) {
     stopSpriteMovement(sprite);
-    if (getPixelsPerSecond(sprite, action) > 0) {
-        moveFromPositionToBoundary(sprite, action);
+    if (!isMonster(sprite) && getLives() < 1) {
+        show(GAME_OVER_MESSAGE);
     }
-    animateSprite(sprite, action, getDirection(sprite), times)
-        .then(function() {}, error => handlePromiseError(error));
+
+    if (isSound()) {
+        playFallSound();
+    }
+
+    animateVerticalFall(sprite);
+    const frames = getFrames(sprite, FALL, getDirection(sprite));
+    for(let frame of frames) {
+        renderSpriteFrame(sprite, FALL, frame);
+        await sleep(MILLISECONDS_PER_SECOND / getFps(sprite, FALL));
+    }
+}
+
+function animateVerticalFall(sprite) {
+    let distance = parseInt(getBottom(sprite).substring(0, getBottom(sprite).length - 2));
+    let duration = distance / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
+    moveVerticalToBoundary(sprite, DOWN, duration);
+    setTimeout(function () {
+        hideSprite(sprite);
+        setAction(sprite, STOP);
+    }, distance / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND) ;
+}
+
+function performAction(sprite, action, times) {
+    if (action === FALL) {
+        fallAction(sprite);
+    } else {
+        stopSpriteMovement(sprite);
+        if (getPixelsPerSecond(sprite, action) > 0) {
+            moveFromPositionToBoundary(sprite, action);
+        }
+        animateSprite(sprite, action, getDirection(sprite), times)
+            .then(function () {
+            }, error => handlePromiseError(error));
+    }
 }
 
 function fallAction(sprite) {
@@ -153,7 +185,7 @@ function monsterTurnaround(sprite) {
 
     if (isPassedLeft || isPassedRight) {
         setDirection(sprite,isPassedLeft ? RIGHT : LEFT);
-        animateHelper(sprite, WALK, 0);
+        performAction(sprite, WALK, 0);
         return true;
     } else {
         return false;
@@ -187,7 +219,7 @@ function startMonsterAttacks(unpausing = false) {
         if ((getStatus(monsterSprite) === DEAD && !unpausing) || (getStatus(monsterSprite) === ALIVE && unpausing)) {
             showSprite(monsterSprite);
             setStatus(monsterSprite, ALIVE);
-            animateHelper(monsterSprite, getDefaultAction(monsterSprite), 0);
+            performAction(monsterSprite, getDefaultAction(monsterSprite), 0);
         }
     }
 }
@@ -299,33 +331,7 @@ function isJustDied() {
     return new Date().getTime() - getDeathTime(BARBARIAN_SPRITE) < JUST_DIED_THRESHOLD;
 }
 
-async function animateFall(sprite) {
-    stopSpriteMovement(sprite);
-    if (!isMonster(sprite) && getLives() < 1) {
-        show(GAME_OVER_MESSAGE);
-    }
 
-    if (isSound()) {
-        playFallSound();
-    }
-
-    animateVerticalFall(sprite);
-    const frames = getFrames(sprite, FALL, getDirection(sprite));
-    for(let frame of frames) {
-        renderSpriteFrame(sprite, FALL, frame);
-        await sleep(MILLISECONDS_PER_SECOND / getFps(sprite, FALL));
-    }
-}
-
-function animateVerticalFall(sprite) {
-    let distance = parseInt(getBottom(sprite).substring(0, getBottom(sprite).length - 2));
-    let duration = distance / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
-    moveVerticalToBoundary(sprite, DOWN, duration);
-    setTimeout(function () {
-        hideSprite(sprite);
-        setAction(sprite, STOP);
-    }, distance / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND) ;
-}
 
 
 

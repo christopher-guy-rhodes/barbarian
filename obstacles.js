@@ -58,7 +58,7 @@ function getObstacles(sprite) {
     return result;
 }
 
-function handleObstacles(sprite, obstacle) {
+function handleObstacles(sprite) {
 
     if (sprite[NAME] === BARBARIAN_SPRITE_NAME && screenNumber == 1 && $('.bridge').css('display') === 'block' &&
         sprite[SPRITE].offset().left >= 700) {
@@ -76,9 +76,7 @@ function handleObstacles(sprite, obstacle) {
                 moveSpriteToHeight(sprite, obstacle[HEIGHT]);
             } else {
                 stopSpriteMovement(sprite);
-                if (obstacle[OBSTACLE_TYPE] === PIT) {
-                    fallAction(sprite);
-                }
+                performAction(sprite, obstacle[FAIL_ACTION]);
                 // Allow barbarian to attack at boundary
                 if (sprite[ACTION] !== ATTACK || sprite[ACTION] !== JUMP) {
                     return true;

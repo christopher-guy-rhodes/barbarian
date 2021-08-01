@@ -25,7 +25,7 @@ function launchMonsterAttack(sprite, opponent, opponents) {
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
         var proximity = Math.abs(getProximity(sprite, opponent));
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
-            animateHelper(sprite, ATTACK, 0);
+            performAction(sprite, ATTACK, 0);
             return true;
         }
     }
@@ -79,7 +79,8 @@ function areAllMonstersDeadOnScreen() {
 
 }
 
-function fightSequence(sprite, opponents) {
+function fightSequence(sprite) {
+    let opponents = getOpponents();
     var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
 
     for (var i = 0; i < opponentsInProximity.length; i++) {

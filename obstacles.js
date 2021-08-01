@@ -1,7 +1,6 @@
 function avoidedObstacleWithJump(sprite, obstacle) {
     if (sprite[ACTION] === JUMP) {
         let sprite_left = sprite[SPRITE].offset().left;
-        console.log(sprite[NAME] + ' is jumping and left is ' + sprite_left + ' jump range is ' + obstacle[JUMP_RANGE]);
         if (sprite_left > obstacle[JUMP_RANGE][0] && sprite_left < obstacle[JUMP_RANGE][1]) {
             return true;
         }
@@ -80,8 +79,7 @@ function handleObstacles(sprite, obstacle) {
             if (isMonster(sprite) || isDownhill(sprite, obstacle) || avoidedObstacleWithJump(sprite, obstacle)) {
                 moveSpriteToHeight(sprite, obstacle[HEIGHT]);
             } else {
-                actionHelper(sprite, getFailAction(obstacle), 1);
-                console.log('==> hit boundry');
+                performAction(sprite, getFailAction(obstacle), 1);
                 // Allow barbarian to attack at boundary
                 if (sprite[ACTION] !== ATTACK || sprite[ACTION] !== JUMP) {
                     return true;

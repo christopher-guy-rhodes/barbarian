@@ -85,7 +85,7 @@ function handleSpaceKeypress() {
 
         hide(START_MESSAGE);
         startMonsterAttacks();
-        actionHelper(BARBARIAN_SPRITE, STOP, 0);
+        performAction(BARBARIAN_SPRITE, STOP, 0);
     }
 }
 
@@ -103,7 +103,7 @@ function handlePauseKeypress() {
             hide(PAUSE_MESSAGE);
             setPaused(false);
             if (getAction(BARBARIAN_SPRITE) !== undefined) {
-                actionHelper(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
+                performAction(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
             }
             startMonsterAttacks(true);
             setThemeSongPauseState(false);
@@ -147,19 +147,19 @@ function handleSoundKeypress() {
 
 function handleRunKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== RUN && isAliveOrJustDied()) {
-        actionHelper(BARBARIAN_SPRITE, RUN, 0);
+        performAction(BARBARIAN_SPRITE, RUN, 0);
     }
 }
 
 function handleJumpKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== JUMP && isAliveOrJustDied()) {
-        actionHelper(BARBARIAN_SPRITE, JUMP, 1);
+        performAction(BARBARIAN_SPRITE, JUMP, 1);
     }
 }
 
 function handleStopKeypress() {
     if (isAliveOrJustDied()) {
-        actionHelper(BARBARIAN_SPRITE, STOP, 1);
+        performAction(BARBARIAN_SPRITE, STOP, 1);
         setAction(BARBARIAN_SPRITE, STOP);
     }
 }
@@ -167,21 +167,21 @@ function handleStopKeypress() {
 function handleRightKeypress() {
     if ((getAction(BARBARIAN_SPRITE) !== WALK || getDirection(BARBARIAN_SPRITE) !== RIGHT) && isAliveOrJustDied()) {
         setDirection(BARBARIAN_SPRITE, RIGHT);
-        actionHelper(BARBARIAN_SPRITE, WALK, 0);
+        performAction(BARBARIAN_SPRITE, WALK, 0);
     }
 }
 
 function handleLeftKeypress() {
     if ((BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) && isAliveOrJustDied()) {
         setDirection(BARBARIAN_SPRITE, LEFT);
-        actionHelper(BARBARIAN_SPRITE, WALK, 0);
+        performAction(BARBARIAN_SPRITE, WALK, 0);
     }
 }
 
 function handleAttackKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== ATTACK && isAliveOrJustDied()) {
         playGruntSound();
-        actionHelper(BARBARIAN_SPRITE, ATTACK, 1);
+        performAction(BARBARIAN_SPRITE, ATTACK, 1);
     }
 }
 

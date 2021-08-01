@@ -23,3 +23,8 @@ function filterBarbarianSprite(sprites) {
     }
     return result;
 }
+
+function handlePromiseError(error) {
+    console.log('Error fulfilling promise: ' + error);
+}
+

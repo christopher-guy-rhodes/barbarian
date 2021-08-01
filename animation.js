@@ -1,11 +1,11 @@
 /**
- * Animate a sprite using the requested action. Stops when a different action is requested of the action has happend
+ * Animate a sprite using the requested action. Stops when a different action is requested of the action has happened
  * "times" times. If times is set to zero the animation will not terminate unless a new action is requested.
  * @param sprite the sprite to animate
  * @param requestedAction the requested action (WALK, ATTACK etc.)
  * @param requestedDirection the requested direction (LEFT, RIGHT etc.)
  * @param times the number of times to perform the action (0 for infinite)
- * @returns {Promise<void>} the void promise
+ * @returns {Promise<void>} a void promise
  */
 async function animateSprite(sprite, requestedAction, requestedDirection, times) {
 
@@ -36,7 +36,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             !isSpriteCurrentOpponent(sprite) ||
             isDead(sprite) ||
             fightSequence(sprite, getOpponents()) ||
-            monsterTurnaround(sprite, getOpponents()) ||
+            monsterTurnaround(sprite) ||
             handleBoundary(sprite)) {
             break;
         }
@@ -44,7 +44,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
         renderSpriteFrame(sprite, requestedAction, frames[index++]);
         await sleep(MILLISECONDS_PER_SECOND / getFps(sprite));
 
-        if (index == frames.length) {
+        if (index === frames.length) {
             // If times is 0 we loop infinitely, if times is set decrement it and keep looping
             if (counter === 0 || --counter > 0) {
                 index = 0;
@@ -61,38 +61,57 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
     }
 }
 
-function actionHelper(sprite, requestedAction, times) {
+/**
+ * Handles both sprite and movement animation for the set of actions a sprite can perform.
+ *
+ * @param sprite the sprite to animate
+ * @param requestedAction the action to perform
+ * @param times the number of times to perform the action (infinitely if zero)
+ */
+function performAction(sprite, requestedAction, times) {
     stopSpriteMovement(sprite);
 
-    if (requestedAction === STOP) {
-        stop(sprite);
-        return;
-    } else if (requestedAction === FALL) {
-        fall(sprite);
-        return;
-    } else if (requestedAction === ATTACK) {
-        attack(sprite, times);
-        return;
+    switch(requestedAction) {
+        case STOP:
+            stop(sprite);
+            break;
+        case FALL:
+            fall(sprite);
+            break;
+        case ATTACK:
+            attack(sprite, times);
+            break;
+        case SIT:
+            sit(sprite, times);
+            break;
+        case RUN:
+            animateHelper(sprite, requestedAction, RUN_SPEED_INCREASE_FACTOR, times);
+            break;
+        case WALK:
+        case JUMP:
+            animateHelper(sprite, requestedAction, 1, times);
+            break;
     }
+}
 
-    if (requestedAction === RUN) {
-        setCurrentPixelsPerSecond(sprite,getPixelsPerSecond(sprite) * RUN_SPEED_INCREASE_FACTOR);
-    } else {
-        setCurrentPixelsPerSecond(sprite, getPixelsPerSecond(sprite));
-    }
+function animateHelper(sprite, action, speedMultiplier, times) {
+    setCurrentPixelsPerSecond(sprite,getPixelsPerSecond(sprite)*speedMultiplier);
+    moveFromPositionToBoundary(sprite);
+    animateSprite(sprite, action, getDirection(sprite), times)
+        .then(function() {}, error => handlePromiseError(error));
+}
 
-    if (requestedAction !== SIT && (requestedAction !== ATTACK || hasMovingAttack(sprite))) {
-        moveFromPositionToBoundary(sprite);
-    }
-
-    animateSprite(sprite, requestedAction, getDirection(sprite), times);
+function sit(sprite, times) {
+    setCurrentPixelsPerSecond(sprite, getPixelsPerSecond(sprite));
+    animateSprite(sprite, SIT, getDirection(sprite), times)
+        .then(function() {}, error => handlePromiseError(error));
 }
 
 function fall(sprite) {
     setAction(sprite, FALL);
     setLives(0);
     handleDeath(sprite);
-    animateFall(sprite);
+    animateFall(sprite).then(function() {}, error => handlePromiseError(error));
 }
 
 function attack(sprite, times) {
@@ -101,7 +120,8 @@ function attack(sprite, times) {
     } else {
         moveFromPositionToBoundary(sprite);
     }
-    animateSprite(sprite, ATTACK, getDirection(sprite), times);
+    animateSprite(sprite, ATTACK, getDirection(sprite), times)
+        .then(function() {}, error => handlePromiseError(error));
 }
 
 function stop(sprite) {
@@ -114,27 +134,6 @@ function stop(sprite) {
 
     setSpriteBackgroundPosition(sprite, x, y);
     stopSpriteMovement(sprite);
-}
-
-/**
- * Highlights the monster when the barbarian is within attacking distance. Meant to hint to the player when to attack.
- * @param sprite the to highlight
- */
-function highlightAttackRange(sprite) {
-    if (!isHints() || isMonster(sprite)) {
-        return;
-    }
-    let opponents = filterBarbarianSprite(getOpponents());
-    for (const opponent of opponents) {
-        const thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
-
-        const distance = Math.abs(getLeft(sprite) - getLeft(opponent));
-
-        let shoudHighlight = !isDead(sprite) &&
-            (distance >= thresholds[MIN] - HIGHLIGHT_BUFFER) &&
-            (distance <= thresholds[MAX] + HIGHLIGHT_BUFFER);
-        setHighlight(opponent, shoudHighlight);
-    }
 }
 
 function moveFromPositionToBoundary(sprite) {
@@ -151,7 +150,7 @@ function moveHorizontalToBoundary(sprite, direction, duration) {
 }
 
 function moveVerticalToBoundary(sprite, direction, duration) {
-    let bottom = direction == DOWN ? '0px' : '800px';
+    let bottom = direction === DOWN ? '0px' : '800px';
     getElement(sprite).animate({bottom: bottom}, duration,  'linear');
 }
 
@@ -178,16 +177,7 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function getRelativeDeathDelay(sprite, opponent) {
-    const separation = Math.abs(getLeft(sprite) - getLeft(opponent));
-
-    const relativePps = getDirection(sprite) === getDirection(opponent)
-        ? getCurrentPixelsPerSecond(opponent) - getCurrentPixelsPerSecond(sprite)
-        : getCurrentPixelsPerSecond(opponent) + getCurrentPixelsPerSecond(sprite);
-    return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * MILLISECONDS_PER_SECOND;
-}
-
-function monsterTurnaround(sprite, opponents) {
+function monsterTurnaround(sprite) {
     if (!isMonster(sprite)) {
         return false;
     }
@@ -201,7 +191,7 @@ function monsterTurnaround(sprite, opponents) {
 
     if (isPassedLeft || isPassedRight) {
         setDirection(sprite,isPassedLeft ? RIGHT : LEFT);
-        actionHelper(sprite, WALK, 0);
+        performAction(sprite, WALK, 0);
         return true;
     } else {
         return false;
@@ -211,7 +201,7 @@ function monsterTurnaround(sprite, opponents) {
 function initializeScreen() {
     let artifacts = SCREENS[getScreenNumber()][ARTIFACTS];
     if (artifacts !== undefined) {
-        for (artifact of artifacts) {
+        for (let artifact of artifacts) {
             show(artifact);
         }
     }
@@ -235,13 +225,13 @@ function startMonsterAttacks(force = false) {
         if (getStatus(monsterSprite) === DEAD || force) {
             showSprite(monsterSprite);
             setStatus(monsterSprite, ALIVE);
-            actionHelper(monsterSprite, getDefaultAction(monsterSprite), 0);
+            performAction(monsterSprite, getDefaultAction(monsterSprite), 0);
         }
     }
 }
 
-function hideOpponentsAndArtifacts(screenNumber) {
-    var opponents = filterBarbarianSprite(getOpponents());
+function hideOpponentsAndArtifacts() {
+    let opponents = filterBarbarianSprite(getOpponents());
     for (let opponent of opponents) {
         hideSprite(opponent);
         hideSprite(opponent[DEATH]);
@@ -249,31 +239,33 @@ function hideOpponentsAndArtifacts(screenNumber) {
 
     let artifacts = SCREENS[getScreenNumber()][ARTIFACTS];
     if (artifacts !== undefined) {
-        for (artifact of artifacts) {
+        for (let artifact of artifacts) {
             hide(artifact);
         }
     }
 }
 
 function handleBoundary(sprite) {
-    const isRightBoundry = hitRightBoundry(sprite);
-    const isLeftBoundry = hitLeftBoundary(sprite);
+    const isRightBoundary = hitRightBoundry(sprite);
+    const isLeftBoundary = hitLeftBoundary(sprite);
 
-    if (!isLeftBoundry && !isRightBoundry) {
+    if (!isLeftBoundary && !isRightBoundary) {
         return false;
     }
 
-    if (isLeftBoundry && getScreenNumber() > 0) {
-        hideOpponentsAndArtifacts(getScreenNumber());
-        setScreenNumber(getScreenNumber() - 1)
-        advanceBackdrop(sprite, RIGHT);
+    if (isLeftBoundary && getScreenNumber() > 0) {
+        hideOpponentsAndArtifacts();
+        setScreenNumber(getScreenNumber() - 1);
+        advanceBackdrop(sprite, RIGHT)
+            .then(function() {}, error => handlePromiseError(error));
     }
-    if (isRightBoundry && !isMonster(sprite)) {
+    if (isRightBoundary && !isMonster(sprite)) {
         if (SCREENS[getScreenNumber()] !== undefined && areAllMonstersDeadOnScreen()) {
-            hideOpponentsAndArtifacts(getScreenNumber());
+            hideOpponentsAndArtifacts();
             setScreenNumber(getScreenNumber()+1);
             if (SCREENS[getScreenNumber()] !== undefined) {
-                advanceBackdrop(sprite, LEFT);
+                advanceBackdrop(sprite, LEFT)
+                    .then(function() {}, error => handlePromiseError(error));
             }
         }
         if (SCREENS[getScreenNumber()] === undefined) {
@@ -313,7 +305,7 @@ async function animateBarbarianDeath(sprite) {
     stopSpriteMovement(sprite);
     setBarbarianDying(true);
 
-    const frames = getFrames(sprite[DEATH], DEATH, getDirection(sprite))
+    const frames = getFrames(sprite[DEATH], DEATH, getDirection(sprite));
     for (let frame of frames) {
         renderDeathSpriteFrame(sprite, frame);
         await sleep(MILLISECONDS_PER_SECOND / sprite[DEATH][FRAMES][DEATH][FPS]);
@@ -328,7 +320,7 @@ async function animateMonsterDeath(sprite) {
     showSprite(sprite[DEATH]);
     hideSprite(sprite);
 
-    const frames = getFrames(sprite[DEATH], DEATH, getDirection(sprite))
+    const frames = getFrames(sprite[DEATH], DEATH, getDirection(sprite));
     for (let frame of frames) {
         renderDeathSpriteFrame(sprite, frame);
         await sleep(MILLISECONDS_PER_SECOND / sprite[DEATH][FRAMES][DEATH][FPS]);
@@ -363,10 +355,9 @@ async function animateFall(sprite) {
     }
 }
 
-
 function animateVerticalFall(sprite) {
     let distance = parseInt(getBottom(sprite).substring(0, getBottom(sprite).length - 2));
-    let duration = distance / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND
+    let duration = distance / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
     moveVerticalToBoundary(sprite, DOWN, duration);
     setTimeout(function () {
         hideSprite(sprite);

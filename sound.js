@@ -12,8 +12,10 @@ function startThemeSong() {
 }
 
 function playSound(soundPath) {
-    let audio = new Audio(soundPath);
-    audio.play();
+    if (isSound()) {
+        let audio = new Audio(soundPath);
+        audio.play();
+    }
 }
 
 function setThemeSongPauseState(state) {

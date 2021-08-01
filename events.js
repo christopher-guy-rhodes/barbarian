@@ -62,8 +62,8 @@ function resetGame() {
 
         for (const sprite of SPRITES) {
             setDisplay(sprite[SPRITE], getResetDisplay(sprite));
-            setLeft(sprite[SPRITE], getResetLeft(sprite));
-            setBottom(sprite[SPRITE], getResetBottom(sprite));
+            setLeft(sprite, getResetLeft(sprite));
+            setSpriteBottom(sprite, getResetBottom(sprite));
             setStatus(sprite, getResetStatus(sprite));
         }
 
@@ -125,7 +125,8 @@ function handleHintsKeypress() {
     setHints(!isHints());
 
     setTimeout(function () {
-        hide(isHints() ? HINTS_ON_MESSAGE : HINTS_OFF_MESSAGE);
+        hide(HINTS_ON_MESSAGE);
+        hide(HINTS_OFF_MESSAGE);
     }, TOGGLE_MESSAGE_TIME);
 }
 
@@ -135,11 +136,12 @@ function handleSoundKeypress() {
 
     hide(isSound() ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE);
     show(isSound() ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE);
-    setSound(!isSound());
     setThemeSongPauseState(isSound());
+    setSound(!isSound());
 
     setTimeout(function () {
-        hide(isSound() ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE);
+        hide(SOUND_OFF_MESSAGE);
+        hide(SOUND_ON_MESSAGE);
     }, TOGGLE_MESSAGE_TIME);
 }
 

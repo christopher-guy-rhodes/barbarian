@@ -10,15 +10,17 @@ var STOP_RIGHT_HEIGHT_OFFSET = 0;
 var STOP_LEFT_HEIGHT_OFFSET = 1;
 
 var DEATH_FRAMES = {
-    RIGHT : {
-        FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        HEIGHT_OFFSET: 0
-    },
-    LEFT : {
-        FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-        HEIGHT_OFFSET: 0
-    },
-    FPS : BOG_MONSTER_SPRITE_FPS
+    DEATH : {
+        RIGHT: {
+            FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            HEIGHT_OFFSET: 0
+        },
+        LEFT: {
+            FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            HEIGHT_OFFSET: 0
+        },
+        FPS: BOG_MONSTER_SPRITE_FPS
+    }
 };
 
 BARBARIAN_SPRITE = {
@@ -71,16 +73,18 @@ BARBARIAN_SPRITE = {
     },
     DEATH : {
         SPRITE : $(".barbarian"),
-        ANIMATION : {
-            RIGHT : {
-                FRAMES: [96, 97, 98, 99, 100],
-                HEIGHT_OFFSET: 12
-            },
-            LEFT : {
-                FRAMES : [108, 107, 106, 105, 104],
-                HEIGHT_OFFSET: 13
-            },
-            FPS : SPRITE_FPS
+        FRAMES : {
+            DEATH: {
+                RIGHT: {
+                    FRAMES: [96, 97, 98, 99, 100],
+                    HEIGHT_OFFSET: 12
+                },
+                LEFT: {
+                    FRAMES: [108, 107, 106, 105, 104],
+                    HEIGHT_OFFSET: 13
+                },
+                FPS: SPRITE_FPS
+            }
         },
         DELAY : 1800
     },
@@ -149,7 +153,7 @@ DOG_SPRITE = {
     },
     DEATH : {
         SPRITE : $(".death"),
-        ANIMATION : DEATH_FRAMES,
+        FRAMES : DEATH_FRAMES,
         DELAY : 1800
     },
     STOP_POSITION : {
@@ -209,7 +213,7 @@ MONSTER_SPRITE = {
     },
     DEATH : {
         SPRITE : $(".death"),
-        ANIMATION : DEATH_FRAMES,
+        FRAMES : DEATH_FRAMES,
         DELAY : 1800
     },
     SOUND: '/sounds/monster.mp3',
@@ -282,16 +286,28 @@ function show(sprite) {
     sprite.css('display', 'block');
 }
 
+function showSprite(sprite) {
+    show(getElement(sprite));
+}
+
 function hide(sprite) {
     sprite.css('display', 'none');
+}
+
+function hideSprite(sprite) {
+    hide(getElement(sprite));
 }
 
 function setBottom(sprite, bottom) {
     sprite.css('bottom', bottom + 'px')
 }
 
+function setSpriteBottom(sprite, bottom) {
+    setBottom(getElement(sprite), bottom);
+}
+
 function setLeft(sprite, left) {
-    sprite.css('left', left + 'px')
+    getElement(sprite).css('left', left + 'px')
 }
 
 function getStatus(sprite) {
@@ -327,19 +343,15 @@ function setBackgroundPosition(sprite, backgroundPosition) {
 }
 
 function stopSpriteMovement(sprite) {
-    sprite.stop();
+    getElement(sprite).stop();
 }
 
 function getName(sprite) {
     return sprite[NAME];
 }
 
-function highlight(sprite) {
-    sprite.css('filter','brightness(300%)');
-}
-
-function unhighlight(sprite) {
-    sprite.css('filter','brightness(100%)');
+function setHighlight(sprite, state) {
+    getElement(sprite).css('filter','brightness(' + (state ? '300%' : '100%') + ')');
 }
 
 function getPixelsPerSecond(sprite) {
@@ -366,13 +378,12 @@ function getLeftStopPosition(sprite) {
     return sprite[STOP_POSITION][LEFT];
 }
 
-
 function getWidth(sprite) {
-    return sprite.width();
+    return getElement(sprite).width();
 }
 
 function getHeight(sprite) {
-    return sprite.height();
+    return getElement(sprite).height();
 }
 
 function getRightHeightStopPosition(sprite) {
@@ -384,15 +395,15 @@ function getLeftHeightStopPosition(sprite) {
 }
 
 function getLeft(sprite) {
-    return sprite.offset().left;
+    return getElement(sprite).offset().left;
 }
 
 function getBottom(sprite) {
-    return sprite.css('bottom');
+    return getElement(sprite).css('bottom');
 }
 
 function setSpriteBackgroundPosition(sprite, x, y) {
-    sprite.css('background-position', x + 'px ' + y + 'px');
+    getElement(sprite).css('background-position', x + 'px ' + y + 'px');
 }
 
 function setDeathTime(sprite, time) {
@@ -421,4 +432,24 @@ function getResetStatus(sprite) {
 
 function getResetDisplay(sprite) {
     return sprite[RESET_DISPLAY];
+}
+
+function getFrames(sprite, requestedAction, direction) {
+    return sprite[FRAMES][requestedAction][direction][FRAMES];
+}
+
+function getDeathDelay(sprite) {
+    return sprite[DEATH][DELAY];
+}
+
+function getFps(sprite) {
+    return sprite[FPS];
+}
+
+function getElement(sprite) {
+    return sprite[SPRITE];
+}
+
+function isWalking(sprite) {
+    return getAction(sprite) === WALK;
 }

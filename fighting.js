@@ -93,10 +93,49 @@ function fightSequence(sprite, opponents) {
         }
         if (opponentDefeated(sprite, opponent)) {
             console.log(sprite[NAME] + ' defeated ' + opponent[NAME]);
-            opponent[DEATH][DELAY] = getDeathDelay(sprite, opponent);
+            opponent[DEATH][DELAY] = getRelativeDeathDelay(sprite, opponent);
+
             death(opponent);
         }
     }
     return false;
 }
+
+function getOpponents() {
+    return SCREENS[getScreenNumber()][OPPONENTS];
+}
+
+function death(sprite) {
+    if (isMonster(sprite)) {
+        monsterDeath(sprite);
+    } else {
+        barbarianDeath(sprite);
+    }
+}
+
+function handleDeath(sprite) {
+    setDeathTime(sprite, new Date().getTime());
+    setStatus(sprite, DEAD);
+}
+
+function barbarianDeath(sprite) {
+    handleDeath(sprite);
+    animateBarbarianDeath(sprite);
+    playGruntSound();
+    show(START_MESSAGE);
+    setLives(getLives() - 1);
+    if (getLives() < 1) {
+        show(GAME_OVER_MESSAGE);
+    }
+}
+
+function monsterDeath(sprite) {
+    handleDeath(sprite);
+    animateMonsterDeath(sprite);
+    playFireSound();
+}
+
+
+
+
 

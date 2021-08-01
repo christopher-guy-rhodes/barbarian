@@ -27,7 +27,6 @@ var ACTION = 'ACTION';
 var DIRECTION = 'DIRECTION';
 var SPRITE = 'SPRITE';
 var FRAMES = 'FRAMES';
-var ANIMATION = 'ANIMATION';
 var NAME = 'NAME';
 var HEIGHT_OFFSET = 'HEIGHT_OFFSET';
 var FPS = 'FPS';
@@ -65,6 +64,8 @@ var ATTACK_PROXIMITY = 320;
 // Directions
 var LEFT = 'LEFT';
 var RIGHT = 'RIGHT';
+var UP = 'UP';
+var DOWN = 'DOWN';
 
 // Sprites
 var BARBARIAN_SPRITE_NAME = 'BARBARIAN';

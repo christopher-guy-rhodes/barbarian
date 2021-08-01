@@ -25,7 +25,7 @@ function launchMonsterAttack(sprite, opponent, opponents) {
     if (sprite[NAME] !== BARBARIAN_SPRITE_NAME && sprite[ACTION] !== ATTACK) {
         var proximity = Math.abs(getProximity(sprite, opponent));
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
-            performAction(sprite, ATTACK, 0);
+            animateHelper(sprite, ATTACK, 0);
             return true;
         }
     }
@@ -155,8 +155,8 @@ function getRelativeDeathDelay(sprite, opponent) {
     const separation = Math.abs(getLeft(sprite) - getLeft(opponent));
 
     const relativePps = getDirection(sprite) === getDirection(opponent)
-        ? getCurrentPixelsPerSecond(opponent) - getCurrentPixelsPerSecond(sprite)
-        : getCurrentPixelsPerSecond(opponent) + getCurrentPixelsPerSecond(sprite);
+        ? getPixelsPerSecond(opponent, getAction(sprite)) - getPixelsPerSecond(sprite, getAction(sprite))
+        : getPixelsPerSecond(opponent, getAction(sprite)) + getPixelsPerSecond(sprite, getAction(sprite));
     return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * MILLISECONDS_PER_SECOND;
 }
 

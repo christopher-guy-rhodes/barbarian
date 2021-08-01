@@ -4,6 +4,7 @@ var BOG_MONSTER_SPRITE_FPS = 5;
 var BOG_MONSTER_PIXELS_PER_SECOND = 150;
 var DOG_SPRITE_FPS = 5;
 var DOG_PIXELS_PER_SECOND = 150;
+var BARBARIAN_SPRITE_PIXELS_PER_SECOND = 150;
 var STOP_RIGHT_POSITION = 0;
 var STOP_LEFT_POSITION = 6;
 var STOP_RIGHT_HEIGHT_OFFSET = 0;
@@ -29,9 +30,23 @@ BARBARIAN_SPRITE = {
     ACTION : STOP,
     DIRECTION : RIGHT,
     HAS_MOVING_ATTACK: false,
-    FPS : SPRITE_FPS,
-    currentPixelsPerSecond: 0,
-    PIXELS_PER_SECOND : 150,
+    FPS: {
+      WALK : SPRITE_FPS,
+      RUN : SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+      JUMP: SPRITE_FPS,
+      ATTACK: SPRITE_FPS,
+      STOP: 0,
+      FALL: SPRITE_FPS
+    },
+    PIXELS_PER_SECOND : {
+        WALK : BARBARIAN_SPRITE_PIXELS_PER_SECOND,
+        RUN : BARBARIAN_SPRITE_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: BARBARIAN_SPRITE_PIXELS_PER_SECOND,
+        ATTACK: 0,
+        STOP: 0,
+        FALL: BARBARIAN_SPRITE_PIXELS_PER_SECOND
+    },
+
     STATUS : DEAD,
     DEATH_TIME: 0,
     FRAMES : {
@@ -106,9 +121,24 @@ DOG_SPRITE = {
     ACTION : SIT,
     DIRECTION : LEFT,
     HAS_MOVING_ATTACK : true,
-    FPS : DOG_SPRITE_FPS,
-    PIXELS_PER_SECOND : DOG_PIXELS_PER_SECOND,
-    currentPixelsPerSecond : 0,
+    FPS: {
+        WALK : DOG_SPRITE_FPS,
+        RUN : DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: DOG_SPRITE_FPS,
+        ATTACK: DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+        STOP: 0,
+        FALL: DOG_SPRITE_FPS,
+        SIT: DOG_SPRITE_FPS
+    },
+    PIXELS_PER_SECOND : {
+        WALK : DOG_PIXELS_PER_SECOND,
+        RUN : DOG_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: DOG_PIXELS_PER_SECOND,
+        ATTACK: DOG_PIXELS_PER_SECOND,
+        SIT: 0,
+        STOP: 0,
+        FALL: DOG_PIXELS_PER_SECOND
+    },
     STATUS : DEAD,
     DEATH_TIME: 0,
     FRAMES : {
@@ -176,9 +206,22 @@ MONSTER_SPRITE = {
     ACTION : WALK,
     DIRECTION : LEFT,
     HAS_MOVING_ATTACK : true,
-    FPS: BOG_MONSTER_SPRITE_FPS,
-    PIXELS_PER_SECOND : BOG_MONSTER_PIXELS_PER_SECOND,
-    currentPixelsPerSecond: BOG_MONSTER_PIXELS_PER_SECOND,
+    FPS: {
+        WALK : BOG_MONSTER_SPRITE_FPS,
+        RUN : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: BOG_MONSTER_SPRITE_FPS,
+        ATTACK : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+        STOP: 0,
+        FALL: BOG_MONSTER_SPRITE_FPS
+    },
+    PIXELS_PER_SECOND : {
+        WALK : BOG_MONSTER_PIXELS_PER_SECOND,
+        RUN : BOG_MONSTER_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: BOG_MONSTER_PIXELS_PER_SECOND,
+        ATTACK: BOG_MONSTER_PIXELS_PER_SECOND,
+        STOP: 0,
+        FALL: BOG_MONSTER_PIXELS_PER_SECOND
+    },
     STATUS : DEAD,
     DEATH_TIME: 0,
     FRAMES : {
@@ -233,14 +276,14 @@ SCREENS = {
     1 : {
         OBSTACLES: {
             RIGHT: [
-                {LEFT: 50, OBSTACLE_TYPE: ELEVATION, HEIGHT: 82, FAIL_ACTION: STOP, JUMP_RANGE: [-100, 100]},
-                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, HEIGHT: 164, FAIL_ACTION: STOP, JUMP_RANGE: [400, 430]},
-                {LEFT: 800, OBSTACLE_TYPE: PIT, HEIGHT: 164, FAIL_ACTION: FALL, JUMP_RANGE: [710, 830]}
+                {LEFT: 50, OBSTACLE_TYPE: ELEVATION, HEIGHT: 82, JUMP_RANGE: [-100, 100]},
+                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, HEIGHT: 164, JUMP_RANGE: [400, 430]},
+                {LEFT: 800, OBSTACLE_TYPE: PIT, HEIGHT: 164, JUMP_RANGE: [710, 830]}
             ],
             LEFT: [
                 {LEFT: 100, OBSTACLE_TYPE: ELEVATION, HEIGHT: 12},
                 {LEFT: 400, OBSTACLE_TYPE: ELEVATION, HEIGHT: 82},
-                {LEFT: 950, OBSTACLE_TYPE: PIT, HEIGHT: 164, FAIL_ACTION: FALL, JUMP_RANGE: [880, 1000]}
+                {LEFT: 950, OBSTACLE_TYPE: PIT, HEIGHT: 164, JUMP_RANGE: [880, 1000]}
             ]
         },
         OPPONENTS: [DOG_SPRITE, BARBARIAN_SPRITE],
@@ -354,16 +397,8 @@ function setHighlight(sprite, state) {
     getElement(sprite).css('filter','brightness(' + (state ? '300%' : '100%') + ')');
 }
 
-function getPixelsPerSecond(sprite) {
-    return sprite[PIXELS_PER_SECOND];
-}
-
-function setCurrentPixelsPerSecond(sprite, value) {
-    sprite['currentPixelsPerSecond'] = value;
-}
-
-function getCurrentPixelsPerSecond(sprite) {
-    return sprite['currentPixelsPerSecond'];
+function getPixelsPerSecond(sprite, action) {
+    return sprite[PIXELS_PER_SECOND][action];
 }
 
 function hasMovingAttack(sprite) {
@@ -442,8 +477,8 @@ function getDeathDelay(sprite) {
     return sprite[DEATH][DELAY];
 }
 
-function getFps(sprite) {
-    return sprite[FPS];
+function getFps(sprite, action) {
+    return sprite[FPS][action];
 }
 
 function getElement(sprite) {

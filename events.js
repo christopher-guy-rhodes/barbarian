@@ -3,10 +3,6 @@ function resetBridgePosition() {
     hide(BRIDGE);
 }
 
-function getLives() {
-    return lives;
-}
-
 function isScrolling() {
     return scrolling;
 }
@@ -39,6 +35,10 @@ function setSound(status) {
     sound = status;
 }
 
+function getLives() {
+    return lives;
+}
+
 function setLives(number) {
     lives = number;
 }
@@ -53,7 +53,7 @@ function setScreenNumber(number) {
 
 function resetGame() {
     renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
-    setAction(BARBARIAN_SPRITE, undefined);
+    setAction(BARBARIAN_SPRITE, STOP);
     setDirection(BARBARIAN_SPRITE, RIGHT);
     if (getLives() < 1) {
         setLives(3);
@@ -79,16 +79,6 @@ function resetGame() {
     }
 }
 
-function handleSpaceKeypress() {
-    if (isDead(BARBARIAN_SPRITE)) {
-        resetGame();
-
-        hide(START_MESSAGE);
-        startMonsterAttacks();
-        performAction(BARBARIAN_SPRITE, STOP, 0);
-    }
-}
-
 function shouldThrottle(lastKeypressTime) {
     let elapsed = KEYPRESS_THROTTLE_DELAY;
     if (typeof lastKeypressTime !== undefined) {
@@ -97,13 +87,23 @@ function shouldThrottle(lastKeypressTime) {
     return elapsed < KEYPRESS_THROTTLE_DELAY;
 }
 
+function handleSpaceKeypress() {
+    if (isDead(BARBARIAN_SPRITE)) {
+        resetGame();
+
+        hide(START_MESSAGE);
+        startMonsterAttacks();
+        animateHelper(BARBARIAN_SPRITE, STOP, 0);
+    }
+}
+
 function handlePauseKeypress() {
     if (!isDead(BARBARIAN_SPRITE)) {
         if (isPaused()) {
             hide(PAUSE_MESSAGE);
             setPaused(false);
             if (getAction(BARBARIAN_SPRITE) !== undefined) {
-                performAction(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
+                animateHelper(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
             }
             startMonsterAttacks(true);
             setThemeSongPauseState(false);
@@ -147,41 +147,41 @@ function handleSoundKeypress() {
 
 function handleRunKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== RUN && isAliveOrJustDied()) {
-        performAction(BARBARIAN_SPRITE, RUN, 0);
+        animateHelper(BARBARIAN_SPRITE, RUN, 0);
     }
 }
 
 function handleJumpKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== JUMP && isAliveOrJustDied()) {
-        performAction(BARBARIAN_SPRITE, JUMP, 1);
+        animateHelper(BARBARIAN_SPRITE, JUMP, 1);
     }
 }
 
 function handleStopKeypress() {
     if (isAliveOrJustDied()) {
-        performAction(BARBARIAN_SPRITE, STOP, 1);
-        setAction(BARBARIAN_SPRITE, STOP);
+        stopAction(BARBARIAN_SPRITE);
     }
 }
 
 function handleRightKeypress() {
     if ((getAction(BARBARIAN_SPRITE) !== WALK || getDirection(BARBARIAN_SPRITE) !== RIGHT) && isAliveOrJustDied()) {
         setDirection(BARBARIAN_SPRITE, RIGHT);
-        performAction(BARBARIAN_SPRITE, WALK, 0);
+        animateHelper(BARBARIAN_SPRITE, WALK, 0);
     }
 }
 
 function handleLeftKeypress() {
     if ((BARBARIAN_SPRITE[ACTION] != WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) && isAliveOrJustDied()) {
         setDirection(BARBARIAN_SPRITE, LEFT);
-        performAction(BARBARIAN_SPRITE, WALK, 0);
+        animateHelper(BARBARIAN_SPRITE, WALK, 0);
     }
 }
 
 function handleAttackKeypress() {
     if (getAction(BARBARIAN_SPRITE) !== ATTACK && isAliveOrJustDied()) {
+        stopSpriteMovement(BARBARIAN_SPRITE);
         playGruntSound();
-        performAction(BARBARIAN_SPRITE, ATTACK, 1);
+        animateHelper(BARBARIAN_SPRITE, ATTACK, 1);
     }
 }
 

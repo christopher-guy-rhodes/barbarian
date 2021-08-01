@@ -43,10 +43,6 @@ function isObstacleClose(sprite, obstacle) {
     return false;
 }
 
-function getFailAction(obstacle) {
-    return obstacle[FAIL_ACTION];
-}
-
 function getObstacles(sprite) {
     var obstacleObj = SCREENS[screenNumber][OBSTACLES];
     obstacleObj = obstacleObj === undefined ? {LEFT: [], RIGHT: []} : obstacleObj;
@@ -79,7 +75,10 @@ function handleObstacles(sprite, obstacle) {
             if (isMonster(sprite) || isDownhill(sprite, obstacle) || avoidedObstacleWithJump(sprite, obstacle)) {
                 moveSpriteToHeight(sprite, obstacle[HEIGHT]);
             } else {
-                performAction(sprite, getFailAction(obstacle), 1);
+                stopSpriteMovement(sprite);
+                if (obstacle[OBSTACLE_TYPE] === PIT) {
+                    fallAction(sprite);
+                }
                 // Allow barbarian to attack at boundary
                 if (sprite[ACTION] !== ATTACK || sprite[ACTION] !== JUMP) {
                     return true;

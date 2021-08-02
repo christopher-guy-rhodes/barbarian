@@ -118,10 +118,10 @@ function barbarianDeath(sprite) {
     handleDeath(sprite);
     animateBarbarianDeath(sprite);
     playGruntSound();
-    show(START_MESSAGE);
+    showMessage(START_MESSAGE);
     setLives(getLives() - 1);
     if (getLives() < 1) {
-        show(GAME_OVER_MESSAGE);
+        showMessage(GAME_OVER_MESSAGE);
     }
 }
 

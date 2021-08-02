@@ -5,9 +5,13 @@ var SCREEN_WIDTH = 1400;
 var RUN_SPEED_INCREASE_FACTOR = 1.5;
 var DEFAULT_DEATH_DELAY = 2000;
 
-var ADVANCE_SCREEN_SCROLL_DURATION = 1000;
-var ADVANCE_SCREEN_PIXELS_PER_SECOND = 1500;
-var ADVANCE_SCREEN_PIXELS_PER_FRAME = 10;
+// How long does it take to advance the screen?
+var ADVANCE_SCREEN_DURATION = 1;
+var ADVANCE_SCREEN_PIXELS_PER_SECOND = SCREEN_WIDTH / ADVANCE_SCREEN_DURATION;
+// How many pixels are moved in a single frame. Higher values make for a smoother scroll but if the value is too
+// high the overhead of the animation and sleep in the loop will cause the screen scroll to be out of sync with the
+// sprite that is scrolling simultaneously via jquery animation which is more efficient
+var ADVANCE_SCREEN_PIXELS_PER_FRAME = 25;
 
 // labels
 var OBSTACLE_TYPE = 'OBSTACLE_TYPE';
@@ -50,6 +54,15 @@ var RESET_STATUS = 'RESET_STATUS';
 var SOUND = 'SOUND';
 var DEFAULT_ACTION = 'DEFAULT_ACTION';
 var ARTIFACTS = 'ARTIFACTS';
+var THEME_SONG = 'THEME_SONG';
+var GROWL_SOUND = 'GROWL_SOUND';
+var MONSTER_SOUND = 'MONSTER_SOUND';
+var GRUNT_SOUND = 'GRUNT_SOUND';
+var GROWL_SOUND = 'GROWL_SOUND';
+var FIRE_SOUND = 'FIRE_SOUND';
+var FALL_SOUND = 'FALL_SOUND';
+var SOUNDS = 'SOUNDS';
+
 // Actions
 var STOP = 'STOP';
 var RUN = 'RUN';

@@ -129,20 +129,22 @@ function stopAction(sprite) {
 function moveFromPositionToBoundary(sprite, action) {
     let pixelsPerSecond = getPixelsPerSecond(sprite, action);
     if (pixelsPerSecond === 0) {
-        console.log('pixels per second is 0 for ' + sprite[NAME] + ' and action ' + action + ' action is ' + getAction(sprite));
         return;
     }
     const isRight = getDirection(sprite) === RIGHT;
     const distance = isRight ? windowWidth - getLeft(sprite) - getWidth(sprite) : getLeft(sprite);
     const duration = distance / getPixelsPerSecond(sprite, action) * MILLISECONDS_PER_SECOND;
-    console.log('duration for ' + sprite[NAME] + ' action ' + getAction(sprite) + ' is ' + duration);
-    moveHorizontalToBoundary(sprite, getDirection(sprite), duration);
+    const x = isRight ? windowWidth - getWidth(sprite) : 0;
+    moveToHorizontalPosition(sprite, x, getPixelsPerSecond(sprite, action));
 }
 
-function moveHorizontalToBoundary(sprite, direction, duration) {
-    const isRight = direction === RIGHT;
-    const left = isRight ? windowWidth - getWidth(sprite) + 'px' : '0px';
-    getElement(sprite).animate({left: left}, duration, 'linear');
+function moveToHorizontalPosition(sprite, x, pixelsPerSecond) {
+    let isRight = x > getLeft(sprite);
+    let distance = Math.abs(x - getLeft(sprite));
+    let duration = distance / pixelsPerSecond * MILLISECONDS_PER_SECOND;
+
+
+    getElement(sprite).animate({left: x + 'px'}, duration, 'linear');
 }
 
 function moveVerticalToBoundary(sprite, direction, duration) {
@@ -151,18 +153,24 @@ function moveVerticalToBoundary(sprite, direction, duration) {
 }
 
 async function advanceBackdrop(sprite, direction) {
-    const sleepPerIterationDuration = (ADVANCE_SCREEN_SCROLL_DURATION / ADVANCE_SCREEN_PIXELS_PER_SECOND) * ADVANCE_SCREEN_PIXELS_PER_FRAME;
-    const numberOfIterations = windowWidth / ADVANCE_SCREEN_PIXELS_PER_FRAME;
+    let pixelsPerIteration = ADVANCE_SCREEN_PIXELS_PER_SECOND / ADVANCE_SCREEN_PIXELS_PER_FRAME;
+    let numberOfIterations = windowWidth / pixelsPerIteration;
+    let sleepPerIteration = (ADVANCE_SCREEN_DURATION / numberOfIterations) * MILLISECONDS_PER_SECOND;
 
-    // Animate the sprite to move with the screen scroll. The animation is set to take as long as the screen scroll takes
     setScrolling(true);
-    moveHorizontalToBoundary(sprite, direction, numberOfIterations * sleepPerIterationDuration);
+    const x = getDirection(sprite) === RIGHT ? 0 : windowWidth - getWidth(sprite);
+
+
+    // The barbarian is only travelling a shorter distance equal to his width. Adjust the pixels per second so it
+    // finishes at the same time as the screen scroll
+    let adjustedPixelsPerSecond = (windowWidth - getWidth(sprite)) / ADVANCE_SCREEN_DURATION;
+    moveToHorizontalPosition(sprite, x, adjustedPixelsPerSecond);
 
     for (let i = 0; i < numberOfIterations ; i++) {
-        let offset = (i + 1) * ADVANCE_SCREEN_PIXELS_PER_FRAME;
-        let position = direction === RIGHT ? numberOfIterations * ADVANCE_SCREEN_PIXELS_PER_FRAME - offset : offset;
+        let offset = (i + 1) * pixelsPerIteration;
+        let position = direction === RIGHT ? numberOfIterations * pixelsPerIteration - offset : offset;
         setBackgroundPosition(BACKDROP, '-' + position);
-        await sleep(sleepPerIterationDuration);
+        await sleep(sleepPerIteration);
     }
     setScrolling(false);
     initializeScreen();
@@ -216,11 +224,11 @@ function startMonsterAttacks(unpausing = false) {
     let monsterSprites = filterBarbarianSprite(SCREENS[getScreenNumber()][OPPONENTS]);
 
     for (let monsterSprite of monsterSprites) {
-        playSound(getSound(monsterSprite));
 
         if ((getStatus(monsterSprite) === DEAD && !unpausing) || (getStatus(monsterSprite) === ALIVE && unpausing)) {
             showSprite(monsterSprite);
             setStatus(monsterSprite, ALIVE);
+            playSound(getSound(monsterSprite));
             performAction(monsterSprite, getDefaultAction(monsterSprite), 0);
         }
     }

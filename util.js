@@ -1,9 +1,9 @@
 function showMessage(element) {
     element.css('display', 'block');
 
-    // Hide the other messages that are not being displayed
-    for (e of MESSAGES) {
-        if (e == element) {
+    for(let i = 0; i < MESSAGES.length; i++) {
+        let e = MESSAGES[i];
+        if (e[0].classList == element[0].classList) {
             continue;
         }
         e.css('display', 'none');

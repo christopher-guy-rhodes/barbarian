@@ -1,68 +1,50 @@
-function initializeThemeSong() {
-    if (sound) {
-        theme = new Audio('/sounds/theme.mp3');
-    }
-}
-
 function startThemeSong() {
-    if (sound && !pause) {
-        theme.play();
-        theme.loop = true;
+    if (isSound() && !isPaused()) {
+        SOUNDS[THEME_SONG].play();
     }
 }
 
-function playSound(soundPath) {
+function playSound(sound) {
     if (isSound()) {
-        let audio = new Audio(soundPath);
-        audio.play();
+        SOUNDS[sound].play();
     }
 }
 
-function setThemeSongPauseState(state) {
-    if (sound) {
+function setSoundsPauseState(state) {
+    if (isSound()) {
         if (state) {
-            theme.pause();
+            for (let sound of Object.values(SOUNDS)) {
+                sound.pause();
+            }
         } else {
-            theme.play();
+            SOUNDS[THEME_SONG].play();
         }
     }
 }
 
 function playGruntSound() {
-    if (sound) {
-        var audio = new Audio('/sounds/grunt.mp3');
-        audio.play();
-        setTimeout(function () {
-            audio.pause();
-        }, 800);
+    if (isSound()) {
+        SOUNDS[GRUNT_SOUND].play();
     }
 }
 
 function playGrowlSound() {
     if (isSound()) {
-        let audio = new Audio('/sounds/growl.mp3');
-        audio.play();
-        setTimeout(function () {
-            audio.pause();
-        }, 4000);
+        SOUNDS[GROWL_SOUND].play();
     }
 }
 
 function playFireSound() {
-    if (sound) {
-        let audio = new Audio('/sounds/fire.mp3');
-        audio.play();
+    if (isSound()) {
+        SOUNDS[FIRE_SOUND].play();
         setTimeout(function () {
-            audio.pause();
+            SOUNDS[FIRE_SOUND].pause();
         }, 3000);
     }
 }
 
 function playFallSound() {
-    let audio = new Audio('/sounds/fall.mp3');
-    audio.play();
-    setTimeout(function () {
-        audio.pause();
-    }, 3400);
-
+    if (isSound()) {
+        SOUNDS[FALL_SOUND].play();
+    }
 }

@@ -32,8 +32,6 @@ $(document).ready(function(){
     // Include keypress events
     $.getScript('/events.js', function() {
 
-    initializeThemeSong();
-
     // Don't allow screen resizing
     $(window).resize(function(){
         window.resizeTo(SCREEN_WIDTH, SCREEN_HEIGHT);
@@ -61,10 +59,14 @@ $(document).ready(function(){
             if (!pause || e.which === KEYPRESS[KP_PAUSE]) {
                 switch (e.which) {
                     case KEYPRESS[KP_CONTROLS]:
-                        isDead(BARBARIAN_SPRITE) && showMessage(CONTROL_MESSAGE);
+                        if(isDead(BARBARIAN_SPRITE)) {
+                            showMessage(CONTROL_MESSAGE);
+                        }
                         break;
                     case KEYPRESS[KP_MAIN]:
-                        isDead(BARBARIAN_SPRITE) && showMessage(START_MESSAGE);
+                        if(isDead(BARBARIAN_SPRITE)) {
+                            showMessage(START_MESSAGE);
+                        }
                         break;
                     case KEYPRESS[KP_SPACE]:
                         handleSpaceKeypress();

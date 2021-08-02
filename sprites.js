@@ -10,6 +10,16 @@ var STOP_LEFT_POSITION = 6;
 var STOP_RIGHT_HEIGHT_OFFSET = 0;
 var STOP_LEFT_HEIGHT_OFFSET = 1;
 
+var SOUNDS = {
+    THEME_SONG : new Audio('/sounds/theme.mp3'),
+    FALL_SOUND : new Audio('/sounds/fall.mp3'),
+    GRUNT_SOUND : new Audio('/sounds/grunt.mp3'),
+    GROWL_SOUND : new Audio('/sounds/growl.mp3'),
+    FIRE_SOUND : new Audio('/sounds/fire.mp3'),
+    MONSTER_SOUND : new Audio('/sounds/monster.mp3'),
+
+};
+
 var DEATH_FRAMES = {
     DEATH : {
         RIGHT: {
@@ -193,7 +203,7 @@ DOG_SPRITE = {
         LEFT_HEIGHT: 1
     },
     DEFAULT_ACTION: SIT,
-    SOUND: '/sounds/growl.mp3',
+    SOUND: GROWL_SOUND,
     RESET_LEFT: 850,
     RESET_BOTTOM: 160,
     RESET_DISPLAY: 'none',
@@ -259,7 +269,7 @@ MONSTER_SPRITE = {
         FRAMES : DEATH_FRAMES,
         DELAY : 1800
     },
-    SOUND: '/sounds/monster.mp3',
+    SOUND: MONSTER_SOUND,
     DEFAULT_ACTION: WALK,
     RESET_LEFT: 850,
     RESET_BOTTOM: 12,

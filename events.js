@@ -106,12 +106,12 @@ function handlePauseKeypress() {
                 performAction(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
             }
             startMonsterAttacks(true);
-            setThemeSongPauseState(false);
+            setSoundsPauseState(false);
         } else {
             $('.pause_message').css('display', 'block');
             show(PAUSE_MESSAGE);
             setPaused(true);
-            setThemeSongPauseState(true);
+            setSoundsPauseState(true);
         }
     }
 }
@@ -136,7 +136,7 @@ function handleSoundKeypress() {
 
     hide(isSound() ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE);
     show(isSound() ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE);
-    setThemeSongPauseState(isSound());
+    setSoundsPauseState(isSound());
     setSound(!isSound());
 
     setTimeout(function () {

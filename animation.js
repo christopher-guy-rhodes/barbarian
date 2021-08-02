@@ -92,6 +92,8 @@ function animateVerticalFall(sprite) {
 function performAction(sprite, action, times) {
     if (action === FALL) {
         fallAction(sprite);
+    } else if (action === STOP) {
+        stopAction(sprite);
     } else {
         stopSpriteMovement(sprite);
         if (getPixelsPerSecond(sprite, action) > 0) {

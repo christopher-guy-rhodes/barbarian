@@ -159,7 +159,7 @@ function handleJumpKeypress() {
 
 function handleStopKeypress() {
     if (isAliveOrJustDied()) {
-        stopAction(BARBARIAN_SPRITE);
+        performAction(BARBARIAN_SPRITE, STOP, 1);
     }
 }
 

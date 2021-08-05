@@ -64,13 +64,10 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
 async function animateFall(sprite) {
     stopSpriteMovement(sprite);
     if (!isMonster(sprite) && getLives() < 1) {
-        show(GAME_OVER_MESSAGE);
+        showMessage(GAME_OVER_MESSAGE);
     }
 
-    if (isSound()) {
-        playFallSound();
-    }
-
+    playFallSound();
     animateVerticalFall(sprite);
     const frames = getFrames(sprite, FALL, getDirection(sprite));
     for(let frame of frames) {
@@ -80,13 +77,13 @@ async function animateFall(sprite) {
 }
 
 function animateVerticalFall(sprite) {
-    let distance = parseInt(getBottom(sprite).substring(0, getBottom(sprite).length - 2));
-    let duration = distance / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
-    moveVerticalToBoundary(sprite, DOWN, duration);
+    let duration = getBottom(sprite) / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
+
+    moveToPosition(sprite, undefined, 0, FALLING_PIXELS_PER_SECOND);
     setTimeout(function () {
         hideSprite(sprite);
         setAction(sprite, STOP);
-    }, distance / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND) ;
+    }, duration) ;
 }
 
 function performAction(sprite, action, times) {
@@ -135,21 +132,22 @@ function moveFromPositionToBoundary(sprite, action) {
     const distance = isRight ? windowWidth - getLeft(sprite) - getWidth(sprite) : getLeft(sprite);
     const duration = distance / getPixelsPerSecond(sprite, action) * MILLISECONDS_PER_SECOND;
     const x = isRight ? windowWidth - getWidth(sprite) : 0;
-    moveToHorizontalPosition(sprite, x, getPixelsPerSecond(sprite, action));
+    moveToPosition(sprite, x, undefined, getPixelsPerSecond(sprite, action));
 }
 
-function moveToHorizontalPosition(sprite, x, pixelsPerSecond) {
-    let isRight = x > getLeft(sprite);
-    let distance = Math.abs(x - getLeft(sprite));
+function moveToPosition(sprite, x, y, pixelsPerSecond) {
+    let distanceX = x === undefined ? 0 : Math.abs(x - getLeft(sprite));
+    let distanceY = y === undefined ? 0 : Math.abs(y - getBottom(sprite));
+    let distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
     let duration = distance / pixelsPerSecond * MILLISECONDS_PER_SECOND;
 
-
-    getElement(sprite).animate({left: x + 'px'}, duration, 'linear');
+    getElement(sprite).animate({left: x + 'px', bottom: y + 'px'}, duration, 'linear');
 }
 
-function moveVerticalToBoundary(sprite, direction, duration) {
-    let bottom = direction === DOWN ? '0px' : '800px';
-    getElement(sprite).animate({bottom: bottom}, duration,  'linear');
+function moveVerticalToBoundary(sprite, direction, pixelsPerSecond) {
+    let y = direction === DOWN ? '0' : '800';
+    console.log('falling: moving position to:' + y);
+    moveToPosition(sprite, undefined, y, pixelsPerSecond);
 }
 
 async function advanceBackdrop(sprite, direction) {
@@ -160,11 +158,10 @@ async function advanceBackdrop(sprite, direction) {
     setScrolling(true);
     const x = getDirection(sprite) === RIGHT ? 0 : windowWidth - getWidth(sprite);
 
-
     // The barbarian is only travelling a shorter distance equal to his width. Adjust the pixels per second so it
     // finishes at the same time as the screen scroll
     let adjustedPixelsPerSecond = (windowWidth - getWidth(sprite)) / ADVANCE_SCREEN_DURATION;
-    moveToHorizontalPosition(sprite, x, adjustedPixelsPerSecond);
+    moveToPosition(sprite, x, undefined, adjustedPixelsPerSecond);
 
     for (let i = 0; i < numberOfIterations ; i++) {
         let offset = (i + 1) * pixelsPerIteration;

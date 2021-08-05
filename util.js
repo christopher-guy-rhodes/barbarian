@@ -10,6 +10,13 @@ function showMessage(element) {
     }
 }
 
+function hideAllMessages() {
+    for(let i = 0; i < MESSAGES.length; i++) {
+        let e = MESSAGES[i];
+        e.css('display', 'none');
+    }
+}
+
 function hideMessage(element) {
     element.css('display', 'none');
 }
@@ -28,3 +35,6 @@ function handlePromiseError(error) {
     console.log('Error fulfilling promise: ' + error);
 }
 
+function stripPxSuffix(field) {
+    return field.substring(0, field.length - 2);
+}

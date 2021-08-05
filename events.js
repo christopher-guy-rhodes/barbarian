@@ -91,7 +91,7 @@ function handleSpaceKeypress() {
     if (isDead(BARBARIAN_SPRITE)) {
         resetGame();
 
-        hide(START_MESSAGE);
+        hideAllMessages();
         startMonsterAttacks();
         performAction(BARBARIAN_SPRITE, STOP, 0);
     }

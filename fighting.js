@@ -79,7 +79,7 @@ function areAllMonstersDeadOnScreen() {
 
 }
 
-function fightSequence(sprite) {
+function handleFightSequence(sprite) {
     let opponents = getOpponents();
     var opponentsInProximity = getSpritesInProximity(sprite, opponents, sprite[SPRITE].width()*1.5);
 

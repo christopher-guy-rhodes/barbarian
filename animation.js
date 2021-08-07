@@ -1,4 +1,19 @@
 /**
+ * Handles the animation and fight sequences for the available actions that a sprite has (RUN, ATTACK etc).
+ * @param sprite the sprite to execute the action for
+ * @param action the action to execute
+ * @param times the number of times to execute the action (zero for infinite)
+ */
+function performAction(sprite, action, times) {
+    stopSpriteMovement(sprite);
+    let pixelsPerSecond = getPixelsPerSecond(sprite, action);
+    moveFromPositionToBoundary(sprite, action, pixelsPerSecond);
+    animateSprite(sprite, action, getDirection(sprite), times)
+        .then(function () {
+        }, error => handlePromiseError(error));
+}
+
+/**
  * Animate a sprite using the requested action. Stops when a different action is requested of the action has happened
  * "times" times. If times is set to zero the animation will not terminate unless a new action is requested.
  * @param sprite the sprite to animate
@@ -26,17 +41,18 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
         if (getLives() < 1) {
             setTimeout(function () {
                 gameOver = true;
-            }, 2 * getDeathDelay(sprite) * (1 / getFps(sprite)));
+            }, 2 * getDeathDelay(sprite) * (1 / getFps(sprite, getAction(sprite))));
         }
 
         // If the action starts a new animation or the current one should terminate break out of the loop
-        if (isPaused() ||
+        if (handleStop(sprite) ||
+            isPaused() ||
             gameOver ||
             handleObstacles(sprite) ||
             !isSpriteCurrentOpponent(sprite) ||
             isDead(sprite) ||
-            fightSequence(sprite) ||
-            monsterTurnaround(sprite) ||
+            handleFightSequence(sprite) ||
+            handleMonsterTurnaround(sprite) ||
             handleBoundary(sprite)) {
             break;
         }
@@ -61,80 +77,62 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
     }
 }
 
-async function animateFall(sprite) {
-    stopSpriteMovement(sprite);
-    if (!isMonster(sprite) && getLives() < 1) {
-        showMessage(GAME_OVER_MESSAGE);
-    }
-
-    playFallSound();
-    animateVerticalFall(sprite);
-    const frames = getFrames(sprite, FALL, getDirection(sprite));
-    for(let frame of frames) {
-        renderSpriteFrame(sprite, FALL, frame);
-        await sleep(MILLISECONDS_PER_SECOND / getFps(sprite, FALL));
-    }
-}
-
-function animateVerticalFall(sprite) {
-    let duration = getBottom(sprite) / FALLING_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
-
-    moveToPosition(sprite, undefined, 0, FALLING_PIXELS_PER_SECOND);
-    setTimeout(function () {
-        hideSprite(sprite);
-        setAction(sprite, STOP);
-    }, duration) ;
-}
-
-function performAction(sprite, action, times) {
-    if (action === FALL) {
-        fallAction(sprite);
-    } else if (action === STOP) {
-        stopAction(sprite);
-    } else {
-        stopSpriteMovement(sprite);
-        if (getPixelsPerSecond(sprite, action) > 0) {
-            moveFromPositionToBoundary(sprite, action);
-        }
-        animateSprite(sprite, action, getDirection(sprite), times)
-            .then(function () {
-            }, error => handlePromiseError(error));
-    }
-}
-
-function fallAction(sprite) {
-    stopSpriteMovement(sprite);
-    setAction(sprite, FALL);
-    setLives(0);
-    handleDeath(sprite);
-    animateFall(sprite).then(function() {}, error => handlePromiseError(error));
-}
-
-function stopAction(sprite) {
-    stopSpriteMovement(sprite);
-    const isRight = getDirection(sprite) === RIGHT;
-    const x = -1 * (isRight ? getRightStopPosition(sprite)
-                            : getLeftStopPosition(sprite)) * getWidth(sprite);
-    const y = isRight ? (-1 * getRightHeightStopPosition(sprite))
-        : -1 * getLeftHeightStopPosition(sprite) * getHeight(sprite);
-
-    setSpriteBackgroundPosition(sprite, x, y);
-    stopSpriteMovement(sprite);
-    setAction(BARBARIAN_SPRITE, STOP);
-}
-
-function moveFromPositionToBoundary(sprite, action) {
-    let pixelsPerSecond = getPixelsPerSecond(sprite, action);
-    if (pixelsPerSecond === 0) {
+/**
+ * Moves from the current position to the boundary
+ * @param sprite the sprite to move to the boundary
+ * @param action the sprite action
+ * @param pixelsPerSecond the rate at which to move
+ */
+function moveFromPositionToBoundary(sprite, action, pixelsPerSecond) {
+    if (pixelsPerSecond <= 0) {
         return;
     }
-    const isRight = getDirection(sprite) === RIGHT;
-    const distance = isRight ? windowWidth - getLeft(sprite) - getWidth(sprite) : getLeft(sprite);
-    const duration = distance / getPixelsPerSecond(sprite, action) * MILLISECONDS_PER_SECOND;
-    const x = isRight ? windowWidth - getWidth(sprite) : 0;
-    moveToPosition(sprite, x, undefined, getPixelsPerSecond(sprite, action));
+
+    let x, y = undefined;
+    if (action === FALL) {
+        y = 0;
+    } else if (isMovingRight(sprite)) {
+        x = windowWidth - getWidth(sprite);
+    } else {
+        x = 0;
+    }
+
+    moveToPosition(sprite, x, y, pixelsPerSecond);
 }
 
+/**
+ * Stops the barbarian sprite from moving and sets the position to a natural standing motion.
+ * @param sprite the sprite to stop
+ * @returns {boolean} true if the movement should stop, false otherwise
+ */
+function handleStop(sprite) {
+
+    if (getAction(sprite) !== STOP) {
+        return false;
+    }
+
+    stopSpriteMovement(sprite);
+
+    let x, y = undefined;
+    if (getDirection(sprite) === RIGHT) {
+        x = getRightStopPosition(sprite);
+        y = -1 * getRightHeightStopPosition(sprite)
+    } else {
+        x = getLeftStopPosition(sprite) * getWidth(sprite);
+        y = -1 * getLeftHeightStopPosition(sprite) * getHeight(sprite);
+    }
+
+    setSpriteBackgroundPosition(sprite, x, y);
+    return true;
+}
+
+/**
+ * Moves a sprite to a position on the plane.
+ * @param sprite the sprite to move
+ * @param x the x coordinate to move to
+ * @param y the y coordinate to move to
+ * @param pixelsPerSecond the rate at which to move
+ */
 function moveToPosition(sprite, x, y, pixelsPerSecond) {
     let distanceX = x === undefined ? 0 : Math.abs(x - getLeft(sprite));
     let distanceY = y === undefined ? 0 : Math.abs(y - getBottom(sprite));
@@ -144,12 +142,12 @@ function moveToPosition(sprite, x, y, pixelsPerSecond) {
     getElement(sprite).animate({left: x + 'px', bottom: y + 'px'}, duration, 'linear');
 }
 
-function moveVerticalToBoundary(sprite, direction, pixelsPerSecond) {
-    let y = direction === DOWN ? '0' : '800';
-    console.log('falling: moving position to:' + y);
-    moveToPosition(sprite, undefined, y, pixelsPerSecond);
-}
-
+/**
+ * Scrolls the backdrop and moves the sprite along with it
+ * @param sprite the sprite to scroll along with the background
+ * @param direction the direction the screen will move
+ * @returns {Promise<void>} a void promise
+ */
 async function advanceBackdrop(sprite, direction) {
     let pixelsPerIteration = ADVANCE_SCREEN_PIXELS_PER_SECOND / ADVANCE_SCREEN_PIXELS_PER_FRAME;
     let numberOfIterations = windowWidth / pixelsPerIteration;
@@ -158,8 +156,8 @@ async function advanceBackdrop(sprite, direction) {
     setScrolling(true);
     const x = getDirection(sprite) === RIGHT ? 0 : windowWidth - getWidth(sprite);
 
-    // The barbarian is only travelling a shorter distance equal to his width. Adjust the pixels per second so it
-    // finishes at the same time as the screen scroll
+    // The barbarian is travelling a distance that is shorter by his width. Adjust the pixels per second so his
+    // scrolling finishes at the same time
     let adjustedPixelsPerSecond = (windowWidth - getWidth(sprite)) / ADVANCE_SCREEN_DURATION;
     moveToPosition(sprite, x, undefined, adjustedPixelsPerSecond);
 
@@ -178,7 +176,12 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function monsterTurnaround(sprite) {
+/**
+ * Causes the monster to chase the barbarian of once the barbarian has passed the monster.
+ * @param sprite the monster sprite
+ * @returns {boolean} true if the monster has passed the sprite, false otherwise
+ */
+function handleMonsterTurnaround(sprite) {
     if (!isMonster(sprite)) {
         return false;
     }
@@ -199,6 +202,9 @@ function monsterTurnaround(sprite) {
     }
 }
 
+/**
+ * Initializes the current screen
+ */
 function initializeScreen() {
     let artifacts = SCREENS[getScreenNumber()][ARTIFACTS];
     if (artifacts !== undefined) {
@@ -217,6 +223,11 @@ function initializeScreen() {
     }
 }
 
+/**
+ * Starts the monster attacks for the monsters on the current screen. Normally the monsters need to be dead before they
+ * will be started unless the game is being unpaused.
+ * @param unpausing true if the function was called in the context of unpausing the game
+ */
 function startMonsterAttacks(unpausing = false) {
     let monsterSprites = filterBarbarianSprite(SCREENS[getScreenNumber()][OPPONENTS]);
 
@@ -231,6 +242,9 @@ function startMonsterAttacks(unpausing = false) {
     }
 }
 
+/**
+ * Hides the opponents and artifacts on the current screen
+ */
 function hideOpponentsAndArtifacts() {
     let opponents = filterBarbarianSprite(getOpponents());
     for (let opponent of opponents) {
@@ -246,7 +260,15 @@ function hideOpponentsAndArtifacts() {
     }
 }
 
+/**
+ * Updates and scrolls the screen when the barbarian hits a screen boundary.
+ * @param sprite the barbarian sprite
+ * @returns {boolean}
+ */
 function handleBoundary(sprite) {
+    if (isMonster(sprite)) {
+        return false;
+    }
     const isRightBoundary = hitRightBoundry(sprite);
     const isLeftBoundary = hitLeftBoundary(sprite);
 
@@ -259,8 +281,7 @@ function handleBoundary(sprite) {
         setScreenNumber(getScreenNumber() - 1);
         advanceBackdrop(sprite, RIGHT)
             .then(function() {}, error => handlePromiseError(error));
-    }
-    if (isRightBoundary && !isMonster(sprite)) {
+    } else if (isRightBoundary) {
         if (SCREENS[getScreenNumber()] !== undefined && areAllMonstersDeadOnScreen()) {
             hideOpponentsAndArtifacts();
             setScreenNumber(getScreenNumber()+1);
@@ -277,12 +298,16 @@ function handleBoundary(sprite) {
         }
     }
 
-    // Since we are stopping set the frame to the stop frame (1st frame when walking)
-    renderSpriteFrame(sprite, WALK, 0);
     setAction(sprite, STOP);
     return true;
 }
 
+/**
+ * Renders a sprite frame by adjusting the vertical and horizontal background position
+ * @param sprite the sprite to render a frame for
+ * @param requestedAction the action used to find the proper frame
+ * @param position the horizontal background position offset
+ */
 function renderSpriteFrame(sprite, requestedAction, position) {
     const heightOffsetGridUnits = sprite[FRAMES][requestedAction][sprite[DIRECTION]][HEIGHT_OFFSET];
     const heightOffset = heightOffsetGridUnits * getHeight(sprite);

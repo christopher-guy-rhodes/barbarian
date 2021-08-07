@@ -84,7 +84,17 @@ BARBARIAN_SPRITE = {
                 HEIGHT_OFFSET : 15},
             RIGHT: {
                 FRAMES : [0, 1, 2, 3],
-                HEIGHT_OFFSET: 14}}
+                HEIGHT_OFFSET: 14}},
+        STOP: {
+            LEFT: {
+                FRAMES : [13],
+                HEIGHT_OFFSET : 1
+            },
+            RIGHT: {
+                FRAMES : [1],
+                HEIGHT_OFFSET: 1
+            }
+        }
     },
     DEATH : {
         SPRITE : $(".barbarian"),
@@ -379,6 +389,10 @@ function getDirection(sprite) {
 
 function setDirection(sprite, direction) {
     sprite[DIRECTION] = direction;
+}
+
+function isMovingRight(sprite) {
+    return getDirection(sprite) === RIGHT;
 }
 
 function setBackgroundPosition(sprite, backgroundPosition) {

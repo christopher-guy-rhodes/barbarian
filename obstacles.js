@@ -60,6 +60,11 @@ function getObstacles(sprite) {
 
 function handleObstacles(sprite) {
 
+    if (getAction(sprite) === FALL) {
+        console.log('==> possible infinite recursion');
+        return false;
+    }
+
     if (sprite[NAME] === BARBARIAN_SPRITE_NAME && screenNumber == 1 && $('.bridge').css('display') === 'block' &&
         sprite[SPRITE].offset().left >= 700) {
         //$('.bridge').css('display', 'none');
@@ -76,7 +81,26 @@ function handleObstacles(sprite) {
                 moveSpriteToHeight(sprite, obstacle[HEIGHT]);
             } else {
                 stopSpriteMovement(sprite);
-                performAction(sprite, obstacle[FAIL_ACTION]);
+
+                let action = obstacle[FAIL_ACTION];
+
+                if (action === FALL) {
+                    setTimeout(function () {
+                        setLives(0);
+                        handleDeath(sprite);
+                        if (!isMonster(sprite) && getLives() < 1) {
+                            showMessage(GAME_OVER_MESSAGE);
+                        }
+                        hideSprite(sprite);
+                        hide(LIFE1)
+                        hide(LIFE2);
+                    }, 2 * getDeathDelay(sprite) * (1 / getFps(sprite, action)));
+
+                    playFallSound();
+                    console.log('==> animating ' + sprite[NAME] + ' with action:' + action + ' direction:' + getDirection(sprite));
+                }
+
+                performAction(sprite, action);
                 // Allow barbarian to attack at boundary
                 if (sprite[ACTION] !== ATTACK || sprite[ACTION] !== JUMP) {
                     return true;

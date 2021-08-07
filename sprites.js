@@ -10,26 +10,11 @@ var STOP_LEFT_POSITION = 6;
 var STOP_RIGHT_HEIGHT_OFFSET = 0;
 var STOP_LEFT_HEIGHT_OFFSET = 1;
 
-var DEATH_FRAMES = {
-    DEATH : {
-        RIGHT: {
-            FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-            HEIGHT_OFFSET: 0
-        },
-        LEFT: {
-            FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-            HEIGHT_OFFSET: 0
-        },
-        FPS: BOG_MONSTER_SPRITE_FPS
-    }
-};
-
 BARBARIAN_SPRITE = {
     SPRITE : $(".barbarian"),
     NAME : BARBARIAN_SPRITE_NAME,
     ACTION : STOP,
     DIRECTION : RIGHT,
-    HAS_MOVING_ATTACK: false,
     FPS: {
       WALK : SPRITE_FPS,
       RUN : SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
@@ -46,9 +31,7 @@ BARBARIAN_SPRITE = {
         STOP: 0,
         FALL: BARBARIAN_SPRITE_PIXELS_PER_SECOND
     },
-
     STATUS : DEAD,
-    DEATH_TIME: 0,
     FRAMES : {
         ATTACK : {
             LEFT : {
@@ -94,10 +77,11 @@ BARBARIAN_SPRITE = {
                 FRAMES : [1],
                 HEIGHT_OFFSET: 1
             }
-        }
-    },
+        }},
     DEATH : {
         SPRITE : $(".barbarian"),
+        DELAY : 1800,
+        DEATH_TIME: 0,
         FRAMES : {
             DEATH: {
                 RIGHT: {
@@ -110,8 +94,7 @@ BARBARIAN_SPRITE = {
                 },
                 FPS: SPRITE_FPS
             }
-        },
-        DELAY : 1800
+        }
     },
     STOP_POSITION : {
         RIGHT : STOP_RIGHT_POSITION,
@@ -130,7 +113,6 @@ DOG_SPRITE = {
     NAME : DOG_SPRITE_NAME,
     ACTION : SIT,
     DIRECTION : LEFT,
-    HAS_MOVING_ATTACK : true,
     FPS: {
         WALK : DOG_SPRITE_FPS,
         RUN : DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
@@ -150,7 +132,6 @@ DOG_SPRITE = {
         FALL: DOG_PIXELS_PER_SECOND
     },
     STATUS : DEAD,
-    DEATH_TIME: 0,
     FRAMES : {
         SIT : {
             LEFT : {
@@ -181,7 +162,7 @@ DOG_SPRITE = {
                 FRAMES : [0, 1, 2, 3, 4],
                 HEIGHT_OFFSET : 2
             }
-        }
+        },
     },
     ATTACK_THRESHOLDS : {
         MIN : 0,
@@ -193,8 +174,21 @@ DOG_SPRITE = {
     },
     DEATH : {
         SPRITE : $(".death"),
-        FRAMES : DEATH_FRAMES,
-        DELAY : 1800
+        DELAY : 1800,
+        DEATH_TIME: 0,
+        FRAMES : {
+            DEATH : {
+                RIGHT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    HEIGHT_OFFSET: 0
+                },
+                LEFT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    HEIGHT_OFFSET: 0
+                },
+                FPS: BOG_MONSTER_SPRITE_FPS
+            }
+        },
     },
     STOP_POSITION : {
         RIGHT : 0,
@@ -215,7 +209,6 @@ MONSTER_SPRITE = {
     NAME : MONSTER_SPRITE_NAME,
     ACTION : WALK,
     DIRECTION : LEFT,
-    HAS_MOVING_ATTACK : true,
     FPS: {
         WALK : BOG_MONSTER_SPRITE_FPS,
         RUN : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
@@ -233,7 +226,6 @@ MONSTER_SPRITE = {
         FALL: BOG_MONSTER_PIXELS_PER_SECOND
     },
     STATUS : DEAD,
-    DEATH_TIME: 0,
     FRAMES : {
         WALK : {
             LEFT : {
@@ -254,7 +246,7 @@ MONSTER_SPRITE = {
                 FRAMES: [16, 17 , 18, 19, 20, 21, 23, 23],
                 HEIGHT_OFFSET: 2
             }
-        }
+        },
     },
     ATTACK_THRESHOLDS : {
         MIN : 0,
@@ -266,8 +258,21 @@ MONSTER_SPRITE = {
     },
     DEATH : {
         SPRITE : $(".death"),
-        FRAMES : DEATH_FRAMES,
-        DELAY : 1800
+        DELAY : 1800,
+        DEATH_TIME: 0,
+        FRAMES : {
+            DEATH : {
+                RIGHT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    HEIGHT_OFFSET: 0
+                },
+                LEFT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    HEIGHT_OFFSET: 0
+                },
+                FPS: BOG_MONSTER_SPRITE_FPS
+            }
+        },
     },
     SOUND: MONSTER_SOUND,
     DEFAULT_ACTION: WALK,
@@ -415,10 +420,6 @@ function getPixelsPerSecond(sprite, action) {
     return sprite[PIXELS_PER_SECOND][action];
 }
 
-function hasMovingAttack(sprite) {
-    return sprite[HAS_MOVING_ATTACK];
-}
-
 function getRightStopPosition(sprite) {
     return sprite[STOP_POSITION][RIGHT];
 }
@@ -456,11 +457,11 @@ function setSpriteBackgroundPosition(sprite, x, y) {
 }
 
 function setDeathTime(sprite, time) {
-    sprite[DEATH_TIME] = time;
+    sprite[DEATH][DEATH_TIME] = time;
 }
 
 function getDeathTime(sprite) {
-    return sprite[DEATH_TIME];
+    return sprite[DEATH][DEATH_TIME];
 }
 
 function getDefaultAction(sprite) {

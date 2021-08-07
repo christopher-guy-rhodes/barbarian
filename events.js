@@ -52,7 +52,7 @@ function setScreenNumber(number) {
 }
 
 function resetGame() {
-    renderSpriteFrame(BARBARIAN_SPRITE, WALK, 0);
+    renderSpriteFrame(BARBARIAN_SPRITE, WALK, getDirection(BARBARIAN_SPRITE), 0, getHeight(BARBARIAN_SPRITE));
     setAction(BARBARIAN_SPRITE, STOP);
     setDirection(BARBARIAN_SPRITE, RIGHT);
     if (getLives() < 1) {
@@ -192,5 +192,22 @@ function setBarbarianDying(value) {
 function isBarbarianDying() {
     return barbarianDying;
 }
+
+function hitLeftBoundary(sprite) {
+    return !isMovingRight(sprite) && getLeft(sprite) === 0;
+}
+
+function hitRightBoundary(sprite) {
+    return isMovingRight(sprite) && getLeft(sprite) === windowWidth - getWidth(sprite);
+}
+
+function isAliveOrJustDied() {
+    return !isDead(BARBARIAN_SPRITE) || isJustDied();
+}
+
+function isJustDied() {
+    return new Date().getTime() - getDeathTime(BARBARIAN_SPRITE) < JUST_DIED_THRESHOLD;
+}
+
 
 

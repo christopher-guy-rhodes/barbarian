@@ -116,7 +116,7 @@ function handleDeath(sprite) {
 
 function barbarianDeath(sprite) {
     handleDeath(sprite);
-    animateBarbarianDeath(sprite);
+    animateDeath(sprite);
     playGruntSound();
     showMessage(START_MESSAGE);
     setLives(getLives() - 1);
@@ -127,7 +127,7 @@ function barbarianDeath(sprite) {
 
 function monsterDeath(sprite) {
     handleDeath(sprite);
-    animateMonsterDeath(sprite);
+    animateDeath(sprite);
     playFireSound();
 }
 

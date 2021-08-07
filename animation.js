@@ -57,7 +57,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
             break;
         }
 
-        renderSpriteFrame(sprite, requestedAction, frames[index++]);
+        renderSpriteFrame(sprite, requestedAction, getDirection(sprite), frames[index++]);
         await sleep(MILLISECONDS_PER_SECOND / getFps(sprite, requestedAction));
 
         if (index === frames.length) {
@@ -112,7 +112,13 @@ function handleStop(sprite) {
     }
 
     stopSpriteMovement(sprite);
+    console.log('setting render stop frame');
 
+    // Set sprite to the fist walking frame when it stops so it is not in an awkward position
+    comeToRest(sprite);
+    return true;
+
+    /*
     let x, y = undefined;
     if (getDirection(sprite) === RIGHT) {
         x = getRightStopPosition(sprite);
@@ -123,7 +129,14 @@ function handleStop(sprite) {
     }
 
     setSpriteBackgroundPosition(sprite, x, y);
+    */
     return true;
+}
+
+function comeToRest(sprite) {
+    renderSpriteFrame(sprite, WALK, getDirection(sprite), getDirection(sprite) === LEFT
+        ? sprite[FRAMES][WALK][getDirection(sprite)][FRAMES].length
+        : 0);
 }
 
 /**
@@ -191,7 +204,7 @@ function handleMonsterTurnaround(sprite) {
         hitLeftBoundary(sprite);
     const isPassedRight = getDirection(sprite) === RIGHT &&
         getLeft(sprite) - getWidth(sprite) * PASSING_MULTIPLIER > getLeft(BARBARIAN_SPRITE) ||
-        hitRightBoundry(sprite);
+        hitRightBoundary(sprite);
 
     if (isPassedLeft || isPassedRight) {
         setDirection(sprite,isPassedLeft ? RIGHT : LEFT);
@@ -263,13 +276,13 @@ function hideOpponentsAndArtifacts() {
 /**
  * Updates and scrolls the screen when the barbarian hits a screen boundary.
  * @param sprite the barbarian sprite
- * @returns {boolean}
+ * @returns {boolean} true if the
  */
 function handleBoundary(sprite) {
     if (isMonster(sprite)) {
         return false;
     }
-    const isRightBoundary = hitRightBoundry(sprite);
+    const isRightBoundary = hitRightBoundary(sprite);
     const isLeftBoundary = hitLeftBoundary(sprite);
 
     if (!isLeftBoundary && !isRightBoundary) {
@@ -298,6 +311,7 @@ function handleBoundary(sprite) {
         }
     }
 
+    comeToRest(sprite);
     setAction(sprite, STOP);
     return true;
 }
@@ -308,62 +322,37 @@ function handleBoundary(sprite) {
  * @param requestedAction the action used to find the proper frame
  * @param position the horizontal background position offset
  */
-function renderSpriteFrame(sprite, requestedAction, position) {
-    const heightOffsetGridUnits = sprite[FRAMES][requestedAction][sprite[DIRECTION]][HEIGHT_OFFSET];
-    const heightOffset = heightOffsetGridUnits * getHeight(sprite);
+function renderSpriteFrame(sprite, requestedAction, direction, position) {
+    const heightOffset = sprite[FRAMES][requestedAction][direction][HEIGHT_OFFSET] * getHeight(sprite);
     setSpriteBackgroundPosition(sprite, (-1*position*getWidth(sprite)), -1*heightOffset);
 }
 
-function renderDeathSpriteFrame(sprite, position) {
-    const heightOffset = sprite[DEATH][FRAMES][DEATH][sprite[DIRECTION]][HEIGHT_OFFSET] * getHeight(sprite[DEATH]);
-    setSpriteBackgroundPosition(sprite[DEATH], (-1*position*getWidth(sprite[DEATH])), -1*heightOffset);
-}
-
-function hitLeftBoundary(sprite) {
-    return getDirection(sprite) === LEFT && getLeft(sprite) === 0;
-}
-
-function hitRightBoundry(sprite) {
-    return getDirection(sprite) === RIGHT && getLeft(sprite) === windowWidth - getWidth(sprite);
-}
-
-async function animateBarbarianDeath(sprite) {
+/**
+ * Animate the death of a sprite
+ * @param sprite the sprite to animate the death for
+ * @returns {Promise<void>} a void promise
+ */
+async function animateDeath(sprite) {
     stopSpriteMovement(sprite);
-    setBarbarianDying(true);
+    setLeft(sprite[DEATH], getLeft(sprite));
+    setBarbarianDying(!isMonster(sprite));
+    showSprite(sprite[DEATH]);
 
-    const frames = getFrames(sprite[DEATH], DEATH, getDirection(sprite));
+    if (isMonster(sprite)) {
+        hideSprite(sprite);
+    }
+
+    let frames = getFrames(sprite[DEATH], DEATH, getDirection(sprite));
     for (let frame of frames) {
-        renderDeathSpriteFrame(sprite, frame);
+        renderSpriteFrame(sprite[DEATH], DEATH, getDirection(sprite), frame);
         await sleep(MILLISECONDS_PER_SECOND / sprite[DEATH][FRAMES][DEATH][FPS]);
     }
 
     setBarbarianDying(false);
-}
 
-async function animateMonsterDeath(sprite) {
-    stopSpriteMovement(sprite);
-    setLeft(sprite[DEATH], getLeft(sprite));
-    showSprite(sprite[DEATH]);
-    hideSprite(sprite);
-
-    const frames = getFrames(sprite[DEATH], DEATH, getDirection(sprite));
-    for (let frame of frames) {
-        renderDeathSpriteFrame(sprite, frame);
-        await sleep(MILLISECONDS_PER_SECOND / sprite[DEATH][FRAMES][DEATH][FPS]);
+    if (isMonster(sprite)) {
+        hideSprite(sprite[DEATH]);
     }
-
-    hideSprite(sprite[DEATH]);
 }
-
-function isAliveOrJustDied() {
-    return !isDead(BARBARIAN_SPRITE) || isJustDied();
-}
-
-function isJustDied() {
-    return new Date().getTime() - getDeathTime(BARBARIAN_SPRITE) < JUST_DIED_THRESHOLD;
-}
-
-
-
 
 

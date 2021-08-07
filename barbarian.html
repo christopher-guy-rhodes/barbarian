@@ -41,7 +41,7 @@ $(document).ready(function(){
     let keypressTime;
     let lastKeypressTime;
 
-    renderSpriteFrame(MONSTER_SPRITE, WALK, 0);
+    renderSpriteFrame(MONSTER_SPRITE, WALK, getDirection(MONSTER_SPRITE), 0, getHeight(MONSTER_SPRITE));
 
     $(document).keydown(function(e) {
 

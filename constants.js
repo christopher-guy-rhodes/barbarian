@@ -69,7 +69,6 @@ var RUN = 'RUN';
 var ATTACK = 'ATTACK';
 var JUMP = 'JUMP';
 var WALK = 'WALK';
-var HAS_MOVING_ATTACK = 'HAS_MOVING_ATTACK';
 var DEATH = 'DEATH';
 var SIT = 'SIT';
 var ATTACK_PROXIMITY = 320;

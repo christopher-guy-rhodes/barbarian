@@ -76,7 +76,7 @@
 }
 
 .backdrop {
-    background-image: url(/background-1.png);
+    background-image: url(/images/background-1.png);
     width: 1400px;
     height: 800px;
     position: absolute;

@@ -2,7 +2,7 @@
     /*border: 1px solid red;*/
     height: 400px;
     width: 400px;
-    background-image: url(./sprites/sprite.png);
+    background-image: url(../sprites/sprite.png);
     position: absolute;
     bottom: 12px;
     left: 0px;
@@ -12,7 +12,7 @@
     border: 0px solid red;
     height: 400px;
     width: 400px;
-    background-image: url(./sprites/monsters.png);
+    background-image: url(../sprites/monsters.png);
     position: absolute;
     left: 850px;
     bottom: 12px;
@@ -22,7 +22,7 @@
     border: 0px solid red;
     height: 400px;
     width: 400px;
-    background-image: url(./sprites/dog.png);
+    background-image: url(../sprites/dog.png);
     background-position: -1200px -400px;
     position: absolute;
     left:850px;
@@ -34,7 +34,7 @@
     border: 0px solid white;
     height: 800px;
     width: 400px;
-    background-image: url(./sprites/death.png);
+    background-image: url(../sprites/death.png);
     position: absolute;
     bottom: 0;
     display: none;
@@ -43,7 +43,7 @@
 .bridge {
     height: 48px;
     width: 149px;
-    background-image: url(./sprites/bridge.png);
+    background-image: url(../sprites/bridge.png);
     background-repeat: no-repeat;
     position: absolute;
     bottom: 116px;
@@ -56,7 +56,7 @@
     opacity: 50%;
     height: 400px;
     width: 400px;
-    background-image: url(./sprites/sprite.png);
+    background-image: url(../sprites/sprite.png);
     #background-position: -2400px -400px;
     position: absolute;
     bottom:164px;
@@ -68,7 +68,7 @@
     opacity: 50%;
     height: 400px;
     width: 400px;
-    background-image: url(./sprites/sprite.png);
+    background-image: url(../sprites/sprite.png);
     #background-position: -2400px -400px;
     position: absolute;
     bottom: 164px;

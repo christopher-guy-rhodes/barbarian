@@ -286,7 +286,8 @@ SPRITES = [BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE];
 
 SCREENS = {
     0 : {
-        OPPONENTS: [MONSTER_SPRITE, BARBARIAN_SPRITE]
+        OPPONENTS: [MONSTER_SPRITE, BARBARIAN_SPRITE],
+        ARTIFACTS: []
     },
     1 : {
         OBSTACLES: {
@@ -302,7 +303,11 @@ SCREENS = {
             ]
         },
         OPPONENTS: [DOG_SPRITE, BARBARIAN_SPRITE],
-        ARTIFACTS: [BRIDGE],
+        ARTIFACTS: [{
+            ELEMENT: BRIDGE,
+            RESET : {
+                BOTTOM: 116, DISPLAY: 'none'}
+            }],
     }
 };
 

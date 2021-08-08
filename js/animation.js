@@ -41,7 +41,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
         if (getLives() < 1) {
             setTimeout(function () {
                 gameOver = true;
-            }, 2 * getDeathDelay(sprite) * (1 / getFps(sprite, getAction(sprite))));
+            }, getDeathDelay(sprite) * (1 / getFps(sprite, getAction(sprite))));
         }
 
         // If the action starts a new animation or the current one should terminate break out of the loop
@@ -210,27 +210,6 @@ function handleMonsterTurnaround(sprite) {
 }
 
 /**
- * Initializes the current screen
- */
-function initializeScreen() {
-    let artifacts = SCREENS[getScreenNumber()][ARTIFACTS];
-    if (artifacts !== undefined) {
-        for (let artifact of artifacts) {
-            show(artifact);
-        }
-    }
-
-    let monsterSprites = filterBarbarianSprite(SCREENS[getScreenNumber()][OPPONENTS]);
-
-    for (let monsterSprite of monsterSprites) {
-        setLeft(monsterSprite, getResetLeft(monsterSprite));
-        setHighlight(monsterSprite, false);
-        setSpriteBottom(monsterSprite, getResetBottom(monsterSprites));
-        setStatus(monsterSprite, DEAD);
-    }
-}
-
-/**
  * Starts the monster attacks for the monsters on the current screen. Normally the monsters need to be dead before they
  * will be started unless the game is being unpaused.
  * @param unpausing true if the function was called in the context of unpausing the game
@@ -262,7 +241,7 @@ function hideOpponentsAndArtifacts() {
     let artifacts = SCREENS[getScreenNumber()][ARTIFACTS];
     if (artifacts !== undefined) {
         for (let artifact of artifacts) {
-            hide(artifact);
+            hide(artifact[ELEMENT]);
         }
     }
 }

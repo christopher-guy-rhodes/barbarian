@@ -1,106 +1,93 @@
 // dimensions
-var SCREEN_HEIGHT = 800;
-var SCREEN_WIDTH = 1400;
+const SCREEN_HEIGHT = 800;
+const SCREEN_WIDTH = 1400;
 
-var RUN_SPEED_INCREASE_FACTOR = 1.5;
-var DEFAULT_DEATH_DELAY = 2000;
+const RUN_SPEED_INCREASE_FACTOR = 1.5;
+const DEFAULT_DEATH_DELAY = 2000;
 
 // How long does it take to advance the screen?
-var ADVANCE_SCREEN_DURATION = 1;
-var ADVANCE_SCREEN_PIXELS_PER_SECOND = SCREEN_WIDTH / ADVANCE_SCREEN_DURATION;
-// How many pixels are moved in a single frame. Higher values make for a smoother scroll but if the value is too
-// high the overhead of the animation and sleep in the loop will cause the screen scroll to be out of sync with the
-// sprite that is scrolling simultaneously via jquery animation which is more efficient
-var ADVANCE_SCREEN_PIXELS_PER_FRAME = 25;
+const ADVANCE_SCREEN_DURATION_SECONDS = 1;
+const ADVANCE_SCREEN_PIXELS_PER_SECOND = SCREEN_WIDTH / ADVANCE_SCREEN_DURATION_SECONDS;
+// How many pixels are moved in a single frame. Higher values make for a smoother scroll but if the value is too high
+// the overhead of the animation and sleep in the loop will cause the screen scroll to be out of sync with the sprite
+// that is scrolling simultaneously via jquery animation which is more efficient
+const ADVANCE_SCREEN_PIXELS_PER_FRAME = 25;
 
 // labels
-var OBSTACLE_TYPE = 'OBSTACLE_TYPE';
-var PIT = 'PIT';
-var ELEVATION = 'ELEVATION';
-var FAIL_ACTION = 'FAIL_ACTION';
-var JUMP_RANGE = 'JUMP_RANGE';
-var TIMESTAMP = 'TIMESTAMP';
-var STEP = 'STEP';
-var FALL = 'FALL';
-var HEIGHT = 'HEIGHT';
-var CONSEQUENCE = 'CONSEQUENCE';
-var STOP_POSITION = 'STOP_POSITION';
-var RIGHT_HEIGHT = 'RIGHT_HEIGHT';
-var LEFT_HEIGHT = 'LEFT_HEIGHT';
-var ACTION = 'ACTION';
-var DIRECTION = 'DIRECTION';
-var SPRITE = 'SPRITE';
-var FRAMES = 'FRAMES';
-var NAME = 'NAME';
-var HEIGHT_OFFSET = 'HEIGHT_OFFSET';
-var FPS = 'FPS';
-var PIXELS_PER_SECOND = 'PIXELS_PER_SECOND';
-var STATUS = 'STATUS';
-var ALIVE = 'ALIVE';
-var DEAD = 'DEAD';
-var ATTACK_THRESHOLDS = 'ATTACK_THRESHOLDS';
-var BARBARIAN_ATTACK_THRESHOLDS = 'BARBARIAN_ATTACK_THRESHOLDS';
-var TURNAROUND = 'TURNAROUND';
-var MIN = 'MIN';
-var MAX = 'MAX';
-var DELAY = 'DELAY';
-var OBSTACLES = 'OBSTACLES';
-var OPPONENTS = 'OPPONENTS';
-var DEATH_TIME = 'DEATH_TIME';
-var RESET_DISPLAY = 'RESET_DISPLAY';
-var RESET_BOTTOM = 'RESET_BOTTOM';
-var RESET_LEFT = 'RESET_LEFT';
-var RESET_STATUS = 'RESET_STATUS';
-var SOUND = 'SOUND';
-var DEFAULT_ACTION = 'DEFAULT_ACTION';
-var ARTIFACTS = 'ARTIFACTS';
-var THEME_SONG = 'THEME_SONG';
-var GROWL_SOUND = 'GROWL_SOUND';
-var MONSTER_SOUND = 'MONSTER_SOUND';
-var GRUNT_SOUND = 'GRUNT_SOUND';
-var GROWL_SOUND = 'GROWL_SOUND';
-var FIRE_SOUND = 'FIRE_SOUND';
-var FALL_SOUND = 'FALL_SOUND';
-var SOUNDS = 'SOUNDS';
+const OBSTACLE_TYPE = 'OBSTACLE_TYPE';
+const PIT = 'PIT';
+const ELEVATION = 'ELEVATION';
+const FAIL_ACTION = 'FAIL_ACTION';
+const JUMP_RANGE = 'JUMP_RANGE';
+const FALL = 'FALL';
+const HEIGHT = 'HEIGHT';
+const STOP_POSITION = 'STOP_POSITION';
+const RIGHT_HEIGHT = 'RIGHT_HEIGHT';
+const LEFT_HEIGHT = 'LEFT_HEIGHT';
+const ACTION = 'ACTION';
+const DIRECTION = 'DIRECTION';
+const SPRITE = 'SPRITE';
+const FRAMES = 'FRAMES';
+const NAME = 'NAME';
+const HEIGHT_OFFSET = 'HEIGHT_OFFSET';
+const FPS = 'FPS';
+const PIXELS_PER_SECOND = 'PIXELS_PER_SECOND';
+const STATUS = 'STATUS';
+const ALIVE = 'ALIVE';
+const DEAD = 'DEAD';
+const ATTACK_THRESHOLDS = 'ATTACK_THRESHOLDS';
+const BARBARIAN_ATTACK_THRESHOLDS = 'BARBARIAN_ATTACK_THRESHOLDS';
+const MIN = 'MIN';
+const MAX = 'MAX';
+const DELAY = 'DELAY';
+const OBSTACLES = 'OBSTACLES';
+const OPPONENTS = 'OPPONENTS';
+const DEATH_TIME = 'DEATH_TIME';
+const RESET_DISPLAY = 'RESET_DISPLAY';
+const RESET_BOTTOM = 'RESET_BOTTOM';
+const RESET_LEFT = 'RESET_LEFT';
+const RESET_STATUS = 'RESET_STATUS';
+const SOUND = 'SOUND';
+const DEFAULT_ACTION = 'DEFAULT_ACTION';
+const ARTIFACTS = 'ARTIFACTS';
 
-// Actions
-var STOP = 'STOP';
-var RUN = 'RUN';
-var ATTACK = 'ATTACK';
-var JUMP = 'JUMP';
-var WALK = 'WALK';
-var DEATH = 'DEATH';
-var SIT = 'SIT';
-var ATTACK_PROXIMITY = 320;
+const THEME_SONG = 'THEME_SONG';
+const GROWL_SOUND = 'GROWL_SOUND';
+const MONSTER_SOUND = 'MONSTER_SOUND';
+const GRUNT_SOUND = 'GRUNT_SOUND';
+const FIRE_SOUND = 'FIRE_SOUND';
+const FALL_SOUND = 'FALL_SOUND';
 
-// Directions
-var LEFT = 'LEFT';
-var RIGHT = 'RIGHT';
-var UP = 'UP';
-var DOWN = 'DOWN';
+const STOP = 'STOP';
+const RUN = 'RUN';
+const ATTACK = 'ATTACK';
+const JUMP = 'JUMP';
+const WALK = 'WALK';
+const DEATH = 'DEATH';
+const SIT = 'SIT';
+const LEFT = 'LEFT';
+const RIGHT = 'RIGHT';
 
-// Sprites
-var BARBARIAN_SPRITE_NAME = 'BARBARIAN';
-var MONSTER_SPRITE_NAME = 'MONSTER';
-var DOG_SPRITE_NAME = 'DOG';
+const BARBARIAN_SPRITE_NAME = 'BARBARIAN';
+const MONSTER_SPRITE_NAME = 'MONSTER';
+const DOG_SPRITE_NAME = 'DOG';
 
-// Keypress events
-var KEYPRESS_THROTTLE_DELAY = 200;
-var KP_LEFT = 'KP_LEFT';
-var KP_RIGHT = 'KP_RIGHT';
-var KP_RUN = 'KP_RUN';
-var KP_JUMP = 'KP_JUMP';
-var KP_STOP = 'KP_STOP';
-var KP_ATTACK = 'KP_ATTACK';
-var KP_PAUSE = 'KP_PAUSE';
-var KP_SPACE = 'KP_SPACE';
-var KP_CONTROLS = 'KP_CONTROLS';
-var KP_MAIN = 'KP_MAIN';
-var KP_HINTS = 'KP_HINTS';
-var KP_SOUND = 'KP_SOUND';
+const KEYPRESS_THROTTLE_DELAY = 200;
+const KP_LEFT = 'KP_LEFT';
+const KP_RIGHT = 'KP_RIGHT';
+const KP_RUN = 'KP_RUN';
+const KP_JUMP = 'KP_JUMP';
+const KP_STOP = 'KP_STOP';
+const KP_ATTACK = 'KP_ATTACK';
+const KP_PAUSE = 'KP_PAUSE';
+const KP_SPACE = 'KP_SPACE';
+const KP_CONTROLS = 'KP_CONTROLS';
+const KP_MAIN = 'KP_MAIN';
+const KP_HINTS = 'KP_HINTS';
+const KP_SOUND = 'KP_SOUND';
 
 // Keypress event names
-var KEYPRESS = {
+const KEYPRESS = {
     KP_LEFT     : 37,
     KP_RIGHT    : 39,
     KP_ATTACK   : 65,
@@ -116,30 +103,27 @@ var KEYPRESS = {
 };
 
 // Messages
-var CONTROL_MESSAGE = $('.controls_message');
-var START_MESSAGE = $('.start_message');
-var GAME_OVER_MESSAGE = $('.game_over');
-var DEMO_OVER_MESSAGE = $('.demo_over_message');
-
-var MESSAGES = [CONTROL_MESSAGE, START_MESSAGE, GAME_OVER_MESSAGE, DEMO_OVER_MESSAGE];
+const GAME_OVER_MESSAGE = $('.game_over');
+const DEMO_OVER_MESSAGE = $('.demo_over_message');
+const START_MESSAGE = $('.start_message');
+const CONTROL_MESSAGE = $('.controls_message');
+const SOUND_ON_MESSAGE = $('.sound_message_on');
+const SOUND_OFF_MESSAGE = $('.sound_message_off');
+const HINTS_ON_MESSAGE = $('.hints_message_on');
+const HINTS_OFF_MESSAGE = $('.hints_message_off');
+const PAUSE_MESSAGE = $('.pause_message');
+const MESSAGES = [CONTROL_MESSAGE, START_MESSAGE, GAME_OVER_MESSAGE, DEMO_OVER_MESSAGE];
 
 // Elements
-var BRIDGE = $('.bridge');
-var BACKDROP = $('.backdrop');
-var GAME_OVER_MESSAGE = $('.game_over');
-var DEMO_OVER_MESSAGE = $('.demo_over_message');
-var START_MESSAGE = $('.start_message');
-var CONTROL_MESSAGE = $('.controls_message');
-var SOUND_ON_MESSAGE = $('.sound_message_on');
-var SOUND_OFF_MESSAGE = $('.sound_message_off');
-var HINTS_ON_MESSAGE = $('.hints_message_on');
-var HINTS_OFF_MESSAGE = $('.hints_message_off');
-var PAUSE_MESSAGE = $('.pause_message');
-var LIFE1 = $('.life1');
-var LIFE2 = $('.life2');
+const BRIDGE = $('.bridge');
+const BACKDROP = $('.backdrop');
+const LIFE1 = $('.life1');
+const LIFE2 = $('.life2');
 
-var HIGHLIGHT_BUFFER = 150;
-var MILLISECONDS_PER_SECOND = 1000;
-var PASSING_MULTIPLIER = 1.5;
-var JUST_DIED_THRESHOLD = 500;
-var TOGGLE_MESSAGE_TIME = 3000;
+const HIGHLIGHT_BUFFER = 150;
+const MILLISECONDS_PER_SECOND = 1000;
+const PASSING_MULTIPLIER = 1.5;
+const JUST_DIED_THRESHOLD = 500;
+const TOGGLE_MESSAGE_TIME = 3000;
+const ATTACK_PROXIMITY = 320;
+

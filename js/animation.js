@@ -153,14 +153,14 @@ function moveToPosition(sprite, x, y, pixelsPerSecond) {
 async function advanceBackdrop(sprite, direction) {
     let pixelsPerIteration = ADVANCE_SCREEN_PIXELS_PER_SECOND / ADVANCE_SCREEN_PIXELS_PER_FRAME;
     let numberOfIterations = windowWidth / pixelsPerIteration;
-    let sleepPerIteration = (ADVANCE_SCREEN_DURATION / numberOfIterations) * MILLISECONDS_PER_SECOND;
+    let sleepPerIteration = (ADVANCE_SCREEN_DURATION_SECONDS / numberOfIterations) * MILLISECONDS_PER_SECOND;
 
     setActionsLocked(true);
     let x = getDirection(sprite) === RIGHT ? 0 : windowWidth - getWidth(sprite);
 
     // The barbarian is travelling a distance that is shorter by his width. Adjust the pixels per second so his
     // scrolling finishes at the same time
-    let adjustedPixelsPerSecond = (windowWidth - getWidth(sprite)) / ADVANCE_SCREEN_DURATION;
+    let adjustedPixelsPerSecond = (windowWidth - getWidth(sprite)) / ADVANCE_SCREEN_DURATION_SECONDS;
     moveToPosition(sprite, x, undefined, adjustedPixelsPerSecond);
 
     for (let i = 0; i < numberOfIterations ; i++) {

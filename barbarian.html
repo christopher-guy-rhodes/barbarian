@@ -10,26 +10,26 @@ let actionsLocked = false;
 let pause = false;
 let lives = 3;
 let hints = true;
-let sound = false;
+let sound = true;
 let theme;
 $(document).ready(function(){
 
     // Include constants
-    $.getScript('/constants.js', function() {
+    $.getScript('/js/constants.js', function() {
     // Include util module
-    $.getScript('/util.js', function() {
+    $.getScript('/js/util.js', function() {
     // Include sound module
-    $.getScript('/sound.js', function() {
+    $.getScript('/js/sound.js', function() {
     // Include sprite definition
-    $.getScript('/sprites.js', function() {
+    $.getScript('/js/sprites.js', function() {
     // INclude the obstacles module
-    $.getScript('/obstacles.js', function() {
+    $.getScript('/js/obstacles.js', function() {
     // Include the fighting module
-    $.getScript('/fighting.js', function() {
+    $.getScript('/js/fighting.js', function() {
     // Include animation module
-    $.getScript('/animation.js', function() {
+    $.getScript('/js/animation.js', function() {
     // Include keypress events
-    $.getScript('/events.js', function() {
+    $.getScript('/js/events.js', function() {
 
     // Don't allow screen resizing
     $(window).resize(function(){

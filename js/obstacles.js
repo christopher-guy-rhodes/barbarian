@@ -65,13 +65,12 @@ function handleObstacles(sprite) {
         return false;
     }
 
-    if (sprite[NAME] === BARBARIAN_SPRITE_NAME && screenNumber == 1 && $('.bridge').css('display') === 'block' &&
+    if (sprite[NAME] === BARBARIAN_SPRITE_NAME && screenNumber == 1 && BRIDGE.css('display') === 'block' &&
         sprite[SPRITE].offset().left >= 700) {
-        //$('.bridge').css('display', 'none');
-        $('.bridge').animate({bottom: '0px'}, 300, 'linear');
+        BRIDGE.animate({bottom: '0px'}, 300, 'linear');
 
         setTimeout(function () {
-            $('.bridge').css('display', 'none')
+            BRIDGE.css('display', 'none')
         }, 300);
     }
 

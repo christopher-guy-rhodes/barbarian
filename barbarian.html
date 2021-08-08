@@ -6,13 +6,12 @@
 <script>
 let screenNumber = 0;
 let canAdvance = false;
-let scrolling = false;
+let actionsLocked = false;
 let pause = false;
 let lives = 3;
 let hints = true;
 let sound = true;
 let theme;
-let barbarianDying = false;
 $(document).ready(function(){
 
     // Include constants
@@ -52,7 +51,7 @@ $(document).ready(function(){
         let isInterruptable = getAction(BARBARIAN_SPRITE) === JUMP ||
                               getAction(BARBARIAN_SPRITE) === ATTACK ||
                               getAction(BARBARIAN_SPRITE) == FALL;
-        if (!shouldThrottle(lastKeypressTime) && !isInterruptable && !isScrolling() && !isBarbarianDying()) {
+        if (!shouldThrottle(lastKeypressTime) && !isInterruptable && !isActionsLocked()) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
 

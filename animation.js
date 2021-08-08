@@ -85,6 +85,7 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
  */
 function moveFromPositionToBoundary(sprite, action, pixelsPerSecond) {
     if (pixelsPerSecond <= 0) {
+        // If the sprite isn't moving (stop, non-moving attack etc.) to not move it to the boundary
         return;
     }
 
@@ -112,31 +113,19 @@ function handleStop(sprite) {
     }
 
     stopSpriteMovement(sprite);
-    console.log('setting render stop frame');
-
-    // Set sprite to the fist walking frame when it stops so it is not in an awkward position
-    comeToRest(sprite);
-    return true;
-
-    /*
-    let x, y = undefined;
-    if (getDirection(sprite) === RIGHT) {
-        x = getRightStopPosition(sprite);
-        y = -1 * getRightHeightStopPosition(sprite)
-    } else {
-        x = getLeftStopPosition(sprite) * getWidth(sprite);
-        y = -1 * getLeftHeightStopPosition(sprite) * getHeight(sprite);
-    }
-
-    setSpriteBackgroundPosition(sprite, x, y);
-    */
+    renderAtRestFrame(sprite);
     return true;
 }
 
-function comeToRest(sprite) {
-    renderSpriteFrame(sprite, WALK, getDirection(sprite), getDirection(sprite) === LEFT
+/**
+ * Renders the first "at rest" walking frame for the sprite.
+ * @param sprite the sprite to render the at rest frme for
+ */
+function renderAtRestFrame(sprite) {
+    let position = getDirection(sprite) === LEFT
         ? sprite[FRAMES][WALK][getDirection(sprite)][FRAMES].length
-        : 0);
+        : 0;
+    renderSpriteFrame(sprite, WALK, getDirection(sprite), position);
 }
 
 /**
@@ -166,8 +155,8 @@ async function advanceBackdrop(sprite, direction) {
     let numberOfIterations = windowWidth / pixelsPerIteration;
     let sleepPerIteration = (ADVANCE_SCREEN_DURATION / numberOfIterations) * MILLISECONDS_PER_SECOND;
 
-    setScrolling(true);
-    const x = getDirection(sprite) === RIGHT ? 0 : windowWidth - getWidth(sprite);
+    setActionsLocked(true);
+    let x = getDirection(sprite) === RIGHT ? 0 : windowWidth - getWidth(sprite);
 
     // The barbarian is travelling a distance that is shorter by his width. Adjust the pixels per second so his
     // scrolling finishes at the same time
@@ -180,11 +169,16 @@ async function advanceBackdrop(sprite, direction) {
         setBackgroundPosition(BACKDROP, '-' + position);
         await sleep(sleepPerIteration);
     }
-    setScrolling(false);
+    setActionsLocked(false);
     initializeScreen();
     startMonsterAttacks();
 }
 
+/**
+ * Sleep for ms milliseconds
+ * @param ms the number of milliseconds to sleep
+ * @returns {Promise<void>} a void promise
+ */
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -199,10 +193,10 @@ function handleMonsterTurnaround(sprite) {
         return false;
     }
 
-    const isPassedLeft = getDirection(sprite) === LEFT &&
+    let isPassedLeft = getDirection(sprite) === LEFT &&
         getLeft(sprite) + getWidth(sprite) * PASSING_MULTIPLIER < getLeft(BARBARIAN_SPRITE) ||
         hitLeftBoundary(sprite);
-    const isPassedRight = getDirection(sprite) === RIGHT &&
+    let isPassedRight = getDirection(sprite) === RIGHT &&
         getLeft(sprite) - getWidth(sprite) * PASSING_MULTIPLIER > getLeft(BARBARIAN_SPRITE) ||
         hitRightBoundary(sprite);
 
@@ -282,8 +276,8 @@ function handleBoundary(sprite) {
     if (isMonster(sprite)) {
         return false;
     }
-    const isRightBoundary = hitRightBoundary(sprite);
-    const isLeftBoundary = hitLeftBoundary(sprite);
+    let isRightBoundary = hitRightBoundary(sprite);
+    let isLeftBoundary = hitLeftBoundary(sprite);
 
     if (!isLeftBoundary && !isRightBoundary) {
         return false;
@@ -311,7 +305,7 @@ function handleBoundary(sprite) {
         }
     }
 
-    comeToRest(sprite);
+    renderAtRestFrame(sprite);
     setAction(sprite, STOP);
     return true;
 }
@@ -320,10 +314,11 @@ function handleBoundary(sprite) {
  * Renders a sprite frame by adjusting the vertical and horizontal background position
  * @param sprite the sprite to render a frame for
  * @param requestedAction the action used to find the proper frame
+ * @param direction the direction the sprite is facing
  * @param position the horizontal background position offset
  */
 function renderSpriteFrame(sprite, requestedAction, direction, position) {
-    const heightOffset = sprite[FRAMES][requestedAction][direction][HEIGHT_OFFSET] * getHeight(sprite);
+    let heightOffset = sprite[FRAMES][requestedAction][direction][HEIGHT_OFFSET] * getHeight(sprite);
     setSpriteBackgroundPosition(sprite, (-1*position*getWidth(sprite)), -1*heightOffset);
 }
 
@@ -335,7 +330,7 @@ function renderSpriteFrame(sprite, requestedAction, direction, position) {
 async function animateDeath(sprite) {
     stopSpriteMovement(sprite);
     setLeft(sprite[DEATH], getLeft(sprite));
-    setBarbarianDying(!isMonster(sprite));
+    setActionsLocked(!isMonster(sprite));
     showSprite(sprite[DEATH]);
 
     if (isMonster(sprite)) {
@@ -348,7 +343,7 @@ async function animateDeath(sprite) {
         await sleep(MILLISECONDS_PER_SECOND / sprite[DEATH][FRAMES][DEATH][FPS]);
     }
 
-    setBarbarianDying(false);
+    setActionsLocked(false);
 
     if (isMonster(sprite)) {
         hideSprite(sprite[DEATH]);

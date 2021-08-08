@@ -3,12 +3,12 @@ function resetBridgePosition() {
     hide(BRIDGE);
 }
 
-function isScrolling() {
-    return scrolling;
+function isActionsLocked() {
+    return actionsLocked;
 }
 
-function setScrolling(value) {
-    scrolling = value;
+function setActionsLocked(value) {
+    actionsLocked = value;
 }
 
 function isHints() {
@@ -183,14 +183,6 @@ function handleAttackKeypress() {
         playGruntSound();
         performAction(BARBARIAN_SPRITE, ATTACK, 1);
     }
-}
-
-function setBarbarianDying(value) {
-    barbarianDying = value;
-}
-
-function isBarbarianDying() {
-    return barbarianDying;
 }
 
 function hitLeftBoundary(sprite) {

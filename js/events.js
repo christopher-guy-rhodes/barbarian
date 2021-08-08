@@ -46,6 +46,26 @@ function setScreenNumber(number) {
     screenNumber = number;
 }
 
+function getLowerJumpThreshold(sprite) {
+    return sprite[JUMP_THRESHOLDS][MIN];
+}
+
+function getUpperJumpThreshold(sprite) {
+    return sprite[JUMP_THRESHOLDS][MAX];
+}
+
+function isAttacking(sprite) {
+    return sprite[ACTION] === ATTACK;
+}
+
+function setDeathDelay(sprite, delay) {
+    sprite[DEATH][DELAY] = delay;
+}
+
+function getOpponents() {
+    return SCREENS[getScreenNumber()][OPPONENTS];
+}
+
 /**
  * Resets the game after a barbarian death or the game is completed.
  */

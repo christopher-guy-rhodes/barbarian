@@ -168,6 +168,10 @@ DOG_SPRITE = {
         MIN : 0,
         MAX : 100
     },
+    JUMP_THRESHOLDS : {
+        MIN : 15,
+        MAX : 100
+    },
     BARBARIAN_ATTACK_THRESHOLDS : {
         MIN : 0,
         MAX : 115
@@ -202,7 +206,7 @@ DOG_SPRITE = {
     RESET_BOTTOM: 160,
     RESET_DISPLAY: 'none',
     RESET_STATUS: DEAD
-}
+};
 
 MONSTER_SPRITE = {
     SPRITE : $(".monster"),
@@ -252,6 +256,10 @@ MONSTER_SPRITE = {
         MIN : 0,
         MAX : 100
     },
+    JUMP_THRESHOLDS : {
+        MIN : 15,
+        MAX : 100
+    },
     BARBARIAN_ATTACK_THRESHOLDS : {
         MIN: 0,
         MAX: 100
@@ -293,13 +301,13 @@ SCREENS = {
         OBSTACLES: {
             RIGHT: [
                 {LEFT: 50, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 82, JUMP_RANGE: [-100, 100]},
-                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 164, JUMP_RANGE: [400, 430]},
-                {LEFT: 800, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 164, JUMP_RANGE: [710, 830]}
+                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 160, JUMP_RANGE: [400, 430]},
+                {LEFT: 800, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 160, JUMP_RANGE: [710, 830]}
             ],
             LEFT: [
                 {LEFT: 100, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 12},
                 {LEFT: 400, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 82},
-                {LEFT: 950, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 164, JUMP_RANGE: [880, 1000]}
+                {LEFT: 950, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 160, JUMP_RANGE: [880, 1000]}
             ]
         },
         OPPONENTS: [DOG_SPRITE, BARBARIAN_SPRITE],

@@ -128,19 +128,24 @@ function death(sprite) {
     if (isMonster(sprite)) {
         monsterDeath(sprite);
     } else {
-        barbarianDeath(sprite);
+        barbarianDeath(sprite, ATTACK);
     }
+    animateDeath(sprite);
 }
 
 /**
  * Handles the death of the barbarian.
- * @param sprite
+ * @param sprite the barbarian sprite
+ * @param action the action the barbarian was taking when he died
  */
-function barbarianDeath(sprite) {
+function barbarianDeath(sprite, action) {
     setDeathTime(sprite, new Date().getTime());
     setStatus(sprite, DEAD);
-    animateDeath(sprite);
-    playGruntSound();
+    if (action !== FALL) {
+        playGruntSound();
+    } else {
+        hideSprite(BARBARIAN_SPRITE)
+    }
     showMessage(START_MESSAGE);
     setLives(getLives() - 1);
     if (getLives() < 1) {
@@ -155,7 +160,6 @@ function barbarianDeath(sprite) {
 function monsterDeath(sprite) {
     setDeathTime(sprite, new Date().getTime());
     setStatus(sprite, DEAD);
-    animateDeath(sprite);
     playFireSound();
 }
 

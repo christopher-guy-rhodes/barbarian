@@ -102,6 +102,8 @@ BARBARIAN_SPRITE = {
         RIGHT_HEIGHT : STOP_RIGHT_HEIGHT_OFFSET,
         LEFT_HEIGHT: STOP_LEFT_HEIGHT_OFFSET
     },
+    RESET_ACTION : STOP,
+    RESET_DIRECTION : RIGHT,
     RESET_LEFT: 0,
     RESET_BOTTOM: 12,
     RESET_DISPLAY: 'block',
@@ -200,8 +202,9 @@ DOG_SPRITE = {
         RIGHT_HEIGHT : 0,
         LEFT_HEIGHT: 1
     },
-    DEFAULT_ACTION: SIT,
     SOUND: GROWL_SOUND,
+    RESET_DIRECTION : LEFT,
+    RESET_ACTION: SIT,
     RESET_LEFT: 850,
     RESET_BOTTOM: 160,
     RESET_DISPLAY: 'none',
@@ -283,7 +286,8 @@ MONSTER_SPRITE = {
         },
     },
     SOUND: MONSTER_SOUND,
-    DEFAULT_ACTION: WALK,
+    RESET_ACTION: WALK,
+    RESET_DIRECTION : LEFT,
     RESET_LEFT: 850,
     RESET_BOTTOM: 12,
     RESET_DISPLAY: 'block',
@@ -294,28 +298,36 @@ SPRITES = [BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE];
 
 SCREENS = {
     0 : {
+        OBSTACLES : {
+            LEFT: [],
+            RIGHT: [],
+        },
         OPPONENTS: [MONSTER_SPRITE, BARBARIAN_SPRITE],
-        ARTIFACTS: []
+        TRAP_DOORS: []
     },
     1 : {
         OBSTACLES: {
             RIGHT: [
-                {LEFT: 50, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 82, JUMP_RANGE: [-100, 100]},
-                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 160, JUMP_RANGE: [400, 430]},
-                {LEFT: 800, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 160, JUMP_RANGE: [710, 830]}
+                {LEFT: 50, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 82, JUMP_THRESHOLDS: {MIN: -100, MAX: 100}},
+                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 160, JUMP_THRESHOLDS: {MIN: 400, MAX: 430}},
+                {LEFT: 800, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 160, JUMP_THRESHOLDS: {MIN: 710, MAX: 830}}
             ],
             LEFT: [
                 {LEFT: 100, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 12},
                 {LEFT: 400, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 82},
-                {LEFT: 950, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 160, JUMP_RANGE: [880, 1000]}
+                {LEFT: 950, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 160, JUMP_THRESHOLDS: {MIN: 880, MAX: 1000}}
             ]
         },
         OPPONENTS: [DOG_SPRITE, BARBARIAN_SPRITE],
-        ARTIFACTS: [{
+        TRAP_DOORS: [{
             ELEMENT: BRIDGE,
             RESET : {
-                BOTTOM: 116, DISPLAY: 'none'}
-            }],
+                BOTTOM: 116
+            },
+            TRIGGER : {
+                LEFT: 700,
+                TIME: 300
+            }}],
     }
 };
 
@@ -337,6 +349,34 @@ function getSpritesInProximity(sprite, opponents, proximityThreshold) {
     return attackers;
 }
 
+function getLives() {
+    return lives;
+}
+
+function setLives(number) {
+    lives = number;
+}
+
+function getLowerJumpThreshold(sprite) {
+    return sprite[JUMP_THRESHOLDS][MIN];
+}
+
+function getUpperJumpThreshold(sprite) {
+    return sprite[JUMP_THRESHOLDS][MAX];
+}
+
+function isAttacking(sprite) {
+    return sprite[ACTION] === ATTACK;
+}
+
+function setDeathDelay(sprite, delay) {
+    sprite[DEATH][DELAY] = delay;
+}
+
+function getOpponents() {
+    return SCREENS[getScreenNumber()][OPPONENTS];
+}
+
 function isMonster(sprite) {
     return sprite[NAME] !== BARBARIAN_SPRITE_NAME;
 }
@@ -347,6 +387,10 @@ function isDead(sprite) {
 
 function isSpriteCurrentOpponent(sprite) {
     return SCREENS[screenNumber][OPPONENTS].includes(sprite);
+}
+
+function isElementVisible(element) {
+    return element.css('display') === 'block';
 }
 
 function setDisplay(sprite, display) {
@@ -477,8 +521,12 @@ function getDeathTime(sprite) {
     return sprite[DEATH][DEATH_TIME];
 }
 
-function getDefaultAction(sprite) {
-    return sprite[DEFAULT_ACTION];
+function getResetAction(sprite) {
+    return sprite[RESET_ACTION];
+}
+
+function getResetDirection(sprite) {
+    return sprite[RESET_DIRECTION];
 }
 
 function getResetLeft(sprite) {
@@ -491,10 +539,6 @@ function getResetBottom(sprite) {
 
 function getResetStatus(sprite) {
     return sprite[RESET_STATUS];
-}
-
-function getResetDisplay(sprite) {
-    return sprite[RESET_DISPLAY];
 }
 
 function getFrames(sprite, requestedAction, direction) {

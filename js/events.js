@@ -30,14 +30,6 @@ function setSound(status) {
     sound = status;
 }
 
-function getLives() {
-    return lives;
-}
-
-function setLives(number) {
-    lives = number;
-}
-
 function getScreenNumber() {
     return screenNumber;
 }
@@ -46,68 +38,71 @@ function setScreenNumber(number) {
     screenNumber = number;
 }
 
-function getLowerJumpThreshold(sprite) {
-    return sprite[JUMP_THRESHOLDS][MIN];
-}
-
-function getUpperJumpThreshold(sprite) {
-    return sprite[JUMP_THRESHOLDS][MAX];
-}
-
-function isAttacking(sprite) {
-    return sprite[ACTION] === ATTACK;
-}
-
-function setDeathDelay(sprite, delay) {
-    sprite[DEATH][DELAY] = delay;
-}
-
-function getOpponents() {
-    return SCREENS[getScreenNumber()][OPPONENTS];
-}
-
 /**
  * Resets the game after a barbarian death or the game is completed.
  */
 function resetGame() {
     renderAtRestFrame(BARBARIAN_SPRITE);
-    setAction(BARBARIAN_SPRITE, STOP);
-    setDirection(BARBARIAN_SPRITE, RIGHT);
+    resetSpritePositions();
 
     if (getLives() < 1) {
-        setLives(3);
-        setScreenNumber(0);
-        for (const sprite of SPRITES) {
-            setDisplay(sprite[SPRITE], getResetDisplay(sprite));
-            setLeft(sprite, getResetLeft(sprite));
-            setSpriteBottom(sprite, getResetBottom(sprite));
-            setStatus(sprite, getResetStatus(sprite));
-        }
-
-        setBackgroundPosition(BACKDROP, 0);
-        show(LIFE1);
-        show(LIFE2);
-        hideAllMessages();
+        resetGameOver();
     } else {
-        setStatus(BARBARIAN_SPRITE, ALIVE);
-        hide($('.life' + getLives()));
-        hide(CONTROL_MESSAGE);
+        resetGameContinue();
     }
-    resetArtifacts();
+    resetTrapDoors();
+    initializeScreen();
 }
 
 /**
- * Resets artifacts (bridge etc) when the game is restarted.
+ * Resets settings after game is over.
  */
-function resetArtifacts() {
+function resetGameOver() {
+    setLives(3);
+    setScreenNumber(0);
+    setBackgroundPosition(BACKDROP, 0);
+    show(LIFE1);
+    show(LIFE2);
+    hideAllMessages();
+}
+
+/**
+ * Resets settings after barbarian death when he has more lives.
+ */
+function resetGameContinue() {
+    hide($('.life' + getLives()));
+    hide(CONTROL_MESSAGE);
+}
+
+/**
+ * Reset all the sprite positions.
+ */
+function resetSpritePositions() {
+    let spritesOnScreen = SCREENS[getScreenNumber()][OPPONENTS];
+    for (const sprite of SPRITES) {
+        let isSpriteOnScreen = $.inArray(sprite, spritesOnScreen) !== -1;
+        setDisplay(sprite[SPRITE], isSpriteOnScreen ? 'block' : 'none');
+        setAction(sprite, getResetAction(sprite));
+        setDirection(sprite, getResetDirection(sprite));
+        setLeft(sprite, getResetLeft(sprite));
+        setSpriteBottom(sprite, getResetBottom(sprite));
+        setStatus(sprite, getResetStatus(sprite));
+    }
+}
+
+/**
+ * Resets trap doors when the game is restarted.
+ */
+function resetTrapDoors() {
+    console.log('reset trap doors');
     for (let screenNumber of Object.keys(SCREENS)) {
         if (parseInt(screenNumber) === getScreenNumber()) {
             continue;
         }
-        let artifacts = SCREENS[screenNumber][ARTIFACTS];
-        for (let artifact of artifacts) {
-            artifact[ELEMENT].css('display', artifact[RESET][DISPLAY]);
-            artifact[ELEMENT].css('bottom', artifact[RESET][BOTTOM]);
+        let trapDoors = SCREENS[screenNumber][TRAP_DOORS];
+        for (let trapDoor of trapDoors) {
+            trapDoor[ELEMENT].css('display', 'none');
+            trapDoor[ELEMENT].css('bottom', trapDoor[RESET][BOTTOM]);
         }
     }
 }
@@ -116,9 +111,11 @@ function resetArtifacts() {
  * Initializes the current screen
  */
 function initializeScreen() {
-    let artifacts = SCREENS[getScreenNumber()][ARTIFACTS];
-    for (let artifact of artifacts) {
-        show(artifact[ELEMENT]);
+    console.log('initialize screen');
+    let trapDoors = SCREENS[getScreenNumber()][TRAP_DOORS];
+    for (let trapDoor of trapDoors) {
+        show(trapDoor[ELEMENT]);
+        setBottom(trapDoor[ELEMENT], trapDoor[RESET][BOTTOM]);
     }
 
     let monsterSprites = filterBarbarianSprite(SCREENS[getScreenNumber()][OPPONENTS]);

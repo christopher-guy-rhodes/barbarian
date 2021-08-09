@@ -78,6 +78,25 @@ async function animateSprite(sprite, requestedAction, requestedDirection, times)
 }
 
 /**
+ * Handles trap door animation.
+ * @param sprite
+ */
+function animateTrapDoor(sprite) {
+    if (!isMonster(sprite)) {
+        let trapDoors = SCREENS[getScreenNumber()][TRAP_DOORS];
+        for (let trapDoor of trapDoors) {
+            if (isElementVisible(trapDoor[ELEMENT]) && getLeft(sprite) >= trapDoor[TRIGGER][LEFT]) {
+                trapDoor[ELEMENT].animate({bottom: '0px'}, trapDoor[TRIGGER][TIME], 'linear');
+
+                setTimeout(function() {
+                    trapDoor[ELEMENT].css('display', 'none');
+                }, trapDoor[TRIGGER][TIME]);
+            }
+        }
+    }
+}
+
+/**
  * Moves from the current position to the boundary
  * @param sprite the sprite to move to the boundary
  * @param action the sprite action
@@ -223,24 +242,24 @@ function startMonsterAttacks(unpausing = false) {
             showSprite(monsterSprite);
             setStatus(monsterSprite, ALIVE);
             playSound(getSound(monsterSprite));
-            performAction(monsterSprite, getDefaultAction(monsterSprite), 0);
+            performAction(monsterSprite, getResetAction(monsterSprite), 0);
         }
     }
 }
 
 /**
- * Hides the opponents and artifacts on the current screen
+ * Hides the opponents and trap doors on the current screen
  */
-function hideOpponentsAndArtifacts() {
+function hideOpponentsAndTrapDoors() {
     let opponents = filterBarbarianSprite(getOpponents());
     for (let opponent of opponents) {
         hideSprite(opponent);
         hideSprite(opponent[DEATH]);
     }
 
-    let artifacts = SCREENS[getScreenNumber()][ARTIFACTS];
-    if (artifacts !== undefined) {
-        for (let artifact of artifacts) {
+    let trapDoors = SCREENS[getScreenNumber()][TRAP_DOORS];
+    if (trapDoors !== undefined) {
+        for (let artifact of trapDoors) {
             hide(artifact[ELEMENT]);
         }
     }
@@ -263,13 +282,13 @@ function handleBoundary(sprite) {
     }
 
     if (isLeftBoundary && getScreenNumber() > 0) {
-        hideOpponentsAndArtifacts();
+        hideOpponentsAndTrapDoors();
         setScreenNumber(getScreenNumber() - 1);
         advanceBackdrop(sprite, RIGHT)
             .then(function() {}, error => handlePromiseError(error));
     } else if (isRightBoundary) {
         if (SCREENS[getScreenNumber()] !== undefined && areAllMonstersDeadOnScreen()) {
-            hideOpponentsAndArtifacts();
+            hideOpponentsAndTrapDoors();
             setScreenNumber(getScreenNumber()+1);
             if (SCREENS[getScreenNumber()] !== undefined) {
                 advanceBackdrop(sprite, LEFT)

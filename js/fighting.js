@@ -13,7 +13,6 @@ function isSuccessfulAttack(sprite, opponent) {
     }
 
     let heightDiff = getBottom(sprite) - getBottom(opponent);
-    console.log('heightDiff between ' + sprite[NAME] + ' and ' +  opponent[NAME] + 'is ' + heightDiff);
     let distance = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
     return distance >= thresholds[MIN] && distance <= thresholds[MAX] && heightDiff === 0;
 }

@@ -135,3 +135,13 @@ const TOGGLE_MESSAGE_TIME = 3000;
 const ATTACK_PROXIMITY = 320;
 const OBSTACLE_CLOSE_PROXIMITY = 50;
 
+const SOUNDS = {
+    THEME_SONG : sound ? new Audio('/sounds/theme.mp3') : undefined,
+    FALL_SOUND : new Audio('/sounds/fall.mp3'),
+    GRUNT_SOUND : new Audio('/sounds/grunt.mp3'),
+    GROWL_SOUND : new Audio('/sounds/growl.mp3'),
+    FIRE_SOUND : new Audio('/sounds/fire.mp3'),
+    MONSTER_SOUND : new Audio('/sounds/monster.mp3'),
+
+};
+

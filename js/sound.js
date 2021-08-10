@@ -1,30 +1,29 @@
-var SOUNDS = {
-    THEME_SONG : sound ? new Audio('/sounds/theme.mp3') : undefined,
-    FALL_SOUND : new Audio('/sounds/fall.mp3'),
-    GRUNT_SOUND : new Audio('/sounds/grunt.mp3'),
-    GROWL_SOUND : new Audio('/sounds/growl.mp3'),
-    FIRE_SOUND : new Audio('/sounds/fire.mp3'),
-    MONSTER_SOUND : new Audio('/sounds/monster.mp3'),
-
-};
-
-
-
-function startThemeSong() {
-    if (isSound() && !isPaused() && SOUNDS[THEME_SONG] !==undefined) {
+/**
+ * Plays the theme song if sound is enabled and the game is not paused.
+ */
+function playThemeSong() {
+    // Theme song can be undefined because there is a problem where it won't play when running the server locally
+    if (isSound() && !isPaused() && SOUNDS[THEME_SONG] !== undefined) {
         SOUNDS[THEME_SONG].play();
     }
 }
 
+/**
+ * Plays the specified sound if sound is enabled .
+ * @param sound the sound to play
+ */
 function playSound(sound) {
     if (isSound()) {
         SOUNDS[sound].play();
     }
 }
 
-function setSoundsPauseState(state) {
+/**
+ * Pauses all sounds if the game is paused, start the theme song if if the game is not paused.
+ */
+function setSoundsPauseState() {
     if (isSound()) {
-        if (state) {
+        if (isPaused()) {
             for (let sound of Object.values(SOUNDS)) {
                 sound.pause();
             }
@@ -34,18 +33,27 @@ function setSoundsPauseState(state) {
     }
 }
 
+/**
+ * Play the grunt sound if sound is enabled.
+ */
 function playGruntSound() {
     if (isSound()) {
         SOUNDS[GRUNT_SOUND].play();
     }
 }
 
+/**
+ * Play the growl sound if sound is enabled.
+ */
 function playGrowlSound() {
     if (isSound()) {
         SOUNDS[GROWL_SOUND].play();
     }
 }
 
+/**
+ * Play the fire sound if sound is enabled.
+ */
 function playFireSound() {
     if (isSound()) {
         SOUNDS[FIRE_SOUND].play();
@@ -55,6 +63,9 @@ function playFireSound() {
     }
 }
 
+/**
+ * Play the fall sound if sound is enabled.
+ */
 function playFallSound() {
     if (isSound()) {
         SOUNDS[FALL_SOUND].play();

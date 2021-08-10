@@ -94,7 +94,6 @@ function resetSpritePositions() {
  * Resets trap doors when the game is restarted.
  */
 function resetTrapDoors() {
-    console.log('reset trap doors');
     for (let screenNumber of Object.keys(SCREENS)) {
         if (parseInt(screenNumber) === getScreenNumber()) {
             continue;
@@ -111,7 +110,6 @@ function resetTrapDoors() {
  * Initializes the current screen
  */
 function initializeScreen() {
-    console.log('initialize screen');
     let trapDoors = SCREENS[getScreenNumber()][TRAP_DOORS];
     for (let trapDoor of trapDoors) {
         show(trapDoor[ELEMENT]);

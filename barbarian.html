@@ -40,7 +40,7 @@ $(document).ready(function(){
     let keypressTime;
     let lastKeypressTime;
 
-    renderSpriteFrame(MONSTER_SPRITE, WALK, getDirection(MONSTER_SPRITE), 0, getHeight(MONSTER_SPRITE));
+    renderSpriteFrame(MONSTER_SPRITE, WALK, getProperty(MONSTER_SPRITE, DIRECTION), 0, getSpriteHeight(MONSTER_SPRITE));
 
     $(document).keydown(function(e) {
 
@@ -48,22 +48,22 @@ $(document).ready(function(){
 
         keypressTime = new Date().getTime();
 
-        let isInterruptable = getAction(BARBARIAN_SPRITE) === JUMP ||
-                              getAction(BARBARIAN_SPRITE) === ATTACK ||
-                              getAction(BARBARIAN_SPRITE) == FALL;
-        if (!shouldThrottle(lastKeypressTime) && !isInterruptable && !isActionsLocked()) {
+        let isInterruptable = getProperty(BARBARIAN_SPRITE, ACTION) === JUMP ||
+                              getProperty(BARBARIAN_SPRITE, ACTION) === ATTACK ||
+                              getProperty(BARBARIAN_SPRITE, ACTION) == FALL;
+        if (!shouldThrottle(lastKeypressTime) && !isInterruptable && !actionsLocked) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
 
             if (!pause || e.which === KEYPRESS[KP_PAUSE]) {
                 switch (e.which) {
                     case KEYPRESS[KP_CONTROLS]:
-                        if(isDead(BARBARIAN_SPRITE)) {
+                        if(compareProperty(BARBARIAN_SPRITE, STATUS, DEAD)) {
                             showMessage(CONTROL_MESSAGE);
                         }
                         break;
                     case KEYPRESS[KP_MAIN]:
-                        if(isDead(BARBARIAN_SPRITE)) {
+                        if(compareProperty(BARBARIAN_SPRITE, STATUS, DEAD)) {
                             showMessage(START_MESSAGE);
                         }
                         break;

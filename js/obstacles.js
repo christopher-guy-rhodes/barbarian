@@ -5,8 +5,8 @@
  * @returns {boolean} true if the sprite avoided the obstacle, false otherwise
  */
 function hasEvadedObstacleWithJump(sprite, obstacle) {
-    return getAction(sprite) === JUMP && getLeft(sprite) > getLowerJumpThreshold(obstacle) &&
-        getLeft(sprite) < getUpperJumpThreshold(obstacle);
+    return getProperty(sprite, ACTION) === JUMP && getSpriteLeft(sprite) > getProperty(obstacle, JUMP_THRESHOLDS, MIN) &&
+        getSpriteLeft(sprite) < getProperty(obstacle, JUMP_THRESHOLDS, MAX);
 }
 
 /**
@@ -16,7 +16,7 @@ function hasEvadedObstacleWithJump(sprite, obstacle) {
  * @returns {boolean} true if the obstacle is lower than the sprite, false otherwise
  */
 function isDownhill(sprite, obstacle) {
-    return getObstacleHeight(obstacle) <= getBottom(sprite) && getObstacleType(obstacle) !== PIT;
+    return getObstacleHeight(obstacle) <= getSpriteBottom(sprite) && getObstacleType(obstacle) !== PIT;
 }
 
 /**
@@ -47,25 +47,16 @@ function getObstacleType(obstacle) {
 }
 
 /**
- * Moves the sprite the the specified height.
- * @param sprite the sprite to move
- * @param height the height to move the sprite too
- */
-function moveSpriteToHeight(sprite, height) {
-    setSpriteBottom(sprite, height);
-}
-
-/**
  * Determines if the sprite is past the obstacle boundary.
  * @param sprite the sprite
  * @param obstacle the obstacle
  * @returns {boolean} true if the sprite is past the boundary, false otherwise
  */
 function isPastBoundary(sprite, obstacle) {
-    if (isMovingRight(sprite)) {
-        return getLeft(sprite) >= obstacle[LEFT];
+    if (compareProperty(sprite, DIRECTION, RIGHT)) {
+        return getSpriteLeft(sprite) >= obstacle[LEFT];
     } else {
-        return getLeft(sprite) <= obstacle[LEFT];
+        return getSpriteLeft(sprite) <= obstacle[LEFT];
     }
     return false;
 }
@@ -77,7 +68,7 @@ function isPastBoundary(sprite, obstacle) {
  * @returns {boolean} true if the sprite is close to the obstacle, false otherwise
  */
 function isObstacleClose(sprite, obstacle) {
-    return Math.abs(getObstacleLeft(obstacle) - getLeft(sprite)) <= OBSTACLE_CLOSE_PROXIMITY;
+    return Math.abs(getObstacleLeft(obstacle) - getSpriteLeft(sprite)) <= OBSTACLE_CLOSE_PROXIMITY;
 }
 
 /**
@@ -86,7 +77,7 @@ function isObstacleClose(sprite, obstacle) {
  * @returns {[]} the list of obstacles
  */
 function getObstacles(sprite) {
-    let obstacles = SCREENS[getScreenNumber()][OBSTACLES][sprite[DIRECTION]];
+    let obstacles = SCREENS[screenNumber][OBSTACLES][sprite[DIRECTION]];
 
     let result = [];
     for (let obstacle of obstacles) {
@@ -105,7 +96,7 @@ function getObstacles(sprite) {
  */
 function handleObstacles(sprite) {
 
-    if (getAction(sprite) === FALL) {
+    if (getProperty(sprite, ACTION) === FALL) {
         // Don't want to handle obstacles while falling to prevent infinite recursion in the animateSprite method
         return false;
     }
@@ -115,22 +106,22 @@ function handleObstacles(sprite) {
     for (const obstacle of getObstacles(sprite)) {
         if (isPastBoundary(sprite, obstacle)) {
             if (isMonster(sprite) || isDownhill(sprite, obstacle) || hasEvadedObstacleWithJump(sprite, obstacle)) {
-                moveSpriteToHeight(sprite, obstacle[HEIGHT]);
+                setCss(getProperty(sprite, SPRITE).css('bottom', obstacle[HEIGHT] + 'px'));
             } else {
-                stopSpriteMovement(sprite);
+                getProperty(sprite, SPRITE).stop();
 
-                let action = getFailAction(obstacle);
+                let action = getProperty(obstacle, FAIL_ACTION);
 
                 if (action === FALL) {
                     playFallSound();
                     setTimeout(function () {
                         barbarianDeath(sprite, FALL);
-                    },  getDeathDelay(sprite) * (1 / getFps(sprite, action)));
+                    },  getProperty(sprite, DEATH, DELAY) * (1 / getProperty(sprite, FPS, action)));
                 }
 
                 performAction(sprite, action);
                 // Allow barbarian to attack at boundary
-                if (getAction(sprite) !== ATTACK || getAction(sprite) !== JUMP) {
+                if (getProperty(sprite, ACTION) !== ATTACK || getProperty(sprite, ACTION) !== JUMP) {
                     return true;
                 }
             }
@@ -139,13 +130,3 @@ function handleObstacles(sprite) {
 
     return false;
 }
-
-/**
- * Gets the fail action for a particular obstacle.
- * @param obstacle the obstacle to get the fail action for
- * @returns {String} the fail action
- */
-function getFailAction(obstacle) {
-    return obstacle[FAIL_ACTION];
-}
-

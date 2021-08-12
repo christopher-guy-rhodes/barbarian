@@ -12,7 +12,7 @@ function isSuccessfulAttack(sprite, opponent) {
         thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
     }
 
-    let heightDiff = getBottom(sprite) - getBottom(opponent);
+    let heightDiff = getSpriteBottom(sprite) - getSpriteBottom(opponent);
     let distance = Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
     return distance >= thresholds[MIN] && distance <= thresholds[MAX] && heightDiff === 0;
 }
@@ -24,8 +24,8 @@ function isSuccessfulAttack(sprite, opponent) {
  * @returns {boolean} returns true if the monster attacked, false otherwise
  */
 function launchMonsterAttack(sprite, opponent) {
-    if (isMonster(sprite) && getAction(sprite) !== ATTACK) {
-        let proximity = Math.abs(getProximity(sprite, opponent));
+    if (isMonster(sprite) && getProperty(sprite, ACTION) !== ATTACK) {
+        let proximity = getProximity(sprite, opponent);
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
             performAction(sprite, ATTACK, 0);
             return true;
@@ -42,7 +42,7 @@ function launchMonsterAttack(sprite, opponent) {
  * @returns {number} the number of pixels apart.
  */
 function getProximity(sprite, opponent) {
-    return sprite[SPRITE].offset().left - opponent[SPRITE].offset().left;
+    return Math.abs(sprite[SPRITE].offset().left - opponent[SPRITE].offset().left);
 }
 
 /**
@@ -52,10 +52,10 @@ function getProximity(sprite, opponent) {
  * @returns {boolean} true if the opponent avoided the attack, false otherwise
  */
 function hasJumpEvaded(sprite, opponent) {
-    let distance = Math.abs(getLeft(sprite) - getLeft(opponent));
+    let distance = Math.abs(getSpriteLeft(sprite) - getSpriteLeft(opponent));
 
-    return getAction(opponent) === JUMP  && distance < getUpperJumpThreshold(sprite) &&
-        distance > getLowerJumpThreshold(sprite);
+    return getProperty(opponent, ACTION) === JUMP  && distance < getProperty(sprite, JUMP_THRESHOLDS, MAX) &&
+        distance > getProperty(sprite, JUMP_THRESHOLDS, MIN);
 }
 
 /**
@@ -65,7 +65,7 @@ function hasJumpEvaded(sprite, opponent) {
  * @returns {boolean|boolean} true if they are both alive, false otherwise
  */
 function areBothAlive(sprite, opponent) {
-    return !isDead(opponent) && !isDead(sprite);
+    return !compareProperty(opponent, STATUS, DEAD) && !compareProperty(sprite, STATUS, DEAD);
 }
 
 /**
@@ -75,7 +75,7 @@ function areBothAlive(sprite, opponent) {
  * @returns {boolean|boolean} true if the sprite defeated the opponent, false otherwise
  */
 function opponentDefeated(sprite, opponent) {
-    return isAttacking(sprite) &&
+    return compareProperty(sprite, ACTION, ATTACK) &&
         !hasJumpEvaded(sprite, opponent) &&
         areBothAlive(sprite, opponent) &&
         isSuccessfulAttack(sprite, opponent);
@@ -104,7 +104,7 @@ function areAllMonstersDeadOnScreen() {
  * @returns {boolean} true if the opponent launched an attack, false otherwise
  */
 function handleFightSequence(sprite) {
-    let opponentsInProximity = getSpritesInProximity(sprite, getOpponents(), sprite[SPRITE].width()*1.5);
+    let opponentsInProximity = getOpponentsInProximity(sprite, sprite[SPRITE].width()*1.5);
 
     for (let i = 0; i < opponentsInProximity.length; i++) {
         let opponent = opponentsInProximity[i];
@@ -112,7 +112,7 @@ function handleFightSequence(sprite) {
             return true;
         }
         if (opponentDefeated(sprite, opponent)) {
-            setDeathDelay(opponent, getRelativeDeathDelay(sprite, opponent));
+            setProperty(opponent, DEATH, DELAY, getRelativeDeathDelay(sprite, opponent));
             death(opponent);
         }
     }
@@ -138,16 +138,16 @@ function death(sprite) {
  * @param action the action the barbarian was taking when he died
  */
 function barbarianDeath(sprite, action) {
-    setDeathTime(sprite, new Date().getTime());
-    setStatus(sprite, DEAD);
+    setProperty(sprite, DEATH, TIME, new Date().getTime());
+    setProperty(sprite, STATUS, DEAD);
     if (action !== FALL) {
         playGruntSound();
     } else {
         hideSprite(BARBARIAN_SPRITE)
     }
     showMessage(START_MESSAGE);
-    setLives(getLives() - 1);
-    if (getLives() < 1) {
+    lives = lives - 1;
+    if (lives < 1) {
         showMessage(GAME_OVER_MESSAGE);
     }
 }
@@ -157,8 +157,8 @@ function barbarianDeath(sprite, action) {
  * @param sprite the monster sprite
  */
 function monsterDeath(sprite) {
-    setDeathTime(sprite, new Date().getTime());
-    setStatus(sprite, DEAD);
+    setProperty(sprite, DEATH, TIME, new Date().getTime());
+    setProperty(sprite, STATUS, DEAD);
     playFireSound();
 }
 
@@ -167,19 +167,19 @@ function monsterDeath(sprite) {
  * @param sprite the to highlight
  */
 function highlightAttackRange(sprite) {
-    if (!isHints() || isMonster(sprite)) {
+    if (!hints || isMonster(sprite)) {
         return;
     }
     let opponents = filterBarbarianSprite(getOpponents());
     for (let opponent of opponents) {
         let thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
 
-        let distance = Math.abs(getLeft(sprite) - getLeft(opponent));
+        let distance = Math.abs(getSpriteLeft(sprite) - getSpriteLeft(opponent));
 
-        let shoudHighlight = !isDead(sprite) &&
+        let shoudHighlight = !compareProperty(sprite, STATUS, DEAD) &&
             (distance >= thresholds[MIN] - HIGHLIGHT_BUFFER) &&
             (distance <= thresholds[MAX] + HIGHLIGHT_BUFFER);
-        setHighlight(opponent, shoudHighlight);
+        setSpriteHighlight(opponent, shoudHighlight);
     }
 }
 
@@ -190,12 +190,38 @@ function highlightAttackRange(sprite) {
  * @returns {number} the resulting delay in milliseconds
  */
 function getRelativeDeathDelay(sprite, opponent) {
-    const separation = Math.abs(getLeft(sprite) - getLeft(opponent));
+    const separation = Math.abs(getSpriteLeft(sprite) - getSpriteLeft(opponent));
 
-    const relativePps = getDirection(sprite) === getDirection(opponent)
-        ? getPixelsPerSecond(opponent, getAction(sprite)) - getPixelsPerSecond(sprite, getAction(sprite))
-        : getPixelsPerSecond(opponent, getAction(sprite)) + getPixelsPerSecond(sprite, getAction(sprite));
+    const relativePps = getProperty(sprite, DIRECTION) === getProperty(opponent, DIRECTION)
+        ? getProperty(opponent, PIXELS_PER_SECOND, getProperty(sprite, ACTION)) - getProperty(sprite, PIXELS_PER_SECOND, getProperty(sprite, ACTION))
+        : getProperty(opponent, PIXELS_PER_SECOND, getProperty(sprite, ACTION)) + getProperty(sprite, PIXELS_PER_SECOND, getProperty(sprite, ACTION));
     return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * MILLISECONDS_PER_SECOND;
+}
+
+/**
+ * Get the opponents in the proximity of the sprite
+ * @param sprite the sprite
+ * @param proximityThreshold the proximity threshold in pixels
+ * @returns {[]}
+ */
+function getOpponentsInProximity(sprite, proximityThreshold) {
+    let attackers = [];
+    let opponents = getOpponents();
+    for (let opponent of opponents) {
+        let proximity = getProximity(sprite, opponent);
+        if (proximity > 0 && proximity < proximityThreshold) {
+            attackers.push(opponent);
+        }
+    }
+    return attackers;
+}
+
+function getOpponents() {
+    return SCREENS[screenNumber][OPPONENTS];
+}
+
+function isSpriteCurrentOpponent(sprite) {
+    return SCREENS[screenNumber][OPPONENTS].includes(sprite);
 }
 
 

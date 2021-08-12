@@ -1,15 +1,3 @@
-var SPRITE_FPS = 5;
-var FALLING_PIXELS_PER_SECOND = 300;
-var BOG_MONSTER_SPRITE_FPS = 5;
-var BOG_MONSTER_PIXELS_PER_SECOND = 150;
-var DOG_SPRITE_FPS = 5;
-var DOG_PIXELS_PER_SECOND = 150;
-var BARBARIAN_SPRITE_PIXELS_PER_SECOND = 150;
-var STOP_RIGHT_POSITION = 0;
-var STOP_LEFT_POSITION = 6;
-var STOP_RIGHT_HEIGHT_OFFSET = 0;
-var STOP_LEFT_HEIGHT_OFFSET = 1;
-
 BARBARIAN_SPRITE = {
     SPRITE : $(".barbarian"),
     NAME : BARBARIAN_SPRITE_NAME,
@@ -81,7 +69,7 @@ BARBARIAN_SPRITE = {
     DEATH : {
         SPRITE : $(".barbarian"),
         DELAY : 1800,
-        DEATH_TIME: 0,
+        TIME: 0,
         FRAMES : {
             DEATH: {
                 RIGHT: {
@@ -102,12 +90,13 @@ BARBARIAN_SPRITE = {
         RIGHT_HEIGHT : STOP_RIGHT_HEIGHT_OFFSET,
         LEFT_HEIGHT: STOP_LEFT_HEIGHT_OFFSET
     },
-    RESET_ACTION : STOP,
-    RESET_DIRECTION : RIGHT,
-    RESET_LEFT: 0,
-    RESET_BOTTOM: 12,
-    RESET_DISPLAY: 'block',
-    RESET_STATUS: ALIVE
+    RESET : {
+        ACTION : STOP,
+        DIRECTION : RIGHT,
+        LEFT: 0,
+        BOTTOM: 12,
+        STATUS: ALIVE
+    }
 };
 
 DOG_SPRITE = {
@@ -181,7 +170,7 @@ DOG_SPRITE = {
     DEATH : {
         SPRITE : $(".death"),
         DELAY : 1800,
-        DEATH_TIME: 0,
+        TIME: 0,
         FRAMES : {
             DEATH : {
                 RIGHT: {
@@ -203,12 +192,13 @@ DOG_SPRITE = {
         LEFT_HEIGHT: 1
     },
     SOUND: GROWL_SOUND,
-    RESET_DIRECTION : LEFT,
-    RESET_ACTION: SIT,
-    RESET_LEFT: 850,
-    RESET_BOTTOM: 160,
-    RESET_DISPLAY: 'none',
-    RESET_STATUS: DEAD
+    RESET : {
+        ACTION : SIT,
+        DIRECTION: LEFT,
+        LEFT: 850,
+        BOTTOM: 160,
+        STATUS: DEAD
+    }
 };
 
 MONSTER_SPRITE = {
@@ -270,7 +260,7 @@ MONSTER_SPRITE = {
     DEATH : {
         SPRITE : $(".death"),
         DELAY : 1800,
-        DEATH_TIME: 0,
+        TIME: 0,
         FRAMES : {
             DEATH : {
                 RIGHT: {
@@ -286,12 +276,13 @@ MONSTER_SPRITE = {
         },
     },
     SOUND: MONSTER_SOUND,
-    RESET_ACTION: WALK,
-    RESET_DIRECTION : LEFT,
-    RESET_LEFT: 850,
-    RESET_BOTTOM: 12,
-    RESET_DISPLAY: 'block',
-    RESET_STATUS: DEAD
+    RESET : {
+        ACTION : WALK,
+        DIRECTION : LEFT,
+        LEFT: 850,
+        BOTTOM: 12,
+        STATUS: DEAD
+    }
 };
 
 SPRITES = [BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE];
@@ -331,232 +322,34 @@ SCREENS = {
     }
 };
 
-function getSpritesInProximity(sprite, opponents, proximityThreshold) {
-    var attackers = [];
-    for (var i = 0; i < opponents.length; i++) {
-        var opponent = opponents[i];
-        proximity = getProximity(sprite, opponent);
-        if (sprite[DIRECTION] == 'LEFT') {
-            if (proximity > 0 && proximity < proximityThreshold) {
-                attackers.push(opponent);
-            }
-        } else {
-            if (proximity < 0 && proximity > -1*proximityThreshold ) {
-                attackers.push(opponent);
-            }
-        }
-    }
-    return attackers;
-}
-
-function getLives() {
-    return lives;
-}
-
-function setLives(number) {
-    lives = number;
-}
-
-function getLowerJumpThreshold(sprite) {
-    return sprite[JUMP_THRESHOLDS][MIN];
-}
-
-function getUpperJumpThreshold(sprite) {
-    return sprite[JUMP_THRESHOLDS][MAX];
-}
-
-function isAttacking(sprite) {
-    return sprite[ACTION] === ATTACK;
-}
-
-function setDeathDelay(sprite, delay) {
-    sprite[DEATH][DELAY] = delay;
-}
-
-function getOpponents() {
-    return SCREENS[getScreenNumber()][OPPONENTS];
-}
-
 function isMonster(sprite) {
     return sprite[NAME] !== BARBARIAN_SPRITE_NAME;
 }
 
-function isDead(sprite) {
-    return sprite[STATUS] === DEAD;
-}
-
-function isSpriteCurrentOpponent(sprite) {
-    return SCREENS[screenNumber][OPPONENTS].includes(sprite);
-}
-
-function isElementVisible(element) {
-    return element.css('display') === 'block';
-}
-
-function setDisplay(sprite, display) {
-    sprite.css('display', display);
-}
-
-function show(sprite) {
-    sprite.css('display', 'block');
-}
-
-function showSprite(sprite) {
-    show(getElement(sprite));
-}
-
-function hide(sprite) {
-    sprite.css('display', 'none');
-}
-
 function hideSprite(sprite) {
-    hide(getElement(sprite));
+    hide(getProperty(sprite, SPRITE));
 }
 
-function setBottom(sprite, bottom) {
-    sprite.css('bottom', bottom + 'px')
+function setSpriteLeft(sprite, left) {
+    getProperty(sprite, SPRITE).css('left', left + 'px')
 }
 
-function setSpriteBottom(sprite, bottom) {
-    setBottom(getElement(sprite), bottom);
+function setSpriteHighlight(sprite, state) {
+    getProperty(sprite, SPRITE).css('filter','brightness(' + (state ? '300%' : '100%') + ')');
 }
 
-function setLeft(sprite, left) {
-    getElement(sprite).css('left', left + 'px')
+function getSpriteWidth(sprite) {
+    return getProperty(sprite. SPRITE).width();
 }
 
-function getStatus(sprite) {
-    return sprite[STATUS];
+function getSpriteHeight(sprite) {
+    return getProperty(sprite, SPRITE).height();
 }
 
-function setStatus(sprite, status) {
-    sprite[STATUS] = status;
+function getSpriteLeft(sprite) {
+    return getProperty(sprite, SPRITE).offset().left;
 }
 
-function getAction(sprite) {
-    return sprite[ACTION];
-}
-
-function getSound(sprite) {
-    return sprite[SOUND];
-}
-
-function setAction(sprite, action) {
-    sprite[ACTION] = action;
-}
-
-function getDirection(sprite) {
-    return sprite[DIRECTION];
-}
-
-function setDirection(sprite, direction) {
-    sprite[DIRECTION] = direction;
-}
-
-function isMovingRight(sprite) {
-    return getDirection(sprite) === RIGHT;
-}
-
-function setBackgroundPosition(sprite, backgroundPosition) {
-    sprite.css('background-position', backgroundPosition + 'px')
-}
-
-function stopSpriteMovement(sprite) {
-    getElement(sprite).stop();
-}
-
-function getName(sprite) {
-    return sprite[NAME];
-}
-
-function setHighlight(sprite, state) {
-    getElement(sprite).css('filter','brightness(' + (state ? '300%' : '100%') + ')');
-}
-
-function getPixelsPerSecond(sprite, action) {
-    return sprite[PIXELS_PER_SECOND][action];
-}
-
-function getRightStopPosition(sprite) {
-    return sprite[STOP_POSITION][RIGHT];
-}
-
-function getLeftStopPosition(sprite) {
-    return sprite[STOP_POSITION][LEFT];
-}
-
-function getWidth(sprite) {
-    return getElement(sprite).width();
-}
-
-function getHeight(sprite) {
-    return getElement(sprite).height();
-}
-
-function getRightHeightStopPosition(sprite) {
-    return sprite[STOP_POSITION][RIGHT_HEIGHT];
-}
-
-function getLeftHeightStopPosition(sprite) {
-    return sprite[STOP_POSITION][LEFT_HEIGHT];
-}
-
-function getLeft(sprite) {
-    return getElement(sprite).offset().left;
-}
-
-function getBottom(sprite) {
-    return stripPxSuffix(getElement(sprite).css('bottom'));
-}
-
-function setSpriteBackgroundPosition(sprite, x, y) {
-    getElement(sprite).css('background-position', x + 'px ' + y + 'px');
-}
-
-function setDeathTime(sprite, time) {
-    sprite[DEATH][DEATH_TIME] = time;
-}
-
-function getDeathTime(sprite) {
-    return sprite[DEATH][DEATH_TIME];
-}
-
-function getResetAction(sprite) {
-    return sprite[RESET_ACTION];
-}
-
-function getResetDirection(sprite) {
-    return sprite[RESET_DIRECTION];
-}
-
-function getResetLeft(sprite) {
-    return sprite[RESET_LEFT];
-}
-
-function getResetBottom(sprite) {
-    return sprite[RESET_BOTTOM];
-}
-
-function getResetStatus(sprite) {
-    return sprite[RESET_STATUS];
-}
-
-function getFrames(sprite, requestedAction, direction) {
-    return sprite[FRAMES][requestedAction][direction][FRAMES];
-}
-
-function getDeathDelay(sprite) {
-    return sprite[DEATH][DELAY];
-}
-
-function getFps(sprite, action) {
-    return sprite[FPS][action];
-}
-
-function getElement(sprite) {
-    return sprite[SPRITE];
-}
-
-function isWalking(sprite) {
-    return getAction(sprite) === WALK;
+function getSpriteBottom(sprite) {
+    return stripPxSuffix(getProperty(sprite, SPRITE).css('bottom'));
 }

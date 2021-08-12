@@ -3,7 +3,7 @@
  */
 function playThemeSong() {
     // Theme song can be undefined because there is a problem where it won't play when running the server locally
-    if (isSound() && !isPaused() && SOUNDS[THEME_SONG] !== undefined) {
+    if (sound && !pause && SOUNDS[THEME_SONG] !== undefined) {
         SOUNDS[THEME_SONG].play();
     }
 }
@@ -12,9 +12,9 @@ function playThemeSong() {
  * Plays the specified sound if sound is enabled .
  * @param sound the sound to play
  */
-function playSound(sound) {
-    if (isSound()) {
-        SOUNDS[sound].play();
+function playSound(snd) {
+    if (sound) {
+        SOUNDS[snd].play();
     }
 }
 
@@ -22,8 +22,8 @@ function playSound(sound) {
  * Pauses all sounds if the game is paused, start the theme song if if the game is not paused.
  */
 function setSoundsPauseState() {
-    if (isSound()) {
-        if (isPaused()) {
+    if (sound) {
+        if (pause) {
             for (let sound of Object.values(SOUNDS)) {
                 sound.pause();
             }
@@ -37,7 +37,7 @@ function setSoundsPauseState() {
  * Play the grunt sound if sound is enabled.
  */
 function playGruntSound() {
-    if (isSound()) {
+    if (sound) {
         SOUNDS[GRUNT_SOUND].play();
     }
 }
@@ -46,7 +46,7 @@ function playGruntSound() {
  * Play the growl sound if sound is enabled.
  */
 function playGrowlSound() {
-    if (isSound()) {
+    if (sound) {
         SOUNDS[GROWL_SOUND].play();
     }
 }
@@ -55,7 +55,7 @@ function playGrowlSound() {
  * Play the fire sound if sound is enabled.
  */
 function playFireSound() {
-    if (isSound()) {
+    if (sound) {
         SOUNDS[FIRE_SOUND].play();
         setTimeout(function () {
             SOUNDS[FIRE_SOUND].pause();
@@ -67,7 +67,7 @@ function playFireSound() {
  * Play the fall sound if sound is enabled.
  */
 function playFallSound() {
-    if (isSound()) {
+    if (sound) {
         SOUNDS[FALL_SOUND].play();
     }
 }

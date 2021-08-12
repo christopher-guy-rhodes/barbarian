@@ -1,56 +1,16 @@
-function isActionsLocked() {
-    return actionsLocked;
-}
-
-function setActionsLocked(value) {
-    actionsLocked = value;
-}
-
-function isHints() {
-    return hints;
-}
-
-function setHints(status) {
-    hints = status;
-}
-
-function isPaused() {
-    return pause;
-}
-
-function setPaused(state) {
-    pause = state;
-}
-
-function isSound() {
-    return sound;
-}
-
-function setSound(status) {
-    sound = status;
-}
-
-function getScreenNumber() {
-    return screenNumber;
-}
-
-function setScreenNumber(number) {
-    screenNumber = number;
-}
-
 /**
  * Resets the game after a barbarian death or the game is completed.
  */
 function resetGame() {
     renderAtRestFrame(BARBARIAN_SPRITE);
-    resetSpritePositions();
 
-    if (getLives() < 1) {
+    if (lives < 1) {
         resetGameOver();
     } else {
         resetGameContinue();
     }
     resetTrapDoors();
+    resetSpritePositions();
     initializeScreen();
 }
 
@@ -58,9 +18,10 @@ function resetGame() {
  * Resets settings after game is over.
  */
 function resetGameOver() {
-    setLives(3);
-    setScreenNumber(0);
-    setBackgroundPosition(BACKDROP, 0);
+    lives = 3;
+    screenNumber = 0;
+    setCss(BACKDROP, 'background-position', '0px');
+
     show(LIFE1);
     show(LIFE2);
     hideAllMessages();
@@ -70,7 +31,7 @@ function resetGameOver() {
  * Resets settings after barbarian death when he has more lives.
  */
 function resetGameContinue() {
-    hide($('.life' + getLives()));
+    hide($('.life' + lives));
     hide(CONTROL_MESSAGE);
 }
 
@@ -78,15 +39,15 @@ function resetGameContinue() {
  * Reset all the sprite positions.
  */
 function resetSpritePositions() {
-    let spritesOnScreen = SCREENS[getScreenNumber()][OPPONENTS];
+    let spritesOnScreen = SCREENS[screenNumber][OPPONENTS];
     for (const sprite of SPRITES) {
         let isSpriteOnScreen = $.inArray(sprite, spritesOnScreen) !== -1;
         setDisplay(sprite[SPRITE], isSpriteOnScreen ? 'block' : 'none');
-        setAction(sprite, getResetAction(sprite));
-        setDirection(sprite, getResetDirection(sprite));
-        setLeft(sprite, getResetLeft(sprite));
-        setSpriteBottom(sprite, getResetBottom(sprite));
-        setStatus(sprite, getResetStatus(sprite));
+        setProperty(sprite, ACTION, getProperty(sprite, RESET, ACTION));
+        setProperty(sprite, DIRECTION, getProperty(sprite, RESET, DIRECTION));
+        setSpriteLeft(sprite, getProperty(sprite, RESET, LEFT));
+        setCss(getProperty(sprite, SPRITE).css('bottom', getProperty(sprite, RESET, BOTTOM) + 'px'));
+        setProperty(sprite, STATUS, getProperty(sprite, RESET, STATUS));
     }
 }
 
@@ -94,13 +55,12 @@ function resetSpritePositions() {
  * Resets trap doors when the game is restarted.
  */
 function resetTrapDoors() {
-    for (let screenNumber of Object.keys(SCREENS)) {
-        if (parseInt(screenNumber) === getScreenNumber()) {
-            continue;
-        }
-        let trapDoors = SCREENS[screenNumber][TRAP_DOORS];
+    for (let scrNo of Object.keys(SCREENS)) {
+        let trapDoors = SCREENS[scrNo][TRAP_DOORS];
         for (let trapDoor of trapDoors) {
-            trapDoor[ELEMENT].css('display', 'none');
+            if (parseInt(scrNo) !== screenNumber) {
+                trapDoor[ELEMENT].css('display', 'none');
+            }
             trapDoor[ELEMENT].css('bottom', trapDoor[RESET][BOTTOM]);
         }
     }
@@ -110,19 +70,19 @@ function resetTrapDoors() {
  * Initializes the current screen
  */
 function initializeScreen() {
-    let trapDoors = SCREENS[getScreenNumber()][TRAP_DOORS];
+    let trapDoors = SCREENS[screenNumber][TRAP_DOORS];
     for (let trapDoor of trapDoors) {
         show(trapDoor[ELEMENT]);
-        setBottom(trapDoor[ELEMENT], trapDoor[RESET][BOTTOM]);
+        setCss(trapDoor[ELEMENT], trapDoor[RESET][BOTTOM] + 'px');
     }
 
-    let monsterSprites = filterBarbarianSprite(SCREENS[getScreenNumber()][OPPONENTS]);
+    let monsterSprites = filterBarbarianSprite(SCREENS[screenNumber][OPPONENTS]);
 
     for (let monsterSprite of monsterSprites) {
-        setLeft(monsterSprite, getResetLeft(monsterSprite));
-        setHighlight(monsterSprite, false);
-        setSpriteBottom(monsterSprite, getResetBottom(monsterSprites));
-        setStatus(monsterSprite, DEAD);
+        setSpriteLeft(monsterSprite, getProperty(monsterSprite, RESET, LEFT));
+        setSpriteHighlight(monsterSprite, false);
+        setCss(getProperty(monsterSprite, SPRITE).css('bottom', getProperty(monsterSprite, RESET, BOTTOM) + 'px'));
+        setProperty(monsterSprite, STATUS, DEAD);
     }
 }
 
@@ -143,7 +103,7 @@ function shouldThrottle(lastKeypressTime) {
  * Handles the space bar keypress event that restarts the game after a barbarian death or game completion.
  */
 function handleSpaceKeypress() {
-    if (isDead(BARBARIAN_SPRITE)) {
+    if (compareProperty(BARBARIAN_SPRITE, STATUS, DEAD)) {
         resetGame();
         hideAllMessages();
         startMonsterAttacks();
@@ -155,18 +115,18 @@ function handleSpaceKeypress() {
  * Handles the pause keypress event ("p" key).
  */
 function handlePauseKeypress() {
-    if (!isDead(BARBARIAN_SPRITE)) {
-        if (isPaused()) {
+    if (!compareProperty(BARBARIAN_SPRITE, STATUS, DEAD)) {
+        if (pause) {
             hide(PAUSE_MESSAGE);
-            setPaused(false);
-            if (getAction(BARBARIAN_SPRITE) !== undefined) {
-                performAction(BARBARIAN_SPRITE, getAction(BARBARIAN_SPRITE), 0);
+            pause = false;
+            if (getProperty(BARBARIAN_SPRITE, ACTION) !== undefined) {
+                performAction(BARBARIAN_SPRITE, getProperty(BARBARIAN_SPRITE, ACTION), 0);
             }
             startMonsterAttacks(true);
             setSoundsPauseState(false);
         } else {
             show(PAUSE_MESSAGE);
-            setPaused(true);
+            pause = true;
             setSoundsPauseState(true);
         }
     }
@@ -179,9 +139,9 @@ function handleHintsKeypress() {
     hide(SOUND_ON_MESSAGE);
     hide(SOUND_OFF_MESSAGE);
 
-    hide(isHints() ? HINTS_ON_MESSAGE : HINTS_OFF_MESSAGE);
-    show(isHints() ? HINTS_OFF_MESSAGE : HINTS_ON_MESSAGE);
-    setHints(!isHints());
+    hide(hints ? HINTS_ON_MESSAGE : HINTS_OFF_MESSAGE);
+    show(hints ? HINTS_OFF_MESSAGE : HINTS_ON_MESSAGE);
+    hints = !hints;
 
     setTimeout(function () {
         hide(HINTS_ON_MESSAGE);
@@ -196,10 +156,10 @@ function handleSoundKeypress() {
     hide(HINTS_ON_MESSAGE);
     hide(HINTS_OFF_MESSAGE);
 
-    hide(isSound() ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE);
-    show(isSound() ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE);
-    setSoundsPauseState(isSound());
-    setSound(!isSound());
+    hide(sound ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE);
+    show(sound ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE);
+    setSoundsPauseState(sound);
+    sound = !sound;
 
     setTimeout(function () {
         hide(SOUND_OFF_MESSAGE);
@@ -211,7 +171,8 @@ function handleSoundKeypress() {
  * Handles the run keypress event ("r" key).
  */
 function handleRunKeypress() {
-    if (getAction(BARBARIAN_SPRITE) !== RUN && isBarbarianAliveOrJustDied()) {
+    getProperty(BARBARIAN_SPRITE, FPS, WALK);
+    if (getProperty(BARBARIAN_SPRITE, ACTION) !== RUN && isBarbarianAliveOrJustDied()) {
         performAction(BARBARIAN_SPRITE, RUN, 0);
     }
 }
@@ -220,7 +181,7 @@ function handleRunKeypress() {
  * Handles the jump keypress event ("j" key).
  */
 function handleJumpKeypress() {
-    if (getAction(BARBARIAN_SPRITE) !== JUMP && isBarbarianAliveOrJustDied()) {
+    if (getProperty(BARBARIAN_SPRITE, ACTION) !== JUMP && isBarbarianAliveOrJustDied()) {
         performAction(BARBARIAN_SPRITE, JUMP, 1);
     }
 }
@@ -238,8 +199,8 @@ function handleStopKeypress() {
  * Handles the move right keypress event (right arrow key).
  */
 function handleRightKeypress() {
-    if ((getAction(BARBARIAN_SPRITE) !== WALK || getDirection(BARBARIAN_SPRITE) !== RIGHT) && isBarbarianAliveOrJustDied()) {
-        setDirection(BARBARIAN_SPRITE, RIGHT);
+    if ((getProperty(BARBARIAN_SPRITE, ACTION) !== WALK || getProperty(BARBARIAN_SPRITE, DIRECTION) !== RIGHT) && isBarbarianAliveOrJustDied()) {
+        setProperty(BARBARIAN_SPRITE, DIRECTION, RIGHT);
         performAction(BARBARIAN_SPRITE, WALK, 0);
     }
 }
@@ -249,7 +210,7 @@ function handleRightKeypress() {
  */
 function handleLeftKeypress() {
     if ((BARBARIAN_SPRITE[ACTION] !== WALK || BARBARIAN_SPRITE[DIRECTION] !== LEFT) && isBarbarianAliveOrJustDied()) {
-        setDirection(BARBARIAN_SPRITE, LEFT);
+        setProperty(BARBARIAN_SPRITE, DIRECTION, LEFT);
         performAction(BARBARIAN_SPRITE, WALK, 0);
     }
 }
@@ -258,8 +219,8 @@ function handleLeftKeypress() {
  * Handles the attack keypress event ("a" key).
  */
 function handleAttackKeypress() {
-    if (getAction(BARBARIAN_SPRITE) !== ATTACK && isBarbarianAliveOrJustDied()) {
-        stopSpriteMovement(BARBARIAN_SPRITE);
+    if (getProperty(BARBARIAN_SPRITE, ACTION) !== ATTACK && isBarbarianAliveOrJustDied()) {
+        getProperty(BARBARIAN_SPRITE, SPRITE).stop()
         playGruntSound();
         performAction(BARBARIAN_SPRITE, ATTACK, 1);
     }
@@ -271,7 +232,7 @@ function handleAttackKeypress() {
  * @returns {boolean|boolean} true if the sprite as hit the left boundary, false otherwise
  */
 function hitLeftBoundary(sprite) {
-    return !isMovingRight(sprite) && getLeft(sprite) === 0;
+    return !compareProperty(sprite, DIRECTION, RIGHT) && getSpriteLeft(sprite) === 0;
 }
 
 /**
@@ -280,7 +241,7 @@ function hitLeftBoundary(sprite) {
  * @returns {boolean|boolean} true if the sprite as hit the right boundary, false otherwise
  */
 function hitRightBoundary(sprite) {
-    return isMovingRight(sprite) && getLeft(sprite) === windowWidth - getWidth(sprite);
+    return compareProperty(sprite, DIRECTION, RIGHT) && getSpriteLeft(sprite) === windowWidth - getSpriteWidth(sprite);
 }
 
 /**
@@ -288,7 +249,7 @@ function hitRightBoundary(sprite) {
  * @returns {boolean}
  */
 function isBarbarianAliveOrJustDied() {
-    return !isDead(BARBARIAN_SPRITE) || isBarbarianJustDied();
+    return !compareProperty(BARBARIAN_SPRITE, STATUS, DEAD) || isBarbarianJustDied();
 }
 
 /**
@@ -296,7 +257,7 @@ function isBarbarianAliveOrJustDied() {
  * @returns {boolean} true if the barbarian has just died, false otherwise.
  */
 function isBarbarianJustDied() {
-    return new Date().getTime() - getDeathTime(BARBARIAN_SPRITE) < JUST_DIED_THRESHOLD;
+    return new Date().getTime() - getProperty(BARBARIAN_SPRITE, DEATH, TIME) < JUST_DIED_THRESHOLD;
 }
 
 

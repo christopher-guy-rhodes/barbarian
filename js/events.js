@@ -4,7 +4,7 @@
 function resetGame() {
     renderAtRestFrame(BARBARIAN_SPRITE);
 
-    if (lives < 1) {
+    if (numLives < 1) {
         resetGameOver();
     } else {
         resetGameContinue();
@@ -18,7 +18,7 @@ function resetGame() {
  * Resets settings after game is over.
  */
 function resetGameOver() {
-    lives = 3;
+    numLives = 3;
     screenNumber = 0;
     setCss(BACKDROP, 'background-position', '0px');
 
@@ -31,7 +31,7 @@ function resetGameOver() {
  * Resets settings after barbarian death when he has more lives.
  */
 function resetGameContinue() {
-    hide($('.life' + lives));
+    hide($('.life' + numLives));
     hide(CONTROL_MESSAGE);
 }
 
@@ -116,9 +116,9 @@ function handleSpaceKeypress() {
  */
 function handlePauseKeypress() {
     if (!compareProperty(BARBARIAN_SPRITE, STATUS, DEAD)) {
-        if (pause) {
+        if (isPaused) {
             hide(PAUSE_MESSAGE);
-            pause = false;
+            isPaused = false;
             if (getProperty(BARBARIAN_SPRITE, ACTION) !== undefined) {
                 performAction(BARBARIAN_SPRITE, getProperty(BARBARIAN_SPRITE, ACTION), 0);
             }
@@ -126,7 +126,7 @@ function handlePauseKeypress() {
             setSoundsPauseState(false);
         } else {
             show(PAUSE_MESSAGE);
-            pause = true;
+            isPaused = true;
             setSoundsPauseState(true);
         }
     }
@@ -141,7 +141,7 @@ function handleHintsKeypress() {
 
     hide(hints ? HINTS_ON_MESSAGE : HINTS_OFF_MESSAGE);
     show(hints ? HINTS_OFF_MESSAGE : HINTS_ON_MESSAGE);
-    hints = !hints;
+    isHints = !isHints;
 
     setTimeout(function () {
         hide(HINTS_ON_MESSAGE);
@@ -159,7 +159,7 @@ function handleSoundKeypress() {
     hide(sound ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE);
     show(sound ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE);
     setSoundsPauseState(sound);
-    sound = !sound;
+    isSoundOn = !isSoundOn;
 
     setTimeout(function () {
         hide(SOUND_OFF_MESSAGE);
@@ -232,7 +232,7 @@ function handleAttackKeypress() {
  * @returns {boolean|boolean} true if the sprite as hit the left boundary, false otherwise
  */
 function hitLeftBoundary(sprite) {
-    return !compareProperty(sprite, DIRECTION, RIGHT) && getSpriteLeft(sprite) === 0;
+    return !compareProperty(sprite, DIRECTION, RIGHT) && getProperty(sprite, SPRITE).offset().left === 0;
 }
 
 /**
@@ -241,7 +241,7 @@ function hitLeftBoundary(sprite) {
  * @returns {boolean|boolean} true if the sprite as hit the right boundary, false otherwise
  */
 function hitRightBoundary(sprite) {
-    return compareProperty(sprite, DIRECTION, RIGHT) && getSpriteLeft(sprite) === windowWidth - getSpriteWidth(sprite);
+    return compareProperty(sprite, DIRECTION, RIGHT) && getProperty(sprite, SPRITE).offset().left === windowWidth - getSpriteWidth(sprite);
 }
 
 /**

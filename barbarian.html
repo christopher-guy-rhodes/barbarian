@@ -5,13 +5,11 @@
 <script src="/js/jquery.min.js"></script>
 <script>
 let screenNumber = 0;
-let canAdvance = false;
 let actionsLocked = false;
-let pause = false;
-let lives = 3;
-let hints = true;
-let sound = true;
-let theme;
+let isPaused = false;
+let numLives = 3;
+let isHints = true;
+let isSoundOn = true;
 $(document).ready(function(){
 
     // Include constants
@@ -55,7 +53,7 @@ $(document).ready(function(){
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
 
-            if (!pause || e.which === KEYPRESS[KP_PAUSE]) {
+            if (!isPaused || e.which === KEYPRESS[KP_PAUSE]) {
                 switch (e.which) {
                     case KEYPRESS[KP_CONTROLS]:
                         if(compareProperty(BARBARIAN_SPRITE, STATUS, DEAD)) {

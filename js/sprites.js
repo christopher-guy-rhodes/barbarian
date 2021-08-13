@@ -322,10 +322,6 @@ SCREENS = {
     }
 };
 
-function isMonster(sprite) {
-    return sprite[NAME] !== BARBARIAN_SPRITE_NAME;
-}
-
 function hideSprite(sprite) {
     hide(getProperty(sprite, SPRITE));
 }
@@ -344,10 +340,6 @@ function getSpriteWidth(sprite) {
 
 function getSpriteHeight(sprite) {
     return getProperty(sprite, SPRITE).height();
-}
-
-function getSpriteLeft(sprite) {
-    return getProperty(sprite, SPRITE).offset().left;
 }
 
 function getSpriteBottom(sprite) {

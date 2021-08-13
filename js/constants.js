@@ -129,7 +129,7 @@ const ATTACK_PROXIMITY = 320;
 const OBSTACLE_CLOSE_PROXIMITY = 50;
 
 const SOUNDS = {
-    THEME_SONG : sound ? new Audio('/sounds/theme.mp3') : undefined,
+    THEME_SONG : isSoundOn ? new Audio('/sounds/theme.mp3') : undefined,
     FALL_SOUND : new Audio('/sounds/fall.mp3'),
     GRUNT_SOUND : new Audio('/sounds/grunt.mp3'),
     GROWL_SOUND : new Audio('/sounds/growl.mp3'),

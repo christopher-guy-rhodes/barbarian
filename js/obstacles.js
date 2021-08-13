@@ -5,8 +5,8 @@
  * @returns {boolean} true if the sprite avoided the obstacle, false otherwise
  */
 function hasEvadedObstacleWithJump(sprite, obstacle) {
-    return getProperty(sprite, ACTION) === JUMP && getSpriteLeft(sprite) > getProperty(obstacle, JUMP_THRESHOLDS, MIN) &&
-        getSpriteLeft(sprite) < getProperty(obstacle, JUMP_THRESHOLDS, MAX);
+    return getProperty(sprite, ACTION) === JUMP && getProperty(sprite, SPRITE).offset().left > getProperty(obstacle, JUMP_THRESHOLDS, MIN) &&
+        getProperty(sprite, SPRITE).offset().left < getProperty(obstacle, JUMP_THRESHOLDS, MAX);
 }
 
 /**
@@ -54,9 +54,9 @@ function getObstacleType(obstacle) {
  */
 function isPastBoundary(sprite, obstacle) {
     if (compareProperty(sprite, DIRECTION, RIGHT)) {
-        return getSpriteLeft(sprite) >= obstacle[LEFT];
+        return getProperty(sprite, SPRITE).offset().left >= obstacle[LEFT];
     } else {
-        return getSpriteLeft(sprite) <= obstacle[LEFT];
+        return getProperty(sprite, SPRITE).offset().left <= obstacle[LEFT];
     }
     return false;
 }
@@ -68,7 +68,7 @@ function isPastBoundary(sprite, obstacle) {
  * @returns {boolean} true if the sprite is close to the obstacle, false otherwise
  */
 function isObstacleClose(sprite, obstacle) {
-    return Math.abs(getObstacleLeft(obstacle) - getSpriteLeft(sprite)) <= OBSTACLE_CLOSE_PROXIMITY;
+    return Math.abs(getObstacleLeft(obstacle) - getProperty(sprite, SPRITE).offset().left) <= OBSTACLE_CLOSE_PROXIMITY;
 }
 
 /**
@@ -105,7 +105,9 @@ function handleObstacles(sprite) {
 
     for (const obstacle of getObstacles(sprite)) {
         if (isPastBoundary(sprite, obstacle)) {
-            if (isMonster(sprite) || isDownhill(sprite, obstacle) || hasEvadedObstacleWithJump(sprite, obstacle)) {
+            if (!compareProperty(sprite, NAME, BARBARIAN_SPRITE_NAME) ||
+                isDownhill(sprite, obstacle) ||
+                hasEvadedObstacleWithJump(sprite, obstacle)) {
                 setCss(getProperty(sprite, SPRITE).css('bottom', obstacle[HEIGHT] + 'px'));
             } else {
                 getProperty(sprite, SPRITE).stop();

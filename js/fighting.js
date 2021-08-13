@@ -6,7 +6,7 @@
  */
 function isSuccessfulAttack(sprite, opponent) {
     let thresholds;
-    if (isMonster(sprite)) {
+    if (!compareProperty(sprite, NAME, BARBARIAN_SPRITE_NAME)) {
         thresholds = sprite[ATTACK_THRESHOLDS];
     } else {
         thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
@@ -24,7 +24,7 @@ function isSuccessfulAttack(sprite, opponent) {
  * @returns {boolean} returns true if the monster attacked, false otherwise
  */
 function launchMonsterAttack(sprite, opponent) {
-    if (isMonster(sprite) && getProperty(sprite, ACTION) !== ATTACK) {
+    if (!compareProperty(sprite, NAME, BARBARIAN_SPRITE_NAME) && getProperty(sprite, ACTION) !== ATTACK) {
         let proximity = getProximity(sprite, opponent);
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
             performAction(sprite, ATTACK, 0);
@@ -52,7 +52,7 @@ function getProximity(sprite, opponent) {
  * @returns {boolean} true if the opponent avoided the attack, false otherwise
  */
 function hasJumpEvaded(sprite, opponent) {
-    let distance = Math.abs(getSpriteLeft(sprite) - getSpriteLeft(opponent));
+    let distance = Math.abs(getProperty(sprite, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
 
     return getProperty(opponent, ACTION) === JUMP  && distance < getProperty(sprite, JUMP_THRESHOLDS, MAX) &&
         distance > getProperty(sprite, JUMP_THRESHOLDS, MIN);
@@ -124,7 +124,7 @@ function handleFightSequence(sprite) {
  * @param sprite the sprite that has died
  */
 function death(sprite) {
-    if (isMonster(sprite)) {
+    if (!compareProperty(sprite, NAME, BARBARIAN_SPRITE_NAME)) {
         monsterDeath(sprite);
     } else {
         barbarianDeath(sprite, ATTACK);
@@ -146,8 +146,8 @@ function barbarianDeath(sprite, action) {
         hideSprite(BARBARIAN_SPRITE)
     }
     showMessage(START_MESSAGE);
-    lives = lives - 1;
-    if (lives < 1) {
+    numLives = numLives - 1;
+    if (numLives < 1) {
         showMessage(GAME_OVER_MESSAGE);
     }
 }
@@ -167,14 +167,14 @@ function monsterDeath(sprite) {
  * @param sprite the to highlight
  */
 function highlightAttackRange(sprite) {
-    if (!hints || isMonster(sprite)) {
+    if (!isHints || !compareProperty(sprite, NAME, BARBARIAN_SPRITE_NAME)) {
         return;
     }
     let opponents = filterBarbarianSprite(getOpponents());
     for (let opponent of opponents) {
         let thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
 
-        let distance = Math.abs(getSpriteLeft(sprite) - getSpriteLeft(opponent));
+        let distance = Math.abs(getProperty(sprite, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
 
         let shoudHighlight = !compareProperty(sprite, STATUS, DEAD) &&
             (distance >= thresholds[MIN] - HIGHLIGHT_BUFFER) &&
@@ -190,7 +190,7 @@ function highlightAttackRange(sprite) {
  * @returns {number} the resulting delay in milliseconds
  */
 function getRelativeDeathDelay(sprite, opponent) {
-    const separation = Math.abs(getSpriteLeft(sprite) - getSpriteLeft(opponent));
+    const separation = Math.abs(getProperty(sprite, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
 
     const relativePps = getProperty(sprite, DIRECTION) === getProperty(opponent, DIRECTION)
         ? getProperty(opponent, PIXELS_PER_SECOND, getProperty(sprite, ACTION)) - getProperty(sprite, PIXELS_PER_SECOND, getProperty(sprite, ACTION))
@@ -219,10 +219,5 @@ function getOpponentsInProximity(sprite, proximityThreshold) {
 function getOpponents() {
     return SCREENS[screenNumber][OPPONENTS];
 }
-
-function isSpriteCurrentOpponent(sprite) {
-    return SCREENS[screenNumber][OPPONENTS].includes(sprite);
-}
-
 
 

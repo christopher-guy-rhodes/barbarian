@@ -24,7 +24,7 @@ function hideMessage(element) {
 function filterBarbarianSprite(sprites) {
     let result = [];
     for (let sprite of sprites) {
-        if (isMonster(sprite)) {
+        if (!compareProperty(sprite, NAME, BARBARIAN_SPRITE_NAME)) {
             result.push(sprite);
         }
     }

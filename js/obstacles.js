@@ -16,7 +16,7 @@ function hasEvadedObstacleWithJump(sprite, obstacle) {
  * @returns {boolean} true if the obstacle is lower than the sprite, false otherwise
  */
 function isDownhill(sprite, obstacle) {
-    return getObstacleHeight(obstacle) <= getSpriteBottom(sprite) && getObstacleType(obstacle) !== PIT;
+    return getObstacleHeight(obstacle) <= stripPxSuffix(getProperty(sprite, SPRITE).css('bottom')) && getObstacleType(obstacle) !== PIT;
 }
 
 /**

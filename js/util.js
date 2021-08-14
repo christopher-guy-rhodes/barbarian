@@ -17,10 +17,6 @@ function hideAllMessages() {
     }
 }
 
-function hideMessage(element) {
-    element.css('display', 'none');
-}
-
 function filterBarbarianSprite(sprites) {
     let result = [];
     for (let sprite of sprites) {
@@ -37,18 +33,6 @@ function handlePromiseError(error) {
 
 function stripPxSuffix(field) {
     return field.substring(0, field.length - 2);
-}
-
-function setDisplay(sprite, display) {
-    sprite.css('display', display);
-}
-
-function show(sprite) {
-    sprite.css('display', 'block');
-}
-
-function hide(sprite) {
-    sprite.css('display', 'none');
 }
 
 function setSpriteCss(element, prop, value) {
@@ -90,8 +74,8 @@ function setProperty() {
 
 function setNestedKey(obj, path, value) {
     if (path.length === 1) {
-        obj[path] = value
-        return
+        obj[path] = value;
+        return;
     }
-    return setNestedKey(obj[path[0]], path.slice(1), value)
+    return setNestedKey(obj[path[0]], path.slice(1), value);
 }

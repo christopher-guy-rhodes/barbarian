@@ -1,4 +1,4 @@
-BARBARIAN_SPRITE = {
+BARBARIAN_CHARACTER = {
     SPRITE : $(".barbarian"),
     NAME : BARBARIAN_SPRITE_NAME,
     ACTION : STOP,
@@ -99,7 +99,7 @@ BARBARIAN_SPRITE = {
     }
 };
 
-DOG_SPRITE = {
+DOG_CHARACTER = {
     SPRITE : $('.dog'),
     NAME : DOG_SPRITE_NAME,
     ACTION : SIT,
@@ -201,7 +201,7 @@ DOG_SPRITE = {
     }
 };
 
-MONSTER_SPRITE = {
+MONSTER_CHARACTER = {
     SPRITE : $(".monster"),
     NAME : MONSTER_SPRITE_NAME,
     ACTION : WALK,
@@ -285,7 +285,7 @@ MONSTER_SPRITE = {
     }
 };
 
-SPRITES = [BARBARIAN_SPRITE, MONSTER_SPRITE, DOG_SPRITE];
+SPRITES = [BARBARIAN_CHARACTER, MONSTER_CHARACTER, DOG_CHARACTER];
 
 SCREENS = {
     0 : {
@@ -293,7 +293,7 @@ SCREENS = {
             LEFT: [],
             RIGHT: [],
         },
-        OPPONENTS: [MONSTER_SPRITE, BARBARIAN_SPRITE],
+        OPPONENTS: [MONSTER_CHARACTER, BARBARIAN_CHARACTER],
         TRAP_DOORS: []
     },
     1 : {
@@ -309,7 +309,7 @@ SCREENS = {
                 {LEFT: 950, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 160, JUMP_THRESHOLDS: {MIN: 880, MAX: 1000}}
             ]
         },
-        OPPONENTS: [DOG_SPRITE, BARBARIAN_SPRITE],
+        OPPONENTS: [DOG_CHARACTER, BARBARIAN_CHARACTER],
         TRAP_DOORS: [{
             ELEMENT: BRIDGE,
             RESET : {
@@ -321,27 +321,3 @@ SCREENS = {
             }}],
     }
 };
-
-function hideSprite(sprite) {
-    hide(getProperty(sprite, SPRITE));
-}
-
-function setSpriteLeft(sprite, left) {
-    getProperty(sprite, SPRITE).css('left', left + 'px')
-}
-
-function setSpriteHighlight(sprite, state) {
-    getProperty(sprite, SPRITE).css('filter','brightness(' + (state ? '300%' : '100%') + ')');
-}
-
-function getSpriteWidth(sprite) {
-    return getProperty(sprite. SPRITE).width();
-}
-
-function getSpriteHeight(sprite) {
-    return getProperty(sprite, SPRITE).height();
-}
-
-function getSpriteBottom(sprite) {
-    return stripPxSuffix(getProperty(sprite, SPRITE).css('bottom'));
-}

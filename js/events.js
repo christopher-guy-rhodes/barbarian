@@ -22,8 +22,9 @@ function resetGameOver() {
     screenNumber = 0;
     setCss(BACKDROP, 'background-position', '0px');
 
-    setCss(LIFE1, 'display', 'block');
-    setCss(LIFE2, 'display', 'block');
+    for (let i = 1; i < numLives; i++) {
+        setCss($('.life' + i), 'display', 'block');
+    }
     hideAllMessages();
 }
 
@@ -39,15 +40,15 @@ function resetGameContinue() {
  * Reset all the sprite positions.
  */
 function resetSpritePositions() {
-    let spritesOnScreen = SCREENS[screenNumber][OPPONENTS];
+    let spritesOnScreen = getProperty(SCREENS, screenNumber, OPPONENTS);
     for (const sprite of SPRITES) {
         let isSpriteOnScreen = $.inArray(sprite, spritesOnScreen) !== -1;
         setProperty(sprite, ACTION, getProperty(sprite, RESET, ACTION));
         setProperty(sprite, DIRECTION, getProperty(sprite, RESET, DIRECTION));
         setProperty(sprite, STATUS, getProperty(sprite, RESET, STATUS));
-        setSpriteCss(sprite, 'display', isSpriteOnScreen ? 'block' : 'none');
-        setSpriteCss(sprite, 'left',  getProperty(sprite, RESET, LEFT) + 'px');
-        setSpriteCss(sprite, 'bottom', getProperty(sprite, RESET, BOTTOM) + 'px');
+        setCharacterCss(sprite, 'display', isSpriteOnScreen ? 'block' : 'none');
+        setCharacterCss(sprite, 'left',  getProperty(sprite, RESET, LEFT) + 'px');
+        setCharacterCss(sprite, 'bottom', getProperty(sprite, RESET, BOTTOM) + 'px');
     }
 }
 
@@ -61,7 +62,6 @@ function resetTrapDoors() {
             if (parseInt(scrNo) !== screenNumber) {
                 setCss(getProperty(trapDoor, ELEMENT), 'display', 'none');
             }
-            trapDoor[ELEMENT].css('bottom', trapDoor[RESET][BOTTOM]);
             setCss(getProperty(trapDoor, ELEMENT), 'bottom', getProperty(trapDoor, RESET, BOTTOM) + 'px');
         }
     }
@@ -71,18 +71,18 @@ function resetTrapDoors() {
  * Initializes the current screen
  */
 function initializeScreen() {
-    let trapDoors = SCREENS[screenNumber][TRAP_DOORS];
+    let trapDoors = getProperty(SCREENS, screenNumber, TRAP_DOORS);
     for (let trapDoor of trapDoors) {
         setCss(getProperty(trapDoor, ELEMENT), 'display', 'block');
-        setCss(trapDoor[ELEMENT], trapDoor[RESET][BOTTOM] + 'px');
+        setCss(getProperty(trapDoor, ELEMENT), getProperty(trapDoor, RESET, BOTTOM) + 'px');
     }
 
-    let monsterSprites = filterBarbarianSprite(getProperty(SCREENS, screenNumber, OPPONENTS));
+    let monsterSprites = filterBarbarianCharacter(getProperty(SCREENS, screenNumber, OPPONENTS));
 
     for (let monsterSprite of monsterSprites) {
-        setSpriteCss(monsterSprite, 'left', getProperty(monsterSprite, RESET, LEFT) + 'px');
-        setSpriteCss(monsterSprite, 'bottom', getProperty(monsterSprite, RESET, BOTTOM) + 'px');
-        setSpriteCss(monsterSprite, 'filter', "brightness(100%)");
+        setCharacterCss(monsterSprite, 'left', getProperty(monsterSprite, RESET, LEFT) + 'px');
+        setCharacterCss(monsterSprite, 'bottom', getProperty(monsterSprite, RESET, BOTTOM) + 'px');
+        setCharacterCss(monsterSprite, 'filter', "brightness(100%)");
         setProperty(monsterSprite, STATUS, DEAD);
     }
 }
@@ -121,7 +121,9 @@ function handlePauseKeypress() {
             setCss(PAUSE_MESSAGE, 'display', 'none');
             isPaused = false;
             if (!compareProperty(BARBARIAN_CHARACTER, ACTION, undefined)) {
-                performAction(BARBARIAN_CHARACTER, getProperty(BARBARIAN_CHARACTER, ACTION), 0);
+                console.log('unpausing and index is' + pauseFrameIndex);
+                performAction(BARBARIAN_CHARACTER, getProperty(BARBARIAN_CHARACTER, ACTION), getProperty(BARBARIAN_ACTION_NUM_TIMES, ACTION), pauseFrameIndex);
+                pauseFrameIndex = 0;
             }
             startMonsterAttacks(true);
             setSoundsPauseState(false);
@@ -174,7 +176,7 @@ function handleSoundKeypress() {
 function handleRunKeypress() {
     getProperty(BARBARIAN_CHARACTER, FPS, WALK);
     if (!compareProperty(BARBARIAN_CHARACTER, ACTION, RUN) && isBarbarianAliveOrJustDied()) {
-        performAction(BARBARIAN_CHARACTER, RUN, 0);
+        performAction(BARBARIAN_CHARACTER, RUN, getProperty(BARBARIAN_ACTION_NUM_TIMES, RUN));
     }
 }
 
@@ -183,7 +185,7 @@ function handleRunKeypress() {
  */
 function handleJumpKeypress() {
     if (!compareProperty(BARBARIAN_CHARACTER, ACTION, JUMP) && isBarbarianAliveOrJustDied()) {
-        performAction(BARBARIAN_CHARACTER, JUMP, 1);
+        performAction(BARBARIAN_CHARACTER, JUMP, getProperty(BARBARIAN_ACTION_NUM_TIMES, JUMP));
     }
 }
 
@@ -192,7 +194,7 @@ function handleJumpKeypress() {
  */
 function handleStopKeypress() {
     if (isBarbarianAliveOrJustDied()) {
-        performAction(BARBARIAN_CHARACTER, STOP, 1);
+        performAction(BARBARIAN_CHARACTER, STOP, getProperty(BARBARIAN_ACTION_NUM_TIMES, STOP));
     }
 }
 
@@ -200,9 +202,10 @@ function handleStopKeypress() {
  * Handles the move right keypress event (right arrow key).
  */
 function handleRightKeypress() {
-    if ((!compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) || !compareProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT)) && isBarbarianAliveOrJustDied()) {
+    if ((!compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) || !compareProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT))
+        && isBarbarianAliveOrJustDied()) {
         setProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT);
-        performAction(BARBARIAN_CHARACTER, WALK, 0);
+        performAction(BARBARIAN_CHARACTER, WALK, getProperty(BARBARIAN_ACTION_NUM_TIMES, WALK));
     }
 }
 
@@ -210,9 +213,10 @@ function handleRightKeypress() {
  * Handles the move right keypress event (left arrow key).
  */
 function handleLeftKeypress() {
-    if ((!compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) || !compareProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT)) && isBarbarianAliveOrJustDied()) {
+    if ((!compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) || !compareProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT))
+        && isBarbarianAliveOrJustDied()) {
         setProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT);
-        performAction(BARBARIAN_CHARACTER, WALK, 0);
+        performAction(BARBARIAN_CHARACTER, WALK, getProperty(BARBARIAN_ACTION_NUM_TIMES, WALK));
     }
 }
 
@@ -221,9 +225,9 @@ function handleLeftKeypress() {
  */
 function handleAttackKeypress() {
     if (!compareProperty(BARBARIAN_CHARACTER, ACTION, ATTACK) && isBarbarianAliveOrJustDied()) {
-        getProperty(BARBARIAN_CHARACTER, SPRITE).stop()
+        getProperty(BARBARIAN_CHARACTER, SPRITE).stop();
         playGruntSound();
-        performAction(BARBARIAN_CHARACTER, ATTACK, 1);
+        performAction(BARBARIAN_CHARACTER, ATTACK, getProperty(BARBARIAN_ACTION_NUM_TIMES, ATTACK));
     }
 }
 

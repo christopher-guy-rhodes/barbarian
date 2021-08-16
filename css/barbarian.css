@@ -51,30 +51,6 @@
     left: 980px;
 }
 
-.marker_left {
-    display: none;
-    opacity: 50%;
-    height: 400px;
-    width: 400px;
-    background-image: url(../sprites/sprite.png);
-    #background-position: -2400px -400px;
-    position: absolute;
-    bottom:160px;
-    left: 710px;
-}
-
-.marker_right {
-    display: none;
-    opacity: 50%;
-    height: 400px;
-    width: 400px;
-    background-image: url(../sprites/sprite.png);
-    #background-position: -2400px -400px;
-    position: absolute;
-    bottom: 160px;
-    left: 830px;
-}
-
 .backdrop {
     background-image: url(/images/background-1.png);
     width: 1400px;
@@ -178,26 +154,6 @@
     position: absolute;
     bottom: 690px;
     left: 42px;
-}
-
-.debug_sprite_left {
-    display: none;
-    border: 1px solid red;
-    height: 0px;
-    width: 0px;
-    position: absolute;
-    bottom: 694px;
-    left: 4px;
-}
-
-.debug_opponent_left {
-    display: none;
-    border: 1px solid blue;
-    height: 0px;
-    width: 0px;
-    position: absolute;
-    bottom: 694px;
-    left: 4px;
 }
 
 body {

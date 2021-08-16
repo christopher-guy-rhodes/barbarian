@@ -11,6 +11,7 @@ let numLives = 3;
 let isHints = true;
 let isSoundOn = true;
 let windowWidth = undefined;
+let pauseFrameIndex = 0;
 $(document).ready(function(){
 
     // Include constants
@@ -21,7 +22,7 @@ $(document).ready(function(){
     $.getScript('/js/sound.js', function() {
     // Include sprite definition
     $.getScript('/js/sprites.js', function() {
-    // INclude the obstacles module
+    // Include the obstacles module
     $.getScript('/js/obstacles.js', function() {
     // Include the fighting module
     $.getScript('/js/fighting.js', function() {
@@ -47,53 +48,52 @@ $(document).ready(function(){
 
         keypressTime = new Date().getTime();
 
-        let isInterruptable = getProperty(BARBARIAN_CHARACTER, ACTION) === JUMP ||
-                              getProperty(BARBARIAN_CHARACTER, ACTION) === ATTACK ||
-                              getProperty(BARBARIAN_CHARACTER, ACTION) == FALL;
-        if (!shouldThrottle(lastKeypressTime) && !isInterruptable && !actionsLocked) {
+        let notInnterruptable = getProperty(BARBARIAN_CHARACTER, ACTION) == FALL;
+        if (!shouldThrottle(lastKeypressTime) && !notInnterruptable && !actionsLocked) {
             lastKeypressTime = keypressTime;
             keypressTime = new Date().getTime();
 
-            if (!isPaused || e.which === KEYPRESS[KP_PAUSE]) {
+            if (!isPaused || compareProperty(KEYPRESS, KP_PAUSE, e.which)) {
+
                 switch (e.which) {
-                    case KEYPRESS[KP_CONTROLS]:
+                    case getProperty(KEYPRESS, KP_CONTROLS):
                         if(compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
                             showMessage(CONTROL_MESSAGE);
                         }
                         break;
-                    case KEYPRESS[KP_MAIN]:
+                    case getProperty(KEYPRESS, KP_MAIN):
                         if(compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
                             showMessage(START_MESSAGE);
                         }
                         break;
-                    case KEYPRESS[KP_SPACE]:
+                    case getProperty(KEYPRESS, KP_SPACE):
                         handleSpaceKeypress();
                         break;
-                    case KEYPRESS[KP_PAUSE]:
+                    case getProperty(KEYPRESS, KP_PAUSE):
                         handlePauseKeypress();
                         break;
-                    case KEYPRESS[KP_HINTS]:
+                    case getProperty(KEYPRESS, KP_HINTS):
                         handleHintsKeypress();
                         break;
-                    case KEYPRESS[KP_SOUND]:
+                    case getProperty(KEYPRESS, KP_SOUND):
                         handleSoundKeypress();
                         break;
-                    case KEYPRESS[KP_RUN]:
+                    case getProperty(KEYPRESS, KP_RUN):
                         handleRunKeypress();
                         break;
-                    case KEYPRESS[KP_JUMP]:
+                    case getProperty(KEYPRESS, KP_JUMP):
                         handleJumpKeypress();
                         break;
-                    case KEYPRESS[KP_STOP]:
+                    case getProperty(KEYPRESS, KP_STOP):
                         handleStopKeypress();
                         break;
-                    case KEYPRESS[KP_RIGHT]:
+                    case getProperty(KEYPRESS, KP_RIGHT):
                         handleRightKeypress();
                         break;
-                    case KEYPRESS[KP_LEFT]:
+                    case getProperty(KEYPRESS, KP_LEFT):
                         handleLeftKeypress();
                         break;
-                    case KEYPRESS[KP_ATTACK]:
+                    case getProperty(KEYPRESS, KP_ATTACK):
                         handleAttackKeypress();
                         break;
                     default:
@@ -111,11 +111,6 @@ $(document).ready(function(){
 <div class="backdrop">
     <img class="life1" src="images/player_icon.png"></img>
     <img class="life2" src="images/player_icon.png"></img>
-    <div class="debug_sprite_left"></div>
-    <div class="debug_opponent_left"></div>
-    <div class="debug_distance"></div>
-    <div class="marker_left"></div>
-    <div class="marker_right"></div>
     <div class="bridge"></div>
     <div class="barbarian"></div>
     <div class="monster"></div>

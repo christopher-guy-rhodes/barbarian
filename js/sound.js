@@ -3,8 +3,8 @@
  */
 function playThemeSong() {
     // Theme song can be undefined because there is a problem where it won't play when running the server locally
-    if (isSoundOn && !isPaused && SOUNDS[THEME_SONG] !== undefined) {
-        SOUNDS[THEME_SONG].play();
+    if (isSoundOn && !isPaused && !compareProperty(SOUNDS, THEME_SONG, undefined)) {
+        getProperty(SOUNDS, THEME_SONG).play();
     }
 }
 
@@ -14,7 +14,7 @@ function playThemeSong() {
  */
 function playSound(snd) {
     if (isSoundOn) {
-        SOUNDS[snd].play();
+        getProperty(SOUNDS, snd).play();
     }
 }
 
@@ -27,8 +27,8 @@ function setSoundsPauseState() {
             for (let sound of Object.values(SOUNDS)) {
                 sound.pause();
             }
-        } else if (SOUNDS[THEME_SONG] !== undefined) {
-            SOUNDS[THEME_SONG].play();
+        } else if (!compareProperty(SOUNDS, THEME_SONG, undefined)) {
+            getProperty(SOUNDS, THEME_SONG).play();
         }
     }
 }
@@ -38,7 +38,7 @@ function setSoundsPauseState() {
  */
 function playGruntSound() {
     if (isSoundOn) {
-        SOUNDS[GRUNT_SOUND].play();
+        getProperty(SOUNDS, GRUNT_SOUND).play();
     }
 }
 
@@ -47,7 +47,7 @@ function playGruntSound() {
  */
 function playGrowlSound() {
     if (isSoundOn) {
-        SOUNDS[GROWL_SOUND].play();
+        getProperty(SOUNDS, GROWL_SOUND).play();
     }
 }
 
@@ -56,9 +56,9 @@ function playGrowlSound() {
  */
 function playFireSound() {
     if (isSoundOn) {
-        SOUNDS[FIRE_SOUND].play();
+        getProperty(SOUNDS, FIRE_SOUND).play();
         setTimeout(function () {
-            SOUNDS[FIRE_SOUND].pause();
+            getProperty(SOUNDS, FIRE_SOUND).pause();
         }, 3000);
     }
 }
@@ -68,6 +68,6 @@ function playFireSound() {
  */
 function playFallSound() {
     if (isSoundOn) {
-        SOUNDS[FALL_SOUND].play();
+        getProperty(SOUNDS, FALL_SOUND).play();
     }
 }

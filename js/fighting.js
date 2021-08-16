@@ -143,7 +143,7 @@ function barbarianDeath(character, action) {
     if (action !== FALL) {
         playGruntSound();
     } else {
-        setSpriteCss(BARBARIAN_CHARACTER, 'display', 'none');
+        setCharacterCss(BARBARIAN_CHARACTER, 'display', 'none');
     }
     showMessage(START_MESSAGE);
     numLives = numLives - 1;
@@ -170,7 +170,7 @@ function highlightAttackRange(character) {
     if (!isHints || !compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
         return;
     }
-    let opponents = filterBarbarianSprite(getOpponents());
+    let opponents = filterBarbarianCharacter(getOpponents());
     for (let opponent of opponents) {
         let thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
 
@@ -179,7 +179,7 @@ function highlightAttackRange(character) {
         let shouldHighlight = !compareProperty(character, STATUS, DEAD) &&
             (distance >= thresholds[MIN] - HIGHLIGHT_BUFFER) &&
             (distance <= thresholds[MAX] + HIGHLIGHT_BUFFER);
-        setSpriteCss(opponent, 'filter', 'brightness(' + (shouldHighlight ? '300%' : '100%') + ')');
+        setCharacterCss(opponent, 'filter', 'brightness(' + (shouldHighlight ? '300%' : '100%') + ')');
     }
 }
 

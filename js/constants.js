@@ -113,8 +113,6 @@ const MESSAGES = [CONTROL_MESSAGE, START_MESSAGE, GAME_OVER_MESSAGE, DEMO_OVER_M
 // Elements
 const BRIDGE = $('.bridge');
 const BACKDROP = $('.backdrop');
-const LIFE1 = $('.life1');
-const LIFE2 = $('.life2');
 
 const HIGHLIGHT_BUFFER = 250;
 const MILLISECONDS_PER_SECOND = 1000;

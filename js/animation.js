@@ -4,10 +4,10 @@
  * @param action the action to execute
  * @param numberOfTimes the number of times to execute the action (zero for infinite)
  */
-function performAction(character, action, numberOfTimes) {
+function performAction(character, action, numberOfTimes, index = 0) {
     getProperty(character, SPRITE).stop();
     moveFromPositionToBoundary(character, action, getProperty(character, PIXELS_PER_SECOND, action));
-    animateCharacter(character, action, getProperty(character, DIRECTION), numberOfTimes)
+    animateCharacter(character, action, getProperty(character, DIRECTION), numberOfTimes, index)
         .then(function () {
         }, error => handlePromiseError(error));
 }
@@ -21,14 +21,14 @@ function performAction(character, action, numberOfTimes) {
  * @param numberOfTimes the number of times to perform the action (0 for infinite)
  * @returns {Promise<void>} a void promise
  */
-async function animateCharacter(character, requestedAction, requestedDirection, numberOfTimes) {
+async function animateCharacter(character, requestedAction, requestedDirection, numberOfTimes, idx = 0) {
 
     let frames = getProperty(character, FRAMES, requestedAction, getProperty(character, DIRECTION), FRAMES);
 
     setProperty(character, ACTION, requestedAction);
     setProperty(character, DIRECTION, requestedDirection);
 
-    let index = 0;
+    let index = idx;
     let isGameOver = false;
     let counter = numberOfTimes;
 
@@ -47,7 +47,7 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
 
         // If the action starts a new animation or the current one should terminate break out of the loop
         if (handleStop(character) ||
-            isPaused ||
+            handlePaused(character, index) ||
             isGameOver ||
             handleObstacles(character) ||
             !getProperty(SCREENS, screenNumber, OPPONENTS).includes(character) ||
@@ -78,6 +78,14 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
         setProperty(character, ACTION, undefined);
         getProperty(character, SPRITE).stop();
     }
+}
+
+function handlePaused(character, index) {
+    if (isPaused && compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+        console.log('pausing and frame index is:' + index);
+        pauseFrameIndex = index;
+    }
+    return isPaused;
 }
 
 /**
@@ -250,13 +258,13 @@ function handleMonsterTurnaround(character) {
  * @param unpausing true if the function was called in the context of unpausing the game
  */
 function startMonsterAttacks(unpausing = false) {
-    let monsterSprites = filterBarbarianSprite(SCREENS[screenNumber][OPPONENTS]);
+    let monsterSprites = filterBarbarianCharacter(SCREENS[screenNumber][OPPONENTS]);
 
     for (let monsterSprite of monsterSprites) {
 
         if ((getProperty(monsterSprite, STATUS) === DEAD && !unpausing) ||
             (getProperty(monsterSprite, STATUS) === ALIVE && unpausing)) {
-            setSpriteCss(monsterSprite, 'display', 'block');
+            setCharacterCss(monsterSprite, 'display', 'block');
             setProperty(monsterSprite, STATUS, ALIVE);
             playSound(getProperty(monsterSprite, SOUND));
             performAction(monsterSprite, getProperty(monsterSprite, RESET, ACTION), 0);
@@ -268,10 +276,10 @@ function startMonsterAttacks(unpausing = false) {
  * Hides the opponents and trap doors on the current screen
  */
 function hideOpponentsAndTrapDoors() {
-    let opponents = filterBarbarianSprite(getOpponents());
+    let opponents = filterBarbarianCharacter(getOpponents());
     for (let opponent of opponents) {
-        setSpriteCss(opponent, 'display', 'none');
-        setSpriteCss(getProperty(opponent, DEATH), 'display', 'none');
+        setCharacterCss(opponent, 'display', 'none');
+        setCharacterCss(getProperty(opponent, DEATH), 'display', 'none');
     }
 
     let trapDoors = getProperty(SCREENS, screenNumber, TRAP_DOORS);
@@ -336,7 +344,7 @@ function renderSpriteFrame(character, requestedAction, direction, position) {
     let heightOffset = getProperty(character, FRAMES, requestedAction, direction, HEIGHT_OFFSET) *
             getProperty(character, SPRITE).height();
 
-    setSpriteCss(character, 'background-position',
+    setCharacterCss(character, 'background-position',
         -1*position*getProperty(character, SPRITE).width() + 'px ' + -1*heightOffset + 'px');
 }
 
@@ -347,12 +355,12 @@ function renderSpriteFrame(character, requestedAction, direction, position) {
  */
 async function animateDeath(character) {
     getProperty(character, SPRITE).stop();
-    setSpriteCss(getProperty(character, DEATH), 'left', getProperty(character, SPRITE).offset().left + 'px');
+    setCharacterCss(getProperty(character, DEATH), 'left', getProperty(character, SPRITE).offset().left + 'px');
     actionsLocked = compareProperty(character, NAME, BARBARIAN_SPRITE_NAME);
-    setSpriteCss(character[DEATH], 'display', 'block');
+    setCharacterCss(character[DEATH], 'display', 'block');
 
     if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
-        setSpriteCss(character, 'display', 'none');
+        setCharacterCss(character, 'display', 'none');
     }
 
     let frames = getProperty(character, DEATH, FRAMES, DEATH, getProperty(character, DIRECTION), FRAMES);
@@ -364,7 +372,7 @@ async function animateDeath(character) {
     actionsLocked = false;
 
     if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
-        setSpriteCss(getProperty(character, DEATH), 'display', 'none');
+        setCharacterCss(getProperty(character, DEATH), 'display', 'none');
     }
 }
 

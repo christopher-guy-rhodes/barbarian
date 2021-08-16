@@ -321,3 +321,11 @@ SCREENS = {
             }}],
     }
 };
+
+BARBARIAN_ACTION_NUM_TIMES = {
+    RUN : 0,
+    WALK: 0,
+    ATTACK: 1,
+    JUMP: 1,
+    STOP: 1
+}

@@ -3,6 +3,7 @@
  * @param character the character to execute the action for
  * @param action the action to execute
  * @param numberOfTimes the number of times to execute the action (zero for infinite)
+ * @param index optional starting index (used for resuming paused games)
  */
 function performAction(character, action, numberOfTimes, index = 0) {
     getProperty(character, SPRITE).stop();
@@ -14,11 +15,13 @@ function performAction(character, action, numberOfTimes, index = 0) {
 
 /**
  * Animate a character using the requested action. Stops when a different action is requested or the action has happened
- * "numberOfTimes" times. If times is set to zero the animation will not terminate unless a new action is requested.
+ * numberOfTimes times. If numberOfTimes is set to zero the animation will not terminate unless a new action is
+ * requested.
  * @param character the character to animate
  * @param requestedAction the requested action (WALK, ATTACK etc.)
  * @param requestedDirection the requested direction (LEFT, RIGHT etc.)
  * @param numberOfTimes the number of times to perform the action (0 for infinite)
+ * @param idx optional starting index (used for resuming paused games)
  * @returns {Promise<void>} a void promise
  */
 async function animateCharacter(character, requestedAction, requestedDirection, numberOfTimes, idx = 0) {
@@ -80,9 +83,14 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
     }
 }
 
+/**
+ * Saves off the frame index if pausing and the character is the barbarian.
+ * @param character the character getting paused
+ * @param index the frame index to save off if pausing
+ * @returns {boolean} true if the game is paused, false otherwise
+ */
 function handlePaused(character, index) {
     if (isPaused && compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
-        console.log('pausing and frame index is:' + index);
         pauseFrameIndex = index;
     }
     return isPaused;

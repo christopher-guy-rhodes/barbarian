@@ -1,4 +1,4 @@
-BARBARIAN_CHARACTER = {
+let BARBARIAN_CHARACTER = {
     SPRITE : $(".barbarian"),
     NAME : BARBARIAN_SPRITE_NAME,
     ACTION : STOP,
@@ -99,7 +99,7 @@ BARBARIAN_CHARACTER = {
     }
 };
 
-DOG_CHARACTER = {
+let DOG_CHARACTER = {
     SPRITE : $('.dog'),
     NAME : DOG_SPRITE_NAME,
     ACTION : SIT,
@@ -201,7 +201,7 @@ DOG_CHARACTER = {
     }
 };
 
-MONSTER_CHARACTER = {
+let MONSTER_CHARACTER = {
     SPRITE : $(".monster"),
     NAME : MONSTER_SPRITE_NAME,
     ACTION : WALK,

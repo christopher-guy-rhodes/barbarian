@@ -3,7 +3,48 @@
 <head>
 <link rel="stylesheet" href="/css/barbarian.css">
 <script src="/js/jquery.min.js"></script>
+<script src="/js/jquery.mobile.swipeupdown.js"></script>
+<link rel="stylesheet" href="/css/jquery.mobile.min.css">
+<script src="/js/jquery.mobile.min.js"></script>
+
 <script>
+    $(function(){
+        // Bind the swipeHandler callback function to the swipe event on div.box
+        $('.backdrop').on('swipe', swipeHandler);
+        $('.backdrop').on('swipeup', swipeUpHandler);
+        $('.backdrop').on('swipedown', swipeDownHandler);
+        $('.backdrop').on('taphold', clickHandler);
+        $('.backdrop').on('dblclick', attackHandler);
+
+        function swipeDownHandler(event) {
+            handleStopKeypress();
+        }
+
+        function swipeUpHandler(event) {
+            handleJumpKeypress();
+        }
+
+        function clickHandler(event) {
+            handleSpaceKeypress();
+        }
+
+        function attackHandler(event) {
+            handleAttackKeypress();
+        }
+
+        // Callback function references the event target and adds the 'swipe' class to it
+        function swipeHandler(event){
+            let x1 = event.swipestart.coords[0];
+            let x2 = event.swipestop.coords[0];
+
+            if (x1 < x2) {
+                compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) ? handleRunKeypress() : handleRightKeypress();
+            } else {
+                compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) ? handleRunKeypress() : handleLeftKeypress();
+            }
+        }
+    });
+
 let screenNumber = 0;
 let actionsLocked = false;
 let isPaused = false;
@@ -36,7 +77,7 @@ $(document).ready(function(){
         window.resizeTo(SCREEN_WIDTH, SCREEN_HEIGHT);
     });
 
-    windowWidth = $(document).width();
+    windowWidth = 1400;
     let keypressTime;
     let lastKeypressTime;
 

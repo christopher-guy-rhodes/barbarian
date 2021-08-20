@@ -103,7 +103,7 @@ function shouldThrottle(lastKeypressTime) {
 /**
  * Handles the space bar keypress event that restarts the game after a barbarian death or game completion.
  */
-function handleSpaceKeypress() {
+function handleSpaceKeypress(event) {
     if (compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
         resetGame();
         hideAllMessages();

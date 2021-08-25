@@ -3,47 +3,12 @@
 <head>
 <link rel="stylesheet" href="/css/barbarian.css">
 <script src="/js/jquery.min.js"></script>
-<script src="/js/jquery.mobile.swipeupdown.js"></script>
 <link rel="stylesheet" href="/css/jquery.mobile.min.css">
+<link rel="manifest" href="/manifest.json">
 <script src="/js/jquery.mobile.min.js"></script>
-
+<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+</head>
 <script>
-    $(function(){
-        // Bind the swipeHandler callback function to the swipe event on div.box
-        $('.backdrop').on('swipe', swipeHandler);
-        $('.backdrop').on('swipeup', swipeUpHandler);
-        $('.backdrop').on('swipedown', swipeDownHandler);
-        $('.backdrop').on('taphold', clickHandler);
-        $('.backdrop').on('dblclick', attackHandler);
-
-        function swipeDownHandler(event) {
-            handleStopKeypress();
-        }
-
-        function swipeUpHandler(event) {
-            handleJumpKeypress();
-        }
-
-        function clickHandler(event) {
-            handleSpaceKeypress();
-        }
-
-        function attackHandler(event) {
-            handleAttackKeypress();
-        }
-
-        // Callback function references the event target and adds the 'swipe' class to it
-        function swipeHandler(event){
-            let x1 = event.swipestart.coords[0];
-            let x2 = event.swipestop.coords[0];
-
-            if (x1 < x2) {
-                compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) ? handleRunKeypress() : handleRightKeypress();
-            } else {
-                compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) ? handleRunKeypress() : handleLeftKeypress();
-            }
-        }
-    });
 
 let screenNumber = 0;
 let actionsLocked = false;
@@ -53,6 +18,9 @@ let isHints = true;
 let isSoundOn = true;
 let windowWidth = undefined;
 let pauseFrameIndex = 0;
+let keypressTime;
+let lastKeypressTime;
+
 $(document).ready(function(){
 
     // Include constants
@@ -72,83 +40,104 @@ $(document).ready(function(){
     // Include keypress events
     $.getScript('/js/events.js', function() {
 
-    // Don't allow screen resizing
+    let viewportmeta = document.querySelector('meta[name="viewport"]');
+
+    let width = $(window).width();
+    let height = $(window).height();
+
+    let scalingDimension = undefined;
+    if (width > height) {
+        scalingDimension = width;
+    } else {
+        scalingDimension = height - 50;
+    }
+
+    viewportmeta.content = viewportmeta.content.replace(/initial-scale=[^,]+/, 'initial-scale=' + (scalingDimension / 1400));
+
+    $(window).orientationchange(function(event) {
+
+        viewportmeta.content = viewportmeta.content.replace(/initial-scale=[^,]+/, 'initial-scale=' + (scalingDimension / 1400));
+        viewportmeta.content = viewportmeta.content.replace(/width=[^,]+/, 'width=' + width);
+        viewportmeta.content = viewportmeta.content.replace(/height=[^,]+/, 'height=' + height);
+    });
+
+
+    // Bind the swipeHandler callback function to the swipe event on div.box
+    $('.backdrop').on('swiperight', swipeRightHandler);
+    $('.backdrop').on('swipeleft', swipeLeftHandler);
+    $('.backdrop').on('taphold', tapHoldHandler);
+    $('.backdrop').on('click', clickHandler);
+
+    function clickHandler(event) {
+        if (compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
+            handleKeypress(KEYPRESS[KP_SPACE]);
+        }
+        let topOfBarbarian = parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('height')))/2 + parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('bottom')));
+        let barbarianLeft = getProperty(BARBARIAN_CHARACTER, SPRITE).offset().left + parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('width')) / 2);
+        let pageX = event.originalEvent.pageX;
+        let clickY = event.originalEvent.pageY;
+        if (clickY < 200) {
+            handleKeypress(KEYPRESS[KP_JUMP]);
+        } else if (pageX > barbarianLeft) {
+            if (compareProperty(BARBARIAN_CHARACTER, ACTION, WALK)) {
+                handleKeypress(KEYPRESS[KP_RUN]);
+            } else {
+                handleKeypress(KEYPRESS[KP_RIGHT]);
+            }
+        } else if (pageX <= barbarianLeft) {
+            if (compareProperty(BARBARIAN_CHARACTER, ACTION, WALK)) {
+                handleKeypress(KEYPRESS[KP_RUN]);
+            } else {
+                handleKeypress(KEYPRESS[KP_LEFT]);
+            }
+        }
+    }
+
+    function tapHoldHandler(event) {
+        handleKeypress(KEYPRESS[KP_PAUSE]);
+    }
+
+    function attackHandler(event) {
+        handleKeypress(KEYPRESS[KP_ATTACK]);
+    }
+
+    function swipeRightHandler(event){
+        if (compareProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT)) {
+            handleKeypress(KEYPRESS[KP_STOP]);
+        } else {
+            handleKeypress(KEYPRESS[KP_ATTACK]);
+        }
+    }
+
+    function swipeLeftHandler(event){
+        if (compareProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT)) {
+            handleKeypress(KEYPRESS[KP_STOP]);
+        } else {
+            handleKeypress(KEYPRESS[KP_ATTACK]);
+        }
+    }
+
+
+        // Don't allow screen resizing
     $(window).resize(function(){
         window.resizeTo(SCREEN_WIDTH, SCREEN_HEIGHT);
     });
 
     windowWidth = 1400;
-    let keypressTime;
-    let lastKeypressTime;
 
     renderSpriteFrame(MONSTER_CHARACTER, WALK, getProperty(MONSTER_CHARACTER, DIRECTION), 0, getProperty(MONSTER_CHARACTER, SPRITE).height());
 
     $(document).keydown(function(e) {
-
-        playThemeSong();
-
-        keypressTime = new Date().getTime();
-
-        let notInnterruptable = getProperty(BARBARIAN_CHARACTER, ACTION) == FALL;
-        if (!shouldThrottle(lastKeypressTime) && !notInnterruptable && !actionsLocked) {
-            lastKeypressTime = keypressTime;
-            keypressTime = new Date().getTime();
-
-            if (!isPaused || compareProperty(KEYPRESS, KP_PAUSE, e.which)) {
-
-                switch (e.which) {
-                    case getProperty(KEYPRESS, KP_CONTROLS):
-                        if(compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
-                            showMessage(CONTROL_MESSAGE);
-                        }
-                        break;
-                    case getProperty(KEYPRESS, KP_MAIN):
-                        if(compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
-                            showMessage(START_MESSAGE);
-                        }
-                        break;
-                    case getProperty(KEYPRESS, KP_SPACE):
-                        handleSpaceKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_PAUSE):
-                        handlePauseKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_HINTS):
-                        handleHintsKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_SOUND):
-                        handleSoundKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_RUN):
-                        handleRunKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_JUMP):
-                        handleJumpKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_STOP):
-                        handleStopKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_RIGHT):
-                        handleRightKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_LEFT):
-                        handleLeftKeypress();
-                        break;
-                    case getProperty(KEYPRESS, KP_ATTACK):
-                        handleAttackKeypress();
-                        break;
-                    default:
-                        return; // exit this handler for other keys
-                }
-            }
-        }
+        handleKeypress(e.which);
         e.preventDefault(); // prevent the default action (scroll / move caret)
     });
+
+
 
 })})})})})})})})});
 </script>
 </head>
-<body>
+<body style="touch-action: pan-y;">
 <div class="backdrop">
     <img class="life1" src="images/player_icon.png"></img>
     <img class="life2" src="images/player_icon.png"></img>

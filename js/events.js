@@ -266,5 +266,65 @@ function isBarbarianJustDied() {
     return new Date().getTime() - getProperty(BARBARIAN_CHARACTER, DEATH, TIME) < JUST_DIED_THRESHOLD;
 }
 
+function handleKeypress(keypress) {
+    playThemeSong();
+
+    keypressTime = new Date().getTime();
+
+    let notInnterruptable = getProperty(BARBARIAN_CHARACTER, ACTION) == FALL;
+    if (!shouldThrottle(lastKeypressTime) && !notInnterruptable && !actionsLocked) {
+        lastKeypressTime = keypressTime;
+        keypressTime = new Date().getTime();
+
+        if (!isPaused || compareProperty(KEYPRESS, KP_PAUSE, keypress)) {
+
+            switch (keypress) {
+                case getProperty(KEYPRESS, KP_CONTROLS):
+                    if(compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
+                        showMessage(CONTROL_MESSAGE);
+                    }
+                    break;
+                case getProperty(KEYPRESS, KP_MAIN):
+                    if(compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
+                        showMessage(START_MESSAGE);
+                    }
+                    break;
+                case getProperty(KEYPRESS, KP_SPACE):
+                    handleSpaceKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_PAUSE):
+                    handlePauseKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_HINTS):
+                    handleHintsKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_SOUND):
+                    handleSoundKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_RUN):
+                    handleRunKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_JUMP):
+                    handleJumpKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_STOP):
+                    handleStopKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_RIGHT):
+                    handleRightKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_LEFT):
+                    handleLeftKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_ATTACK):
+                    handleAttackKeypress();
+                    break;
+                default:
+                    return; // exit this handler for other keys
+            }
+        }
+    }
+
+}
 
 

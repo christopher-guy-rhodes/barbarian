@@ -1,0 +1,7 @@
+{
+  "name": "Barbarian",
+  "short_name": "Barbarian",
+  "start_url": ".",
+  "display": "standalone",
+  "orientation":  "landscape"
+}

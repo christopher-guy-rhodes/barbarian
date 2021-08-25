@@ -124,11 +124,11 @@ const OBSTACLE_CLOSE_PROXIMITY = 50;
 
 const SOUNDS = {
     THEME_SONG : isSoundOn ? new Audio('/sounds/theme.mp3') : undefined,
-    FALL_SOUND : new Audio('/sounds/fall.mp3'),
-    GRUNT_SOUND : new Audio('/sounds/grunt.mp3'),
-    GROWL_SOUND : new Audio('/sounds/growl.mp3'),
-    FIRE_SOUND : new Audio('/sounds/fire.mp3'),
-    MONSTER_SOUND : new Audio('/sounds/monster.mp3'),
+    FALL_SOUND : isSoundOn ? new Audio('/sounds/fall.mp3') : undefined,
+    GRUNT_SOUND : isSoundOn ? new Audio('/sounds/grunt.mp3') : undefined,
+    GROWL_SOUND : isSoundOn ? new Audio('/sounds/growl.mp3') : undefined,
+    FIRE_SOUND : isSoundOn ? new Audio('/sounds/fire.mp3') : undefined,
+    MONSTER_SOUND : isSoundOn ? new Audio('/sounds/monster.mp3') : undefined,
 
 };
 

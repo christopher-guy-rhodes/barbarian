@@ -40,85 +40,16 @@ $(document).ready(function(){
     // Include keypress events
     $.getScript('/js/events.js', function() {
 
-    let viewportmeta = document.querySelector('meta[name="viewport"]');
-
-    let width = $(window).width();
-    let height = $(window).height();
-
-    let scalingDimension = undefined;
-    if (width > height) {
-        scalingDimension = width;
-    } else {
-        scalingDimension = height - 50;
-    }
-
-    viewportmeta.content = viewportmeta.content.replace(/initial-scale=[^,]+/, 'initial-scale=' + (scalingDimension / 1400));
-
-    $(window).orientationchange(function(event) {
-
-        viewportmeta.content = viewportmeta.content.replace(/initial-scale=[^,]+/, 'initial-scale=' + (scalingDimension / 1400));
-        viewportmeta.content = viewportmeta.content.replace(/width=[^,]+/, 'width=' + width);
-        viewportmeta.content = viewportmeta.content.replace(/height=[^,]+/, 'height=' + height);
-    });
+    setViewPort();
 
 
-    // Bind the swipeHandler callback function to the swipe event on div.box
-    $('.backdrop').on('swiperight', swipeRightHandler);
-    $('.backdrop').on('swipeleft', swipeLeftHandler);
-    $('.backdrop').on('taphold', tapHoldHandler);
-    $('.backdrop').on('click', clickHandler);
+    // Bind click events
+    BACKDROP.on('swiperight', swipeRightHandler);
+    BACKDROP.on('swipeleft', swipeLeftHandler);
+    BACKDROP.on('taphold', tapHoldHandler);
+    BACKDROP.on('click', clickHandler);
 
-    function clickHandler(event) {
-        if (compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
-            handleKeypress(KEYPRESS[KP_SPACE]);
-        }
-        let topOfBarbarian = parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('height')))/2 + parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('bottom')));
-        let barbarianLeft = getProperty(BARBARIAN_CHARACTER, SPRITE).offset().left + parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('width')) / 2);
-        let pageX = event.originalEvent.pageX;
-        let clickY = event.originalEvent.pageY;
-        if (clickY < 200) {
-            handleKeypress(KEYPRESS[KP_JUMP]);
-        } else if (pageX > barbarianLeft) {
-            if (compareProperty(BARBARIAN_CHARACTER, ACTION, WALK)) {
-                handleKeypress(KEYPRESS[KP_RUN]);
-            } else {
-                handleKeypress(KEYPRESS[KP_RIGHT]);
-            }
-        } else if (pageX <= barbarianLeft) {
-            if (compareProperty(BARBARIAN_CHARACTER, ACTION, WALK)) {
-                handleKeypress(KEYPRESS[KP_RUN]);
-            } else {
-                handleKeypress(KEYPRESS[KP_LEFT]);
-            }
-        }
-    }
-
-    function tapHoldHandler(event) {
-        handleKeypress(KEYPRESS[KP_PAUSE]);
-    }
-
-    function attackHandler(event) {
-        handleKeypress(KEYPRESS[KP_ATTACK]);
-    }
-
-    function swipeRightHandler(event){
-        if (compareProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT)) {
-            handleKeypress(KEYPRESS[KP_STOP]);
-        } else {
-            handleKeypress(KEYPRESS[KP_ATTACK]);
-        }
-    }
-
-    function swipeLeftHandler(event){
-        if (compareProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT)) {
-            handleKeypress(KEYPRESS[KP_STOP]);
-        } else {
-            handleKeypress(KEYPRESS[KP_ATTACK]);
-        }
-    }
-
-
-        // Don't allow screen resizing
+    // Don't allow screen resizing
     $(window).resize(function(){
         window.resizeTo(SCREEN_WIDTH, SCREEN_HEIGHT);
     });
@@ -154,7 +85,7 @@ $(document).ready(function(){
     <div class="demo_over_message">
         <h1>Thank you for playing this demo!</h1>
         <p>
-            Press <strong>[spacebar]</strong> to play again<br/>
+            Press <strong>[spacebar] or tap screen</strong> to play again<br/>
         </p>
     </div>
     <div class="game_over">
@@ -172,23 +103,25 @@ $(document).ready(function(){
             animated them and created my own version of game. Enjoy!<br/><br/>
             Artwork and concept from Barbarian by Psygnosis<br/><br/>
             Theme Song: Death Of Rexor (Conan The Barbarian/Soundtrack Version)<br/><br/>
-            Press <strong>[spacebar]</strong> to play<br/>
-            Press <strong>C</strong> to see controls
+            Press <strong>[spacebar]</strong> or tap screen to play<br/><br>
+            Press <strong>C</strong> or <strong>swipe</strong> to see controls
         </p>
     </div>
     <div class="controls_message">
         <h1>Control menu</h1>
         <p>
-            <strong><-</strong> Left<br/>
-            <strong>-></strong> Right<br/>
-            <strong>A</strong> Attack<br/>
-            <strong>J</strong> Jump<br/>
-            <strong>R</strong> Run<br/>
-            <strong>P</strong> Pause<br/>
-            <strong>H</strong> Hints Toggle<br/>
-            <strong>X</strong> Sound Toggle<br/><br/>
+            <table>
+                <tr><td>Left</td><td>&quot;<-&quot; or &quot;tap&quot;</td></tr>
+                <tr><td>Right</td><td>&quot;->&quot; or &quot;tap&quot;</td></tr>
+                <tr><td>Attack</td><td>&quot;A&quot; or &quot;swipe&quot;</td></tr>
+                <tr><td>Jump</td><td>&quot;J&quot; or &quot;tap high&quot;</td></tr>
+                <tr><td>Run</td><td>&quot;R&quot; or &quot;tap while walking&quot;</td></tr>
+                <tr><td>Pause</td><td>&quot;P&quot; or &quot;tap and hold&quot;</td></tr>
+                <tr><td>Hints Toggle</td><td>&quot;H&quot;</td></tr>
+                <tr><td>Sound Toggle</td><td>&quot;X&quot;</td></tr>
+            </table>
 
-            Press <strong>M</strong> for main menu
+            <br></br>Press <strong>M</strong> or <strong>swipe</strong> for main menu
         </p>
     </div>
 </div>

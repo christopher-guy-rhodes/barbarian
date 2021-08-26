@@ -266,6 +266,10 @@ function isBarbarianJustDied() {
     return new Date().getTime() - getProperty(BARBARIAN_CHARACTER, DEATH, TIME) < JUST_DIED_THRESHOLD;
 }
 
+/**
+ * Handle keypress events and dispatch to appropriate handlers
+ * @param keypress the ASCII key code
+ */
 function handleKeypress(keypress) {
     playThemeSong();
 
@@ -327,4 +331,88 @@ function handleKeypress(keypress) {
 
 }
 
+/**
+ * Handles a mouse click.
+ * @param event the evnet
+ */
+function clickHandler(event) {
+    if (compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
+        handleKeypress(KEYPRESS[KP_SPACE]);
+    }
+    let topOfBarbarian = parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('height')))/2 + parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('bottom')));
+    let barbarianLeft = getProperty(BARBARIAN_CHARACTER, SPRITE).offset().left + parseInt(stripPxSuffix(getProperty(BARBARIAN_CHARACTER, SPRITE).css('width')) / 2);
+    let pageX = event.originalEvent.pageX;
+    let clickY = event.originalEvent.pageY;
+    if (clickY < 200) {
+        handleKeypress(KEYPRESS[KP_JUMP]);
+    } else  {
+        if (compareProperty(BARBARIAN_CHARACTER, ACTION, WALK)) {
+            handleKeypress(KEYPRESS[KP_RUN]);
+        } else {
+            handleKeypress(KEYPRESS[pageX > barbarianLeft ? KP_RIGHT : KP_LEFT]);
+        }
+    }
+}
 
+/**
+ * Handles a tap hold event.
+ * @param event the event
+ */
+function tapHoldHandler(event) {
+    handleKeypress(KEYPRESS[KP_PAUSE]);
+}
+
+/**
+ * Handles a swipe right event.
+ * @param event the event
+ */
+function swipeRightHandler(event){
+    if (testCss(CONTROL_MESSAGE, 'display', 'block')) {
+        handleKeypress(KEYPRESS[KP_MAIN])
+    } else if (compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
+        handleKeypress(KEYPRESS[KP_CONTROLS])
+    } else if (compareProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT)) {
+        handleKeypress(KEYPRESS[KP_STOP]);
+    } else {
+        handleKeypress(KEYPRESS[KP_ATTACK]);
+    }
+}
+
+/**
+ * Handles a swipe left event.
+ * @param event the event
+ */
+function swipeLeftHandler(event){
+    if (testCss(CONTROL_MESSAGE, 'display', 'block')) {
+        handleKeypress(KEYPRESS[KP_MAIN])
+    } else if (compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
+        handleKeypress(KEYPRESS[KP_CONTROLS])
+    } else if (compareProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT)) {
+        handleKeypress(KEYPRESS[KP_STOP]);
+    } else {
+        handleKeypress(KEYPRESS[KP_ATTACK]);
+    }
+}
+
+function setViewPort() {
+    let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+    let width = $(window).width();
+    let height = $(window).height();
+
+    let scalingDimension = undefined;
+    if (width > height) {
+        scalingDimension = width;
+    } else {
+        scalingDimension = height - 50;
+    }
+
+    viewportMeta.content = viewportMeta.content.replace(/initial-scale=[^,]+/, 'initial-scale=' + (scalingDimension / 1400));
+
+    $(window).orientationchange(function(event) {
+
+        viewportMeta.content = viewportMeta.content.replace(/initial-scale=[^,]+/, 'initial-scale=' + (scalingDimension / 1400));
+        viewportMeta.content = viewportMeta.content.replace(/width=[^,]+/, 'width=' + width);
+        viewportMeta.content = viewportMeta.content.replace(/height=[^,]+/, 'height=' + height);
+    });
+}

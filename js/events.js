@@ -85,6 +85,7 @@ function initializeScreen() {
         setCharacterCss(monsterSprite, 'filter', "brightness(100%)");
         setProperty(monsterSprite, STATUS, DEAD);
     }
+    setCharacterCss(BARBARIAN_CHARACTER, 'bottom', getProperty(BARBARIAN_CHARACTER, RESET, BOTTOM) + 'px');
 }
 
 /**
@@ -142,8 +143,8 @@ function handleHintsKeypress() {
     setCss(SOUND_ON_MESSAGE, 'display', 'none');
     setCss(SOUND_OFF_MESSAGE, 'display', 'none');
 
-    setCss(hints ? HINTS_ON_MESSAGE : HINTS_OFF_MESSAGE, 'display', 'none');
-    setCss(hints ? HINTS_OFF_MESSAGE : HINTS_ON_MESSAGE, 'display', 'block');
+    setCss(isHints ? HINTS_ON_MESSAGE : HINTS_OFF_MESSAGE, 'display', 'none');
+    setCss(isHints ? HINTS_OFF_MESSAGE : HINTS_ON_MESSAGE, 'display', 'block');
     isHints = !isHints;
 
     setTimeout(function () {
@@ -159,9 +160,9 @@ function handleSoundKeypress() {
     setCss(HINTS_ON_MESSAGE, 'display', 'none');
     setCss(HINTS_OFF_MESSAGE, 'display', 'none');
 
-    setCss(sound ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE, 'display', 'none');
-    setCss(sound ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE, 'display', 'block');
-    setSoundsPauseState(sound);
+    setCss(isSoundOn ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE, 'display', 'none');
+    setCss(isSoundOn ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE, 'display', 'block');
+    setSoundsPauseState(isSoundOn);
     isSoundOn = !isSoundOn;
 
     setTimeout(function () {

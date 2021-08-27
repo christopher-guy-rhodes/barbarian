@@ -255,7 +255,7 @@ let MONSTER_CHARACTER = {
     },
     BARBARIAN_ATTACK_THRESHOLDS : {
         MIN: 0,
-        MAX: 100
+        MAX: 115
     },
     DEATH : {
         SPRITE : $(".death"),

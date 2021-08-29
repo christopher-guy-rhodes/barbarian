@@ -27,7 +27,7 @@ function launchMonsterAttack(character, opponent) {
     if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME) && !compareProperty(character, ACTION, ATTACK)) {
         let proximity = getProximity(character, opponent);
         if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
-            performAction(character, ATTACK, 0);
+            performAction(character, ATTACK, getProperty(character, RESET, NUMBER_OF_TIMES));
             return true;
         }
     }
@@ -87,7 +87,7 @@ function opponentDefeated(character, opponent) {
  */
 function areAllMonstersDeadOnScreen() {
     for (let spr of SCREENS[screenNumber][OPPONENTS]) {
-        if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
+        if (spr[NAME] === BARBARIAN_SPRITE_NAME || spr[NAME] === ROCK_SPRITE_NAME) {
             continue;
         }
         if (spr[STATUS] === ALIVE) {
@@ -211,6 +211,9 @@ function getOpponentsInProximity(character, proximityThreshold) {
     let opponents = getOpponents();
     for (let opponent of opponents) {
         let proximity = getProximity(character, opponent);
+        if (compareProperty(opponent, NAME, ROCK_CHARACTER)) {
+            console.log('checking if rock is close');
+        }
         if (proximity > 0 && proximity < proximityThreshold) {
             attackers.push(opponent);
         }

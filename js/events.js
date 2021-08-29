@@ -48,7 +48,7 @@ function resetSpritePositions() {
         setProperty(sprite, STATUS, getProperty(sprite, RESET, STATUS));
         setCharacterCss(sprite, 'display', isSpriteOnScreen ? 'block' : 'none');
         setCharacterCss(sprite, 'left',  getProperty(sprite, RESET, LEFT) + 'px');
-        setCharacterCss(sprite, 'bottom', getProperty(sprite, RESET, BOTTOM) + 'px');
+        setCharacterCss(sprite, 'bottom', getProperty(sprite, RESET, BOTTOM, screenNumber) + 'px');
     }
 }
 
@@ -62,7 +62,7 @@ function resetTrapDoors() {
             if (parseInt(scrNo) !== screenNumber) {
                 setCss(getProperty(trapDoor, ELEMENT), 'display', 'none');
             }
-            setCss(getProperty(trapDoor, ELEMENT), 'bottom', getProperty(trapDoor, RESET, BOTTOM) + 'px');
+            setCss(getProperty(trapDoor, ELEMENT), 'bottom', getProperty(trapDoor, RESET, BOTTOM, screenNumber) + 'px');
         }
     }
 }
@@ -74,18 +74,17 @@ function initializeScreen() {
     let trapDoors = getProperty(SCREENS, screenNumber, TRAP_DOORS);
     for (let trapDoor of trapDoors) {
         setCss(getProperty(trapDoor, ELEMENT), 'display', 'block');
-        setCss(getProperty(trapDoor, ELEMENT), getProperty(trapDoor, RESET, BOTTOM) + 'px');
+        setCss(getProperty(trapDoor, ELEMENT), 'bottom', getProperty(trapDoor, RESET, BOTTOM) + 'px');
     }
 
     let monsterSprites = filterBarbarianCharacter(getProperty(SCREENS, screenNumber, OPPONENTS));
 
     for (let monsterSprite of monsterSprites) {
         setCharacterCss(monsterSprite, 'left', getProperty(monsterSprite, RESET, LEFT) + 'px');
-        setCharacterCss(monsterSprite, 'bottom', getProperty(monsterSprite, RESET, BOTTOM) + 'px');
+        setCharacterCss(monsterSprite, 'bottom', getProperty(monsterSprite, RESET, BOTTOM, screenNumber) + 'px');
         setCharacterCss(monsterSprite, 'filter', "brightness(100%)");
         setProperty(monsterSprite, STATUS, DEAD);
     }
-    setCharacterCss(BARBARIAN_CHARACTER, 'bottom', getProperty(BARBARIAN_CHARACTER, RESET, BOTTOM) + 'px');
 }
 
 /**

@@ -214,8 +214,9 @@ async function advanceBackdrop(character, direction) {
             ADVANCE_SCREEN_DURATION_SECONDS);
     moveSpriteToPosition(character, x, undefined, adjustedPixelsPerSecond);
 
-    for (let i = 0; i < numberOfIterations ; i++) {
-        let offset = (i + 1) * pixelsPerIteration;
+    let screenOffset = direction === RIGHT ? -1*(screenNumber * SCREEN_WIDTH) : (screenNumber - 1) * SCREEN_WIDTH;
+    for (let i = 0; i < numberOfIterations; i++) {
+        let offset = screenOffset + (i + 1) * pixelsPerIteration;
         let position = direction === RIGHT ? numberOfIterations * pixelsPerIteration - offset : offset;
         setCss(BACKDROP, 'background-position', -1*position + 'px');
         await sleep(sleepPerIteration);
@@ -244,6 +245,15 @@ function handleMonsterTurnaround(character) {
         return false;
     }
 
+    if (compareProperty(character, RESET, TURNAROUND, false)) {
+        if (hitLeftBoundary(character) || hitRightBoundary(character)) {
+            setCss(getProperty(character, SPRITE), 'display', 'none');
+            return true;
+        }
+        return false;
+    }
+
+
     let isPassedLeft = getProperty(character, DIRECTION) === LEFT &&
         getProperty(character, SPRITE).offset().left + getProperty(character, SPRITE).width() * PASSING_MULTIPLIER <
                 getProperty(BARBARIAN_CHARACTER, SPRITE).offset().left || hitLeftBoundary(character);
@@ -251,9 +261,9 @@ function handleMonsterTurnaround(character) {
         getProperty(character, SPRITE).offset().left - getProperty(character, SPRITE).width() * PASSING_MULTIPLIER >
                 getProperty(BARBARIAN_CHARACTER, SPRITE).offset().left || hitRightBoundary(character);
 
-    if (isPassedLeft || isPassedRight) {
+    if ((isPassedLeft || isPassedRight) && compareProperty(character, RESET, TURNAROUND, true)) {
         setProperty(character, DIRECTION, isPassedLeft ? RIGHT : LEFT);
-        performAction(character, WALK, 0);
+        performAction(character, WALK, getProperty(character, RESET, NUMBER_OF_TIMES));
         return true;
     } else {
         return false;
@@ -275,7 +285,7 @@ function startMonsterAttacks(unpausing = false) {
             setCharacterCss(monsterSprite, 'display', 'block');
             setProperty(monsterSprite, STATUS, ALIVE);
             playSound(getProperty(monsterSprite, SOUND));
-            performAction(monsterSprite, getProperty(monsterSprite, RESET, ACTION), 0);
+            performAction(monsterSprite, getProperty(monsterSprite, RESET, ACTION), getProperty(monsterSprite, RESET, NUMBER_OF_TIMES));
         }
     }
 }

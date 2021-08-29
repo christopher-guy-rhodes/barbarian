@@ -31,6 +31,7 @@ function filterBarbarianCharacter(characters) {
  * @param error the error.
  */
 function handlePromiseError(error) {
+    alert('An error has occurred, please check the console log');
     console.log("Error fulfilling promise: %o", error);
 }
 

@@ -31,6 +31,16 @@
     display: none;
 }
 
+.rock {
+    height: 400px;
+    width: 400px;
+    background-image: url(../sprites/rock.png);
+    position: absolute;
+    left: 1270px;
+    bottom: 12px;
+    display: none;
+}
+
 .death {
     border: 0px solid white;
     height: 800px;

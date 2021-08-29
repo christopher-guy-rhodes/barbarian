@@ -94,7 +94,11 @@ let BARBARIAN_CHARACTER = {
         ACTION : STOP,
         DIRECTION : RIGHT,
         LEFT: 0,
-        BOTTOM: 12,
+        BOTTOM: {
+            0 : 12,
+            1 : 12,
+            2 : 160
+        },
         STATUS: ALIVE
     }
 };
@@ -196,8 +200,14 @@ let DOG_CHARACTER = {
         ACTION : SIT,
         DIRECTION: LEFT,
         LEFT: 850,
-        BOTTOM: 160,
-        STATUS: DEAD
+        BOTTOM: {
+            0 : 12,
+            1 : 160,
+            2 : 12,
+        },
+        STATUS: DEAD,
+        NUMBER_OF_TIMES: 0,
+        TURNAROUND : true
     }
 };
 
@@ -280,12 +290,122 @@ let MONSTER_CHARACTER = {
         ACTION : WALK,
         DIRECTION : LEFT,
         LEFT: 850,
-        BOTTOM: 12,
-        STATUS: DEAD
+        BOTTOM: {
+            0 : 12,
+            1 : 12,
+            2 : 12
+        },
+        STATUS: DEAD,
+        NUMBER_OF_TIMES: 0,
+        TURNAROUND : true
     }
 };
 
-SPRITES = [BARBARIAN_CHARACTER, MONSTER_CHARACTER, DOG_CHARACTER];
+let ROCK_CHARACTER = {
+    SPRITE : $('.rock'),
+    NAME : ROCK_SPRITE_NAME,
+    ACTION : SIT,
+    DIRECTION : LEFT,
+    FPS: {
+        WALK : DOG_SPRITE_FPS,
+        RUN : DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: DOG_SPRITE_FPS,
+        ATTACK: DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+        STOP: 0,
+        FALL: DOG_SPRITE_FPS,
+        SIT: DOG_SPRITE_FPS
+    },
+    PIXELS_PER_SECOND : {
+        WALK : DOG_PIXELS_PER_SECOND,
+        RUN : DOG_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: DOG_PIXELS_PER_SECOND,
+        ATTACK: DOG_PIXELS_PER_SECOND,
+        SIT: 0,
+        STOP: 0,
+        FALL: DOG_PIXELS_PER_SECOND
+    },
+    STATUS : DEAD,
+    FRAMES : {
+        SIT : {
+            LEFT : {
+                FRAMES: [5, 4],
+                HEIGHT_OFFSET : 0
+            },
+            RIGHT : {
+                FRAMES : [0, 1],
+                HEIGHT_OFFSET : 0
+            }
+        },
+        ATTACK : {
+            LEFT : {
+                FRAMES: [5, 4, 3, 2, 1, 0],
+                HEIGHT_OFFSET : 0
+            },
+            RIGHT : {
+                FRAMES : [0, 1, 2, 3, 4, 5],
+                HEIGHT_OFFSET : 0
+            }
+        },
+        WALK : {
+            LEFT : {
+                FRAMES: [5, 4, 3, 2, 1, 0],
+                HEIGHT_OFFSET : 0
+            },
+            RIGHT : {
+                FRAMES : [0, 1, 2, 3, 4, 5],
+                HEIGHT_OFFSET : 0
+            }
+        },
+    },
+    ATTACK_THRESHOLDS : {
+        MIN : 0,
+        MAX : 100
+    },
+    JUMP_THRESHOLDS : {
+        MIN : 15,
+        MAX : 100
+    },
+    BARBARIAN_ATTACK_THRESHOLDS : {
+        MIN : 0,
+        MAX : 0
+    },
+    DEATH : {
+        SPRITE : $(".death"),
+        DELAY : 1800,
+        TIME: 0,
+        FRAMES : {
+            DEATH : {
+                RIGHT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    HEIGHT_OFFSET: 0
+                },
+                LEFT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    HEIGHT_OFFSET: 0
+                },
+                FPS: BOG_MONSTER_SPRITE_FPS
+            }
+        },
+    },
+    STOP_POSITION : {
+        RIGHT : 0,
+        LEFT: 3,
+        RIGHT_HEIGHT : 0,
+        LEFT_HEIGHT: 1
+    },
+    SOUND: GRUNT_SOUND,
+    RESET : {
+        ACTION : SIT,
+        DIRECTION: LEFT,
+        LEFT: 1270,
+        BOTTOM: 12,
+        STATUS: DEAD,
+        NUMBER_OF_TIMES: 0,
+        TURNAROUND : false
+    }
+};
+
+SPRITES = [BARBARIAN_CHARACTER, MONSTER_CHARACTER, DOG_CHARACTER, ROCK_CHARACTER];
 
 SCREENS = {
     0 : {
@@ -300,7 +420,7 @@ SCREENS = {
         OBSTACLES: {
             RIGHT: [
                 {LEFT: 50, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 82, JUMP_THRESHOLDS: {MIN: -100, MAX: 100}},
-                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 160, JUMP_THRESHOLDS: {MIN: 400, MAX: 430}},
+                {LEFT: 400, OBSTACLE_TYPE: ELEVATION, FAIL_ACTION: STOP, HEIGHT: 160, JUMP_THRESHOLDS: {MIN: 350, MAX: 430}},
                 {LEFT: 800, OBSTACLE_TYPE: PIT, FAIL_ACTION: FALL, HEIGHT: 160, JUMP_THRESHOLDS: {MIN: 710, MAX: 830}}
             ],
             LEFT: [
@@ -319,6 +439,21 @@ SCREENS = {
                 LEFT: 700,
                 TIME: 300
             }}],
+    },
+    2 : {
+        OBSTACLES : {
+            RIGHT: [
+                {LEFT: 107, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 122},
+                {LEFT: 207, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 74},
+                {LEFT: 325, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 12},
+            ],
+            LEFT: [
+                {LEFT: 410, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 122, JUMP_THRESHOLDS : {MIN: 310, MAX: 460}},
+                {LEFT: 160, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 160, JUMP_THRESHOLDS : {MIN: 60, MAX: 210}},
+            ],
+        },
+        OPPONENTS: [BARBARIAN_CHARACTER, ROCK_CHARACTER, MONSTER_CHARACTER],
+        TRAP_DOORS: []
     }
 };
 

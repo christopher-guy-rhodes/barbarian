@@ -90,7 +90,7 @@ function areAllMonstersDeadOnScreen() {
         if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
             continue;
         }
-        if (spr[STATUS] === ALIVE) {
+        if (compareProperty(spr, STATUS, ALIVE)) {
             return false;
         }
     }

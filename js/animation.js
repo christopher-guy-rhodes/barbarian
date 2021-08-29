@@ -248,6 +248,7 @@ function handleMonsterTurnaround(character) {
     if (compareProperty(character, RESET, TURNAROUND, false)) {
         if (hitLeftBoundary(character) || hitRightBoundary(character)) {
             setCss(getProperty(character, SPRITE), 'display', 'none');
+            setProperty(character, STATUS, DEAD);
             return true;
         }
         return false;

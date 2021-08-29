@@ -77,7 +77,9 @@ function handleObstacles(character) {
             if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME) ||
                 isDownhill(character, obstacle) ||
                 hasEvadedObstacleWithJump(character, obstacle)) {
-                setCss(getProperty(character, SPRITE).css('bottom', obstacle[HEIGHT] + 'px'));
+                if (compareProperty(character, CAN_ELEVATE, true)) {
+                    setCss(getProperty(character, SPRITE).css('bottom', obstacle[HEIGHT] + 'px'));
+                }
             } else {
                 getProperty(character, SPRITE).stop();
 

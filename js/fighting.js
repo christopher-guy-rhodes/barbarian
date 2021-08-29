@@ -87,7 +87,7 @@ function opponentDefeated(character, opponent) {
  */
 function areAllMonstersDeadOnScreen() {
     for (let spr of SCREENS[screenNumber][OPPONENTS]) {
-        if (spr[NAME] === BARBARIAN_SPRITE_NAME || spr[NAME] === ROCK_SPRITE_NAME) {
+        if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
             continue;
         }
         if (spr[STATUS] === ALIVE) {

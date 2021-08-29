@@ -172,6 +172,9 @@ function highlightAttackRange(character) {
     }
     let opponents = filterBarbarianCharacter(getOpponents());
     for (let opponent of opponents) {
+        if (compareProperty(opponent, CAN_HIGHLIGHT, false)) {
+            continue;
+        }
         let thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
 
         let distance = Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);

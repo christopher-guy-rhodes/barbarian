@@ -19,6 +19,18 @@
     bottom: 12px;
 }
 
+.monster_invincible {
+    border: 0px solid red;
+    height: 400px;
+    width: 400px;
+    background-image: url(../sprites/monster_invincible.png);
+    position: absolute;
+    left: 850px;
+    bottom: 12px;
+    display: none;
+}
+
+
 .dog {
     border: 0px solid red;
     height: 400px;

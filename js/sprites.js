@@ -4,6 +4,7 @@ let BARBARIAN_CHARACTER = {
     ACTION : STOP,
     DIRECTION : RIGHT,
     CAN_ELEVATE : true,
+    CAN_HIGHLIGHT: false,
     FPS: {
       WALK : SPRITE_FPS,
       RUN : SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
@@ -110,6 +111,7 @@ let DOG_CHARACTER = {
     ACTION : SIT,
     DIRECTION : LEFT,
     CAN_ELEVATE : true,
+    CAN_HIGHLIGHT: true,
     FPS: {
         WALK : DOG_SPRITE_FPS,
         RUN : DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
@@ -213,12 +215,13 @@ let DOG_CHARACTER = {
     }
 };
 
-let MONSTER_CHARACTER = {
-    SPRITE : $(".monster"),
-    NAME : MONSTER_SPRITE_NAME,
+let MONSTER_INVINCIBLE_CHARACTER = {
+    SPRITE : $(".monster_invincible"),
+    NAME : MONSTER_INVINCIBLE_SPRITE_NAME,
     ACTION : WALK,
     DIRECTION : LEFT,
     CAN_ELEVATE : true,
+    CAN_HIGHLIGHT: false,
     FPS: {
         WALK : BOG_MONSTER_SPRITE_FPS,
         RUN : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
@@ -263,8 +266,100 @@ let MONSTER_CHARACTER = {
         MAX : 100
     },
     JUMP_THRESHOLDS : {
-        MIN : 15,
+        MIN : -10,
+        MAX : 110
+    },
+    BARBARIAN_ATTACK_THRESHOLDS : {
+        MIN: 0,
+        MAX: 0
+    },
+    DEATH : {
+        SPRITE : $(".death"),
+        DELAY : 1800,
+        TIME: 0,
+        FRAMES : {
+            DEATH : {
+                RIGHT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    HEIGHT_OFFSET: 0
+                },
+                LEFT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                    HEIGHT_OFFSET: 0
+                },
+                FPS: BOG_MONSTER_SPRITE_FPS
+            }
+        },
+    },
+    SOUND: MONSTER_SOUND,
+    RESET : {
+        ACTION : WALK,
+        DIRECTION : LEFT,
+        LEFT: 850,
+        BOTTOM: {
+            0 : 12,
+            1 : 12,
+            2 : 12
+        },
+        STATUS: DEAD,
+        NUMBER_OF_TIMES: 0,
+        TURNAROUND : true
+    }
+};
+
+let MONSTER_CHARACTER = {
+    SPRITE : $(".monster"),
+    NAME : MONSTER_SPRITE_NAME,
+    ACTION : WALK,
+    DIRECTION : LEFT,
+    CAN_ELEVATE : true,
+    CAN_HIGHLIGHT: true,
+    FPS: {
+        WALK : BOG_MONSTER_SPRITE_FPS,
+        RUN : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: BOG_MONSTER_SPRITE_FPS,
+        ATTACK : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
+        STOP: 0,
+        FALL: BOG_MONSTER_SPRITE_FPS
+    },
+    PIXELS_PER_SECOND : {
+        WALK : BOG_MONSTER_PIXELS_PER_SECOND,
+        RUN : BOG_MONSTER_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
+        JUMP: BOG_MONSTER_PIXELS_PER_SECOND,
+        ATTACK: BOG_MONSTER_PIXELS_PER_SECOND,
+        STOP: 0,
+        FALL: BOG_MONSTER_PIXELS_PER_SECOND
+    },
+    STATUS : DEAD,
+    FRAMES : {
+        WALK : {
+            LEFT : {
+                FRAMES: [13, 12, 11, 10, 9, 8],
+                HEIGHT_OFFSET: 1
+            },
+            RIGHT : {
+                FRAMES: [0, 1, 2, 3, 4, 5],
+                HEIGHT_OFFSET: 0
+            }
+        },
+        ATTACK : {
+            LEFT : {
+                FRAMES: [31, 30, 29, 28, 27, 26, 25, 24],
+                HEIGHT_OFFSET: 3
+            },
+            RIGHT : {
+                FRAMES: [16, 17 , 18, 19, 20, 21, 23, 23],
+                HEIGHT_OFFSET: 2
+            }
+        },
+    },
+    ATTACK_THRESHOLDS : {
+        MIN : 0,
         MAX : 100
+    },
+    JUMP_THRESHOLDS : {
+        MIN : -10,
+        MAX : 110
     },
     BARBARIAN_ATTACK_THRESHOLDS : {
         MIN: 0,
@@ -310,6 +405,7 @@ let ROCK_CHARACTER = {
     ACTION : SIT,
     DIRECTION : LEFT,
     CAN_ELEVATE : false,
+    CAN_HIGHLIGHT: false,
     FPS: {
         WALK : DOG_SPRITE_FPS,
         RUN : DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
@@ -362,12 +458,12 @@ let ROCK_CHARACTER = {
         },
     },
     ATTACK_THRESHOLDS : {
-        MIN : 0,
-        MAX : 100
+        MIN : MONSTER_CHARACTER[ATTACK_THRESHOLDS][MIN] - 50,
+        MAX : MONSTER_CHARACTER[ATTACK_THRESHOLDS][MAX] + 50
     },
     JUMP_THRESHOLDS : {
-        MIN : 15,
-        MAX : 100
+        MIN : 0,
+        MAX : 0
     },
     BARBARIAN_ATTACK_THRESHOLDS : {
         MIN : 0,
@@ -409,7 +505,7 @@ let ROCK_CHARACTER = {
     }
 };
 
-SPRITES = [BARBARIAN_CHARACTER, MONSTER_CHARACTER, DOG_CHARACTER, ROCK_CHARACTER];
+SPRITES = [BARBARIAN_CHARACTER, MONSTER_CHARACTER, DOG_CHARACTER, ROCK_CHARACTER, MONSTER_INVINCIBLE_CHARACTER];
 
 SCREENS = {
     0 : {
@@ -456,7 +552,7 @@ SCREENS = {
                 {LEFT: 160, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 160, JUMP_THRESHOLDS : {MIN: 60, MAX: 210}},
             ],
         },
-        OPPONENTS: [BARBARIAN_CHARACTER, ROCK_CHARACTER, MONSTER_CHARACTER],
+        OPPONENTS: [BARBARIAN_CHARACTER, ROCK_CHARACTER, MONSTER_INVINCIBLE_CHARACTER],
         TRAP_DOORS: []
     }
 };

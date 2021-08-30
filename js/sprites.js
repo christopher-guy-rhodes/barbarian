@@ -2,11 +2,14 @@ let BARBARIAN_CHARACTER = {
     SPRITE : $(".barbarian"),
     NAME : BARBARIAN_SPRITE_NAME,
     ACTION : STOP,
+    PREVIOUS_ACTION : undefined,
     DIRECTION : RIGHT,
+    VERTICAL_DIRECTION : undefined,
     CAN_ELEVATE : true,
     CAN_HIGHLIGHT: false,
     FPS: {
       WALK : SPRITE_FPS,
+      SWIM : SPRITE_FPS,
       RUN : SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
       JUMP: SPRITE_FPS,
       ATTACK: SPRITE_FPS,
@@ -15,6 +18,7 @@ let BARBARIAN_CHARACTER = {
     },
     PIXELS_PER_SECOND : {
         WALK : BARBARIAN_SPRITE_PIXELS_PER_SECOND,
+        SWIM : BARBARIAN_SPRITE_PIXELS_PER_SECOND,
         RUN : BARBARIAN_SPRITE_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
         JUMP: BARBARIAN_SPRITE_PIXELS_PER_SECOND,
         ATTACK: 0,
@@ -45,6 +49,13 @@ let BARBARIAN_CHARACTER = {
                 FRAMES : [16, 17, 18, 19, 20, 21],
                 HEIGHT_OFFSET : 2}},
         WALK : {
+            LEFT : {
+                FRAMES :  [13, 12, 11, 10, 9, 8],
+                HEIGHT_OFFSET : 1},
+            RIGHT : {
+                FRAMES : [1, 2, 3, 4, 5, 6],
+                HEIGHT_OFFSET : 0}},
+        SWIM : {
             LEFT : {
                 FRAMES :  [13, 12, 11, 10, 9, 8],
                 HEIGHT_OFFSET : 1},
@@ -86,20 +97,14 @@ let BARBARIAN_CHARACTER = {
             }
         }
     },
-    STOP_POSITION : {
-        RIGHT : STOP_RIGHT_POSITION,
-        LEFT: STOP_LEFT_POSITION,
-        RIGHT_HEIGHT : STOP_RIGHT_HEIGHT_OFFSET,
-        LEFT_HEIGHT: STOP_LEFT_HEIGHT_OFFSET
-    },
     RESET : {
         ACTION : STOP,
         DIRECTION : RIGHT,
         LEFT: 0,
         BOTTOM: {
-            0 : 12,
-            1 : 12,
-            2 : 160
+            SCREEN_0 : 12,
+            SCREEN_1 : 12,
+            SCREEN_2 : 160
         },
         STATUS: ALIVE
     }
@@ -109,26 +114,20 @@ let DOG_CHARACTER = {
     SPRITE : $('.dog'),
     NAME : DOG_SPRITE_NAME,
     ACTION : SIT,
+    PREVIOUS_ACTION : undefined,
     DIRECTION : LEFT,
+    VERTICAL_DIRECTION : undefined,
     CAN_ELEVATE : true,
     CAN_HIGHLIGHT: true,
     FPS: {
-        WALK : DOG_SPRITE_FPS,
-        RUN : DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-        JUMP: DOG_SPRITE_FPS,
+        SIT: DOG_SPRITE_FPS,
         ATTACK: DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-        STOP: 0,
-        FALL: DOG_SPRITE_FPS,
-        SIT: DOG_SPRITE_FPS
+        WALK : DOG_SPRITE_FPS,
     },
     PIXELS_PER_SECOND : {
-        WALK : DOG_PIXELS_PER_SECOND,
-        RUN : DOG_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
-        JUMP: DOG_PIXELS_PER_SECOND,
-        ATTACK: DOG_PIXELS_PER_SECOND,
         SIT: 0,
-        STOP: 0,
-        FALL: DOG_PIXELS_PER_SECOND
+        ATTACK: DOG_PIXELS_PER_SECOND,
+        WALK : DOG_PIXELS_PER_SECOND,
     },
     STATUS : DEAD,
     FRAMES : {
@@ -193,12 +192,6 @@ let DOG_CHARACTER = {
             }
         },
     },
-    STOP_POSITION : {
-        RIGHT : 0,
-        LEFT: 3,
-        RIGHT_HEIGHT : 0,
-        LEFT_HEIGHT: 1
-    },
     SOUND: GROWL_SOUND,
     RESET : {
         ACTION : SIT,
@@ -219,24 +212,18 @@ let MONSTER_INVINCIBLE_CHARACTER = {
     SPRITE : $(".monster_invincible"),
     NAME : MONSTER_INVINCIBLE_SPRITE_NAME,
     ACTION : WALK,
+    PREVIOUS_ACTION : undefined,
     DIRECTION : LEFT,
+    VERTICAL_DIRECTION : undefined,
     CAN_ELEVATE : true,
     CAN_HIGHLIGHT: false,
     FPS: {
         WALK : BOG_MONSTER_SPRITE_FPS,
-        RUN : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-        JUMP: BOG_MONSTER_SPRITE_FPS,
         ATTACK : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-        STOP: 0,
-        FALL: BOG_MONSTER_SPRITE_FPS
     },
     PIXELS_PER_SECOND : {
         WALK : BOG_MONSTER_PIXELS_PER_SECOND,
-        RUN : BOG_MONSTER_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
-        JUMP: BOG_MONSTER_PIXELS_PER_SECOND,
         ATTACK: BOG_MONSTER_PIXELS_PER_SECOND,
-        STOP: 0,
-        FALL: BOG_MONSTER_PIXELS_PER_SECOND
     },
     STATUS : DEAD,
     FRAMES : {
@@ -297,9 +284,9 @@ let MONSTER_INVINCIBLE_CHARACTER = {
         DIRECTION : LEFT,
         LEFT: 850,
         BOTTOM: {
-            0 : 12,
-            1 : 12,
-            2 : 12
+            SCREEN_0 : 12,
+            SCREEN_1 : 12,
+            SCREEN_2 : 12
         },
         STATUS: DEAD,
         NUMBER_OF_TIMES: 0,
@@ -311,24 +298,18 @@ let MONSTER_CHARACTER = {
     SPRITE : $(".monster"),
     NAME : MONSTER_SPRITE_NAME,
     ACTION : WALK,
+    PREVIOUS_ACTION : undefined,
     DIRECTION : LEFT,
+    VERTICAL_DIRECTION : undefined,
     CAN_ELEVATE : true,
     CAN_HIGHLIGHT: true,
     FPS: {
         WALK : BOG_MONSTER_SPRITE_FPS,
-        RUN : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-        JUMP: BOG_MONSTER_SPRITE_FPS,
         ATTACK : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-        STOP: 0,
-        FALL: BOG_MONSTER_SPRITE_FPS
     },
     PIXELS_PER_SECOND : {
         WALK : BOG_MONSTER_PIXELS_PER_SECOND,
-        RUN : BOG_MONSTER_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
-        JUMP: BOG_MONSTER_PIXELS_PER_SECOND,
         ATTACK: BOG_MONSTER_PIXELS_PER_SECOND,
-        STOP: 0,
-        FALL: BOG_MONSTER_PIXELS_PER_SECOND
     },
     STATUS : DEAD,
     FRAMES : {
@@ -389,9 +370,9 @@ let MONSTER_CHARACTER = {
         DIRECTION : LEFT,
         LEFT: 850,
         BOTTOM: {
-            0 : 12,
-            1 : 12,
-            2 : 12
+            SCREEN_0 : 12,
+            SCREEN_1 : 12,
+            SCREEN_2 : 12
         },
         STATUS: DEAD,
         NUMBER_OF_TIMES: 0,
@@ -403,26 +384,19 @@ let ROCK_CHARACTER = {
     SPRITE : $('.rock'),
     NAME : ROCK_SPRITE_NAME,
     ACTION : SIT,
+    PREVIOUS_ACTION : undefined,
     DIRECTION : LEFT,
     CAN_ELEVATE : false,
     CAN_HIGHLIGHT: false,
     FPS: {
+        SIT: ROCK_SPRITE_FPS,
         WALK : ROCK_SPRITE_FPS,
-        RUN : ROCK_SPRITE_FPS,
-        JUMP: ROCK_SPRITE_FPS,
         ATTACK: ROCK_SPRITE_FPS,
-        STOP: 0,
-        FALL: ROCK_SPRITE_FPS,
-        SIT: ROCK_SPRITE_FPS
     },
     PIXELS_PER_SECOND : {
-        WALK : ROCK_PIXELS_PER_SECOND,
-        RUN : ROCK_PIXELS_PER_SECOND,
-        JUMP: ROCK_PIXELS_PER_SECOND,
-        ATTACK: ROCK_PIXELS_PER_SECOND,
         SIT: 0,
-        STOP: 0,
-        FALL: ROCK_PIXELS_PER_SECOND
+        ATTACK: ROCK_PIXELS_PER_SECOND,
+        WALK : ROCK_PIXELS_PER_SECOND,
     },
     STATUS : DEAD,
     FRAMES : {
@@ -487,18 +461,16 @@ let ROCK_CHARACTER = {
             }
         },
     },
-    STOP_POSITION : {
-        RIGHT : 0,
-        LEFT: 3,
-        RIGHT_HEIGHT : 0,
-        LEFT_HEIGHT: 1
-    },
     SOUND: GRUNT_SOUND,
     RESET : {
         ACTION : SIT,
         DIRECTION: LEFT,
         LEFT: 1270,
-        BOTTOM: 12,
+        BOTTOM: {
+            SCREEN_0 : 12,
+            SCREEN_1 : 12,
+            SCREEN_2 : 12
+        },
         STATUS: DEAD,
         NUMBER_OF_TIMES: 0,
         TURNAROUND : false
@@ -514,7 +486,8 @@ SCREENS = {
             RIGHT: [],
         },
         OPPONENTS: [MONSTER_CHARACTER, BARBARIAN_CHARACTER],
-        TRAP_DOORS: []
+        TRAP_DOORS: [],
+        WATER: false
     },
     1 : {
         OBSTACLES: {
@@ -539,6 +512,7 @@ SCREENS = {
                 LEFT: 700,
                 TIME: 300
             }}],
+        WATER: false
     },
     2 : {
         OBSTACLES : {
@@ -553,13 +527,15 @@ SCREENS = {
             ],
         },
         OPPONENTS: [BARBARIAN_CHARACTER, ROCK_CHARACTER, MONSTER_INVINCIBLE_CHARACTER],
-        TRAP_DOORS: []
+        TRAP_DOORS: [],
+        WATER: false
     }
 };
 
 BARBARIAN_ACTION_NUM_TIMES = {
     RUN : 0,
     WALK: 0,
+    SWIM : 0,
     ATTACK: 1,
     JUMP: 1,
     STOP: 1

@@ -6,9 +6,10 @@
  * @param index optional starting index (used for resuming paused games)
  */
 function performAction(character, action, numberOfTimes, index = 0) {
+    setProperty(character, PREVIOUS_ACTION, getProperty(character, ACTION));
     getProperty(character, SPRITE).stop();
     moveFromPositionToBoundary(character, action, getProperty(character, PIXELS_PER_SECOND, action));
-    animateCharacter(character, action, getProperty(character, DIRECTION), numberOfTimes, index)
+    animateCharacter(character, action, getProperty(character, DIRECTION), getProperty(character, VERTICAL_DIRECTION), numberOfTimes, index)
         .then(function () {
         }, error => handlePromiseError(error));
 }
@@ -19,17 +20,19 @@ function performAction(character, action, numberOfTimes, index = 0) {
  * requested.
  * @param character the character to animate
  * @param requestedAction the requested action (WALK, ATTACK etc.)
- * @param requestedDirection the requested direction (LEFT, RIGHT etc.)
+ * @param requestedDirection the requested direction (LEFT, RIGHT)
+ * @param requestedVerticalDirection the requested vertical direction (UP, DOWN)
  * @param numberOfTimes the number of times to perform the action (0 for infinite)
  * @param idx optional starting index (used for resuming paused games)
  * @returns {Promise<void>} a void promise
  */
-async function animateCharacter(character, requestedAction, requestedDirection, numberOfTimes, idx = 0) {
+async function animateCharacter(character, requestedAction, requestedDirection, requestedVerticalDirection, numberOfTimes, idx = 0) {
 
     let frames = getProperty(character, FRAMES, requestedAction, getProperty(character, DIRECTION), FRAMES);
 
     setProperty(character, ACTION, requestedAction);
-    setProperty(character, DIRECTION, requestedDirection);
+    //setProperty(character, DIRECTION, requestedDirection);
+    //setProperty(character, VERTICAL_DIRECTION, requestedVerticalDirection);
 
     let index = idx;
     let isGameOver = false;
@@ -37,6 +40,7 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
 
     while (compareProperty(character, ACTION, requestedAction) &&
            compareProperty(character, DIRECTION, requestedDirection) &&
+           compareProperty(character, VERTICAL_DIRECTION, requestedVerticalDirection) &&
            index < frames.length) {
 
         highlightAttackRange(character);
@@ -75,6 +79,7 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
     if (isPaused || isGameOver) {
         getProperty(character, SPRITE).stop();
     } else if (!compareProperty(character, ACTION, WALK) &&
+               !compareProperty(character, ACTION, SWIM) &&
                compareProperty(character, NAME, BARBARIAN_SPRITE_NAME) &&
                compareProperty(character, ACTION, requestedAction)) {
         // Action is over, reset state so the action can be executed again if desired
@@ -129,8 +134,19 @@ function moveFromPositionToBoundary(character, action, pixelsPerSecond) {
     }
 
     let x, y = undefined;
-    if (action === FALL) {
+    if (action === SWIM) {
+        if (compareProperty(character, VERTICAL_DIRECTION, UP)) {
+            y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
+        } else if (compareProperty(character, VERTICAL_DIRECTION, DOWN)) {
+            y = SCREEN_BOTTOM;
+        }
+    } else if (action === FALL) {
         y = 0;
+    }
+
+    if (action === SWIM && compareProperty(character, PREVIOUS_ACTION, undefined)) {
+        // If they were stopped, don't include a vertical component, just let them swim straignt up or down
+        x = undefined;
     } else if (compareProperty(character, DIRECTION, RIGHT)) {
         x = windowWidth - getProperty(character, SPRITE).width();
     } else {

@@ -220,6 +220,33 @@ function handleLeftKeypress() {
     }
 }
 
+
+/**
+ * Handles the up keypress event (up arrow key);
+ */
+function handleUpKeypress() {
+    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) || !compareProperty(BARBARIAN_CHARACTER, VERTICAL_DIRECTION, UP)) {
+        if (compareProperty(SCREENS, screenNumber, WATER, true)) {
+            setProperty(BARBARIAN_CHARACTER, VERTICAL_DIRECTION, UP);
+            performAction(BARBARIAN_CHARACTER, SWIM, getProperty(BARBARIAN_ACTION_NUM_TIMES, SWIM));
+        }
+    }
+}
+
+/**
+ * Handles the down keypress event (down arrow key);
+ */
+function handleDownKeypress() {
+    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) || !compareProperty(BARBARIAN_CHARACTER, VERTICAL_DIRECTION, DOWN)) {
+        if (compareProperty(SCREENS, screenNumber, WATER, true)) {
+            setProperty(BARBARIAN_CHARACTER, VERTICAL_DIRECTION, DOWN);
+            performAction(BARBARIAN_CHARACTER, SWIM, getProperty(BARBARIAN_ACTION_NUM_TIMES, SWIM));
+        }
+    }
+}
+
+
+
 /**
  * Handles the attack keypress event ("a" key).
  */
@@ -322,6 +349,12 @@ function handleKeypress(keypress) {
                     break;
                 case getProperty(KEYPRESS, KP_ATTACK):
                     handleAttackKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_UP):
+                    handleUpKeypress();
+                    break;
+                case getProperty(KEYPRESS, KP_DOWN):
+                    handleDownKeypress();
                     break;
                 default:
                     return; // exit this handler for other keys

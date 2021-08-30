@@ -1,6 +1,10 @@
 // dimensions
 const SCREEN_HEIGHT = 800;
 const SCREEN_WIDTH = 1400;
+const SCREEN_BOTTOM = 12;
+const SCREEN_0 = 0;
+const SCREEN_1 = 1;
+const SCREEN_2 = 2;
 
 const RUN_SPEED_INCREASE_FACTOR = 1.5;
 const DEFAULT_DEATH_DELAY = 2000;
@@ -24,7 +28,9 @@ const FAIL_ACTION = 'FAIL_ACTION';
 const FALL = 'FALL';
 const HEIGHT = 'HEIGHT';
 const ACTION = 'ACTION';
+const PREVIOUS_ACTION = 'PREVIOUS_ACTION';
 const DIRECTION = 'DIRECTION';
+const VERTICAL_DIRECTION = 'VERTICAL_DIRECTION';
 const SPRITE = 'SPRITE';
 const FRAMES = 'FRAMES';
 const NAME = 'NAME';
@@ -50,6 +56,7 @@ const NUMBER_OF_TIMES = 'NUMBER_OF_TIMES';
 const TURNAROUND = 'TURNAROUND';
 const CAN_ELEVATE = 'CAN_ELEVATE';
 const CAN_HIGHLIGHT = 'CAN_HIGHLIGHT';
+const WATER = 'WATER';
 
 const THEME_SONG = 'THEME_SONG';
 const GROWL_SOUND = 'GROWL_SOUND';
@@ -67,6 +74,9 @@ const DEATH = 'DEATH';
 const SIT = 'SIT';
 const LEFT = 'LEFT';
 const RIGHT = 'RIGHT';
+const SWIM = 'SWIM';
+const UP = 'UP';
+const DOWN = 'DOWN';
 
 const BARBARIAN_SPRITE_NAME = 'BARBARIAN';
 const MONSTER_SPRITE_NAME = 'MONSTER';
@@ -87,6 +97,8 @@ const KP_CONTROLS = 'KP_CONTROLS';
 const KP_MAIN = 'KP_MAIN';
 const KP_HINTS = 'KP_HINTS';
 const KP_SOUND = 'KP_SOUND';
+const KP_UP = 'KP_UP';
+const KP_DOWN = 'KP_DOWN';
 
 // Keypress event names
 const KEYPRESS = {
@@ -101,7 +113,9 @@ const KEYPRESS = {
     KP_CONTROLS : 67,
     KP_MAIN     : 77,
     KP_HINTS    : 72,
-    KP_SOUND    : 88
+    KP_SOUND    : 88,
+    KP_UP       : 38,
+    KP_DOWN     : 40,
 };
 
 // Messages

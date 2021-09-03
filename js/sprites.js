@@ -9,7 +9,7 @@ let BARBARIAN_CHARACTER = {
     CAN_HIGHLIGHT: false,
     FPS: {
       WALK : SPRITE_FPS,
-      SWIM : SPRITE_FPS,
+      SWIM : SWIM_FPS,
       RUN : SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
       JUMP: SPRITE_FPS,
       ATTACK: SPRITE_FPS,
@@ -57,11 +57,11 @@ let BARBARIAN_CHARACTER = {
                 HEIGHT_OFFSET : 0}},
         SWIM : {
             LEFT : {
-                FRAMES :  [13, 12, 11, 10, 9, 8],
-                HEIGHT_OFFSET : 1},
+                FRAMES :  [3, 2, 1, 0],
+                HEIGHT_OFFSET : 17},
             RIGHT : {
-                FRAMES : [1, 2, 3, 4, 5, 6],
-                HEIGHT_OFFSET : 0}},
+                FRAMES : [0, 1, 2, 3],
+                HEIGHT_OFFSET : 16}},
         FALL : {
             LEFT: {
                 FRAMES : [3, 2, 1, 0],
@@ -102,9 +102,11 @@ let BARBARIAN_CHARACTER = {
         DIRECTION : RIGHT,
         LEFT: 0,
         BOTTOM: {
-            SCREEN_0 : 12,
-            SCREEN_1 : 12,
-            SCREEN_2 : 160
+            0 : 12,
+            1 : 12,
+            2 : 160,
+            3 : 12,
+            4 : 700,
         },
         STATUS: ALIVE
     }
@@ -201,6 +203,7 @@ let DOG_CHARACTER = {
             0 : 12,
             1 : 160,
             2 : 12,
+            3 : 12,
         },
         STATUS: DEAD,
         NUMBER_OF_TIMES: 0,
@@ -284,9 +287,10 @@ let MONSTER_INVINCIBLE_CHARACTER = {
         DIRECTION : LEFT,
         LEFT: 850,
         BOTTOM: {
-            SCREEN_0 : 12,
-            SCREEN_1 : 12,
-            SCREEN_2 : 12
+            0 : 12,
+            1 : 12,
+            2 : 12,
+            3 : 12,
         },
         STATUS: DEAD,
         NUMBER_OF_TIMES: 0,
@@ -370,9 +374,10 @@ let MONSTER_CHARACTER = {
         DIRECTION : LEFT,
         LEFT: 850,
         BOTTOM: {
-            SCREEN_0 : 12,
-            SCREEN_1 : 12,
-            SCREEN_2 : 12
+            0 : 12,
+            1 : 12,
+            2 : 12,
+            3 : 12,
         },
         STATUS: DEAD,
         NUMBER_OF_TIMES: 0,
@@ -487,7 +492,11 @@ SCREENS = {
         },
         OPPONENTS: [MONSTER_CHARACTER, BARBARIAN_CHARACTER],
         TRAP_DOORS: [],
-        WATER: false
+        WATER: false,
+        ALLOWED_SCROLL_DIRECTIONS: {
+            LEFT : false,
+            RIGHT: true
+        }
     },
     1 : {
         OBSTACLES: {
@@ -512,7 +521,11 @@ SCREENS = {
                 LEFT: 700,
                 TIME: 300
             }}],
-        WATER: false
+        WATER: false,
+        ALLOWED_SCROLL_DIRECTIONS: {
+            LEFT : true,
+            RIGHT: true
+        }
     },
     2 : {
         OBSTACLES : {
@@ -528,7 +541,24 @@ SCREENS = {
         },
         OPPONENTS: [BARBARIAN_CHARACTER, ROCK_CHARACTER, MONSTER_INVINCIBLE_CHARACTER],
         TRAP_DOORS: [],
-        WATER: false
+        WATER: false,
+        ALLOWED_SCROLL_DIRECTIONS: {
+            LEFT : true,
+            RIGHT: true
+        }
+    },
+    3 : {
+        OBSTACLES : {
+            LEFT: [],
+            RIGHT: [],
+        },
+        OPPONENTS: [BARBARIAN_CHARACTER],
+        TRAP_DOORS: [],
+        WATER: true,
+        ALLOWED_SCROLL_DIRECTIONS: {
+            LEFT : false,
+            RIGHT: true
+        }
     }
 };
 

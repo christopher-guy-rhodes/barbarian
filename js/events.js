@@ -20,7 +20,7 @@ function resetGame() {
 function resetGameOver() {
     numLives = 3;
     screenNumber = 0;
-    setCss(BACKDROP, 'background-position', '0px');
+    setCss(BACKDROP, 'background-position', '0px 0px');
 
     for (let i = 1; i < numLives; i++) {
         setCss($('.life' + i), 'display', 'block');
@@ -202,10 +202,11 @@ function handleStopKeypress() {
  * Handles the move right keypress event (right arrow key).
  */
 function handleRightKeypress() {
-    if ((!compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) || !compareProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT))
+    let action = compareProperty(SCREENS, screenNumber, WATER, true) ? SWIM : WALK;
+    if ((!compareProperty(BARBARIAN_CHARACTER, ACTION, action) || !compareProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT))
         && isBarbarianAliveOrJustDied()) {
         setProperty(BARBARIAN_CHARACTER, DIRECTION, RIGHT);
-        performAction(BARBARIAN_CHARACTER, WALK, getProperty(BARBARIAN_ACTION_NUM_TIMES, WALK));
+        performAction(BARBARIAN_CHARACTER, action, getProperty(BARBARIAN_ACTION_NUM_TIMES, action));
     }
 }
 
@@ -213,10 +214,11 @@ function handleRightKeypress() {
  * Handles the move right keypress event (left arrow key).
  */
 function handleLeftKeypress() {
-    if ((!compareProperty(BARBARIAN_CHARACTER, ACTION, WALK) || !compareProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT))
+    let action = compareProperty(SCREENS, screenNumber, WATER, true) ? SWIM : WALK;
+    if ((!compareProperty(BARBARIAN_CHARACTER, ACTION, action) || !compareProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT))
         && isBarbarianAliveOrJustDied()) {
         setProperty(BARBARIAN_CHARACTER, DIRECTION, LEFT);
-        performAction(BARBARIAN_CHARACTER, WALK, getProperty(BARBARIAN_ACTION_NUM_TIMES, WALK));
+        performAction(BARBARIAN_CHARACTER, action, getProperty(BARBARIAN_ACTION_NUM_TIMES, action));
     }
 }
 
@@ -427,6 +429,16 @@ function swipeLeftHandler(event){
     }
 }
 
+/**
+ * Set the backdrop position based on the screen number
+ */
+function setBackdrop() {
+    setCss(BACKDROP, 'background-position', -1* SCREEN_WIDTH * screenNumber + 'px 0px');
+}
+
+/**
+ * Set the viewport zoom for mobile support
+ */
 function setViewPort() {
     let viewportMeta = document.querySelector('meta[name="viewport"]');
 

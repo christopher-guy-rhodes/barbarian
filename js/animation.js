@@ -134,24 +134,73 @@ function moveFromPositionToBoundary(character, action, pixelsPerSecond) {
     }
 
     let x, y = undefined;
-    if (action === SWIM) {
+    if (action === FALL) {
+        y = 0;
+    } else {
+        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
+            if (action === SWIM && !compareProperty(character, VERTICAL_DIRECTION, undefined)) {
+                // If the character stopped and then went up or down don't move horizontally
+                //setProperty(character, DIRECTION, undefined);
+            }
+            //setProperty(character, VERTICAL_DIRECTION, undefined);
+            //setProperty(character, DIRECTION, undefined);
+        }
+
         if (compareProperty(character, VERTICAL_DIRECTION, UP)) {
             y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
         } else if (compareProperty(character, VERTICAL_DIRECTION, DOWN)) {
             y = SCREEN_BOTTOM;
         }
-    } else if (action === FALL) {
-        y = 0;
+
+        if (compareProperty(character, PREVIOUS_ACTION, undefined) && action === SWIM &&
+                !compareProperty(character, VERTICAL_DIRECTION, undefined)) {
+            // If the character was swimming and stopped, then went up or down don't move horizontally
+            x = undefined;
+        } else if (compareProperty(character, DIRECTION, LEFT)) {
+            x = 0;
+        } else if (compareProperty(character, DIRECTION, RIGHT)) {
+            x = windowWidth - getProperty(character, SPRITE).width();
+        }
     }
 
-    if (action === SWIM && compareProperty(character, PREVIOUS_ACTION, undefined)) {
-        // If they were stopped, don't include a vertical component, just let them swim straignt up or down
-        x = undefined;
-    } else if (compareProperty(character, DIRECTION, RIGHT)) {
+    /*
+    if (compareProperty(character, VERTICAL_DIRECTION, UP)) {
+        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
+            x = undefined;
+        } else {
+            if (compareProperty(character, DIRECTION, RIGHT)) {
+                x = windowWidth - getProperty(character, SPRITE).width();
+            } else if (compareProperty(character, DIRECTION, LEFT)) {
+                x = 0;
+            }
+        }
+        y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
+    } else if (compareProperty(character, VERTICAL_DIRECTION, DOWN)) {
+        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
+            x = undefined;
+        } else {
+            if (compareProperty(character, DIRECTION, RIGHT)) {
+                x = windowWidth - getProperty(character, SPRITE).width();
+            } else if (compareProperty(character, DIRECTION, LEFT)) {
+                x = 0;
+            }
+        }
+        y = SCREEN_BOTTOM;
+    }
+
+    if (compareProperty(character, DIRECTION, RIGHT)) {
+        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
+            y = undefined;
+        }
         x = windowWidth - getProperty(character, SPRITE).width();
-    } else {
+    } else if (compareProperty(character, DIRECTION, LEFT))  {
+        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
+            y = undefined;
+        }
         x = 0;
     }
+
+     */
 
     moveSpriteToPosition(character, x, y, pixelsPerSecond);
 }
@@ -169,6 +218,7 @@ function handleStop(character) {
 
     getProperty(character, SPRITE).stop();
     renderAtRestFrame(character);
+    setProperty(character, VERTICAL_DIRECTION, undefined);
     return true;
 }
 
@@ -177,10 +227,12 @@ function handleStop(character) {
  * @param character the sprite to render the at rest frame for
  */
 function renderAtRestFrame(character) {
+    let action = compareProperty(SCREENS, screenNumber, WATER, true) ? SWIM : WALK;
     let position = compareProperty(character, DIRECTION, LEFT)
-        ? getProperty(character, FRAMES, WALK, getProperty(character, DIRECTION), FRAMES).length
+        ? getProperty(character, FRAMES, action, getProperty(character, DIRECTION), FRAMES).length - 1
         : 0;
-    renderSpriteFrame(character, WALK, getProperty(character, DIRECTION), position);
+
+    renderSpriteFrame(character, action, getProperty(character, DIRECTION), position);
 }
 
 /**
@@ -217,29 +269,55 @@ function moveToPosition(element, duration, x, y) {
  * @returns {Promise<void>} a void promise
  */
 async function advanceBackdrop(character, direction) {
-    let pixelsPerIteration = ADVANCE_SCREEN_PIXELS_PER_SECOND / ADVANCE_SCREEN_PIXELS_PER_FRAME;
-    let numberOfIterations = windowWidth / pixelsPerIteration;
-    let sleepPerIteration = (ADVANCE_SCREEN_DURATION_SECONDS / numberOfIterations) * MILLISECONDS_PER_SECOND;
-
     actionsLocked = true;
-    let x = getProperty(character, DIRECTION) === RIGHT ? 0 : windowWidth - getProperty(character, SPRITE).width();
 
-    // The barbarian is travelling a distance that is shorter by his width. Adjust the pixels per second so his
-    // scrolling finishes at the same time
-    let adjustedPixelsPerSecond = (windowWidth - getProperty(character, SPRITE).width() /
-            ADVANCE_SCREEN_DURATION_SECONDS);
-    moveSpriteToPosition(character, x, undefined, adjustedPixelsPerSecond);
-
-    let screenOffset = direction === RIGHT ? -1*(screenNumber * SCREEN_WIDTH) : (screenNumber - 1) * SCREEN_WIDTH;
-    for (let i = 0; i < numberOfIterations; i++) {
-        let offset = screenOffset + (i + 1) * pixelsPerIteration;
-        let position = direction === RIGHT ? numberOfIterations * pixelsPerIteration - offset : offset;
-        setCss(BACKDROP, 'background-position', -1*position + 'px');
-        await sleep(sleepPerIteration);
+    await moveBackdrop(character, direction, false);
+    if (compareProperty(SCREENS, screenNumber, WATER, true)) {
+        // Scroll the water up
+        await moveBackdrop(character, direction, true);
     }
+
     actionsLocked = false;
     initializeScreen();
     startMonsterAttacks();
+}
+
+/**
+ * Scroll the backdrop horizontally or vertically
+ * @param character the character to move along with the background
+ * @param direction the direction to scroll the screen
+ * @param isVertical whether the scrolling is vertical
+ * @returns {Promise<void>}
+ */
+async function moveBackdrop(character, direction , isVertical) {
+    let pixelsPerSecond = isVertical ? ADVANCE_SCREEN_VERTICAL_PIXELS_PER_SECOND : ADVANCE_SCREEN_PIXELS_PER_SECOND;
+    let screenDimension = isVertical ? SCREEN_HEIGHT : SCREEN_WIDTH;
+
+    let pixelsPerIteration = pixelsPerSecond / ADVANCE_SCREEN_PIXELS_PER_FRAME;
+    let numberOfIterations = screenDimension / pixelsPerIteration;
+    let sleepPerIteration = (ADVANCE_SCREEN_DURATION_SECONDS / numberOfIterations) * MILLISECONDS_PER_SECOND;
+
+    let x, y, distance, screenOffset = undefined;
+    if (isVertical) {
+        y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
+        distance = Math.abs(y - stripPxSuffix(getProperty(character, SPRITE).css('bottom')));
+        screenOffset = 0;
+    } else {
+        x = getProperty(character, DIRECTION) === RIGHT ? 0 : windowWidth - getProperty(character, SPRITE).width();
+        distance = SCREEN_WIDTH - getProperty(character, SPRITE).width();
+        screenOffset = direction === RIGHT ? -1*(screenNumber * SCREEN_WIDTH) : (screenNumber - 1) * SCREEN_WIDTH;
+    }
+    let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
+    moveSpriteToPosition(character, x, y, adjustedPixelsPerSecond);
+
+    for (let i = 0; i < numberOfIterations; i++) {
+        let offset = screenOffset + (i + 1) * pixelsPerIteration;
+        let directionCompare = isVertical ? UP : RIGHT;
+        let position = direction === directionCompare ? numberOfIterations * pixelsPerIteration - offset : offset;
+        let backgroundPosition = isVertical ? 'background-position-y' : 'background-position-x';
+        setCss(BACKDROP, backgroundPosition, -1 * offset + 'px');
+        await sleep(sleepPerIteration);
+    }
 }
 
 /**
@@ -341,12 +419,12 @@ function handleBoundary(character) {
         return false;
     }
 
-    if (isLeftBoundary && screenNumber > 0) {
+    if (isLeftBoundary && compareProperty(SCREENS, screenNumber, ALLOWED_SCROLL_DIRECTIONS, LEFT, true)) {
         hideOpponentsAndTrapDoors();
         screenNumber = screenNumber - 1;
         advanceBackdrop(character, RIGHT)
             .then(function() {}, error => handlePromiseError(error));
-    } else if (isRightBoundary) {
+    } else if (isRightBoundary && compareProperty(SCREENS, screenNumber, ALLOWED_SCROLL_DIRECTIONS, RIGHT, true)) {
         if (!compareProperty(SCREENS, screenNumber, undefined) && areAllMonstersDeadOnScreen()) {
             hideOpponentsAndTrapDoors();
             screenNumber = screenNumber + 1;

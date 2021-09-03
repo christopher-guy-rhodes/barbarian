@@ -2,9 +2,6 @@
 const SCREEN_HEIGHT = 800;
 const SCREEN_WIDTH = 1400;
 const SCREEN_BOTTOM = 12;
-const SCREEN_0 = 0;
-const SCREEN_1 = 1;
-const SCREEN_2 = 2;
 
 const RUN_SPEED_INCREASE_FACTOR = 1.5;
 const DEFAULT_DEATH_DELAY = 2000;
@@ -12,6 +9,7 @@ const DEFAULT_DEATH_DELAY = 2000;
 // How long does it take to advance the screen?
 const ADVANCE_SCREEN_DURATION_SECONDS = 1;
 const ADVANCE_SCREEN_PIXELS_PER_SECOND = SCREEN_WIDTH / ADVANCE_SCREEN_DURATION_SECONDS;
+const ADVANCE_SCREEN_VERTICAL_PIXELS_PER_SECOND = SCREEN_HEIGHT / ADVANCE_SCREEN_DURATION_SECONDS;
 // How many pixels are moved in a single frame. Higher values make for a smoother scroll but if the value is too high
 // the overhead of the animation and sleep in the loop will cause the screen scroll to be out of sync with the sprite
 // that is scrolling simultaneously via jquery animation which is more efficient
@@ -57,6 +55,7 @@ const TURNAROUND = 'TURNAROUND';
 const CAN_ELEVATE = 'CAN_ELEVATE';
 const CAN_HIGHLIGHT = 'CAN_HIGHLIGHT';
 const WATER = 'WATER';
+const ALLOWED_SCROLL_DIRECTIONS = 'ALLOWED_SCROLL_DIRECTIONS';
 
 const THEME_SONG = 'THEME_SONG';
 const GROWL_SOUND = 'GROWL_SOUND';
@@ -153,6 +152,7 @@ const SOUNDS = {
 };
 
 const SPRITE_FPS = 5;
+const SWIM_FPS = 3;
 const BOG_MONSTER_SPRITE_FPS = 5;
 const BOG_MONSTER_PIXELS_PER_SECOND = 150;
 const DOG_SPRITE_FPS = 5;

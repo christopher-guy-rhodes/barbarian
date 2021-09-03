@@ -76,6 +76,16 @@ function setCss(element, prop, value) {
 }
 
 /**
+ * Gets the css property of element
+ * @param element the element to get the css property of
+ * @param prop the prop to get
+ * @returns {*}
+ */
+function getCss(element, prop) {
+    return element.css(prop);
+}
+
+/**
  * Gets a property from ann object. getProperty(A, B, C) is equivalent for A[B][C].
  */
 function getProperty() {

@@ -1,6 +1,7 @@
 let BARBARIAN_CHARACTER = {
     SPRITE : $(".barbarian"),
     NAME : BARBARIAN_SPRITE_NAME,
+    CHARACTER_TYPE: BARBARIAN_CHARACTER_TYPE,
     ACTION : STOP,
     PREVIOUS_ACTION : undefined,
     DIRECTION : RIGHT,
@@ -70,14 +71,12 @@ let BARBARIAN_CHARACTER = {
                 FRAMES : [0, 1, 2, 3],
                 HEIGHT_OFFSET: 14}},
         STOP: {
-            LEFT: {
-                FRAMES : [13],
-                HEIGHT_OFFSET : 1
-            },
-            RIGHT: {
-                FRAMES : [1],
-                HEIGHT_OFFSET: 1
-            }
+            LEFT : {
+                FRAMES :  [3, 2, 1, 0],
+                HEIGHT_OFFSET : 17},
+            RIGHT : {
+                FRAMES : [0, 1, 2, 3],
+                HEIGHT_OFFSET : 16}
         }},
     DEATH : {
         SPRITE : $(".barbarian"),
@@ -115,6 +114,7 @@ let BARBARIAN_CHARACTER = {
 let DOG_CHARACTER = {
     SPRITE : $('.dog'),
     NAME : DOG_SPRITE_NAME,
+    CHARACTER_TYPE: DOG_CHARACTER_TYPE,
     ACTION : SIT,
     PREVIOUS_ACTION : undefined,
     DIRECTION : LEFT,
@@ -214,6 +214,7 @@ let DOG_CHARACTER = {
 let MONSTER_INVINCIBLE_CHARACTER = {
     SPRITE : $(".monster_invincible"),
     NAME : MONSTER_INVINCIBLE_SPRITE_NAME,
+    CHARACTER_TYPE: MONSTER_CHARACTER_TYPE,
     ACTION : WALK,
     PREVIOUS_ACTION : undefined,
     DIRECTION : LEFT,
@@ -301,6 +302,7 @@ let MONSTER_INVINCIBLE_CHARACTER = {
 let MONSTER_CHARACTER = {
     SPRITE : $(".monster"),
     NAME : MONSTER_SPRITE_NAME,
+    TYPE: MONSTER_CHARACTER_TYPE,
     ACTION : WALK,
     PREVIOUS_ACTION : undefined,
     DIRECTION : LEFT,
@@ -388,6 +390,7 @@ let MONSTER_CHARACTER = {
 let ROCK_CHARACTER = {
     SPRITE : $('.rock'),
     NAME : ROCK_SPRITE_NAME,
+    CHARACTER_TYPE: ROCK_CHARACTER_TYPE,
     ACTION : SIT,
     PREVIOUS_ACTION : undefined,
     DIRECTION : LEFT,
@@ -466,7 +469,7 @@ let ROCK_CHARACTER = {
             }
         },
     },
-    SOUND: GRUNT_SOUND,
+    SOUND: undefined,
     RESET : {
         ACTION : SIT,
         DIRECTION: LEFT,
@@ -482,7 +485,101 @@ let ROCK_CHARACTER = {
     }
 };
 
-SPRITES = [BARBARIAN_CHARACTER, MONSTER_CHARACTER, DOG_CHARACTER, ROCK_CHARACTER, MONSTER_INVINCIBLE_CHARACTER];
+let SHARK_CHARACTER1 = newShark($('.shark1'), SHARK_SPRITE_NAME1, 400, 0);
+let SHARK_CHARACTER2 = newShark($('.shark2'), SHARK_SPRITE_NAME2, 0, 1400);
+let SHARK_CHARACTER3 = newShark($('.shark3'), SHARK_SPRITE_NAME3, 800, 1400);
+let SHARK_CHARACTER4 = newShark($('.shark4'), SHARK_SPRITE_NAME4, 400, 1400);
+
+function newShark(element, name, bottom, left) {
+    return {
+        SPRITE: element,
+        CHARACTER_TYPE : SHARK_CHARACTER_TYPE,
+        NAME: name,
+        ACTION: WALK,
+        PREVIOUS_ACTION: undefined,
+        DIRECTION: LEFT,
+        CAN_ELEVATE: false,
+        CAN_HIGHLIGHT: false,
+        FPS: {
+            WALK: SHARK_SPRITE_FPS,
+            ATTACK: SHARK_SPRITE_FPS,
+        },
+        PIXELS_PER_SECOND: {
+            ATTACK: SHARK_PIXELS_PER_SECOND,
+            WALK: SHARK_PIXELS_PER_SECOND,
+        },
+        STATUS: DEAD,
+        FRAMES: {
+            ATTACK: {
+                LEFT: {
+                    FRAMES: [2, 1, 0],
+                    HEIGHT_OFFSET: 3
+                },
+                RIGHT: {
+                    FRAMES: [0, 1, 2],
+                    HEIGHT_OFFSET: 2
+                }
+            },
+            WALK: {
+                LEFT: {
+                    FRAMES: [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
+                    HEIGHT_OFFSET: 1
+                },
+                RIGHT: {
+                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+                    HEIGHT_OFFSET: 0
+                }
+            },
+        },
+        ATTACK_THRESHOLDS: {
+            MIN: 0,
+            MAX: 100
+        },
+        JUMP_THRESHOLDS: {
+            MIN: 15,
+            MAX: 100
+        },
+        BARBARIAN_ATTACK_THRESHOLDS: {
+            MIN: 0,
+            MAX: 115
+        },
+        DEATH: {
+            SPRITE: $(".death"),
+            DELAY: 1800,
+            TIME: 0,
+            FRAMES: {
+                DEATH: {
+                    RIGHT: {
+                        FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                        HEIGHT_OFFSET: 0
+                    },
+                    LEFT: {
+                        FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                        HEIGHT_OFFSET: 0
+                    },
+                    FPS: BOG_MONSTER_SPRITE_FPS
+                }
+            },
+        },
+        SOUND: SPLASH_SOUND,
+        RESET: {
+            ACTION: WALK,
+            DIRECTION: LEFT,
+            LEFT: left,
+            BOTTOM: {
+                SCREEN_0: bottom,
+                SCREEN_1: bottom,
+                SCREEN_2: bottom,
+                SCREEN_3: bottom,
+            },
+            STATUS: DEAD,
+            NUMBER_OF_TIMES: 0,
+            TURNAROUND: true
+        }
+    };
+}
+
+SPRITES = [BARBARIAN_CHARACTER, MONSTER_CHARACTER, DOG_CHARACTER, ROCK_CHARACTER, MONSTER_INVINCIBLE_CHARACTER, SHARK_CHARACTER1, SHARK_CHARACTER2, SHARK_CHARACTER3, SHARK_CHARACTER4];
 
 SCREENS = {
     0 : {
@@ -490,7 +587,7 @@ SCREENS = {
             LEFT: [],
             RIGHT: [],
         },
-        OPPONENTS: [MONSTER_CHARACTER, BARBARIAN_CHARACTER],
+        OPPONENTS: [BARBARIAN_CHARACTER, MONSTER_CHARACTER],
         TRAP_DOORS: [],
         WATER: false,
         ALLOWED_SCROLL_DIRECTIONS: {
@@ -535,8 +632,9 @@ SCREENS = {
                 {LEFT: 325, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 12},
             ],
             LEFT: [
-                {LEFT: 410, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 122, JUMP_THRESHOLDS : {MIN: 310, MAX: 460}},
-                {LEFT: 160, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 160, JUMP_THRESHOLDS : {MIN: 60, MAX: 210}},
+                {LEFT: 410, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 75, JUMP_THRESHOLDS : {MIN: 310, MAX: 460}},
+                {LEFT: 165, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 165, JUMP_THRESHOLDS : {MIN: 65, MAX: 215}},
+                {LEFT: 280, OBSTACLE_TYPE : ELEVATION, FAIL_ACTION: STOP, HEIGHT: 122, JUMP_THRESHOLDS : {MIN: 180, MAX: 330}},
             ],
         },
         OPPONENTS: [BARBARIAN_CHARACTER, ROCK_CHARACTER, MONSTER_INVINCIBLE_CHARACTER],
@@ -552,7 +650,7 @@ SCREENS = {
             LEFT: [],
             RIGHT: [],
         },
-        OPPONENTS: [BARBARIAN_CHARACTER],
+        OPPONENTS: [BARBARIAN_CHARACTER, SHARK_CHARACTER1, SHARK_CHARACTER2, SHARK_CHARACTER3, SHARK_CHARACTER4],
         TRAP_DOORS: [],
         WATER: true,
         ALLOWED_SCROLL_DIRECTIONS: {

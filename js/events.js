@@ -71,6 +71,11 @@ function resetTrapDoors() {
  * Initializes the current screen
  */
 function initializeScreen() {
+
+    if (compareProperty(SCREENS, screenNumber, WATER, true)) {
+        performAction(BARBARIAN_CHARACTER, SWIM, 0);
+    }
+
     let trapDoors = getProperty(SCREENS, screenNumber, TRAP_DOORS);
     for (let trapDoor of trapDoors) {
         setCss(getProperty(trapDoor, ELEMENT), 'display', 'block');
@@ -175,7 +180,9 @@ function handleSoundKeypress() {
  */
 function handleRunKeypress() {
     getProperty(BARBARIAN_CHARACTER, FPS, WALK);
-    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, RUN) && isBarbarianAliveOrJustDied()) {
+    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) &&
+        !compareProperty(BARBARIAN_CHARACTER, ACTION, RUN) &&
+        isBarbarianAliveOrJustDied()) {
         performAction(BARBARIAN_CHARACTER, RUN, getProperty(BARBARIAN_ACTION_NUM_TIMES, RUN));
     }
 }
@@ -184,7 +191,9 @@ function handleRunKeypress() {
  * Handles the jump keypress event ("j" key).
  */
 function handleJumpKeypress() {
-    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, JUMP) && isBarbarianAliveOrJustDied()) {
+    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) &&
+        !compareProperty(BARBARIAN_CHARACTER, ACTION, JUMP) &&
+        isBarbarianAliveOrJustDied()) {
         performAction(BARBARIAN_CHARACTER, JUMP, getProperty(BARBARIAN_ACTION_NUM_TIMES, JUMP));
     }
 }
@@ -193,7 +202,7 @@ function handleJumpKeypress() {
  * Handles the stop keypress event ("s" key).
  */
 function handleStopKeypress() {
-    if (isBarbarianAliveOrJustDied()) {
+    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) && isBarbarianAliveOrJustDied()) {
         performAction(BARBARIAN_CHARACTER, STOP, getProperty(BARBARIAN_ACTION_NUM_TIMES, STOP));
     }
 }
@@ -253,7 +262,9 @@ function handleDownKeypress() {
  * Handles the attack keypress event ("a" key).
  */
 function handleAttackKeypress() {
-    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, ATTACK) && isBarbarianAliveOrJustDied()) {
+    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) &&
+        !compareProperty(BARBARIAN_CHARACTER, ACTION, ATTACK) &&
+        isBarbarianAliveOrJustDied()) {
         getProperty(BARBARIAN_CHARACTER, SPRITE).stop();
         playGruntSound();
         performAction(BARBARIAN_CHARACTER, ATTACK, getProperty(BARBARIAN_ACTION_NUM_TIMES, ATTACK));

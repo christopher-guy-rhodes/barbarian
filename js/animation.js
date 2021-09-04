@@ -137,71 +137,27 @@ function moveFromPositionToBoundary(character, action, pixelsPerSecond) {
     if (action === FALL) {
         y = 0;
     } else {
-        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
-            if (action === SWIM && !compareProperty(character, VERTICAL_DIRECTION, undefined)) {
-                // If the character stopped and then went up or down don't move horizontally
-                //setProperty(character, DIRECTION, undefined);
-            }
-            //setProperty(character, VERTICAL_DIRECTION, undefined);
-            //setProperty(character, DIRECTION, undefined);
-        }
 
-        if (compareProperty(character, VERTICAL_DIRECTION, UP)) {
+        if (compareProperty(SCREENS, screenNumber, WATER, true) && !compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+            let barbarianY = stripPxSuffix(getCss(getProperty(BARBARIAN_CHARACTER, SPRITE), 'bottom'));
+            y = stripPxSuffix(getProperty(character, SPRITE).css('bottom'));
+            if (barbarianY > y) {
+                y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
+            } else {
+                y = SCREEN_BOTTOM;
+            }
+        } else if (compareProperty(character, VERTICAL_DIRECTION, UP)) {
             y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
         } else if (compareProperty(character, VERTICAL_DIRECTION, DOWN)) {
             y = SCREEN_BOTTOM;
         }
 
-        if (compareProperty(character, PREVIOUS_ACTION, undefined) && action === SWIM &&
-                !compareProperty(character, VERTICAL_DIRECTION, undefined)) {
-            // If the character was swimming and stopped, then went up or down don't move horizontally
-            x = undefined;
-        } else if (compareProperty(character, DIRECTION, LEFT)) {
+        if (compareProperty(character, DIRECTION, LEFT)) {
             x = 0;
         } else if (compareProperty(character, DIRECTION, RIGHT)) {
             x = windowWidth - getProperty(character, SPRITE).width();
         }
     }
-
-    /*
-    if (compareProperty(character, VERTICAL_DIRECTION, UP)) {
-        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
-            x = undefined;
-        } else {
-            if (compareProperty(character, DIRECTION, RIGHT)) {
-                x = windowWidth - getProperty(character, SPRITE).width();
-            } else if (compareProperty(character, DIRECTION, LEFT)) {
-                x = 0;
-            }
-        }
-        y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
-    } else if (compareProperty(character, VERTICAL_DIRECTION, DOWN)) {
-        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
-            x = undefined;
-        } else {
-            if (compareProperty(character, DIRECTION, RIGHT)) {
-                x = windowWidth - getProperty(character, SPRITE).width();
-            } else if (compareProperty(character, DIRECTION, LEFT)) {
-                x = 0;
-            }
-        }
-        y = SCREEN_BOTTOM;
-    }
-
-    if (compareProperty(character, DIRECTION, RIGHT)) {
-        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
-            y = undefined;
-        }
-        x = windowWidth - getProperty(character, SPRITE).width();
-    } else if (compareProperty(character, DIRECTION, LEFT))  {
-        if (compareProperty(character, PREVIOUS_ACTION, undefined)) {
-            y = undefined;
-        }
-        x = 0;
-    }
-
-     */
-
     moveSpriteToPosition(character, x, y, pixelsPerSecond);
 }
 
@@ -301,21 +257,22 @@ async function moveBackdrop(character, direction , isVertical) {
     if (isVertical) {
         y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
         distance = Math.abs(y - stripPxSuffix(getProperty(character, SPRITE).css('bottom')));
-        screenOffset = 0;
     } else {
         x = getProperty(character, DIRECTION) === RIGHT ? 0 : windowWidth - getProperty(character, SPRITE).width();
         distance = SCREEN_WIDTH - getProperty(character, SPRITE).width();
-        screenOffset = direction === RIGHT ? -1*(screenNumber * SCREEN_WIDTH) : (screenNumber - 1) * SCREEN_WIDTH;
     }
     let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
     moveSpriteToPosition(character, x, y, adjustedPixelsPerSecond);
 
+    let backgroundPosition = isVertical ? 'background-position-y' : 'background-position-x';
+    let currentPosition = parseInt(stripPxSuffix(getCss(BACKDROP, backgroundPosition)));
+
     for (let i = 0; i < numberOfIterations; i++) {
-        let offset = screenOffset + (i + 1) * pixelsPerIteration;
+        let offset = (i + 1) * pixelsPerIteration;
         let directionCompare = isVertical ? UP : RIGHT;
-        let position = direction === directionCompare ? numberOfIterations * pixelsPerIteration - offset : offset;
-        let backgroundPosition = isVertical ? 'background-position-y' : 'background-position-x';
-        setCss(BACKDROP, backgroundPosition, -1 * offset + 'px');
+        let position = direction === directionCompare ? (currentPosition + offset) : (currentPosition - offset);
+
+        setCss(BACKDROP, backgroundPosition,position + 'px');
         await sleep(sleepPerIteration);
     }
 }
@@ -379,7 +336,9 @@ function startMonsterAttacks(unpausing = false) {
             (getProperty(monsterSprite, STATUS) === ALIVE && unpausing)) {
             setCharacterCss(monsterSprite, 'display', 'block');
             setProperty(monsterSprite, STATUS, ALIVE);
-            playSound(getProperty(monsterSprite, SOUND));
+            if (!compareProperty(monsterSprite, SOUND, undefined)) {
+                playSound(getProperty(monsterSprite, SOUND));
+            }
             performAction(monsterSprite, getProperty(monsterSprite, RESET, ACTION), getProperty(monsterSprite, RESET, NUMBER_OF_TIMES));
         }
     }

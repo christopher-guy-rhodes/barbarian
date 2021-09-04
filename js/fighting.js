@@ -5,6 +5,10 @@
  * @returns {boolean|boolean} true if the attack was successful, false otherwise
  */
 function isSuccessfulAttack(character, opponent) {
+    if (compareProperty(character, CHARACTER_TYPE, getProperty(opponent, CHARACTER_TYPE))) {
+        //characters of the same type cannot kill eachother
+        return false;
+    }
     let thresholds;
     if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
         thresholds = getProperty(character, ATTACK_THRESHOLDS);
@@ -12,9 +16,9 @@ function isSuccessfulAttack(character, opponent) {
         thresholds = getProperty(opponent, BARBARIAN_ATTACK_THRESHOLDS);
     }
 
-    let heightDiff = stripPxSuffix(getProperty(character, SPRITE).css('bottom')) - stripPxSuffix(getProperty(opponent, SPRITE).css('bottom'));
+    let heightDiff = Math.abs(stripPxSuffix(getProperty(character, SPRITE).css('bottom')) - stripPxSuffix(getProperty(opponent, SPRITE).css('bottom')));
     let distance = Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
-    return distance >= thresholds[MIN] && distance <= thresholds[MAX] && heightDiff === 0;
+    return distance >= thresholds[MIN] && distance <= thresholds[MAX] && heightDiff < 100;
 }
 
 /**
@@ -25,8 +29,10 @@ function isSuccessfulAttack(character, opponent) {
  */
 function launchMonsterAttack(character, opponent) {
     if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME) && !compareProperty(character, ACTION, ATTACK)) {
+        let isWater = compareProperty(SCREENS, screenNumber, WATER, true);
+        let proximityThreshold = isWater ? ATTACK_PROXIMITY_WATER : ATTACK_PROXIMITY;
         let proximity = getProximity(character, opponent);
-        if (proximity > 0 && proximity < ATTACK_PROXIMITY) {
+        if (proximity < proximityThreshold) {
             performAction(character, ATTACK, getProperty(character, RESET, NUMBER_OF_TIMES));
             return true;
         }
@@ -42,7 +48,10 @@ function launchMonsterAttack(character, opponent) {
  * @returns {number} the number of pixels apart.
  */
 function getProximity(character, opponent) {
-    return Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
+    let distanceX = Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
+    let distanceY = Math.abs(stripPxSuffix(getCss(getProperty(character, SPRITE),'bottom'))
+        - stripPxSuffix(getCss(getProperty(opponent, SPRITE),'bottom')));
+    return Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 }
 
 /**
@@ -90,7 +99,8 @@ function areAllMonstersDeadOnScreen() {
         if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
             continue;
         }
-        if (compareProperty(spr, STATUS, ALIVE)) {
+        // Sharks cannot be killed, treat them as dead if this decision point is reached
+        if (!compareProperty(spr, CHARACTER_TYPE, SHARK_CHARACTER_TYPE) && compareProperty(spr, STATUS, ALIVE)) {
             return false;
         }
     }
@@ -214,9 +224,6 @@ function getOpponentsInProximity(character, proximityThreshold) {
     let opponents = getOpponents();
     for (let opponent of opponents) {
         let proximity = getProximity(character, opponent);
-        if (compareProperty(opponent, NAME, ROCK_CHARACTER)) {
-            console.log('checking if rock is close');
-        }
         if (proximity > 0 && proximity < proximityThreshold) {
             attackers.push(opponent);
         }

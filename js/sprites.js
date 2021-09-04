@@ -104,8 +104,7 @@ let BARBARIAN_CHARACTER = {
             0 : 12,
             1 : 12,
             2 : 160,
-            3 : 12,
-            4 : 700,
+            3 : 700
         },
         STATUS: ALIVE
     }

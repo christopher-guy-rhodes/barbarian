@@ -24,12 +24,16 @@ function playSound(snd) {
 function setSoundsPauseState() {
     if (isSoundOn) {
         if (isPaused) {
-            for (let sound of Object.values(SOUNDS)) {
-                sound.pause();
-            }
+            stopAllSounds()
         } else if (!compareProperty(SOUNDS, THEME_SONG, undefined)) {
             getProperty(SOUNDS, THEME_SONG).play();
         }
+    }
+}
+
+function stopAllSounds() {
+    for (let sound of Object.values(SOUNDS)) {
+        sound.pause();
     }
 }
 

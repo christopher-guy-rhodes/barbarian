@@ -169,8 +169,14 @@ function handleSoundKeypress() {
 
     setCss(isSoundOn ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE, 'display', 'none');
     setCss(isSoundOn ? SOUND_OFF_MESSAGE : SOUND_ON_MESSAGE, 'display', 'block');
-    setSoundsPauseState(isSoundOn);
     isSoundOn = !isSoundOn;
+
+    if (isSoundOn) {
+        playThemeSong();
+    } else {
+        stopAllSounds();
+    }
+
 
     setTimeout(function () {
         setCss(SOUND_OFF_MESSAGE, 'display', 'none');

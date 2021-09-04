@@ -43,6 +43,9 @@ function resetSpritePositions() {
     let spritesOnScreen = getProperty(SCREENS, screenNumber, OPPONENTS);
     for (const sprite of SPRITES) {
         let isSpriteOnScreen = $.inArray(sprite, spritesOnScreen) !== -1;
+        if (!isSpriteOnScreen) {
+            continue;
+        }
         setProperty(sprite, ACTION, getProperty(sprite, RESET, ACTION));
         setProperty(sprite, DIRECTION, getProperty(sprite, RESET, DIRECTION));
         setProperty(sprite, STATUS, getProperty(sprite, RESET, STATUS));

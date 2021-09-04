@@ -475,9 +475,10 @@ let ROCK_CHARACTER = {
         DIRECTION: LEFT,
         LEFT: 1270,
         BOTTOM: {
-            SCREEN_0 : 12,
-            SCREEN_1 : 12,
-            SCREEN_2 : 12
+            0 : 12,
+            1 : 12,
+            2 : 12,
+            3 : 12
         },
         STATUS: DEAD,
         NUMBER_OF_TIMES: 0,
@@ -567,10 +568,10 @@ function newShark(element, name, bottom, left) {
             DIRECTION: LEFT,
             LEFT: left,
             BOTTOM: {
-                SCREEN_0: bottom,
-                SCREEN_1: bottom,
-                SCREEN_2: bottom,
-                SCREEN_3: bottom,
+                0: bottom,
+                1: bottom,
+                2: bottom,
+                3: bottom,
             },
             STATUS: DEAD,
             NUMBER_OF_TIMES: 0,

@@ -1,583 +1,277 @@
-let BARBARIAN_CHARACTER = {
-    SPRITE : $(".barbarian"),
-    NAME : BARBARIAN_SPRITE_NAME,
-    CHARACTER_TYPE: BARBARIAN_CHARACTER_TYPE,
-    ACTION : STOP,
-    PREVIOUS_ACTION : undefined,
-    DIRECTION : RIGHT,
-    VERTICAL_DIRECTION : undefined,
-    CAN_ELEVATE : true,
-    CAN_HIGHLIGHT: false,
-    FPS: {
-      WALK : SPRITE_FPS,
-      SWIM : SWIM_FPS,
-      RUN : SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-      JUMP: SPRITE_FPS,
-      ATTACK: SPRITE_FPS,
-      STOP: 0,
-      FALL: SPRITE_FPS
-    },
-    PIXELS_PER_SECOND : {
-        WALK : BARBARIAN_SPRITE_PIXELS_PER_SECOND,
-        SWIM : BARBARIAN_SPRITE_PIXELS_PER_SECOND,
-        RUN : BARBARIAN_SPRITE_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
-        JUMP: BARBARIAN_SPRITE_PIXELS_PER_SECOND,
-        ATTACK: 0,
-        STOP: 0,
-        FALL: BARBARIAN_SPRITE_PIXELS_PER_SECOND
-    },
-    STATUS : DEAD,
-    FRAMES : {
-        ATTACK : {
-            LEFT : {
-                FRAMES : [7, 6, 5, 4, 3, 2, 1, 0],
-                HEIGHT_OFFSET : 5},
-            RIGHT : {
-                FRAMES :  [0, 1, 2, 3, 4, 5, 6, 7],
-                HEIGHT_OFFSET : 4}},
-        JUMP : {
-            LEFT : {
-                FRAMES : [62, 61, 60, 59, 58, 57, 56 ],
-                HEIGHT_OFFSET : 7},
-            RIGHT : {
-                FRAMES :  [48, 49, 50, 51, 52, 53, 54],
-                HEIGHT_OFFSET : 6}},
-        RUN : {
-            LEFT : {
-                FRAMES : [24, 25, 26, 27, 28, 29],
-                HEIGHT_OFFSET : 3},
-            RIGHT : {
-                FRAMES : [16, 17, 18, 19, 20, 21],
-                HEIGHT_OFFSET : 2}},
-        WALK : {
-            LEFT : {
-                FRAMES :  [13, 12, 11, 10, 9, 8],
-                HEIGHT_OFFSET : 1},
-            RIGHT : {
-                FRAMES : [1, 2, 3, 4, 5, 6],
-                HEIGHT_OFFSET : 0}},
-        SWIM : {
-            LEFT : {
-                FRAMES :  [3, 2, 1, 0],
-                HEIGHT_OFFSET : 17},
-            RIGHT : {
-                FRAMES : [0, 1, 2, 3],
-                HEIGHT_OFFSET : 16}},
-        FALL : {
-            LEFT: {
-                FRAMES : [3, 2, 1, 0],
-                HEIGHT_OFFSET : 15},
-            RIGHT: {
-                FRAMES : [0, 1, 2, 3],
-                HEIGHT_OFFSET: 14}},
-        STOP: {
-            LEFT : {
-                FRAMES :  [3, 2, 1, 0],
-                HEIGHT_OFFSET : 17},
-            RIGHT : {
-                FRAMES : [0, 1, 2, 3],
-                HEIGHT_OFFSET : 16}
-        }},
-    DEATH : {
-        SPRITE : $(".barbarian"),
-        DELAY : 1800,
-        TIME: 0,
-        FRAMES : {
-            DEATH: {
-                RIGHT: {
-                    FRAMES: [96, 97, 98, 99, 100],
-                    HEIGHT_OFFSET: 12
-                },
-                LEFT: {
-                    FRAMES: [108, 107, 106, 105, 104],
-                    HEIGHT_OFFSET: 13
-                },
-                FPS: SPRITE_FPS
-            }
+const BARBARIAN_FRAMES = {
+    ATTACK : {
+        LEFT : {
+            FRAMES : [7, 6, 5, 4, 3, 2, 1, 0],
+            HEIGHT_OFFSET : 5},
+        RIGHT : {
+            FRAMES :  [0, 1, 2, 3, 4, 5, 6, 7],
+            HEIGHT_OFFSET : 4}},
+    JUMP : {
+        LEFT : {
+            FRAMES : [62, 61, 60, 59, 58, 57, 56 ],
+            HEIGHT_OFFSET : 7},
+        RIGHT : {
+            FRAMES :  [48, 49, 50, 51, 52, 53, 54],
+            HEIGHT_OFFSET : 6}},
+    RUN : {
+        LEFT : {
+            FRAMES : [24, 25, 26, 27, 28, 29],
+            HEIGHT_OFFSET : 3},
+        RIGHT : {
+            FRAMES : [16, 17, 18, 19, 20, 21],
+            HEIGHT_OFFSET : 2}},
+    WALK : {
+        LEFT : {
+            FRAMES :  [13, 12, 11, 10, 9, 8],
+            HEIGHT_OFFSET : 1},
+        RIGHT : {
+            FRAMES : [1, 2, 3, 4, 5, 6],
+            HEIGHT_OFFSET : 0}},
+    SWIM : {
+        LEFT : {
+            FRAMES :  [3, 2, 1, 0],
+            HEIGHT_OFFSET : 17},
+        RIGHT : {
+            FRAMES : [0, 1, 2, 3],
+            HEIGHT_OFFSET : 16}},
+    FALL : {
+        LEFT: {
+            FRAMES : [3, 2, 1, 0],
+            HEIGHT_OFFSET : 15},
+        RIGHT: {
+            FRAMES : [0, 1, 2, 3],
+            HEIGHT_OFFSET: 14}},
+    STOP: {
+        LEFT : {
+            FRAMES :  [3, 2, 1, 0],
+            HEIGHT_OFFSET : 17},
+        RIGHT : {
+            FRAMES : [0, 1, 2, 3],
+            HEIGHT_OFFSET : 16}
+    }
+};
+
+const DOG_FRAMES = {
+    SIT : {
+        LEFT : {
+            FRAMES: [3, 2, 1, 0],
+            HEIGHT_OFFSET : 1
+        },
+        RIGHT : {
+            FRAMES : [0, 1, 2, 3],
+            HEIGHT_OFFSET : 0
         }
     },
-    RESET : {
-        ACTION : STOP,
-        DIRECTION : RIGHT,
-        LEFT: 0,
-        BOTTOM: {
-            0 : 12,
-            1 : 12,
-            2 : 160,
-            3 : 700
+    ATTACK : {
+        LEFT : {
+            FRAMES: [4, 3, 2, 1, 0],
+            HEIGHT_OFFSET : 3
         },
-        STATUS: ALIVE
-    }
-};
-
-let DOG_CHARACTER = {
-    SPRITE : $('.dog'),
-    NAME : DOG_SPRITE_NAME,
-    CHARACTER_TYPE: DOG_CHARACTER_TYPE,
-    ACTION : SIT,
-    PREVIOUS_ACTION : undefined,
-    DIRECTION : LEFT,
-    VERTICAL_DIRECTION : undefined,
-    CAN_ELEVATE : true,
-    CAN_HIGHLIGHT: true,
-    FPS: {
-        SIT: DOG_SPRITE_FPS,
-        ATTACK: DOG_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-        WALK : DOG_SPRITE_FPS,
-    },
-    PIXELS_PER_SECOND : {
-        SIT: 0,
-        ATTACK: DOG_PIXELS_PER_SECOND,
-        WALK : DOG_PIXELS_PER_SECOND,
-    },
-    STATUS : DEAD,
-    FRAMES : {
-        SIT : {
-            LEFT : {
-                FRAMES: [3, 2, 1, 0],
-                HEIGHT_OFFSET : 1
-            },
-            RIGHT : {
-                FRAMES : [0, 1, 2, 3],
-                HEIGHT_OFFSET : 0
-            }
-        },
-        ATTACK : {
-            LEFT : {
-                FRAMES: [4, 3, 2, 1, 0],
-                HEIGHT_OFFSET : 3
-            },
-            RIGHT : {
-                FRAMES : [0, 1, 2, 3, 4],
-                HEIGHT_OFFSET : 2
-            }
-        },
-        WALK : {
-            LEFT : {
-                FRAMES: [4, 3, 2, 1, 0],
-                HEIGHT_OFFSET : 3
-            },
-            RIGHT : {
-                FRAMES : [0, 1, 2, 3, 4],
-                HEIGHT_OFFSET : 2
-            }
-        },
-    },
-    ATTACK_THRESHOLDS : {
-        MIN : 0,
-        MAX : 100
-    },
-    JUMP_THRESHOLDS : {
-        MIN : 15,
-        MAX : 100
-    },
-    BARBARIAN_ATTACK_THRESHOLDS : {
-        MIN : 0,
-        MAX : 115
-    },
-    DEATH : {
-        SPRITE : $(".death"),
-        DELAY : 1800,
-        TIME: 0,
-        FRAMES : {
-            DEATH : {
-                RIGHT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    HEIGHT_OFFSET: 0
-                },
-                LEFT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    HEIGHT_OFFSET: 0
-                },
-                FPS: BOG_MONSTER_SPRITE_FPS
-            }
-        },
-    },
-    SOUND: GROWL_SOUND,
-    RESET : {
-        ACTION : SIT,
-        DIRECTION: LEFT,
-        LEFT: 850,
-        BOTTOM: {
-            0 : 12,
-            1 : 160,
-            2 : 12,
-            3 : 12,
-        },
-        STATUS: DEAD,
-        NUMBER_OF_TIMES: 0,
-        TURNAROUND : true
-    }
-};
-
-let MONSTER_INVINCIBLE_CHARACTER = {
-    SPRITE : $(".monster_invincible"),
-    NAME : MONSTER_INVINCIBLE_SPRITE_NAME,
-    CHARACTER_TYPE: MONSTER_CHARACTER_TYPE,
-    ACTION : WALK,
-    PREVIOUS_ACTION : undefined,
-    DIRECTION : LEFT,
-    VERTICAL_DIRECTION : undefined,
-    CAN_ELEVATE : true,
-    CAN_HIGHLIGHT: false,
-    FPS: {
-        WALK : BOG_MONSTER_SPRITE_FPS,
-        ATTACK : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-    },
-    PIXELS_PER_SECOND : {
-        WALK : BOG_MONSTER_PIXELS_PER_SECOND,
-        ATTACK: BOG_MONSTER_PIXELS_PER_SECOND,
-    },
-    STATUS : DEAD,
-    FRAMES : {
-        WALK : {
-            LEFT : {
-                FRAMES: [13, 12, 11, 10, 9, 8],
-                HEIGHT_OFFSET: 1
-            },
-            RIGHT : {
-                FRAMES: [0, 1, 2, 3, 4, 5],
-                HEIGHT_OFFSET: 0
-            }
-        },
-        ATTACK : {
-            LEFT : {
-                FRAMES: [31, 30, 29, 28, 27, 26, 25, 24],
-                HEIGHT_OFFSET: 3
-            },
-            RIGHT : {
-                FRAMES: [16, 17 , 18, 19, 20, 21, 23, 23],
-                HEIGHT_OFFSET: 2
-            }
-        },
-    },
-    ATTACK_THRESHOLDS : {
-        MIN : 0,
-        MAX : 100
-    },
-    JUMP_THRESHOLDS : {
-        MIN : -25,
-        MAX : 125
-    },
-    BARBARIAN_ATTACK_THRESHOLDS : {
-        MIN: 0,
-        MAX: 0
-    },
-    DEATH : {
-        SPRITE : $(".death"),
-        DELAY : 1800,
-        TIME: 0,
-        FRAMES : {
-            DEATH : {
-                RIGHT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    HEIGHT_OFFSET: 0
-                },
-                LEFT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    HEIGHT_OFFSET: 0
-                },
-                FPS: BOG_MONSTER_SPRITE_FPS
-            }
-        },
-    },
-    SOUND: MONSTER_SOUND,
-    RESET : {
-        ACTION : WALK,
-        DIRECTION : LEFT,
-        LEFT: 850,
-        BOTTOM: {
-            0 : 12,
-            1 : 12,
-            2 : 12,
-            3 : 12,
-        },
-        STATUS: DEAD,
-        NUMBER_OF_TIMES: 0,
-        TURNAROUND : true
-    }
-};
-
-let MONSTER_CHARACTER = {
-    SPRITE : $(".monster"),
-    NAME : MONSTER_SPRITE_NAME,
-    TYPE: MONSTER_CHARACTER_TYPE,
-    ACTION : WALK,
-    PREVIOUS_ACTION : undefined,
-    DIRECTION : LEFT,
-    VERTICAL_DIRECTION : undefined,
-    CAN_ELEVATE : true,
-    CAN_HIGHLIGHT: true,
-    FPS: {
-        WALK : BOG_MONSTER_SPRITE_FPS,
-        ATTACK : BOG_MONSTER_SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-    },
-    PIXELS_PER_SECOND : {
-        WALK : BOG_MONSTER_PIXELS_PER_SECOND,
-        ATTACK: BOG_MONSTER_PIXELS_PER_SECOND,
-    },
-    STATUS : DEAD,
-    FRAMES : {
-        WALK : {
-            LEFT : {
-                FRAMES: [13, 12, 11, 10, 9, 8],
-                HEIGHT_OFFSET: 1
-            },
-            RIGHT : {
-                FRAMES: [0, 1, 2, 3, 4, 5],
-                HEIGHT_OFFSET: 0
-            }
-        },
-        ATTACK : {
-            LEFT : {
-                FRAMES: [31, 30, 29, 28, 27, 26, 25, 24],
-                HEIGHT_OFFSET: 3
-            },
-            RIGHT : {
-                FRAMES: [16, 17 , 18, 19, 20, 21, 23, 23],
-                HEIGHT_OFFSET: 2
-            }
-        },
-    },
-    ATTACK_THRESHOLDS : {
-        MIN : 0,
-        MAX : 100
-    },
-    JUMP_THRESHOLDS : {
-        MIN : -10,
-        MAX : 110
-    },
-    BARBARIAN_ATTACK_THRESHOLDS : {
-        MIN: 0,
-        MAX: 115
-    },
-    DEATH : {
-        SPRITE : $(".death"),
-        DELAY : 1800,
-        TIME: 0,
-        FRAMES : {
-            DEATH : {
-                RIGHT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    HEIGHT_OFFSET: 0
-                },
-                LEFT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    HEIGHT_OFFSET: 0
-                },
-                FPS: BOG_MONSTER_SPRITE_FPS
-            }
-        },
-    },
-    SOUND: MONSTER_SOUND,
-    RESET : {
-        ACTION : WALK,
-        DIRECTION : LEFT,
-        LEFT: 850,
-        BOTTOM: {
-            0 : 12,
-            1 : 12,
-            2 : 12,
-            3 : 12,
-        },
-        STATUS: DEAD,
-        NUMBER_OF_TIMES: 0,
-        TURNAROUND : true
-    }
-};
-
-let ROCK_CHARACTER = {
-    SPRITE : $('.rock'),
-    NAME : ROCK_SPRITE_NAME,
-    CHARACTER_TYPE: ROCK_CHARACTER_TYPE,
-    ACTION : SIT,
-    PREVIOUS_ACTION : undefined,
-    DIRECTION : LEFT,
-    CAN_ELEVATE : false,
-    CAN_HIGHLIGHT: false,
-    FPS: {
-        SIT: ROCK_SPRITE_FPS,
-        WALK : ROCK_SPRITE_FPS,
-        ATTACK: ROCK_SPRITE_FPS,
-    },
-    PIXELS_PER_SECOND : {
-        SIT: 0,
-        ATTACK: ROCK_PIXELS_PER_SECOND,
-        WALK : ROCK_PIXELS_PER_SECOND,
-    },
-    STATUS : DEAD,
-    FRAMES : {
-        SIT : {
-            LEFT : {
-                FRAMES: [5, 4],
-                HEIGHT_OFFSET : 0
-            },
-            RIGHT : {
-                FRAMES : [0, 1],
-                HEIGHT_OFFSET : 0
-            }
-        },
-        ATTACK : {
-            LEFT : {
-                FRAMES: [5, 4, 3, 2, 1, 0],
-                HEIGHT_OFFSET : 0
-            },
-            RIGHT : {
-                FRAMES : [0, 1, 2, 3, 4, 5],
-                HEIGHT_OFFSET : 0
-            }
-        },
-        WALK : {
-            LEFT : {
-                FRAMES: [5, 4, 3, 2, 1, 0],
-                HEIGHT_OFFSET : 0
-            },
-            RIGHT : {
-                FRAMES : [0, 1, 2, 3, 4, 5],
-                HEIGHT_OFFSET : 0
-            }
-        },
-    },
-    ATTACK_THRESHOLDS : {
-        MIN : MONSTER_CHARACTER[ATTACK_THRESHOLDS][MIN] - 50,
-        MAX : MONSTER_CHARACTER[ATTACK_THRESHOLDS][MAX] + 50
-    },
-    JUMP_THRESHOLDS : {
-        MIN : 0,
-        MAX : 0
-    },
-    BARBARIAN_ATTACK_THRESHOLDS : {
-        MIN : 0,
-        MAX : 0
-    },
-    DEATH : {
-        SPRITE : $(".death"),
-        DELAY : 1800,
-        TIME: 0,
-        FRAMES : {
-            DEATH : {
-                RIGHT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    HEIGHT_OFFSET: 0
-                },
-                LEFT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    HEIGHT_OFFSET: 0
-                },
-                FPS: BOG_MONSTER_SPRITE_FPS
-            }
-        },
-    },
-    SOUND: undefined,
-    RESET : {
-        ACTION : SIT,
-        DIRECTION: LEFT,
-        LEFT: 1270,
-        BOTTOM: {
-            0 : 12,
-            1 : 12,
-            2 : 12,
-            3 : 12
-        },
-        STATUS: DEAD,
-        NUMBER_OF_TIMES: 0,
-        TURNAROUND : false
-    }
-};
-
-let SHARK_CHARACTER1 = newShark($('.shark1'), SHARK_SPRITE_NAME1, 400, 0);
-let SHARK_CHARACTER2 = newShark($('.shark2'), SHARK_SPRITE_NAME2, 0, 1400);
-let SHARK_CHARACTER3 = newShark($('.shark3'), SHARK_SPRITE_NAME3, 800, 1400);
-let SHARK_CHARACTER4 = newShark($('.shark4'), SHARK_SPRITE_NAME4, 400, 1400);
-
-function newShark(element, name, bottom, left) {
-    return {
-        SPRITE: element,
-        CHARACTER_TYPE : SHARK_CHARACTER_TYPE,
-        NAME: name,
-        ACTION: WALK,
-        PREVIOUS_ACTION: undefined,
-        DIRECTION: LEFT,
-        CAN_ELEVATE: false,
-        CAN_HIGHLIGHT: false,
-        FPS: {
-            WALK: SHARK_SPRITE_FPS,
-            ATTACK: SHARK_SPRITE_FPS,
-        },
-        PIXELS_PER_SECOND: {
-            ATTACK: SHARK_PIXELS_PER_SECOND,
-            WALK: SHARK_PIXELS_PER_SECOND,
-        },
-        STATUS: DEAD,
-        FRAMES: {
-            ATTACK: {
-                LEFT: {
-                    FRAMES: [2, 1, 0],
-                    HEIGHT_OFFSET: 3
-                },
-                RIGHT: {
-                    FRAMES: [0, 1, 2],
-                    HEIGHT_OFFSET: 2
-                }
-            },
-            WALK: {
-                LEFT: {
-                    FRAMES: [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
-                    HEIGHT_OFFSET: 1
-                },
-                RIGHT: {
-                    FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
-                    HEIGHT_OFFSET: 0
-                }
-            },
-        },
-        ATTACK_THRESHOLDS: {
-            MIN: 0,
-            MAX: 100
-        },
-        JUMP_THRESHOLDS: {
-            MIN: 15,
-            MAX: 100
-        },
-        BARBARIAN_ATTACK_THRESHOLDS: {
-            MIN: 0,
-            MAX: 115
-        },
-        DEATH: {
-            SPRITE: $(".death"),
-            DELAY: 1800,
-            TIME: 0,
-            FRAMES: {
-                DEATH: {
-                    RIGHT: {
-                        FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                        HEIGHT_OFFSET: 0
-                    },
-                    LEFT: {
-                        FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                        HEIGHT_OFFSET: 0
-                    },
-                    FPS: BOG_MONSTER_SPRITE_FPS
-                }
-            },
-        },
-        SOUND: SPLASH_SOUND,
-        RESET: {
-            ACTION: WALK,
-            DIRECTION: LEFT,
-            LEFT: left,
-            BOTTOM: {
-                0: bottom,
-                1: bottom,
-                2: bottom,
-                3: bottom,
-            },
-            STATUS: DEAD,
-            NUMBER_OF_TIMES: 0,
-            TURNAROUND: true
+        RIGHT : {
+            FRAMES : [0, 1, 2, 3, 4],
+            HEIGHT_OFFSET : 2
         }
-    };
-}
+    },
+    WALK : {
+        LEFT : {
+            FRAMES: [4, 3, 2, 1, 0],
+            HEIGHT_OFFSET : 3
+        },
+        RIGHT : {
+            FRAMES : [0, 1, 2, 3, 4],
+            HEIGHT_OFFSET : 2
+        }
+    },
+};
+
+let MONSTER_FRAMES = {
+    WALK : {
+        LEFT : {
+            FRAMES: [13, 12, 11, 10, 9, 8],
+            HEIGHT_OFFSET: 1
+        },
+        RIGHT : {
+            FRAMES: [0, 1, 2, 3, 4, 5],
+            HEIGHT_OFFSET: 0
+        }
+    },
+    ATTACK : {
+        LEFT : {
+            FRAMES: [31, 30, 29, 28, 27, 26, 25, 24],
+            HEIGHT_OFFSET: 3
+        },
+        RIGHT : {
+            FRAMES: [16, 17 , 18, 19, 20, 21, 23, 23],
+            HEIGHT_OFFSET: 2
+        }
+    },
+};
+
+let ROCK_FRAMES = {
+    SIT : {
+        LEFT : {
+            FRAMES: [5, 4],
+                HEIGHT_OFFSET : 0
+        },
+        RIGHT : {
+            FRAMES : [0, 1],
+                HEIGHT_OFFSET : 0
+        }
+    },
+    ATTACK : {
+        LEFT : {
+            FRAMES: [5, 4, 3, 2, 1, 0],
+                HEIGHT_OFFSET : 0
+        },
+        RIGHT : {
+            FRAMES : [0, 1, 2, 3, 4, 5],
+                HEIGHT_OFFSET : 0
+        }
+    },
+    WALK : {
+        LEFT : {
+            FRAMES: [5, 4, 3, 2, 1, 0],
+                HEIGHT_OFFSET : 0
+        },
+        RIGHT : {
+            FRAMES : [0, 1, 2, 3, 4, 5],
+                HEIGHT_OFFSET : 0
+        }
+    },
+};
+
+const SHARK_FRAMES = {
+    ATTACK: {
+        LEFT: {
+            FRAMES: [2, 1, 0],
+            HEIGHT_OFFSET: 3
+        },
+        RIGHT: {
+            FRAMES: [0, 1, 2],
+            HEIGHT_OFFSET: 2
+        }
+    },
+    WALK: {
+        LEFT: {
+            FRAMES: [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+                11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+                11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+                11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+                11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
+            HEIGHT_OFFSET: 1
+        },
+        RIGHT: {
+            FRAMES: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+                6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17],
+            HEIGHT_OFFSET: 0
+        }
+    },
+};
+
+const BARBARIAN_DEATH_FRAMES = {
+    DEATH: {
+        RIGHT: {
+            FRAMES: [96, 97, 98, 99, 100],
+            HEIGHT_OFFSET: 12
+        },
+        LEFT: {
+            FRAMES: [108, 107, 106, 105, 104],
+            HEIGHT_OFFSET: 13
+        },
+        FPS: SPRITE_FPS
+    }
+};
+
+let BARBARIAN_CHARACTER = new CharacterBuilder(BARBARIAN_FRAMES, BARBARIAN_CHARACTER_TYPE, $('.barbarian'))
+    .withAction(STOP)
+    .withName(BARBARIAN_SPRITE_NAME)
+    .withDirection(RIGHT)
+    .withCanHighlight(false)
+    .withDeathSprite($('.barbarian'))
+    .withPixelsPerSecond(ATTACK, 0)
+    .withResetAction(STOP)
+    .withResetDirection(RIGHT)
+    .withResetLeft(0)
+    .withResetStatus(ALIVE)
+    .withDeathFrames(BARBARIAN_DEATH_FRAMES)
+    .withResetBottom(2, 160)
+    .withResetBottom(3, 600).build();
+
+let DOG_CHARACTER = new CharacterBuilder(DOG_FRAMES, DOG_CHARACTER_TYPE, $('.dog'))
+    .withAction(SIT)
+    .withFps(ATTACK, 7.5)
+    .withResetAction(SIT)
+    .withResetBottom(1, 160)
+    .withSound(GROWL_SOUND).build();
+
+let MONSTER_INVINCIBLE_CHARACTER =
+    new CharacterBuilder(MONSTER_FRAMES, MONSTER_CHARACTER_TYPE, $('.monster_invincible'))
+        .withMinJumpThreshold(-25)
+        .withMaxJumpThreshold(126)
+        // Don't allow barbarian to kill the invincible monster
+        .withMinBarbarianAttackThreshold(0)
+        .withMaxBarbarianAttackThreshold(0)
+        .withFps(ATTACK, 7.5)
+        .withSound(MONSTER_SOUND).build();
+
+let MONSTER_CHARACTER = new CharacterBuilder(MONSTER_FRAMES, MONSTER_CHARACTER_TYPE, $('.monster'))
+    .withMinJumpThreshold(-10)
+    .withMaxJumpThreshold(110)
+    .withFps(ATTACK, 7.5)
+    .withSound(MONSTER_SOUND).build();
+
+let ROCK_CHARACTER = new CharacterBuilder(ROCK_FRAMES, ROCK_CHARACTER_TYPE, $('.rock'))
+    .withAction(SIT)
+    .withCanElevate(false)
+    .withCanHighlight(false)
+    .withFps(SIT, 10)
+    .withFps(ATTACK, 10)
+    .withFps(WALK, 10)
+    .withPixelsPerSecond(WALK, 200)
+    .withPixelsPerSecond(ATTACK, 200)
+    .withMinAttackThreshold(getProperty(MONSTER_CHARACTER, ATTACK_THRESHOLDS, MIN) - 50)
+    .withMaxAttackThreshold(getProperty(MONSTER_CHARACTER, ATTACK_THRESHOLDS, MAX) + 50)
+    // Don't allow jump evade of rock
+    .withMinJumpThreshold(0)
+    .withMaxJumpThreshold(0)
+    // Don't allow barbarian to kill rock
+    .withMinBarbarianAttackThreshold(0)
+    .withMaxBarbarianAttackThreshold(0)
+    .withResetAction(SIT)
+    .withResetLeft(1270)
+    .withResetTurnaround(false).build();
+
+let SHARK_CHARACTER1 = new CharacterBuilder(SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark1'))
+    .withFps(ATTACK, 10)
+    .withFps(WALK, 10)
+    .withSound(SPLASH_SOUND)
+    .withResetBottom(3, 0)
+    .withResetLeft(0).build();
+
+let SHARK_CHARACTER2 = new CharacterBuilder(SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark2'))
+    .withFps(ATTACK, 10)
+    .withFps(WALK, 10)
+    .withSound(SPLASH_SOUND)
+    .withResetBottom(3, 0)
+    .withResetLeft(1400).build();
+
+let SHARK_CHARACTER3 = new CharacterBuilder(SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark3'))
+    .withFps(ATTACK, 10)
+    .withFps(WALK, 10)
+    .withSound(SPLASH_SOUND)
+    .withResetBottom(3, 800)
+    .withResetLeft(1400).build();
+
+let SHARK_CHARACTER4 = new CharacterBuilder(SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark4'))
+    .withFps(ATTACK, 10)
+    .withFps(WALK, 10)
+    .withSound(SPLASH_SOUND)
+    .withResetBottom(3, 400)
+    .withResetLeft(0).build();
+
 
 SPRITES = [BARBARIAN_CHARACTER, MONSTER_CHARACTER, DOG_CHARACTER, ROCK_CHARACTER, MONSTER_INVINCIBLE_CHARACTER, SHARK_CHARACTER1, SHARK_CHARACTER2, SHARK_CHARACTER3, SHARK_CHARACTER4];
 

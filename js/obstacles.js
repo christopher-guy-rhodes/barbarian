@@ -81,7 +81,6 @@ function handleObstacles(character) {
                     setCss(getProperty(character, SPRITE).css('bottom', obstacle[HEIGHT] + 'px'));
                 }
             } else {
-                getProperty(character, SPRITE).stop();
 
                 let action = getProperty(obstacle, FAIL_ACTION);
 
@@ -92,10 +91,12 @@ function handleObstacles(character) {
                     },  getProperty(character, DEATH, DELAY) * (1 / getProperty(character, FPS, action)));
                 }
 
-                performAction(character, action);
-                // Allow barbarian to attack and jump at a boundary
-                if (getProperty(character, ACTION) !== ATTACK || getProperty(character, ACTION) !== JUMP) {
+                if (!compareProperty(character, ACTION, ATTACK)) {
+                    getProperty(character, SPRITE).stop();
+                    performAction(character, action);
                     return true;
+                } else {
+                    return false;
                 }
             }
         }

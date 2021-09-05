@@ -22,7 +22,8 @@ let keypressTime;
 let lastKeypressTime;
 
 $(document).ready(function(){
-
+    // Classes
+    $.getScript('/js/characters/CharacterBuilder.js', function() {
     // Include constants
     $.getScript('/js/constants.js', function() {
     // Include util module
@@ -67,7 +68,7 @@ $(document).ready(function(){
 
 
 
-})})})})})})})})});
+})})})})})})})})})});
 </script>
 </head>
 <body style="touch-action: pan-y;">

@@ -31,8 +31,6 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
     let frames = getProperty(character, FRAMES, requestedAction, getProperty(character, DIRECTION), FRAMES);
 
     setProperty(character, ACTION, requestedAction);
-    //setProperty(character, DIRECTION, requestedDirection);
-    //setProperty(character, VERTICAL_DIRECTION, requestedVerticalDirection);
 
     let index = idx;
     let isGameOver = false;

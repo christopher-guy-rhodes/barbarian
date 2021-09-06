@@ -5,20 +5,22 @@
  * @returns {boolean|boolean} true if the attack was successful, false otherwise
  */
 function isSuccessfulAttack(character, opponent) {
-    if (compareProperty(character, CHARACTER_TYPE, getProperty(opponent, CHARACTER_TYPE))) {
+    if (character.getCharacterType() === opponent.getCharacterType()) {
         //characters of the same type cannot kill eachother
         return false;
     }
-    let thresholds;
-    if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
-        thresholds = getProperty(character, ATTACK_THRESHOLDS);
+    let minAttackThreshold, maxAttackThreshold;
+    if (character.getName() !== BARBARIAN_SPRITE_NAME) {
+        minAttackThreshold = character.getMinAttackThreshold();
+        maxAttackThreshold = character.getMaxAttackThreshold();
     } else {
-        thresholds = getProperty(opponent, BARBARIAN_ATTACK_THRESHOLDS);
+        minAttackThreshold = opponent.getMinBarbarianAttackThreshold();
+        maxAttackThreshold = opponent.getMaxBarbarianAttackThreshold();
     }
 
-    let heightDiff = Math.abs(stripPxSuffix(getProperty(character, SPRITE).css('bottom')) - stripPxSuffix(getProperty(opponent, SPRITE).css('bottom')));
-    let distance = Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
-    return distance >= thresholds[MIN] && distance <= thresholds[MAX] && heightDiff < 100;
+    let heightDiff = Math.abs(stripPxSuffix(character.getSprite().css('bottom')) - stripPxSuffix(opponent.getSprite().css('bottom')));
+    let distance = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
+    return distance >= minAttackThreshold && distance <= maxAttackThreshold && heightDiff < 100;
 }
 
 /**
@@ -28,12 +30,12 @@ function isSuccessfulAttack(character, opponent) {
  * @returns {boolean} returns true if the monster attacked, false otherwise
  */
 function launchMonsterAttack(character, opponent) {
-    if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME) && !compareProperty(character, ACTION, ATTACK)) {
+    if (character.getName() !== BARBARIAN_SPRITE_NAME && character.getAction() !== ATTACK) {
         let isWater = compareProperty(SCREENS, screenNumber, WATER, true);
         let proximityThreshold = isWater ? ATTACK_PROXIMITY_WATER : ATTACK_PROXIMITY;
         let proximity = getProximity(character, opponent);
         if (proximity < proximityThreshold) {
-            performAction(character, ATTACK, getProperty(character, RESET, NUMBER_OF_TIMES));
+            performAction(character, ATTACK, character.getResetNumberOfTimes());
             return true;
         }
     }
@@ -48,9 +50,9 @@ function launchMonsterAttack(character, opponent) {
  * @returns {number} the number of pixels apart.
  */
 function getProximity(character, opponent) {
-    let distanceX = Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
-    let distanceY = Math.abs(stripPxSuffix(getCss(getProperty(character, SPRITE),'bottom'))
-        - stripPxSuffix(getCss(getProperty(opponent, SPRITE),'bottom')));
+    let distanceX = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
+    let distanceY = Math.abs(stripPxSuffix(getCss(character.getSprite(),'bottom'))
+        - stripPxSuffix(getCss(opponent.getSprite(),'bottom')));
     return Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
 }
 
@@ -61,10 +63,10 @@ function getProximity(character, opponent) {
  * @returns {boolean} true if the opponent avoided the attack, false otherwise
  */
 function hasJumpEvaded(character, opponent) {
-    let distance = Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
+    let distance = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
 
-    return getProperty(opponent, ACTION) === JUMP  && distance < getProperty(character, JUMP_THRESHOLDS, MAX) &&
-        distance > getProperty(character, JUMP_THRESHOLDS, MIN);
+    return opponent.getAction() === JUMP  && distance < character.getMaxJumpThreshold() &&
+        distance > character.getMinJumpThreshold();
 }
 
 /**
@@ -74,7 +76,7 @@ function hasJumpEvaded(character, opponent) {
  * @returns {boolean|boolean} true if they are both alive, false otherwise
  */
 function areBothAlive(character, opponent) {
-    return !compareProperty(opponent, STATUS, DEAD) && !compareProperty(character, STATUS, DEAD);
+    return opponent.getStatus() !== DEAD && character.getStatus() !== DEAD;
 }
 
 /**
@@ -84,7 +86,8 @@ function areBothAlive(character, opponent) {
  * @returns {boolean|boolean} true if the sprite defeated the opponent, false otherwise
  */
 function opponentDefeated(character, opponent) {
-    return compareProperty(character, ACTION, ATTACK) &&
+
+    return character.getAction() === ATTACK &&
         !hasJumpEvaded(character, opponent) &&
         areBothAlive(character, opponent) &&
         isSuccessfulAttack(character, opponent);
@@ -94,13 +97,12 @@ function opponentDefeated(character, opponent) {
  * Determines if all the monsters on the screen are dead.
  * @returns {boolean} true if all the monsters on the screen are dead, false otherwise.
  */
-function areAllMonstersDeadOnScreen() {
-    for (let spr of SCREENS[screenNumber][OPPONENTS]) {
-        if (spr[NAME] === BARBARIAN_SPRITE_NAME) {
+function areAllMonstersDefeated() {
+    for (let character of SCREENS[screenNumber][OPPONENTS]) {
+        if (character.getName() === BARBARIAN_SPRITE_NAME) {
             continue;
         }
-        // Sharks cannot be killed, treat them as dead if this decision point is reached
-        if (!compareProperty(spr, CHARACTER_TYPE, SHARK_CHARACTER_TYPE) && compareProperty(spr, STATUS, ALIVE)) {
+        if (!character.getCanLeaveBehind() && character.getStatus() === ALIVE) {
             return false;
         }
     }
@@ -114,7 +116,7 @@ function areAllMonstersDeadOnScreen() {
  * @returns {boolean} true if the opponent launched an attack, false otherwise
  */
 function handleFightSequence(character) {
-    let opponentsInProximity = getOpponentsInProximity(character, character[SPRITE].width()*1.5);
+    let opponentsInProximity = getOpponentsInProximity(character, character.getSprite().width()*1.5);
 
     for (let i = 0; i < opponentsInProximity.length; i++) {
         let opponent = opponentsInProximity[i];
@@ -122,7 +124,7 @@ function handleFightSequence(character) {
             return true;
         }
         if (opponentDefeated(character, opponent)) {
-            setProperty(opponent, DEATH, DELAY, getRelativeDeathDelay(character, opponent));
+            opponent.setDeathDelay(getRelativeDeathDelay(character, opponent));
             death(opponent);
         }
     }
@@ -134,7 +136,7 @@ function handleFightSequence(character) {
  * @param character the sprite that has died
  */
 function death(character) {
-    if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+    if (character.getName() !== BARBARIAN_SPRITE_NAME) {
         monsterDeath(character);
     } else {
         barbarianDeath(character, ATTACK);
@@ -148,12 +150,12 @@ function death(character) {
  * @param action the action the barbarian was taking when he died
  */
 function barbarianDeath(character, action) {
-    setProperty(character, DEATH, TIME, new Date().getTime());
-    setProperty(character, STATUS, DEAD);
+    character.setDeathTime(new Date().getTime());
+    character.setStatus(DEAD);
     if (action !== FALL) {
         playGruntSound();
     } else {
-        setCharacterCss(BARBARIAN_CHARACTER, 'display', 'none');
+        BARBARIAN_CHARACTER.getSprite().css('display', 'none');
     }
     showMessage(START_MESSAGE);
     numLives = numLives - 1;
@@ -167,8 +169,8 @@ function barbarianDeath(character, action) {
  * @param character the monster sprite
  */
 function monsterDeath(character) {
-    setProperty(character, DEATH, TIME, new Date().getTime());
-    setProperty(character, STATUS, DEAD);
+    character.setDeathTime(new Date().getTime());
+    character.setStatus(DEAD);
     playFireSound();
 }
 
@@ -177,21 +179,23 @@ function monsterDeath(character) {
  * @param character the to highlight
  */
 function highlightAttackRange(character) {
-    if (!isHints || !compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+    if (!isHints || character.getName() !== BARBARIAN_SPRITE_NAME) {
         return;
     }
     let opponents = filterBarbarianCharacter(getOpponents());
     for (let opponent of opponents) {
-        if (compareProperty(opponent, CAN_HIGHLIGHT, false)) {
+        if (!opponent.getCanHighlight()) {
             continue;
         }
         let thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
+        let minThreshold = opponent.getMinBarbarianAttackThreshold();
+        let maxThreshold = opponent.getMaxBarbarianAttackThreshold();
 
-        let distance = Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
+        let distance = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
 
-        let shouldHighlight = !compareProperty(character, STATUS, DEAD) &&
-            (distance >= thresholds[MIN] - HIGHLIGHT_BUFFER) &&
-            (distance <= thresholds[MAX] + HIGHLIGHT_BUFFER);
+        let shouldHighlight = character.getStatus() !== DEAD &&
+            (distance >= minThreshold - HIGHLIGHT_BUFFER) &&
+            (distance <= maxThreshold + HIGHLIGHT_BUFFER);
         setCharacterCss(opponent, 'filter', 'brightness(' + (shouldHighlight ? '300%' : '100%') + ')');
     }
 }
@@ -203,13 +207,11 @@ function highlightAttackRange(character) {
  * @returns {number} the resulting delay in milliseconds
  */
 function getRelativeDeathDelay(character, opponent) {
-    const separation = Math.abs(getProperty(character, SPRITE).offset().left - getProperty(opponent, SPRITE).offset().left);
+    const separation = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
 
     const relativePps = getProperty(character, DIRECTION) === getProperty(opponent, DIRECTION)
-        ? getProperty(opponent, PIXELS_PER_SECOND, getProperty(character, ACTION)) -
-                getProperty(character, PIXELS_PER_SECOND, getProperty(character, ACTION))
-        : getProperty(opponent, PIXELS_PER_SECOND, getProperty(character, ACTION)) +
-                getProperty(character, PIXELS_PER_SECOND, getProperty(character, ACTION));
+        ? opponent.getPixelsPerSecond(character.getAction()) - character.getPixelsPerSecond(character.getAction())
+        : opponent.getPixelsPerSecond(character.getAction()) + character.getPixelsPerSecond(character.getAction());
     return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * MILLISECONDS_PER_SECOND;
 }
 

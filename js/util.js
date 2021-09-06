@@ -23,7 +23,7 @@ function hideAllMessages() {
  * @returns {*}
  */
 function filterBarbarianCharacter(characters) {
-    return characters.filter(character => !compareProperty(character, NAME, BARBARIAN_SPRITE_NAME));
+    return characters.filter(character => character.getName() != BARBARIAN_SPRITE_NAME);
 }
 
 /**
@@ -51,7 +51,7 @@ function stripPxSuffix(field) {
  * @param value the value to set the css property to
  */
 function setCharacterCss(character, prop, value) {
-    setCss(getProperty(character, SPRITE), prop, value);
+    setCss(character.getSprite(), prop, value);
 }
 
 /**

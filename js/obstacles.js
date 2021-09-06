@@ -6,9 +6,9 @@
  */
 function hasEvadedObstacleWithJump(character, obstacle) {
     return getProperty(character, ACTION) === JUMP &&
-        getProperty(character, SPRITE).offset().left >
+        character.getSprite().offset().left >
         getProperty(obstacle, JUMP_THRESHOLDS, MIN) &&
-        getProperty(character, SPRITE).offset().left <
+        character.getSprite().offset().left <
         getProperty(obstacle, JUMP_THRESHOLDS, MAX);
 }
 
@@ -19,7 +19,7 @@ function hasEvadedObstacleWithJump(character, obstacle) {
  * @returns {boolean} true if the obstacle is lower than the sprite, false otherwise
  */
 function isDownhill(character, obstacle) {
-    return getProperty(obstacle, HEIGHT) <= stripPxSuffix(getProperty(character, SPRITE).css('bottom')) &&
+    return getProperty(obstacle, HEIGHT) <= stripPxSuffix(character.getSprite().css('bottom')) &&
         !compareProperty(obstacle, OBSTACLE_TYPE, PIT);
 }
 
@@ -30,10 +30,10 @@ function isDownhill(character, obstacle) {
  * @returns {boolean} true if the sprite is past the boundary, false otherwise
  */
 function isPastBoundary(character, obstacle) {
-    if (compareProperty(character, DIRECTION, RIGHT)) {
-        return getProperty(character, SPRITE).offset().left >= obstacle[LEFT];
+    if (character.getDirection() === RIGHT) {
+        return character.getSprite().offset().left >= getProperty(obstacle, LEFT);
     } else {
-        return getProperty(character, SPRITE).offset().left <= obstacle[LEFT];
+        return character.getSprite().offset().left <= getProperty(obstacle, LEFT);
     }
 }
 
@@ -44,7 +44,7 @@ function isPastBoundary(character, obstacle) {
  * @returns {boolean} true if the sprite is close to the obstacle, false otherwise
  */
 function isObstacleClose(character, obstacle) {
-    return Math.abs(getProperty(obstacle, LEFT) - getProperty(character, SPRITE).offset().left) <=
+    return Math.abs(getProperty(obstacle, LEFT) - character.getSprite().offset().left) <=
         OBSTACLE_CLOSE_PROXIMITY;
 }
 
@@ -54,7 +54,7 @@ function isObstacleClose(character, obstacle) {
  * @returns {[]} the list of obstacles
  */
 function getObstacles(character) {
-    return getProperty(SCREENS, screenNumber, OBSTACLES, getProperty(character, DIRECTION))
+    return getProperty(SCREENS, screenNumber, OBSTACLES, character.getDirection())
         .filter(obstacle => isObstacleClose(character, obstacle));
 }
 
@@ -65,7 +65,7 @@ function getObstacles(character) {
  */
 function handleObstacles(character) {
 
-    if (getProperty(character, ACTION) === FALL) {
+    if (character.getAction() === FALL) {
         // Don't want to handle obstacles while falling to prevent infinite recursion in the animateSprite method
         return false;
     }
@@ -74,11 +74,11 @@ function handleObstacles(character) {
 
     for (let obstacle of getObstacles(character)) {
         if (isPastBoundary(character, obstacle)) {
-            if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME) ||
+            if (character.getName() !== BARBARIAN_SPRITE_NAME ||
                 isDownhill(character, obstacle) ||
                 hasEvadedObstacleWithJump(character, obstacle)) {
-                if (compareProperty(character, CAN_ELEVATE, true)) {
-                    setCss(getProperty(character, SPRITE).css('bottom', obstacle[HEIGHT] + 'px'));
+                if (character.getCanElevate()) {
+                    setCss(character.getSprite().css('bottom', getProperty(obstacle, HEIGHT) + 'px'));
                 }
             } else {
 
@@ -88,12 +88,12 @@ function handleObstacles(character) {
                     playFallSound();
                     setTimeout(function () {
                         barbarianDeath(character, FALL);
-                    },  getProperty(character, DEATH, DELAY) * (1 / getProperty(character, FPS, action)));
+                    },  character.getFallDelay());
                 }
 
-                if (!compareProperty(character, ACTION, ATTACK)) {
-                    getProperty(character, SPRITE).stop();
-                    performAction(character, action);
+                if (character.getAction() !== ATTACK) {
+                    character.getSprite().stop();
+                    performAction(character, action, character.getActionNumberOfTimes(action));
                     return true;
                 } else {
                     return false;

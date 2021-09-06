@@ -10,12 +10,12 @@
 </head>
 <script>
 
-let screenNumber = 0;
+let screenNumber = 1;
 let actionsLocked = false;
 let isPaused = false;
 let numLives = 3;
 let isHints = true;
-let isSoundOn = true;
+let isSoundOn = false;
 let windowWidth = undefined;
 let pauseFrameIndex = 0;
 let keypressTime;
@@ -23,9 +23,12 @@ let lastKeypressTime;
 
 $(document).ready(function(){
     // Classes
+    $.getScript('/js/characters/Character.js', function() {
     $.getScript('/js/characters/CharacterBuilder.js', function() {
     // Include constants
     $.getScript('/js/constants.js', function() {
+    // Include frame definitions
+    $.getScript('/js/frames.js', function() {
     // Include util module
     $.getScript('/js/util.js', function() {
     // Include sound module
@@ -59,7 +62,7 @@ $(document).ready(function(){
 
     windowWidth = 1400;
 
-    renderSpriteFrame(MONSTER_CHARACTER, WALK, getProperty(MONSTER_CHARACTER, DIRECTION), 0, getProperty(MONSTER_CHARACTER, SPRITE).height());
+    //renderSpriteFrame(MONSTER_CHARACTER, WALK, getProperty(MONSTER_CHARACTER, DIRECTION), 0, getProperty(MONSTER_CHARACTER, SPRITE).height());
 
     $(document).keydown(function(e) {
         handleKeypress(e.which);
@@ -68,7 +71,7 @@ $(document).ready(function(){
 
 
 
-})})})})})})})})})});
+})})})})})})})})})})})});
 </script>
 </head>
 <body style="touch-action: pan-y;">

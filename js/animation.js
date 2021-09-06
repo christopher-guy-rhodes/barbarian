@@ -6,10 +6,10 @@
  * @param index optional starting index (used for resuming paused games)
  */
 function performAction(character, action, numberOfTimes, index = 0) {
-    setProperty(character, PREVIOUS_ACTION, getProperty(character, ACTION));
-    getProperty(character, SPRITE).stop();
-    moveFromPositionToBoundary(character, action, getProperty(character, PIXELS_PER_SECOND, action));
-    animateCharacter(character, action, getProperty(character, DIRECTION), getProperty(character, VERTICAL_DIRECTION), numberOfTimes, index)
+    character.setPreviousAction(character.getAction());
+    character.getSprite().stop();
+    moveFromPositionToBoundary(character, action, character.getPixelsPerSecond(action));
+    animateCharacter(character, action, character.getDirection(), character.getVerticalDirection(), numberOfTimes, index)
         .then(function () {
         }, error => handlePromiseError(error));
 }
@@ -28,17 +28,17 @@ function performAction(character, action, numberOfTimes, index = 0) {
  */
 async function animateCharacter(character, requestedAction, requestedDirection, requestedVerticalDirection, numberOfTimes, idx = 0) {
 
-    let frames = getProperty(character, FRAMES, requestedAction, getProperty(character, DIRECTION), FRAMES);
+    let frames = character.getFrames(requestedAction, character.getDirection());
 
-    setProperty(character, ACTION, requestedAction);
+    character.setAction(requestedAction);
 
     let index = idx;
     let isGameOver = false;
     let counter = numberOfTimes;
 
-    while (compareProperty(character, ACTION, requestedAction) &&
-           compareProperty(character, DIRECTION, requestedDirection) &&
-           compareProperty(character, VERTICAL_DIRECTION, requestedVerticalDirection) &&
+    while (character.getAction() === requestedAction &&
+           character.getDirection() === requestedDirection &&
+           character.getVerticalDirection() === requestedVerticalDirection &&
            index < frames.length) {
 
         highlightAttackRange(character);
@@ -47,7 +47,7 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
         if (numLives < 1) {
             setTimeout(function () {
                 isGameOver = true;
-            },getProperty(character, DEATH, DELAY) * (1 / getProperty(character, FPS, getProperty(character, ACTION))));
+            },character.getDeathDelay() * (1 / character.getFramesPerSecond(character.getAction())));
         }
 
         // If the action starts a new animation or the current one should terminate break out of the loop
@@ -63,8 +63,8 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
             break;
         }
 
-        renderSpriteFrame(character, requestedAction, getProperty(character, DIRECTION), frames[index++]);
-        await sleep(MILLISECONDS_PER_SECOND / getProperty(character, FPS, requestedAction));
+        renderSpriteFrame(character, requestedAction, character.getDirection(), frames[index++]);
+        await sleep(MILLISECONDS_PER_SECOND / character.getFramesPerSecond(requestedAction));
 
         if (index === frames.length) {
             // If times is 0 we loop infinitely, if times is set decrement it and keep looping
@@ -75,14 +75,14 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
     }
 
     if (isPaused || isGameOver) {
-        getProperty(character, SPRITE).stop();
-    } else if (!compareProperty(character, ACTION, WALK) &&
-               !compareProperty(character, ACTION, SWIM) &&
-               compareProperty(character, NAME, BARBARIAN_SPRITE_NAME) &&
-               compareProperty(character, ACTION, requestedAction)) {
+        character.getSprite().stop();
+    } else if (character.getAction() !== WALK &&
+               character.getAction() !== SWIM &&
+               character.getName() === BARBARIAN_SPRITE_NAME &&
+               character.getAction() === requestedAction) {
         // Action is over, reset state so the action can be executed again if desired
         setProperty(character, ACTION, undefined);
-        getProperty(character, SPRITE).stop();
+        character.getSprite().stop();
     }
 }
 
@@ -108,7 +108,7 @@ function animateTrapDoor(character) {
         let trapDoors = getProperty(SCREENS, screenNumber, TRAP_DOORS);
         for (let trapDoor of trapDoors) {
             if (testCss(getProperty(trapDoor, ELEMENT), 'display', 'block') &&
-                    getProperty(character, SPRITE).offset().left >= getProperty(trapDoor, TRIGGER, LEFT)) {
+                    character.getSprite().offset().left >= getProperty(trapDoor, TRIGGER, LEFT)) {
                 moveToPosition(getProperty(trapDoor, ELEMENT), getProperty(trapDoor, TRIGGER, TIME), undefined, 0);
 
                 setTimeout(function() {
@@ -133,27 +133,28 @@ function moveFromPositionToBoundary(character, action, pixelsPerSecond) {
 
     let x, y = undefined;
     if (action === FALL) {
-        y = 0;
+        y = -500;
     } else {
 
-        if (compareProperty(SCREENS, screenNumber, WATER, true) && !compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
-            let barbarianY = stripPxSuffix(getCss(getProperty(BARBARIAN_CHARACTER, SPRITE), 'bottom'));
-            y = stripPxSuffix(getProperty(character, SPRITE).css('bottom'));
+        if (compareProperty(SCREENS, screenNumber, WATER, true) && character.getName() !== BARBARIAN_SPRITE_NAME) {
+            // Make water creates chase the barbarian in 2 dimensions
+            let barbarianY = stripPxSuffix(getCss(BARBARIAN_CHARACTER.getSprite(), 'bottom'));
+            y = stripPxSuffix(character.getSprite().css('bottom'));
             if (barbarianY > y) {
-                y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
+                y = SCREEN_HEIGHT - character.getSprite().height() / 2;
             } else {
                 y = SCREEN_BOTTOM;
             }
-        } else if (compareProperty(character, VERTICAL_DIRECTION, UP)) {
-            y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
-        } else if (compareProperty(character, VERTICAL_DIRECTION, DOWN)) {
+        } else if (character.getVerticalDirection() === UP) {
+            y = SCREEN_HEIGHT - character.getSprite().height() / 2;
+        } else if (character.getVerticalDirection() === DOWN) {
             y = SCREEN_BOTTOM;
         }
 
-        if (compareProperty(character, DIRECTION, LEFT)) {
+        if (character.getDirection() === LEFT) {
             x = 0;
-        } else if (compareProperty(character, DIRECTION, RIGHT)) {
-            x = windowWidth - getProperty(character, SPRITE).width();
+        } else if (character.getDirection() === RIGHT) {
+            x = windowWidth - character.getSprite().width();
         }
     }
     moveSpriteToPosition(character, x, y, pixelsPerSecond);
@@ -166,11 +167,11 @@ function moveFromPositionToBoundary(character, action, pixelsPerSecond) {
  */
 function handleStop(character) {
 
-    if (!compareProperty(character, ACTION, STOP)) {
+    if (character.getAction() !== STOP) {
         return false;
     }
 
-    getProperty(character, SPRITE).stop();
+    character.getSprite().stop();
     renderAtRestFrame(character);
     setProperty(character, VERTICAL_DIRECTION, undefined);
     return true;
@@ -182,11 +183,11 @@ function handleStop(character) {
  */
 function renderAtRestFrame(character) {
     let action = compareProperty(SCREENS, screenNumber, WATER, true) ? SWIM : WALK;
-    let position = compareProperty(character, DIRECTION, LEFT)
-        ? getProperty(character, FRAMES, action, getProperty(character, DIRECTION), FRAMES).length - 1
+    let position = character.getDirection() === LEFT
+        ? character.getFrames(action, character.getDirection()).length
         : 0;
 
-    renderSpriteFrame(character, action, getProperty(character, DIRECTION), position);
+    renderSpriteFrame(character, action, character.getDirection(), position);
 }
 
 /**
@@ -197,12 +198,12 @@ function renderAtRestFrame(character) {
  * @param pixelsPerSecond the rate at which to move
  */
 function moveSpriteToPosition(character, x, y, pixelsPerSecond) {
-    let distanceX = x === undefined ? 0 : Math.abs(x - getProperty(character, SPRITE).offset().left);
-    let distanceY = y === undefined ? 0 : Math.abs(y - stripPxSuffix(getProperty(character, SPRITE).css('bottom')));
+    let distanceX = x === undefined ? 0 : Math.abs(x - character.getSprite().offset().left);
+    let distanceY = y === undefined ? 0 : Math.abs(y - stripPxSuffix(character.getSprite().css('bottom')));
     let distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
     let duration = distance / pixelsPerSecond * MILLISECONDS_PER_SECOND;
 
-    moveToPosition(getProperty(character, SPRITE), duration, x, y);
+    moveToPosition(character.getSprite(), duration, x, y);
 }
 
 /**
@@ -253,11 +254,11 @@ async function moveBackdrop(character, direction , isVertical) {
 
     let x, y, distance, screenOffset = undefined;
     if (isVertical) {
-        y = SCREEN_HEIGHT - getProperty(character, SPRITE).height() / 2;
-        distance = Math.abs(y - stripPxSuffix(getProperty(character, SPRITE).css('bottom')));
+        y = SCREEN_HEIGHT - character.getSprite().height() / 2;
+        distance = Math.abs(y - stripPxSuffix(character.getSprite().css('bottom')));
     } else {
-        x = getProperty(character, DIRECTION) === RIGHT ? 0 : windowWidth - getProperty(character, SPRITE).width();
-        distance = SCREEN_WIDTH - getProperty(character, SPRITE).width();
+        x = getProperty(character, DIRECTION) === RIGHT ? 0 : windowWidth - character.getSprite().width();
+        distance = SCREEN_WIDTH - character.getSprite().width();
     }
     let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
     moveSpriteToPosition(character, x, y, adjustedPixelsPerSecond);
@@ -290,30 +291,29 @@ function sleep(ms) {
  * @returns {boolean} true if the monster has passed the sprite, false otherwise
  */
 function handleMonsterTurnaround(character) {
-    if (compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+    if (character.getName() === BARBARIAN_SPRITE_NAME) {
         return false;
     }
 
-    if (compareProperty(character, RESET, TURNAROUND, false)) {
+    if (!character.getResetTurnaround()) {
         if (hitLeftBoundary(character) || hitRightBoundary(character)) {
-            setCss(getProperty(character, SPRITE), 'display', 'none');
-            setProperty(character, STATUS, DEAD);
+            setCss(character.getSprite(), 'display', 'none');
             return true;
         }
         return false;
     }
 
 
-    let isPassedLeft = getProperty(character, DIRECTION) === LEFT &&
-        getProperty(character, SPRITE).offset().left + getProperty(character, SPRITE).width() * PASSING_MULTIPLIER <
-                getProperty(BARBARIAN_CHARACTER, SPRITE).offset().left || hitLeftBoundary(character);
-    let isPassedRight = getProperty(character, DIRECTION) === RIGHT &&
-        getProperty(character, SPRITE).offset().left - getProperty(character, SPRITE).width() * PASSING_MULTIPLIER >
-                getProperty(BARBARIAN_CHARACTER, SPRITE).offset().left || hitRightBoundary(character);
+    let isPassedLeft = character.getDirection() === LEFT &&
+        character.getSprite().offset().left + character.getSprite().width() * PASSING_MULTIPLIER <
+                BARBARIAN_CHARACTER.getSprite().offset().left || hitLeftBoundary(character);
+    let isPassedRight = character.getDirection() === RIGHT &&
+        character.getSprite().offset().left - character.getSprite().width() * PASSING_MULTIPLIER >
+                BARBARIAN_CHARACTER.getSprite().offset().left || hitRightBoundary(character);
 
-    if ((isPassedLeft || isPassedRight) && compareProperty(character, RESET, TURNAROUND, true)) {
-        setProperty(character, DIRECTION, isPassedLeft ? RIGHT : LEFT);
-        performAction(character, WALK, getProperty(character, RESET, NUMBER_OF_TIMES));
+    if ((isPassedLeft || isPassedRight) && character.getResetTurnaround()) {
+        character.setDirection(isPassedLeft ? RIGHT : LEFT);
+        performAction(character, WALK, character.getResetNumberOfTimes());
         return true;
     } else {
         return false;
@@ -326,18 +326,18 @@ function handleMonsterTurnaround(character) {
  * @param unpausing true if the function was called in the context of unpausing the game
  */
 function startMonsterAttacks(unpausing = false) {
-    let monsterSprites = filterBarbarianCharacter(SCREENS[screenNumber][OPPONENTS]);
+    let monsterCharacters = filterBarbarianCharacter(SCREENS[screenNumber][OPPONENTS]);
 
-    for (let monsterSprite of monsterSprites) {
+    for (let monsterCharacter of monsterCharacters) {
 
-        if ((getProperty(monsterSprite, STATUS) === DEAD && !unpausing) ||
-            (getProperty(monsterSprite, STATUS) === ALIVE && unpausing)) {
-            setCharacterCss(monsterSprite, 'display', 'block');
-            setProperty(monsterSprite, STATUS, ALIVE);
-            if (!compareProperty(monsterSprite, SOUND, undefined)) {
-                playSound(getProperty(monsterSprite, SOUND));
+        if ((monsterCharacter.getStatus() === DEAD && !unpausing) ||
+            (monsterCharacter.getStatus() === ALIVE && unpausing)) {
+            setCharacterCss(monsterCharacter, 'display', 'block');
+            monsterCharacter.setStatus(ALIVE);
+            if (monsterCharacter.getSound() !== undefined) {
+                playSound(monsterCharacter.getSound());
             }
-            performAction(monsterSprite, getProperty(monsterSprite, RESET, ACTION), getProperty(monsterSprite, RESET, NUMBER_OF_TIMES));
+            performAction(monsterCharacter, monsterCharacter.getResetAction(), monsterCharacter.getResetNumberOfTimes());
         }
     }
 }
@@ -349,7 +349,7 @@ function hideOpponentsAndTrapDoors() {
     let opponents = filterBarbarianCharacter(getOpponents());
     for (let opponent of opponents) {
         setCharacterCss(opponent, 'display', 'none');
-        setCharacterCss(getProperty(opponent, DEATH), 'display', 'none');
+        setCss(opponent.getDeathSprite(), 'display', 'none');
     }
 
     let trapDoors = getProperty(SCREENS, screenNumber, TRAP_DOORS);
@@ -366,7 +366,7 @@ function hideOpponentsAndTrapDoors() {
  * @returns {boolean} true if the
  */
 function handleBoundary(character) {
-    if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+    if (character.getName() !== BARBARIAN_SPRITE_NAME) {
         return false;
     }
     let isRightBoundary = hitRightBoundary(character);
@@ -382,7 +382,7 @@ function handleBoundary(character) {
         advanceBackdrop(character, RIGHT)
             .then(function() {}, error => handlePromiseError(error));
     } else if (isRightBoundary && compareProperty(SCREENS, screenNumber, ALLOWED_SCROLL_DIRECTIONS, RIGHT, true)) {
-        if (!compareProperty(SCREENS, screenNumber, undefined) && areAllMonstersDeadOnScreen()) {
+        if (!compareProperty(SCREENS, screenNumber, undefined) && areAllMonstersDefeated()) {
             hideOpponentsAndTrapDoors();
             screenNumber = screenNumber + 1;
             if (!compareProperty(SCREENS, screenNumber, undefined)) {
@@ -392,13 +392,17 @@ function handleBoundary(character) {
         }
         if (compareProperty(SCREENS, screenNumber, undefined)) {
             setCss(DEMO_OVER_MESSAGE, 'display', 'block');
-            setProperty(BARBARIAN_CHARACTER, STATUS, DEAD);
+            setProperty(character, STATUS, DEAD);
             screenNumber = 0;
             numLives = 0;
         }
     }
 
-    renderAtRestFrame(character);
+    if (numLives !== 0) {
+        // Don't render at rest frame if the game has ended since the screen number context to set it appropriately
+        // is no longer set. For example if the game ends while swimming we don't want to render a walking frame.
+        renderAtRestFrame(character);
+    }
     setProperty(character, ACTION, STOP);
     return true;
 }
@@ -411,11 +415,10 @@ function handleBoundary(character) {
  * @param position the horizontal background position offset
  */
 function renderSpriteFrame(character, requestedAction, direction, position) {
-    let heightOffset = getProperty(character, FRAMES, requestedAction, direction, HEIGHT_OFFSET) *
-            getProperty(character, SPRITE).height();
+    let heightOffset = character.getHeightOffset(requestedAction, direction) * character.getSprite().height();
 
     setCharacterCss(character, 'background-position',
-        -1*position*getProperty(character, SPRITE).width() + 'px ' + -1*heightOffset + 'px');
+        -1*position*character.getSprite().width() + 'px ' + -1*heightOffset + 'px');
 }
 
 /**
@@ -424,25 +427,30 @@ function renderSpriteFrame(character, requestedAction, direction, position) {
  * @returns {Promise<void>} a void promise
  */
 async function animateDeath(character) {
-    getProperty(character, SPRITE).stop();
-    setCharacterCss(getProperty(character, DEATH), 'left', getProperty(character, SPRITE).offset().left + 'px');
-    actionsLocked = compareProperty(character, NAME, BARBARIAN_SPRITE_NAME);
-    setCharacterCss(character[DEATH], 'display', 'block');
+    character.getSprite().stop();
+    character.getDeathSprite().css('left', character.getSprite().offset().left + 'px');
+    actionsLocked = character.getName() === BARBARIAN_SPRITE_NAME;
+    character.getDeathSprite().css('display', 'block');
 
-    if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
-        setCharacterCss(character, 'display', 'none');
+    if (character.getName() !== BARBARIAN_SPRITE_NAME) {
+        character.getSprite().css('display', 'none');
     }
 
-    let frames = getProperty(character, DEATH, FRAMES, DEATH, getProperty(character, DIRECTION), FRAMES);
+    let frames = character.getDeathFrames(character.getDirection());
+    let heightOffset = character.getDeathSpriteHeightOffset(character.getDirection()) * character.getSprite().height();
     for (let frame of frames) {
-        renderSpriteFrame(character[DEATH], DEATH, getProperty(character, DIRECTION), frame);
-        await sleep(MILLISECONDS_PER_SECOND / character[DEATH][FRAMES][DEATH][FPS]);
+        //renderSpriteFrame(character[DEATH], DEATH, getProperty(character, DIRECTION), frame);
+
+        setCss(character.getDeathSprite(), 'background-position',
+            -1*frame*character.getSprite().width() + 'px ' + -1*heightOffset + 'px');
+
+        await sleep(MILLISECONDS_PER_SECOND / character.getDeathFramesPerSecond());
     }
 
     actionsLocked = false;
 
     if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
-        setCharacterCss(getProperty(character, DEATH), 'display', 'none');
+        setCss(character.getDeathSprite(), 'display', 'none');
     }
 }
 

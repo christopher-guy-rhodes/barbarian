@@ -104,7 +104,7 @@ function handlePaused(character, index) {
  * @param character the character interacting with the trap door
  */
 function animateTrapDoor(character) {
-    if (compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+    if (character.getName() === BARBARIAN_SPRITE_NAME) {
         let trapDoors = getProperty(SCREENS, screenNumber, TRAP_DOORS);
         for (let trapDoor of trapDoors) {
             if (testCss(getProperty(trapDoor, ELEMENT), 'display', 'block') &&
@@ -173,7 +173,7 @@ function handleStop(character) {
 
     character.getSprite().stop();
     renderAtRestFrame(character);
-    setProperty(character, VERTICAL_DIRECTION, undefined);
+    character.setVerticalDirection(undefined);
     return true;
 }
 
@@ -376,6 +376,7 @@ function handleBoundary(character) {
         return false;
     }
 
+
     if (isLeftBoundary && compareProperty(SCREENS, screenNumber, ALLOWED_SCROLL_DIRECTIONS, LEFT, true)) {
         hideOpponentsAndTrapDoors();
         screenNumber = screenNumber - 1;
@@ -393,8 +394,10 @@ function handleBoundary(character) {
         if (compareProperty(SCREENS, screenNumber, undefined)) {
             setCss(DEMO_OVER_MESSAGE, 'display', 'block');
             setProperty(character, STATUS, DEAD);
+            character.setStatus(DEAD);
             screenNumber = 0;
             numLives = 0;
+        } else {
         }
     }
 

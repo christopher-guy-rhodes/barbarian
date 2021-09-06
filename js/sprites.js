@@ -82,6 +82,7 @@ SCREENS = {
             ],
         },
         opponents: [BARBARIAN_CHARACTER,
+            /*
             new CharacterBuilder(ROCK_FRAMES, ROCK_CHARACTER_TYPE, $('.rock'))
                 .withAction(SIT)
                 .withCanElevate(false)
@@ -110,7 +111,7 @@ SCREENS = {
                 .withMinBarbarianAttackThreshold(0)
                 .withMaxBarbarianAttackThreshold(0)
                 .withFramesPerSecond(ATTACK, 7.5)
-                .withSound(MONSTER_SOUND).build()],
+                .withSound(MONSTER_SOUND).build()*/],
         trapDoors: [],
         water: false,
         allowedScrollDirections: {
@@ -155,8 +156,8 @@ SCREENS = {
         trapDoors: [],
         water: true,
         allowedScrollDirections: {
-            LEFT : false,
-            RIGHT: true
+            left : false,
+            right: true
         }
     }
 };

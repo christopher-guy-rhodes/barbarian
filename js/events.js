@@ -249,9 +249,9 @@ function handleLeftKeypress() {
  * Handles the up keypress event (up arrow key);
  */
 function handleUpKeypress() {
-    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) || !compareProperty(BARBARIAN_CHARACTER, VERTICAL_DIRECTION, UP)) {
+    if (BARBARIAN_CHARACTER.getAction() !== SWIM || BARBARIAN_CHARACTER.getVerticalDirection() !== UP) {
         if (compareProperty(SCREENS, screenNumber, WATER, true)) {
-            setProperty(BARBARIAN_CHARACTER, VERTICAL_DIRECTION, UP);
+            BARBARIAN_CHARACTER.setVerticalDirection(UP);
             performAction(BARBARIAN_CHARACTER, SWIM, BARBARIAN_CHARACTER.getActionNumberOfTimes(SWIM));
         }
     }
@@ -261,9 +261,9 @@ function handleUpKeypress() {
  * Handles the down keypress event (down arrow key);
  */
 function handleDownKeypress() {
-    if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) || !compareProperty(BARBARIAN_CHARACTER, VERTICAL_DIRECTION, DOWN)) {
+    if (BARBARIAN_CHARACTER.getAction() !== SWIM || BARBARIAN_CHARACTER.getVerticalDirection() !== DOWN) {
         if (compareProperty(SCREENS, screenNumber, WATER, true)) {
-            setProperty(BARBARIAN_CHARACTER, VERTICAL_DIRECTION, DOWN);
+            BARBARIAN_CHARACTER.setVerticalDirection(DOWN);
             performAction(BARBARIAN_CHARACTER, SWIM, BARBARIAN_CHARACTER.getActionNumberOfTimes(SWIM));
         }
     }

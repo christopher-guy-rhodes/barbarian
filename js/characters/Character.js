@@ -223,6 +223,10 @@ class Character {
         this.direction = direction;
     }
 
+    setVerticalDirection(direction) {
+        this.verticalDirection = direction;
+    }
+
     setStatus(status) {
         this.status = status;
     }

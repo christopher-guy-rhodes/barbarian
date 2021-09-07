@@ -5,7 +5,7 @@
  * @returns {boolean} true if the sprite avoided the obstacle, false otherwise
  */
 function hasEvadedObstacleWithJump(character, obstacle) {
-    return getProperty(character, ACTION) === JUMP &&
+    return character.getAction() === JUMP &&
         character.getSprite().offset().left >
         getProperty(obstacle, JUMP_THRESHOLDS, MIN) &&
         character.getSprite().offset().left <

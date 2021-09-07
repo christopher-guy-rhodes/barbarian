@@ -209,9 +209,9 @@ function highlightAttackRange(character) {
 function getRelativeDeathDelay(character, opponent) {
     const separation = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
 
-    const relativePps = getProperty(character, DIRECTION) === getProperty(opponent, DIRECTION)
-        ? opponent.getPixelsPerSecond(character.getAction()) - character.getPixelsPerSecond(character.getAction())
-        : opponent.getPixelsPerSecond(character.getAction()) + character.getPixelsPerSecond(character.getAction());
+    const relativePps = character.getDirection() === opponent.getDirection()
+        ? opponent.getPixelsPerSecond(opponent.getAction()) - character.getPixelsPerSecond(character.getAction())
+        : opponent.getPixelsPerSecond(opponent.getAction()) + character.getPixelsPerSecond(character.getAction());
     return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * MILLISECONDS_PER_SECOND;
 }
 

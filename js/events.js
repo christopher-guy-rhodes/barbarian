@@ -398,14 +398,29 @@ function clickHandler(event) {
     if (compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
         handleKeypress(KEYPRESS[KP_SPACE]);
     }
-    let topOfBarbarian = parseInt(stripPxSuffix(BARBARIAN_CHARACTER.getSprite().css('height')))/2 + parseInt(stripPxSuffix(BARBARIAN_CHARACTER.getSprite().css('bottom')));
+    let bottomOfBarbarian = parseInt(stripPxSuffix(BARBARIAN_CHARACTER.getSprite().css('bottom')));
+    let topOfBarbarian = parseInt(stripPxSuffix(BARBARIAN_CHARACTER.getSprite().css('height')))/2 + bottomOfBarbarian;
     let barbarianLeft = BARBARIAN_CHARACTER.getSprite().offset().left + parseInt(stripPxSuffix(BARBARIAN_CHARACTER.getSprite().css('width')) / 2);
     let pageX = event.originalEvent.pageX;
-    let clickY = event.originalEvent.pageY;
-    if (clickY < 200) {
+    let clickY = SCREEN_HEIGHT - event.originalEvent.pageY;
+
+
+    if (compareProperty(SCREENS, screenNumber, WATER, true)) {
+        if (clickY > topOfBarbarian + 100) {
+            handleKeypress(KEYPRESS[KP_UP]);
+            return;
+        } else if (clickY < bottomOfBarbarian - 100) {
+            handleKeypress(KEYPRESS[KP_DOWN]);
+            return;
+        }
+    }
+
+    if (!compareProperty(SCREENS, screenNumber, WATER, true) &&  clickY > 600) {
         handleKeypress(KEYPRESS[KP_JUMP]);
     } else  {
-        if (BARBARIAN_CHARACTER.getAction() === WALK) {
+        let changingDirection = BARBARIAN_CHARACTER.getDirection() === RIGHT && pageX < barbarianLeft ||
+            BARBARIAN_CHARACTER.getDirection() === LEFT && pageX > barbarianLeft;
+        if (BARBARIAN_CHARACTER.getAction() === WALK && !changingDirection) {
             handleKeypress(KEYPRESS[KP_RUN]);
         } else {
             handleKeypress(KEYPRESS[pageX > barbarianLeft ? KP_RIGHT : KP_LEFT]);

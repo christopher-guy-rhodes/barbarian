@@ -56,7 +56,7 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
             isGameOver ||
             handleObstacles(character) ||
             !getProperty(SCREENS, screenNumber, OPPONENTS).includes(character) ||
-            compareProperty(character, STATUS, DEAD) ||
+            character.getStatus() === DEAD ||
             handleFightSequence(character) ||
             handleMonsterTurnaround(character) ||
             handleBoundary(character)) {
@@ -93,7 +93,7 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
  * @returns {boolean} true if the game is paused, false otherwise
  */
 function handlePaused(character, index) {
-    if (isPaused && compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+    if (isPaused && character.getName() === BARBARIAN_SPRITE_NAME) {
         pauseFrameIndex = index;
     }
     return isPaused;
@@ -257,7 +257,7 @@ async function moveBackdrop(character, direction , isVertical) {
         y = SCREEN_HEIGHT - character.getSprite().height() / 2;
         distance = Math.abs(y - stripPxSuffix(character.getSprite().css('bottom')));
     } else {
-        x = getProperty(character, DIRECTION) === RIGHT ? 0 : windowWidth - character.getSprite().width();
+        x = character.getDirection() === RIGHT ? 0 : windowWidth - character.getSprite().width();
         distance = SCREEN_WIDTH - character.getSprite().width();
     }
     let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
@@ -442,8 +442,6 @@ async function animateDeath(character) {
     let frames = character.getDeathFrames(character.getDirection());
     let heightOffset = character.getDeathSpriteHeightOffset(character.getDirection()) * character.getSprite().height();
     for (let frame of frames) {
-        //renderSpriteFrame(character[DEATH], DEATH, getProperty(character, DIRECTION), frame);
-
         setCss(character.getDeathSprite(), 'background-position',
             -1*frame*character.getSprite().width() + 'px ' + -1*heightOffset + 'px');
 
@@ -452,7 +450,7 @@ async function animateDeath(character) {
 
     actionsLocked = false;
 
-    if (!compareProperty(character, NAME, BARBARIAN_SPRITE_NAME)) {
+    if (character.getName() !== BARBARIAN_SPRITE_NAME) {
         setCss(character.getDeathSprite(), 'display', 'none');
     }
 }

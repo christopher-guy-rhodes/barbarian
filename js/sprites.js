@@ -130,6 +130,7 @@ SCREENS = {
                 .withSound(SPLASH_SOUND)
                 .withResetBottom(3, 0)
                 .withCanLeaveBehind(true)
+                .withCanHighlight(false)
                 .withResetLeft(0).build(),
             new CharacterBuilder(SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark2'))
                 .withFramesPerSecond(ATTACK, 10)
@@ -137,6 +138,7 @@ SCREENS = {
                 .withSound(SPLASH_SOUND)
                 .withResetBottom(3, 0)
                 .withCanLeaveBehind(true)
+                .withCanHighlight(false)
                 .withResetLeft(1400).build(),
             new CharacterBuilder(SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark3'))
                 .withFramesPerSecond(ATTACK, 10)
@@ -144,6 +146,7 @@ SCREENS = {
                 .withSound(SPLASH_SOUND)
                 .withResetBottom(3, 800)
                 .withCanLeaveBehind(true)
+                .withCanHighlight(false)
                 .withResetLeft(1400).build(),
             new CharacterBuilder(SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark4'))
                 .withFramesPerSecond(ATTACK, 10)
@@ -151,6 +154,7 @@ SCREENS = {
                 .withSound(SPLASH_SOUND)
                 .withResetBottom(3, 400)
                 .withCanLeaveBehind(true)
+                .withCanHighlight(false)
                 .withResetLeft(0).build()],
         trapDoors: [],
         water: true,

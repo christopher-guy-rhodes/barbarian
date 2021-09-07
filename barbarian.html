@@ -15,7 +15,7 @@ let actionsLocked = false;
 let isPaused = false;
 let numLives = 3;
 let isHints = true;
-let isSoundOn = false;
+let isSoundOn = true;
 let windowWidth = undefined;
 let pauseFrameIndex = 0;
 let keypressTime;
@@ -123,14 +123,16 @@ $(document).ready(function(){
         <h1>Control menu</h1>
         <p>
             <table>
-                <tr><td>Left</td><td>&quot;<-&quot; or &quot;tap&quot;</td></tr>
-                <tr><td>Right</td><td>&quot;->&quot; or &quot;tap&quot;</td></tr>
-                <tr><td>Attack</td><td>&quot;A&quot; or &quot;swipe&quot;</td></tr>
-                <tr><td>Jump</td><td>&quot;J&quot; or &quot;tap high&quot;</td></tr>
-                <tr><td>Run</td><td>&quot;R&quot; or &quot;tap while walking&quot;</td></tr>
-                <tr><td>Pause</td><td>&quot;P&quot; or &quot;tap and hold&quot;</td></tr>
-                <tr><td>Hints Toggle</td><td>&quot;H&quot;</td></tr>
-                <tr><td>Sound Toggle</td><td>&quot;X&quot;</td></tr>
+                <tr><td>Left</td><td>[LEFT ARROW] or tap to the left of the barbarian for mobile</td></tr>
+                <tr><td>Right</td><td>[RIGTH ARROW] or tap to the right of the barbarian for mobile</td></tr>
+                <tr><td>UP</td><td>[UP ARROW] or tap above the barbarian for mobile</td></tr>
+                <tr><td>DOWN</td><td>[DOWN ARROW] or tap below the barbarian for mobile</td></tr>
+                <tr><td>Attack</td><td>&quot;A&quot; or swipe for mobile</td></tr>
+                <tr><td>Jump</td><td>&quot;J&quot; or tap high on the screen for mobile</td></tr>
+                <tr><td>Run</td><td>&quot;R&quot; or tap while walking for mobile</td></tr>
+                <tr><td>Pause</td><td>&quot;P&quot; or tap and hold for mobile</td></tr>
+                <tr><td>Hints Toggle</td><td>&quot;H&quot; (no mobile support)</td></tr>
+                <tr><td>Sound Toggle</td><td>&quot;X&quot; (no mobile support)</td></tr>
             </table>
 
             <br></br>Press <strong>M</strong> or <strong>swipe</strong> for main menu

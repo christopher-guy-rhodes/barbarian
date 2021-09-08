@@ -7,8 +7,9 @@
  */
 function performAction(character, action, numberOfTimes, index = 0) {
     character.setPreviousAction(character.getAction());
-    character.getSprite().stop();
-    moveFromPositionToBoundary(character, action, character.getPixelsPerSecond(action));
+    character.stopAnimation();
+    character.setAction(action);
+    character.moveFromPositionToBoundary();
     animateCharacter(character, action, character.getDirection(), character.getVerticalDirection(), numberOfTimes, index)
         .then(function () {
         }, error => handlePromiseError(error));
@@ -30,7 +31,6 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
 
     let frames = character.getFrames(requestedAction, character.getDirection());
 
-    character.setAction(requestedAction);
 
     let index = idx;
     let isGameOver = false;
@@ -109,7 +109,9 @@ function animateTrapDoor(character) {
         for (let trapDoor of trapDoors) {
             if (testCss(getProperty(trapDoor, ELEMENT), 'display', 'block') &&
                     character.getSprite().offset().left >= getProperty(trapDoor, TRIGGER, LEFT)) {
-                moveToPosition(getProperty(trapDoor, ELEMENT), getProperty(trapDoor, TRIGGER, TIME), undefined, 0);
+                // TODO: make trap door an object that has an animator via composition. For now just construct animator
+                let animator = new Animator(getProperty(trapDoor, ELEMENT));
+                animator.moveToPosition(getProperty(trapDoor, TRIGGER, TIME), undefined, 0);
 
                 setTimeout(function() {
                     getProperty(trapDoor, ELEMENT).css('display', 'none');
@@ -117,47 +119,6 @@ function animateTrapDoor(character) {
             }
         }
     }
-}
-
-/**
- * Moves from the current position to the boundary.
- * @param character the character to move to the boundary
- * @param action the character action
- * @param pixelsPerSecond the rate at which to move
- */
-function moveFromPositionToBoundary(character, action, pixelsPerSecond) {
-    if (pixelsPerSecond <= 0) {
-        // If the sprite isn't moving (stop, non-moving attack etc.) to not move it to the boundary
-        return;
-    }
-
-    let x, y = undefined;
-    if (action === FALL) {
-        y = -500;
-    } else {
-
-        if (compareProperty(SCREENS, screenNumber, WATER, true) && character.getName() !== BARBARIAN_SPRITE_NAME) {
-            // Make water creates chase the barbarian in 2 dimensions
-            let barbarianY = stripPxSuffix(getCss(BARBARIAN_CHARACTER.getSprite(), 'bottom'));
-            y = stripPxSuffix(character.getSprite().css('bottom'));
-            if (barbarianY > y) {
-                y = SCREEN_HEIGHT - character.getSprite().height() / 2;
-            } else {
-                y = SCREEN_BOTTOM;
-            }
-        } else if (character.getVerticalDirection() === UP) {
-            y = SCREEN_HEIGHT - character.getSprite().height() / 2;
-        } else if (character.getVerticalDirection() === DOWN) {
-            y = SCREEN_BOTTOM;
-        }
-
-        if (character.getDirection() === LEFT) {
-            x = 0;
-        } else if (character.getDirection() === RIGHT) {
-            x = windowWidth - character.getSprite().width();
-        }
-    }
-    moveSpriteToPosition(character, x, y, pixelsPerSecond);
 }
 
 /**
@@ -188,33 +149,6 @@ function renderAtRestFrame(character) {
         : 0;
 
     renderSpriteFrame(character, action, character.getDirection(), position);
-}
-
-/**
- * Moves a character to a position on the plane.
- * @param character the sprite to move
- * @param x the x coordinate to move to
- * @param y the y coordinate to move to
- * @param pixelsPerSecond the rate at which to move
- */
-function moveSpriteToPosition(character, x, y, pixelsPerSecond) {
-    let distanceX = x === undefined ? 0 : Math.abs(x - character.getSprite().offset().left);
-    let distanceY = y === undefined ? 0 : Math.abs(y - stripPxSuffix(character.getSprite().css('bottom')));
-    let distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
-    let duration = distance / pixelsPerSecond * MILLISECONDS_PER_SECOND;
-
-    moveToPosition(character.getSprite(), duration, x, y);
-}
-
-/**
- * Move the element to position x, y and make the animation take duration seconds.
- * @param element the element to animate
- * @param duration the duration of the animation
- * @param x the x coordinate
- * @param y the y coordinate
- */
-function moveToPosition(element, duration, x, y) {
-    element.animate({left: x + 'px', bottom: y + 'px'}, duration, 'linear')
 }
 
 /**
@@ -261,7 +195,7 @@ async function moveBackdrop(character, direction , isVertical) {
         distance = SCREEN_WIDTH - character.getSprite().width();
     }
     let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
-    moveSpriteToPosition(character, x, y, adjustedPixelsPerSecond);
+    character.moveToPosition(x, y, adjustedPixelsPerSecond);
 
     let backgroundPosition = isVertical ? 'background-position-y' : 'background-position-x';
     let currentPosition = parseInt(stripPxSuffix(getCss(BACKDROP, backgroundPosition)));

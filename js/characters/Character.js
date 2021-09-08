@@ -40,8 +40,66 @@ class Character {
         this.canLeaveBehind = canLeaveBehind;
         this.sound = sound;
         this.previousAction = undefined;
+
+        if (this.sprite === undefined) {
+            alert('something is wrong');
+        }
+        this.animator = new Animator(this.sprite);
     }
 
+    stopAnimation() {
+        this.getSprite().stop();
+    }
+
+    /**
+     * Moves from the current position to the boundary.
+     * @param action the character action
+     * @param pixelsPerSecond the rate at which to move
+     */
+    moveFromPositionToBoundary() {
+        let pixelsPerSecond = this.getPixelsPerSecond(this.getAction());
+        if (pixelsPerSecond <= 0) {
+            // If the sprite isn't moving (stop, non-moving attack etc.) to not move it to the boundary
+            return;
+        }
+
+        let x, y = undefined;
+        if (this.getAction() === FALL) {
+            y = 0;
+        } else {
+
+            if (compareProperty(SCREENS, screenNumber, WATER, true) && this.getName() !== BARBARIAN_SPRITE_NAME) {
+                // Make water creates chase the barbarian in 2 dimensions
+                let barbarianY = stripPxSuffix(getCss(BARBARIAN_CHARACTER.getSprite(), 'bottom'));
+                y = stripPxSuffix(this.getSprite().css('bottom'));
+                if (barbarianY > y) {
+                    y = SCREEN_HEIGHT - this.getSprite().height() / 2;
+                } else {
+                    y = SCREEN_BOTTOM;
+                }
+            } else if (this.getVerticalDirection() === UP) {
+                y = SCREEN_HEIGHT - this.getSprite().height() / 2;
+            } else if (this.getVerticalDirection() === DOWN) {
+                y = SCREEN_BOTTOM;
+            }
+
+            if (this.getDirection() === LEFT) {
+                x = 0;
+            } else if (this.getDirection() === RIGHT) {
+                x = windowWidth - this.getSprite().width();
+            }
+        }
+        this.moveToPosition(x, y, pixelsPerSecond);
+    }
+
+
+    moveToPosition(x, y, pixelsPerSecond) {
+        this.animator.moveElementToPosition(x, y, pixelsPerSecond)
+    }
+
+    /*
+     * Getters and setters
+     */
     getFallDelay() {
         return this.death[FALL_DELAY];
     }

@@ -20,6 +20,7 @@ function resetGame() {
 function resetGameOver() {
     numLives = 3;
     screenNumber = 0;
+    BARBARIAN_CHARACTER.setDirection(RIGHT);
     setCss(BACKDROP, 'background-position', '0px 0px');
 
     for (let i = 1; i < numLives; i++) {
@@ -129,14 +130,15 @@ function handleSpaceKeypress(event) {
  * Handles the pause keypress event ("p" key).
  */
 function handlePauseKeypress() {
+
     if (!compareProperty(BARBARIAN_CHARACTER, STATUS, DEAD)) {
         if (isPaused) {
             setCss(PAUSE_MESSAGE, 'display', 'none');
             isPaused = false;
             if (!compareProperty(BARBARIAN_CHARACTER, ACTION, undefined)) {
                 let action = BARBARIAN_CHARACTER.getAction();
-                performAction(BARBARIAN_CHARACTER, action, BARBARIAN_CHARACTER.getActionNumberOfTimes(action), pauseFrameIndex);
-                pauseFrameIndex = 0;
+                performAction(BARBARIAN_CHARACTER, action, BARBARIAN_CHARACTER.getActionNumberOfTimes(action), pauseFrame);
+                pauseFrame = 0;
             }
             startMonsterAttacks(true);
             setSoundsPauseState(false);
@@ -217,6 +219,9 @@ function handleJumpKeypress() {
 function handleStopKeypress() {
     if (!compareProperty(BARBARIAN_CHARACTER, ACTION, SWIM) && isBarbarianAliveOrJustDied()) {
         performAction(BARBARIAN_CHARACTER, STOP, BARBARIAN_CHARACTER.getActionNumberOfTimes(STOP));
+        BARBARIAN_CHARACTER.getSprite().stop();
+        renderAtRestFrame(BARBARIAN_CHARACTER);
+        BARBARIAN_CHARACTER.setVerticalDirection(undefined);
     }
 }
 
@@ -284,14 +289,6 @@ function handleAttackKeypress() {
     }
 }
 
-/**
- * Determines if the sprite has hit the left screen boundary.
- * @param character the character to check boundary conditions for
- * @returns {boolean|boolean} true if the sprite as hit the left boundary, false otherwise
- */
-function hitLeftBoundary(character) {
-    return character.getDirection() !== RIGHT && character.getSprite().offset().left === 0;
-}
 
 /**
  * Determines if the character has hit the right screen boundary.

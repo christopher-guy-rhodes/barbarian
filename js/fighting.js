@@ -115,7 +115,11 @@ function areAllMonstersDefeated() {
  * @param character the barbarian sprite
  * @returns {boolean} true if the opponent launched an attack, false otherwise
  */
-function handleFightSequence(character) {
+function defeatedInFight(character) {
+    highlightAttackRange(character);
+    if (!getProperty(SCREENS, screenNumber, OPPONENTS).includes(character) ||character.getStatus() === DEAD) {
+        return true;
+    }
     let opponentsInProximity = getOpponentsInProximity(character, character.getSprite().width()*1.5);
 
     for (let i = 0; i < opponentsInProximity.length; i++) {
@@ -177,10 +181,11 @@ function monsterDeath(character) {
 /**
  * Highlights the monster when the barbarian is within attacking distance. Meant to hint to the player when to attack.
  * @param character the to highlight
+ * @returns {boolean}
  */
 function highlightAttackRange(character) {
     if (!isHints || character.getName() !== BARBARIAN_SPRITE_NAME) {
-        return;
+        return false;
     }
     let opponents = filterBarbarianCharacter(getOpponents());
     for (let opponent of opponents) {
@@ -197,6 +202,7 @@ function highlightAttackRange(character) {
             (distance >= minThreshold - HIGHLIGHT_BUFFER) &&
             (distance <= maxThreshold + HIGHLIGHT_BUFFER);
         setCharacterCss(opponent, 'filter', 'brightness(' + (shouldHighlight ? '300%' : '100%') + ')');
+        return false;
     }
 }
 

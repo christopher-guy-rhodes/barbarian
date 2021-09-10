@@ -97,6 +97,18 @@ class Character {
         this.animator.moveElementToPosition(x, y, pixelsPerSecond)
     }
 
+    isStopped() {
+        return this.action === STOP;
+    }
+
+    isAtLeftBoundary() {
+        return this.direction !== RIGHT && this.sprite.offset().left === 0
+    }
+
+    isAtRightBoundary() {
+        return this.direction === RIGHT && this.sprite.offset().left === SCREEN_WIDTH - this.sprite.width();
+    }
+
     /*
      * Getters and setters
      */

@@ -9,7 +9,6 @@ function performAction(character, action, numberOfTimes, index = 0) {
     character.setPreviousAction(character.getAction());
     character.stopAnimation();
     character.setAction(action);
-    character.moveFromPositionToBoundary();
     animateCharacter(character, action, character.getDirection(), character.getVerticalDirection(), numberOfTimes, index)
         .then(function () {
         }, error => handlePromiseError(error));
@@ -29,47 +28,38 @@ function performAction(character, action, numberOfTimes, index = 0) {
  */
 async function animateCharacter(character, requestedAction, requestedDirection, requestedVerticalDirection, numberOfTimes, idx = 0) {
 
+    character.moveFromPositionToBoundary();
+
     let frames = character.getFrames(requestedAction, character.getDirection());
 
 
-    let index = idx;
+    let frame = idx;
     let isGameOver = false;
     let counter = numberOfTimes;
 
     while (character.getAction() === requestedAction &&
            character.getDirection() === requestedDirection &&
            character.getVerticalDirection() === requestedVerticalDirection &&
-           index < frames.length) {
+           !character.isStopped() &&
+           !hitBoundary(character) &&
+           !monsterTurnaround(character) &&
+           !hitObstacle(character) &&
+           !defeatedInFight(character) &&
+           !isPaused &&
+           frame < frames.length) {
 
-        highlightAttackRange(character);
-
-        // Delay the game over setting to allow for the barbarian to fall before the animation is stopped
-        if (numLives < 1) {
-            setTimeout(function () {
-                isGameOver = true;
-            },character.getDeathDelay() * (1 / character.getFramesPerSecond(character.getAction())));
+        if (isPaused && character.getName() === BARBARIAN_SPRITE_NAME) {
+            // Save the frame if the game was paused so the animation can be resumed at the right place
+            pauseFrame = frame;
         }
 
-        // If the action starts a new animation or the current one should terminate break out of the loop
-        if (handleStop(character) ||
-            handlePaused(character, index) ||
-            isGameOver ||
-            handleObstacles(character) ||
-            !getProperty(SCREENS, screenNumber, OPPONENTS).includes(character) ||
-            character.getStatus() === DEAD ||
-            handleFightSequence(character) ||
-            handleMonsterTurnaround(character) ||
-            handleBoundary(character)) {
-            break;
-        }
-
-        renderSpriteFrame(character, requestedAction, character.getDirection(), frames[index++]);
+        renderSpriteFrame(character, requestedAction, character.getDirection(), frames[frame++]);
         await sleep(MILLISECONDS_PER_SECOND / character.getFramesPerSecond(requestedAction));
 
-        if (index === frames.length) {
+        if (frame === frames.length) {
             // If times is 0 we loop infinitely, if times is set decrement it and keep looping
             if (counter === 0 || --counter > 0) {
-                index = 0;
+                frame = 0;
             }
         }
     }
@@ -84,19 +74,6 @@ async function animateCharacter(character, requestedAction, requestedDirection, 
         setProperty(character, ACTION, undefined);
         character.getSprite().stop();
     }
-}
-
-/**
- * Saves off the frame index if pausing and the character is the barbarian.
- * @param character the character getting paused
- * @param index the frame index to save off if pausing
- * @returns {boolean} true if the game is paused, false otherwise
- */
-function handlePaused(character, index) {
-    if (isPaused && character.getName() === BARBARIAN_SPRITE_NAME) {
-        pauseFrameIndex = index;
-    }
-    return isPaused;
 }
 
 /**
@@ -122,23 +99,6 @@ function animateTrapDoor(character) {
 }
 
 /**
- * Stops the character from moving and sets the position to a natural standing motion.
- * @param character the character to stop
- * @returns {boolean} true if the movement should stop, false otherwise
- */
-function handleStop(character) {
-
-    if (character.getAction() !== STOP) {
-        return false;
-    }
-
-    character.getSprite().stop();
-    renderAtRestFrame(character);
-    character.setVerticalDirection(undefined);
-    return true;
-}
-
-/**
  * Renders the first "at rest" walking frame for the character.
  * @param character the sprite to render the at rest frame for
  */
@@ -159,6 +119,13 @@ function renderAtRestFrame(character) {
  */
 async function advanceBackdrop(character, direction) {
     actionsLocked = true;
+
+    hideOpponentsAndTrapDoors();
+    if (direction === LEFT) {
+        screenNumber = screenNumber + 1;
+    } else {
+        screenNumber = screenNumber - 1;
+    }
 
     await moveBackdrop(character, direction, false);
     if (compareProperty(SCREENS, screenNumber, WATER, true)) {
@@ -224,13 +191,13 @@ function sleep(ms) {
  * @param character the monster sprite
  * @returns {boolean} true if the monster has passed the sprite, false otherwise
  */
-function handleMonsterTurnaround(character) {
+function monsterTurnaround(character) {
     if (character.getName() === BARBARIAN_SPRITE_NAME) {
         return false;
     }
 
     if (!character.getResetTurnaround()) {
-        if (hitLeftBoundary(character) || hitRightBoundary(character)) {
+        if (character.isAtLeftBoundary() || hitRightBoundary(character)) {
             setCss(character.getSprite(), 'display', 'none');
             return true;
         }
@@ -240,10 +207,10 @@ function handleMonsterTurnaround(character) {
 
     let isPassedLeft = character.getDirection() === LEFT &&
         character.getSprite().offset().left + character.getSprite().width() * PASSING_MULTIPLIER <
-                BARBARIAN_CHARACTER.getSprite().offset().left || hitLeftBoundary(character);
+                BARBARIAN_CHARACTER.getSprite().offset().left || character.isAtLeftBoundary();
     let isPassedRight = character.getDirection() === RIGHT &&
         character.getSprite().offset().left - character.getSprite().width() * PASSING_MULTIPLIER >
-                BARBARIAN_CHARACTER.getSprite().offset().left || hitRightBoundary(character);
+                BARBARIAN_CHARACTER.getSprite().offset().left || character.isAtRightBoundary();
 
     if ((isPassedLeft || isPassedRight) && character.getResetTurnaround()) {
         character.setDirection(isPassedLeft ? RIGHT : LEFT);
@@ -299,27 +266,16 @@ function hideOpponentsAndTrapDoors() {
  * @param character the barbarian sprite
  * @returns {boolean} true if the
  */
-function handleBoundary(character) {
+function hitBoundary(character) {
     if (character.getName() !== BARBARIAN_SPRITE_NAME) {
         return false;
     }
-    let isRightBoundary = hitRightBoundary(character);
-    let isLeftBoundary = hitLeftBoundary(character);
 
-    if (!isLeftBoundary && !isRightBoundary) {
-        return false;
-    }
-
-
-    if (isLeftBoundary && compareProperty(SCREENS, screenNumber, ALLOWED_SCROLL_DIRECTIONS, LEFT, true)) {
-        hideOpponentsAndTrapDoors();
-        screenNumber = screenNumber - 1;
+    if (character.isAtLeftBoundary() && compareProperty(SCREENS, screenNumber, ALLOWED_SCROLL_DIRECTIONS, LEFT, true)) {
         advanceBackdrop(character, RIGHT)
             .then(function() {}, error => handlePromiseError(error));
-    } else if (isRightBoundary && compareProperty(SCREENS, screenNumber, ALLOWED_SCROLL_DIRECTIONS, RIGHT, true)) {
+    } else if (character.isAtRightBoundary() && compareProperty(SCREENS, screenNumber, ALLOWED_SCROLL_DIRECTIONS, RIGHT, true)) {
         if (!compareProperty(SCREENS, screenNumber, undefined) && areAllMonstersDefeated()) {
-            hideOpponentsAndTrapDoors();
-            screenNumber = screenNumber + 1;
             if (!compareProperty(SCREENS, screenNumber, undefined)) {
                 advanceBackdrop(character, LEFT)
                     .then(function() {}, error => handlePromiseError(error));
@@ -327,19 +283,19 @@ function handleBoundary(character) {
         }
         if (compareProperty(SCREENS, screenNumber, undefined)) {
             setCss(DEMO_OVER_MESSAGE, 'display', 'block');
-            setProperty(character, STATUS, DEAD);
             character.setStatus(DEAD);
             screenNumber = 0;
             numLives = 0;
-        } else {
         }
+    } else {
+        return false;
     }
-
     if (numLives !== 0) {
         // Don't render at rest frame if the game has ended since the screen number context to set it appropriately
         // is no longer set. For example if the game ends while swimming we don't want to render a walking frame.
         renderAtRestFrame(character);
     }
+
     setProperty(character, ACTION, STOP);
     return true;
 }

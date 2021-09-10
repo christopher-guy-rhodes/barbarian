@@ -76,7 +76,7 @@ SCREENS = {
                 {left: 325, obstacleType : ELEVATION, failAction: STOP, height: 12},
             ],
             left: [
-                {left: 410, obstacleType : ELEVATION, failAction: STOP, height: 75, jumpThresholds : {min: 310, max: 460}},
+                {left: 410, obstacleType : ELEVATION, failAction: STOP, height: 74, jumpThresholds : {min: 310, max: 460}},
                 {left: 165, obstacleType : ELEVATION, failAction: STOP, height: 165, jumpThresholds : {min: 65, max: 215}},
                 {left: 280, obstacleType : ELEVATION, failAction: STOP, height: 122, jumpThresholds : {min: 180, max: 330}},
             ],

@@ -63,7 +63,7 @@ function getObstacles(character) {
  * @param character the character encountering the obstacles
  * @returns {boolean} true if the obstacle stops the animation, false otherwise
  */
-function handleObstacles(character) {
+function hitObstacle(character) {
 
     if (character.getAction() === FALL) {
         // Don't want to handle obstacles while falling to prevent infinite recursion in the animateSprite method

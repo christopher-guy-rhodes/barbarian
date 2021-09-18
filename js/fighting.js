@@ -1,45 +1,12 @@
 /**
- * Determines if a character attack against the opponent would be successful given the current proximity.
- * @param character the character attacking
- * @param opponent the sprite being attacked
- * @returns {boolean|boolean} true if the attack was successful, false otherwise
- */
-function isSuccessfulAttack(character, opponent) {
-    if (character.getCharacterType() === opponent.getCharacterType()) {
-        //characters of the same type cannot kill eachother
-        return false;
-    }
-    let minAttackThreshold, maxAttackThreshold;
-    if (character.getName() !== BARBARIAN_SPRITE_NAME) {
-        minAttackThreshold = character.getMinAttackThreshold();
-        maxAttackThreshold = character.getMaxAttackThreshold();
-    } else {
-        minAttackThreshold = opponent.getMinBarbarianAttackThreshold();
-        maxAttackThreshold = opponent.getMaxBarbarianAttackThreshold();
-    }
-
-    let heightDiff = Math.abs(stripPxSuffix(character.getSprite().css('bottom')) - stripPxSuffix(opponent.getSprite().css('bottom')));
-    let distance = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
-    return distance >= minAttackThreshold && distance <= maxAttackThreshold && heightDiff < 100;
-}
-
-/**
  * Launches an attack by the chracter against opponent if they are within the attack proximity.
  * @param character the character that is attacking
  * @param opponent the opponent being attacked
- * @returns {boolean} returns true if the monster attacked, false otherwise
  */
-function launchMonsterAttack(character, opponent) {
-    if (character.getName() !== BARBARIAN_SPRITE_NAME && character.getAction() !== ATTACK) {
-        let isWater = compareProperty(SCREENS, screenNumber, WATER, true);
-        let proximityThreshold = isWater ? ATTACK_PROXIMITY_WATER : ATTACK_PROXIMITY;
-        let proximity = getProximity(character, opponent);
-        if (proximity < proximityThreshold) {
-            performAction(character, ATTACK, character.getResetNumberOfTimes());
-            return true;
-        }
+function launchAttack(character, opponent) {
+    if (character.getName() !== BARBARIAN_SPRITE_NAME) {
+        game.performAction(character, ATTACK);
     }
-    return false;
 }
 
 /**
@@ -80,72 +47,57 @@ function areBothAlive(character, opponent) {
 }
 
 /**
- * Determines of the character defeated the opponent.
- * @param character the character that is attacking the opponent
- * @param opponent the opponent being attacked
- * @returns {boolean|boolean} true if the sprite defeated the opponent, false otherwise
- */
-function opponentDefeated(character, opponent) {
-
-    return character.getAction() === ATTACK &&
-        !hasJumpEvaded(character, opponent) &&
-        areBothAlive(character, opponent) &&
-        isSuccessfulAttack(character, opponent);
-}
-
-/**
  * Determines if all the monsters on the screen are dead.
  * @returns {boolean} true if all the monsters on the screen are dead, false otherwise.
  */
 function areAllMonstersDefeated() {
-    for (let character of SCREENS[screenNumber][OPPONENTS]) {
-        if (character.getName() === BARBARIAN_SPRITE_NAME) {
-            continue;
-        }
-        if (!character.getCanLeaveBehind() && character.getStatus() === ALIVE) {
-            return false;
-        }
-    }
-    return true;
+    return game.getMonstersOnScreen().filter(m => !m.getCanLeaveBehind() && !m.isDead()).length < 1;
 }
 
-/**
- * Handles the fight sequence between the barbarian character and the monsters on the screen. Has the side effect of
- * killing the loosing character.
- * @param character the barbarian sprite
- * @returns {boolean} true if the opponent launched an attack, false otherwise
- */
-function defeatedInFight(character) {
-    highlightAttackRange(character);
-    if (!getProperty(SCREENS, screenNumber, OPPONENTS).includes(character) ||character.getStatus() === DEAD) {
-        return true;
+function launchCpuAttack(character) {
+    if (character.isBarbarian() || character.isDead() || !game.doesScreenIncludeCharacter(character)) {
+        return;
     }
-    let opponentsInProximity = getOpponentsInProximity(character, character.getSprite().width()*1.5);
+    let opponentsInProximity = character.getOpponentsWithinX(GAME_BOARD, CPU_ATTACK_RANGE_PIXELS);
 
     for (let i = 0; i < opponentsInProximity.length; i++) {
         let opponent = opponentsInProximity[i];
-        if (launchMonsterAttack(character, opponent)) {
-            return true;
-        }
-        if (opponentDefeated(character, opponent)) {
-            opponent.setDeathDelay(getRelativeDeathDelay(character, opponent));
-            death(opponent);
-        }
+        launchAttack(character, opponent);
     }
-    return false;
 }
+
 
 /**
  * Handles the death of a character.
  * @param character the sprite that has died
  */
 function death(character) {
-    if (character.getName() !== BARBARIAN_SPRITE_NAME) {
+    character.setDeathTime(new Date().getTime());
+    character.setStatus(DEAD);
+    if (!character.isBarbarian()) {
         monsterDeath(character);
     } else {
         barbarianDeath(character, ATTACK);
     }
-    animateDeath(character);
+    if (game.isWater()) {
+        character.getSprite().stop();
+        let timeToFall = character.getY() / DEFAULT_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
+        //character.getSprite().css('transform', 'scaleY(-1)');
+        //character.getSprite().css('bottom', character.getY() - 300 + 'px');
+
+        // TODO, share this logic with animate death
+        let frame = character.getDeathFrames(character.getDirection())[4];
+        let heightOffset = character.getDeathSpriteHeightOffset(character.getDirection()) * character.getSprite().height();
+        setCss(character.getDeathSprite(), 'background-position',
+            -1*frame*character.getSprite().width() + 'px ' + -1*heightOffset + 'px');
+
+        character.moveToPosition(character.getX(), 0, DEFAULT_PIXELS_PER_SECOND);
+    } else {
+        game.animateDeath(character).catch(function(error) {
+            handlePromiseError(error);
+        });
+    }
+
 }
 
 /**
@@ -154,12 +106,11 @@ function death(character) {
  * @param action the action the barbarian was taking when he died
  */
 function barbarianDeath(character, action) {
-    character.setDeathTime(new Date().getTime());
-    character.setStatus(DEAD);
     if (action !== FALL) {
-        playGruntSound();
+        game.playGruntSound();
     } else {
-        BARBARIAN_CHARACTER.getSprite().css('display', 'none');
+        console.log('===> hiding1 ' + character.getCharacterType() + ' because he is falling ');
+        game.getBarbarian().hide();
     }
     showMessage(START_MESSAGE);
     numLives = numLives - 1;
@@ -175,51 +126,9 @@ function barbarianDeath(character, action) {
 function monsterDeath(character) {
     character.setDeathTime(new Date().getTime());
     character.setStatus(DEAD);
-    playFireSound();
+    game.playFireSound();
 }
 
-/**
- * Highlights the monster when the barbarian is within attacking distance. Meant to hint to the player when to attack.
- * @param character the to highlight
- * @returns {boolean}
- */
-function highlightAttackRange(character) {
-    if (!isHints || character.getName() !== BARBARIAN_SPRITE_NAME) {
-        return false;
-    }
-    let opponents = filterBarbarianCharacter(getOpponents());
-    for (let opponent of opponents) {
-        if (!opponent.getCanHighlight()) {
-            continue;
-        }
-        let thresholds = opponent[BARBARIAN_ATTACK_THRESHOLDS];
-        let minThreshold = opponent.getMinBarbarianAttackThreshold();
-        let maxThreshold = opponent.getMaxBarbarianAttackThreshold();
-
-        let distance = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
-
-        let shouldHighlight = character.getStatus() !== DEAD &&
-            (distance >= minThreshold - HIGHLIGHT_BUFFER) &&
-            (distance <= maxThreshold + HIGHLIGHT_BUFFER);
-        setCharacterCss(opponent, 'filter', 'brightness(' + (shouldHighlight ? '300%' : '100%') + ')');
-        return false;
-    }
-}
-
-/**
- * Gets the appropriate death delay based on the distance an speed of the character and opponent.
- * @param character the character
- * @param opponent the opponent
- * @returns {number} the resulting delay in milliseconds
- */
-function getRelativeDeathDelay(character, opponent) {
-    const separation = Math.abs(character.getSprite().offset().left - opponent.getSprite().offset().left);
-
-    const relativePps = character.getDirection() === opponent.getDirection()
-        ? opponent.getPixelsPerSecond(opponent.getAction()) - character.getPixelsPerSecond(character.getAction())
-        : opponent.getPixelsPerSecond(opponent.getAction()) + character.getPixelsPerSecond(character.getAction());
-    return DEFAULT_DEATH_DELAY + (separation / Math.abs(relativePps)) * MILLISECONDS_PER_SECOND;
-}
 
 /**
  * Get the opponents in the proximity of the sprite
@@ -227,24 +136,18 @@ function getRelativeDeathDelay(character, opponent) {
  * @param proximityThreshold the proximity threshold in pixels
  * @returns {[]}
  */
-function getOpponentsInProximity(character, proximityThreshold) {
+function getOpponentsInProximity(character, gameBoard, proximityThreshold) {
     let attackers = [];
-    let opponents = getOpponents();
+    let opponents = game.getOpponentsOnScreen();
     for (let opponent of opponents) {
+        if (opponent === character) {
+            continue;
+        }
         let proximity = getProximity(character, opponent);
-        if (proximity > 0 && proximity < proximityThreshold) {
+        if (Math.abs(proximity) < proximityThreshold) {
             attackers.push(opponent);
         }
     }
     return attackers;
 }
-
-/**
- * Gets the opponents on the current screen.
- * @returns {*}
- */
-function getOpponents() {
-    return getProperty(SCREENS, screenNumber, OPPONENTS);
-}
-
 

@@ -10,40 +10,36 @@
 </head>
 <script>
 
-let screenNumber = 0;
-let actionsLocked = false;
-let isPaused = false;
 let numLives = 3;
-let isHints = true;
-let isSoundOn = true;
+let isSoundOn = false;
 let windowWidth = undefined;
-let pauseFrame = 0;
 let keypressTime;
 let lastKeypressTime;
 
 $(document).ready(function(){
     // Classes
     $.getScript('/js/animation/Animator.js', function() {
+    $.getScript('/js/obstacles/Obstacle.js', function() {
+    $.getScript('/js/obstacles/Obstacles.js', function() {
+    $.getScript('/js/sounds/Sounds.js', function() {
+    $.getScript('/js/obstacles/ObstaclesBuilder.js', function() {
     $.getScript('/js/characters/Character.js', function() {
     $.getScript('/js/characters/CharacterBuilder.js', function() {
+    $.getScript('/js/game/GameBoard.js', function() {
+    $.getScript('/js/game/GameBoardBuilder.js', function() {
+    $.getScript('/js/game/Game.js', function() {
     // Include constants
     $.getScript('/js/constants.js', function() {
     // Include frame definitions
     $.getScript('/js/frames.js', function() {
     // Include util module
     $.getScript('/js/util.js', function() {
-    // Include sound module
-    $.getScript('/js/sound.js', function() {
-    // Include sprite definition
-    $.getScript('/js/sprites.js', function() {
-    // Include the obstacles module
-    $.getScript('/js/obstacles.js', function() {
     // Include the fighting module
     $.getScript('/js/fighting.js', function() {
-    // Include animation module
-    $.getScript('/js/animation.js', function() {
     // Include keypress events
     $.getScript('/js/events.js', function() {
+    // Include sprite definition
+    $.getScript('/js/gameConfiguration.js', function() {
 
     setViewPort();
     setBackdrop();
@@ -63,8 +59,6 @@ $(document).ready(function(){
 
     windowWidth = 1400;
 
-    //renderSpriteFrame(MONSTER_CHARACTER, WALK, getProperty(MONSTER_CHARACTER, DIRECTION), 0, getProperty(MONSTER_CHARACTER, SPRITE).height());
-
     $(document).keydown(function(e) {
         handleKeypress(e.which);
         e.preventDefault(); // prevent the default action (scroll / move caret)
@@ -72,7 +66,7 @@ $(document).ready(function(){
 
 
 
-})})})})})})})})})})})})});
+})})})})})})})})})})})})})})})})});
 </script>
 </head>
 <body style="touch-action: pan-y;">
@@ -91,8 +85,6 @@ $(document).ready(function(){
     <div class="shark4"></div>
     <div class="death"></div>
     <div class="pause_message"><h2>Paused</h2></div>
-    <div class="hints_message_off"><h2>Hints Off</h2></div>
-    <div class="hints_message_on"><h2>Hints On</h2></div>
     <div class="sound_message_off"><h2>Sound Off</h2></div>
     <div class="sound_message_on"><h2>Sound On</h2></div>
     <div class="demo_over_message">
@@ -132,7 +124,6 @@ $(document).ready(function(){
                 <tr><td>Jump</td><td>&quot;J&quot; or tap high on the screen for mobile</td></tr>
                 <tr><td>Run</td><td>&quot;R&quot; or tap while walking for mobile</td></tr>
                 <tr><td>Pause</td><td>&quot;P&quot; or tap and hold for mobile</td></tr>
-                <tr><td>Hints Toggle</td><td>&quot;H&quot; (no mobile support)</td></tr>
                 <tr><td>Sound Toggle</td><td>&quot;X&quot; (no mobile support)</td></tr>
             </table>
 

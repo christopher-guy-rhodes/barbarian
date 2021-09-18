@@ -58,17 +58,17 @@ const DOG_FRAMES = {
             heightOffset : 1
         },
         right : {
-            FRAMES : [0, 1, 2, 3],
+            frames : [0, 1, 2, 3],
             heightOffset : 0
         }
     },
     attack : {
         left : {
-                frames: [4, 3, 2, 1, 0],
+            frames: [4, 3, 2, 1, 0],
             heightOffset : 3
         },
         right : {
-            FRAMES : [0, 1, 2, 3, 4],
+            frames : [0, 1, 2, 3, 4],
             heightOffset : 2
         }
     },

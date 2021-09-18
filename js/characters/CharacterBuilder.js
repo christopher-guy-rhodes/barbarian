@@ -1,17 +1,19 @@
 class CharacterBuilder {
-    constructor(frames, characterType, sprite) {
+
+    constructor(barbarian, obstacles, frames, characterType, sprite) {
+        this.barbarian = barbarian;
+        this.obstacles = obstacles;
         this.frames = frames;
         this.characterType = characterType;
         this.sprite = sprite;
         this.name = undefined;
-        this.action = WALK;
+        this.action = undefined;
         this.status = DEAD;
         this.direction = LEFT;
         this.verticalDirection = undefined;
 
         this.reset = {
             status : DEAD,
-            numberOfTimes : 0,
             left : 850,
             action : WALK,
             direction : LEFT,
@@ -29,6 +31,7 @@ class CharacterBuilder {
             walk: 0,
             swim : 0,
             attack: 0,
+            sit: 0,
             jump: 1,
             stop: 1,
             fall: 1
@@ -47,7 +50,6 @@ class CharacterBuilder {
                 },
             },
             framesPerSecond : SPRITE_FPS,
-            delay : 1800,
             fallDelay : 800,
             time : 0
         };
@@ -74,16 +76,6 @@ class CharacterBuilder {
             sit: SPRITE_FPS,
         };
 
-        this.attackThresholds = {
-            min: 0,
-            max: 100
-        };
-
-        this.barbarianAttackThresholds = {
-            min: 0,
-            max: 115
-        };
-
         this.jumpThresholds = {
             min: 15,
             max: 100
@@ -93,7 +85,20 @@ class CharacterBuilder {
         this.canHighlight = true;
         this.canLeaveBehind = false;
         this.sound = undefined;
-        this.previousAction = undefined;
+        this.screenNumber = 0;
+
+        this.currentFrame = {
+            stop: 0,
+            sit: 0,
+            attack: 0,
+            walk: 0,
+            fall: 0,
+            run: 0,
+            jump: 0,
+            swim: 0
+        }
+
+        this.isInvincible = false;
     }
 
     withCanLeaveBehind(flag) {
@@ -112,11 +117,6 @@ class CharacterBuilder {
 
     withAction(action) {
         this.action = action;
-        return this;
-    }
-
-    withDeathDelay(delay) {
-        this.death.delay = delay;
         return this;
     }
 
@@ -146,6 +146,11 @@ class CharacterBuilder {
 
     withResetAction(action) {
         this.reset.action = action;
+        return this;
+    }
+
+    withIsInvincible(flag) {
+        this.isInvincible = flag;
         return this;
     }
 
@@ -216,38 +221,12 @@ class CharacterBuilder {
         return this;
     }
 
-    withMinAttackThreshold(min) {
-        this.attackThresholds[MIN] = min;
+    withScreenNumber(screenNumber) {
+        this.screenNumber = screenNumber;
         return this;
     }
 
-    withMaxAttackThreshold(max) {
-        this.attackThresholds[MAX] = max;
-        return this;
-    }
-
-    withMinJumpThreshold(min) {
-        this.jumpThresholds[MIN] = min;
-        return this;
-    }
-
-    withMaxJumpThreshold(max) {
-        this.jumpThresholds[MAX] = max;
-        return this;
-    }
-
-    withMinBarbarianAttackThreshold(min) {
-        this.barbarianAttackThresholds[MIN] = min;
-        return this;
-    }
-
-    withMaxBarbarianAttackThreshold(max) {
-        this.barbarianAttackThresholds[MAX] = max;
-        return this;
-    }
-
-
-    withStatus(statu) {
+    withStatus(status) {
         this.status = status;
         return this;
     }
@@ -262,7 +241,10 @@ class CharacterBuilder {
         if (this.frames === undefined) {
             throw new Error('CharacterBuilder build error: frames are missing');
         }
-        return new Character(this.frames,
+        return new Character(
+            this.barbarian,
+            this.obstacles,
+            this.frames,
             this.characterType,
             this.sprite,
             this.name,
@@ -275,12 +257,12 @@ class CharacterBuilder {
             this.death,
             this.pixelsPerSecond,
             this.framesPerSecond,
-            this.attackThresholds,
-            this.barbarianAttackThresholds,
-            this.jumpThresholds,
             this.canElevate,
             this.canHighlight,
             this.canLeaveBehind,
-            this.sound);
+            this.sound,
+            this.screenNumber,
+            this.currentFrame,
+            this.isInvincible);
     }
 }

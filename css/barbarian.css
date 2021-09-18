@@ -1,6 +1,6 @@
 
 .barbarian {
-    border: 0px solid red;
+    /*border: 1px solid red;*/
     height: 400px;
     width: 400px;
     background-image: url(../sprites/sprite.png);
@@ -10,12 +10,11 @@
 }
 
 .monster {
-    border: 0px solid red;
+    /*border: 1px solid red;*/
     height: 400px;
     width: 400px;
     background-image: url(../sprites/monsters.png);
     position: absolute;
-    left: 850px;
     bottom: 12px;
     display: none;
 }
@@ -81,7 +80,7 @@
     background-image: url(../sprites/dog.png);
     background-position: -1200px -400px;
     position: absolute;
-    left:850px;
+    left:1050px;
     bottom: 160px;
     display: none;
 }

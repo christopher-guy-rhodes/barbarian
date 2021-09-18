@@ -138,3 +138,13 @@ function setNestedKey(obj, path, value) {
     }
     return setNestedKey(obj[path[0]], path.slice(1), value);
 }
+
+/**
+ * Sleep for ms milliseconds.
+ * @param ms the number of milliseconds to sleep
+ * @returns {Promise<void>} a void promise
+ */
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+

@@ -2,9 +2,9 @@
 const SCREEN_HEIGHT = 800;
 const SCREEN_WIDTH = 1400;
 const SCREEN_BOTTOM = 12;
+const TOTAL_SCREENS = 4;
 
 const RUN_SPEED_INCREASE_FACTOR = 1.5;
-const DEFAULT_DEATH_DELAY = 2000;
 
 // How long does it take to advance the screen?
 const ADVANCE_SCREEN_DURATION_SECONDS = 1;
@@ -44,10 +44,8 @@ const MIN = 'min';
 const MAX = 'max';
 const DELAY = 'delay';
 const FALL_DELAY = 'fallDelay';
-const OBSTACLES = 'obstacles';
 const OPPONENTS = 'opponents';
 const SOUND = 'SOUND';
-const TRAP_DOORS = 'trapDoors';
 const TRIGGER = 'trigger';
 const TIME = 'time';
 const NUMBER_OF_TIMES = 'numberOfTimes';
@@ -55,7 +53,6 @@ const TURNAROUND = 'turnaround';
 const CAN_ELEVATE = 'CAN_ELEVATE';
 const CAN_HIGHLIGHT = 'CAN_HIGHLIGHT';
 const WATER = 'water';
-const ALLOWED_SCROLL_DIRECTIONS = 'allowedScrollDirections';
 
 const THEME_SONG = 'THEME_SONG';
 const GROWL_SOUND = 'GROWL_SOUND';
@@ -70,7 +67,6 @@ const RUN = 'run';
 const ATTACK = 'attack';
 const JUMP = 'jump';
 const WALK = 'walk';
-const DEATH = 'death';
 const SIT = 'sit';
 const FALL = 'fall';
 const SWIM = 'swim';
@@ -100,7 +96,6 @@ const KP_PAUSE = 'KP_PAUSE';
 const KP_SPACE = 'KP_SPACE';
 const KP_CONTROLS = 'KP_CONTROLS';
 const KP_MAIN = 'KP_MAIN';
-const KP_HINTS = 'KP_HINTS';
 const KP_SOUND = 'KP_SOUND';
 const KP_UP = 'KP_UP';
 const KP_DOWN = 'KP_DOWN';
@@ -139,24 +134,14 @@ const MESSAGES = [CONTROL_MESSAGE, START_MESSAGE, GAME_OVER_MESSAGE, DEMO_OVER_M
 const BRIDGE = $('.bridge');
 const BACKDROP = $('.backdrop');
 
+const FIGHTING_RANGE_PIXELS = 100;
+const CPU_ATTACK_RANGE_PIXELS = 500;
 const HIGHLIGHT_BUFFER = 250;
 const MILLISECONDS_PER_SECOND = 1000;
 const PASSING_MULTIPLIER = 1.5;
 const JUST_DIED_THRESHOLD = 500;
 const TOGGLE_MESSAGE_TIME = 3000;
-const ATTACK_PROXIMITY = 320;
-const ATTACK_PROXIMITY_WATER = 200;
-const OBSTACLE_CLOSE_PROXIMITY = 50;
 
-const SOUNDS = {
-    THEME_SONG : isSoundOn ? new Audio('/sounds/theme.mp3') : undefined,
-    FALL_SOUND : isSoundOn ? new Audio('/sounds/fall.mp3') : undefined,
-    GRUNT_SOUND : isSoundOn ? new Audio('/sounds/grunt.mp3') : undefined,
-    GROWL_SOUND : isSoundOn ? new Audio('/sounds/growl.mp3') : undefined,
-    FIRE_SOUND : isSoundOn ? new Audio('/sounds/fire.mp3') : undefined,
-    MONSTER_SOUND : isSoundOn ? new Audio('/sounds/monster.mp3') : undefined,
-    SPLASH_SOUND : isSoundOn ? new Audio('/sounds/splash.mp3') : undefined
-};
 
 const SPRITE_FPS = 5;
 const SWIM_FPS = 3;

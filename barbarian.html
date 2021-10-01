@@ -10,14 +10,13 @@
 </head>
 <script>
 
-let numLives = 3;
-let isSoundOn = false;
 let windowWidth = undefined;
 let keypressTime;
 let lastKeypressTime;
 
 $(document).ready(function(){
     // Classes
+    $.getScript('/js/messages/Messages.js', function() {
     $.getScript('/js/animation/Animator.js', function() {
     $.getScript('/js/obstacles/Obstacle.js', function() {
     $.getScript('/js/obstacles/Obstacles.js', function() {
@@ -25,32 +24,27 @@ $(document).ready(function(){
     $.getScript('/js/obstacles/ObstaclesBuilder.js', function() {
     $.getScript('/js/characters/Character.js', function() {
     $.getScript('/js/characters/CharacterBuilder.js', function() {
+    $.getScript('js/events/Events.js', function() {
     $.getScript('/js/game/GameBoard.js', function() {
     $.getScript('/js/game/GameBoardBuilder.js', function() {
     $.getScript('/js/game/Game.js', function() {
     // Include constants
     $.getScript('/js/constants.js', function() {
-    // Include frame definitions
-    $.getScript('/js/frames.js', function() {
     // Include util module
     $.getScript('/js/util.js', function() {
-    // Include the fighting module
-    $.getScript('/js/fighting.js', function() {
-    // Include keypress events
-    $.getScript('/js/events.js', function() {
     // Include sprite definition
     $.getScript('/js/gameConfiguration.js', function() {
 
-    setViewPort();
-    setBackdrop();
-    initializeScreen();
+    game.setViewPort();
+    game.setBackdrop();
+    game.initializeScreen();
 
 
     // Bind click events
-    BACKDROP.on('swiperight', swipeRightHandler);
-    BACKDROP.on('swipeleft', swipeLeftHandler);
-    BACKDROP.on('taphold', tapHoldHandler);
-    BACKDROP.on('click', clickHandler);
+    BACKDROP.on('swiperight', events.swipeRightHandler);
+    BACKDROP.on('swipeleft', events.swipeLeftHandler);
+    BACKDROP.on('taphold', events.tapHoldHandler);
+    BACKDROP.on('click', events.clickHandler);
 
     // Don't allow screen resizing
     $(window).resize(function(){
@@ -60,13 +54,13 @@ $(document).ready(function(){
     windowWidth = 1400;
 
     $(document).keydown(function(e) {
-        handleKeypress(e.which);
+        events.handleKeypress(e.which);
         e.preventDefault(); // prevent the default action (scroll / move caret)
     });
 
 
 
-})})})})})})})})})})})})})})})})});
+})})})})})})})})})})})})})})})});
 </script>
 </head>
 <body style="touch-action: pan-y;">

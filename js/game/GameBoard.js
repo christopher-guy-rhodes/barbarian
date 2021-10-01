@@ -17,6 +17,10 @@ class GameBoard {
         return opponents;
     }
 
+    getAllMonsters() {
+        return this.getAllOpponents().filter(character => !character.isBarbarian());
+    }
+
     getScreenNumbers() {
         return Object.keys(this.gameBoard);
     }

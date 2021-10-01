@@ -120,15 +120,17 @@ const KEYPRESS = {
 };
 
 // Messages
-const GAME_OVER_MESSAGE = $('.game_over');
-const DEMO_OVER_MESSAGE = $('.demo_over_message');
-const START_MESSAGE = $('.start_message');
-const CONTROL_MESSAGE = $('.controls_message');
 const SOUND_ON_MESSAGE = $('.sound_message_on');
 const SOUND_OFF_MESSAGE = $('.sound_message_off');
 const HINTS_ON_MESSAGE = $('.hints_message_on');
 const HINTS_OFF_MESSAGE = $('.hints_message_off');
 const PAUSE_MESSAGE = $('.pause_message');
+
+const CONTROL_MESSAGE = $('.controls_message');
+const GAME_OVER_MESSAGE = $('.game_over');
+const DEMO_OVER_MESSAGE = $('.demo_over_message');
+const START_MESSAGE = $('.start_message');
+
 const MESSAGES = [CONTROL_MESSAGE, START_MESSAGE, GAME_OVER_MESSAGE, DEMO_OVER_MESSAGE];
 
 // Elements

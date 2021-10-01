@@ -1,30 +1,3 @@
-/**
- * Shows a particular message and hide all other messages.
- * @param message the message to show
- */
-function showMessage(message) {
-    $.each(MESSAGES, function(idx, e) {
-        setCss(e, 'display', e[0].classList !== message[0].classList ? 'none' : 'block');
-    });
-}
-
-/**
- * Hide all messages.
- */
-function hideAllMessages() {
-    $.each(MESSAGES, function(idx, e) {
-        setCss(e, 'display','none');
-    });
-}
-
-/**
- * Filters out the barbarian character from an array of characters
- * @param characters the characters to filter
- * @returns {*}
- */
-function filterBarbarianCharacter(characters) {
-    return characters.filter(character => character.getName() != BARBARIAN_SPRITE_NAME);
-}
 
 /**
  * Handles an error from a promise.
@@ -42,47 +15,6 @@ function handlePromiseError(error) {
  */
 function stripPxSuffix(field) {
     return field.substring(0, field.length - 2);
-}
-
-/**
- * Sets a css property for the element a character.
- * @param character the character to set the css property for
- * @param prop the css property to set
- * @param value the value to set the css property to
- */
-function setCharacterCss(character, prop, value) {
-    setCss(character.getSprite(), prop, value);
-}
-
-/**
- * Tests if the given element has a property with the specified value.
- * @param element the element to test
- * @param prop the prop of the element to test
- * @param testValue the value to compare the prop to
- * @returns {boolean} true if the property of the element is equal to the test, false otherwise
- */
-function testCss(element, prop, testValue) {
-    return element.css(prop) === testValue;
-}
-
-/**
- * Sets the css property of an element setCss($('.foo), 'a', 'b') is equivalent to for $('.foo').css('a', 'b').
- * @param element the element to set the css property of
- * @param prop the property to set
- * @param value the value to set the property to
- */
-function setCss(element, prop, value) {
-    element.css(prop, value);
-}
-
-/**
- * Gets the css property of element
- * @param element the element to get the css property of
- * @param prop the prop to get
- * @returns {*}
- */
-function getCss(element, prop) {
-    return element.css(prop);
 }
 
 /**

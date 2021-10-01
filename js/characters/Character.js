@@ -76,7 +76,7 @@ class Character {
         } else {
             if (gameBoard.isWater(this.getScreenNumber()) && this.getName() !== BARBARIAN_SPRITE_NAME) {
                 // Make water creates chase the barbarian in 2 dimensions
-                let barbarianY = stripPxSuffix(getCss(this.barbarian.getSprite(), 'bottom'));
+                let barbarianY = stripPxSuffix(this.barbarian.getSprite().css('bottom'));
                 y = stripPxSuffix(this.getSprite().css('bottom'));
                 if (barbarianY > y) {
                     y = SCREEN_HEIGHT - this.getSprite().height() / 2;
@@ -196,8 +196,8 @@ class Character {
     // TODO: move to fight class and set fight class object in this class
     getProximity(opponent) {
         let distanceX = Math.abs(this.getSprite().offset().left - opponent.getSprite().offset().left);
-        let distanceY = Math.abs(stripPxSuffix(getCss(this.getSprite(),'bottom'))
-            - stripPxSuffix(getCss(opponent.getSprite(),'bottom')));
+        let distanceY = Math.abs(stripPxSuffix(this.getSprite().css('bottom'))
+            - stripPxSuffix(opponent.getSprite().css('bottom')));
         return Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
     }
 
@@ -218,10 +218,6 @@ class Character {
         }
 
         let frames = this.getFrames(requestedAction, this.getDirection());
-        if (requestedAction === DEATH) {
-            console.log('==> death for ' + this.characterType + ' frames are: ' + frames);
-        }
-
 
         let frame = idx;
         this.setCurrentFrame(requestedAction, frame);
@@ -246,7 +242,6 @@ class Character {
                 sprite = this.getDeathSprite();
                 sprite.show();
                 if (this.getSprite().css('display') === 'block') {
-                    console.log('==> setting death frame to ' + this.getX());
                     sprite.css('left', this.getX() + 'px');
                 }
                 if (!this.isBarbarian()) {
@@ -272,6 +267,9 @@ class Character {
                 }
             }
         }
+
+        /*
+        uncomment to find out why character was stopped if it was unexpected
         if (this.isBarbarian()) {
             console.log(this.getCharacterType() + ' is done ' + requestedAction + 'ing');
 
@@ -316,6 +314,8 @@ class Character {
             }
 
         }
+
+         */
         return frame;
     }
 
@@ -393,6 +393,10 @@ class Character {
 
     isSwimming() {
         return this.getAction() === SWIM;
+    }
+
+    isDying() {
+        return this.getAction() === DEATH;
     }
 
     isJumping() {

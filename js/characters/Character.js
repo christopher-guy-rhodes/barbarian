@@ -53,6 +53,7 @@ class Character {
 
         this.previousAction = undefined;
         this.animator = new Animator(this.sprite);
+        this.sounds = new Sounds();
     }
 
     stopAnimation() {
@@ -164,7 +165,7 @@ class Character {
     // TODO: move to fight class and set fight class object in this class
     shouldCpuFight(gameBoard) {
 
-        if (this.barbarian.didJumpEvade()) {
+        if (this.barbarian.didJumpEvade() || this.getAction() === DEATH) {
             return false;
         }
 
@@ -175,8 +176,8 @@ class Character {
     // TODO: move to fight class and set fight class object in this class
     shouldLaunchAttack(gameBoard) {
 
-        return this.getName() !== BARBARIAN_SPRITE_NAME && !this.barbarian.isDead() &&  this.getAction() !== ATTACK &&
-            this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
+        return !this.isBarbarian() && !this.barbarian.isDead() && this.getAction() !== ATTACK &&
+            this.getAction() !== DEATH && this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
     }
 
     // TODO: move to fight class and set fight class object in this class
@@ -211,9 +212,16 @@ class Character {
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
      */
     async animate(gameBoard, requestedAction, requestedDirection, requestedVerticalDirection, numberOfTimes, idx) {
-        this.moveFromPositionToBoundary(gameBoard);
+
+        if (requestedAction !== DEATH) {
+            this.moveFromPositionToBoundary(gameBoard);
+        }
 
         let frames = this.getFrames(requestedAction, this.getDirection());
+        if (requestedAction === DEATH) {
+            console.log('==> death for ' + this.characterType + ' frames are: ' + frames);
+        }
+
 
         let frame = idx;
         this.setCurrentFrame(requestedAction, frame);
@@ -226,17 +234,32 @@ class Character {
                !this.shouldTurnaround() &&
                !this.isAtBoundary(requestedDirection) &&
                !this.hitObstacle() &&
-               !this.isDead() &&
+               !(this.isDead() && !this.isFalling() && !this.isDying()) &&
                this.isOnScreen(gameBoard) &&
-               !this.shouldLaunchAttack(gameBoard) &&
+               !(this.shouldLaunchAttack(gameBoard)) &&
                !this.shouldCpuFight(gameBoard) &&
                !game.getIsPaused() &&
                frame < frames.length) {
 
+            let sprite = undefined;
+            if (this.getAction() === DEATH) {
+                sprite = this.getDeathSprite();
+                sprite.show();
+                if (this.getSprite().css('display') === 'block') {
+                    console.log('==> setting death frame to ' + this.getX());
+                    sprite.css('left', this.getX() + 'px');
+                }
+                if (!this.isBarbarian()) {
+                    this.getSprite().hide();
+                }
+            } else {
+                sprite = this.getSprite();
+            }
+
             let heightOffset = this.getHeightOffset(requestedAction,
-                this.getDirection()) * this.getSprite().height();
-            this.getSprite().css('background-position',
-                -1*frames[frame++]*this.getSprite().width() + 'px ' + -1 *heightOffset + 'px');
+                this.getDirection()) * sprite.height();
+            sprite.css('background-position',
+                -1*frames[frame++]*sprite.width() + 'px ' + -1 *heightOffset + 'px');
             this.setCurrentFrame(requestedAction, frame);
 
             await sleep(MILLISECONDS_PER_SECOND / this.getFramesPerSecond(requestedAction));
@@ -249,7 +272,6 @@ class Character {
                 }
             }
         }
-        /*
         if (this.isBarbarian()) {
             console.log(this.getCharacterType() + ' is done ' + requestedAction + 'ing');
 
@@ -274,19 +296,19 @@ class Character {
             if (!(!this.hitObstacle())) {
                 console.log('g');
             }
-            if (!(!this.isDead())) {
+            if (!(!(this.isDead() && !this.isFalling() && !this.isDying()))) {
                 console.log('h');
             }
             if (!(this.isOnScreen(gameBoard))) {
                 console.log('i');
             }
-            if (!(!this.shouldCpuLaunchAttack(gameBoard))) {
+            if (!(!this.shouldLaunchAttack(gameBoard))) {
                 console.log('j');
             }
             if (!(!this.shouldCpuFight(gameBoard))) {
                 console.log('k');
             }
-            if (!(!isPaused)) {
+            if (!(!game.isPaused)) {
                 console.log('l');
             }
             if (!(frame < frames.length)) {
@@ -294,7 +316,6 @@ class Character {
             }
 
         }
-                 */
         return frame;
     }
 
@@ -364,6 +385,10 @@ class Character {
 
     isFalling() {
         return this.getAction() === FALL;
+    }
+
+    isDying() {
+        return this.getAction() === DEATH;
     }
 
     isSwimming() {

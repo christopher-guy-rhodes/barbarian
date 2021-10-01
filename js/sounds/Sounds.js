@@ -3,42 +3,41 @@ class Sounds {
         this.isSoundOn = false;
 
         this.sounds = {
-            THEME_SONG : this.isSoundOn ? new Audio('/sounds/theme.mp3') : undefined,
-            FALL_SOUND : this.isSoundOn ? new Audio('/sounds/fall.mp3') : undefined,
-            GRUNT_SOUND : this.isSoundOn ? new Audio('/sounds/grunt.mp3') : undefined,
-            GROWL_SOUND : this.isSoundOn ? new Audio('/sounds/growl.mp3') : undefined,
-            FIRE_SOUND : this.isSoundOn ? new Audio('/sounds/fire.mp3') : undefined,
-            MONSTER_SOUND : this.isSoundOn ? new Audio('/sounds/monster.mp3') : undefined,
-            SPLASH_SOUND : this.isSoundOn ? new Audio('/sounds/splash.mp3') : undefined
+            THEME_SONG : new Audio('/sounds/theme.mp3'),
+            FALL_SOUND : new Audio('/sounds/fall.mp3'),
+            GRUNT_SOUND : new Audio('/sounds/grunt.mp3'),
+            GROWL_SOUND : new Audio('/sounds/growl.mp3'),
+            FIRE_SOUND : new Audio('/sounds/fire.mp3'),
+            MONSTER_SOUND : new Audio('/sounds/monster.mp3'),
+            SPLASH_SOUND : new Audio('/sounds/splash.mp3')
         };
 
     }
 
     playSound(sound) {
-        if (this.isSoundOn) {
-            this.sounds[sound].play();
-        }
-    }
-
-    playThemeSong() {
-        if (this.isSoundOn && this.sounds[THEME_SONG] !== undefined) {
-            this.sounds[THEME_SONG].play();
-        }
-    }
-
-    playGruntSound() {
-        if (this.isSoundOn) {
-            this.sounds[GRUNT_SOUND].play();
+        if (sound !== undefined && this.isSoundOn) {
+            let playPromise = this.sounds[sound].play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    handlePromiseError(error);
+                })
+            }
         }
     }
 
     playFireSound() {
         if (this.isSoundOn) {
-            this.sounds[FIRE_SOUND].play();
+            let playPromise = this.sounds[FIRE_SOUND].play();
             let self = this;
-            setTimeout(function () {
-                self.sounds[FIRE_SOUND].pause();
-            }, 3000);
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    setTimeout(function () {
+                        self.sounds[FIRE_SOUND].pause();
+                    }, 3000);
+                }).catch(error => {
+                    handlePromiseError(error);
+                })
+            }
         }
     }
 
@@ -53,8 +52,8 @@ class Sounds {
         if (this.isSoundOn) {
             if (isPaused) {
                 this.stopAllSounds()
-            } else if (this.sounds[THEME_SONG] !== undefined) {
-                this.sounds[THEME_SONG].play();
+            } else {
+                this.playSound(THEME_SONG);
             }
         }
     }

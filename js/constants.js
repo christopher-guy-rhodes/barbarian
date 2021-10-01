@@ -70,6 +70,7 @@ const WALK = 'walk';
 const SIT = 'sit';
 const FALL = 'fall';
 const SWIM = 'swim';
+const DEATH = 'death';
 
 const LEFT = 'left';
 const RIGHT = 'right';

@@ -13,9 +13,6 @@ class Game {
         this.pauseFrame = 0;
         this.actionsLocked = false;
 
-        this.isSoundOn = false;
-
-
         this.sounds = new Sounds();
     }
 
@@ -49,6 +46,17 @@ class Game {
                 character.getSprite().stop();
         }
 
+        if (character.getAction() === DEATH && character.isBarbarian()) {
+            // Do not change action from DEATH right away because we don't want to barbarian to move while dying
+            game.setActionsLocked(true);
+            setTimeout(function () {
+                game.setActionsLocked(false);
+                //character.setAction(undefined);
+            }, 1000);
+        }
+        if (character.getAction() === DEATH && !character.isBarbarian()) {
+            character.getDeathSprite().hide();
+        }
         if (character.isAtBoundary()) {
             this.handleBoundary(character);
         }
@@ -79,62 +87,98 @@ class Game {
             if (obstacle.getIsElevation()) {
                 if (obstacle.isTraversableDownhillElevation(character)) {
                     character.setBottom(obstacle.getHeight());
+                    // Continue whatever action the character was performing since they traversed the elevation
                     this.performAction(character, requestedAction, character.getCurrentFrame());
-                } else if (obstacle.didCharacterEvade(character)) {
+                } else if (obstacle.didCharacterJumpEvade(character)) {
                     character.setBottom(obstacle.getHeight());
                     // Continue the jumping motion since the character evaded the obstacle
                     this.performAction(character, JUMP, character.getCurrentFrame());
                 } else {
+                    // Hid elevation and did not avoid, let the character remain stopped and render at rest frame
                     this.renderAtRestFrame(character);
                 }
             } else if (obstacle.getIsPit() && character.isBarbarian()) {
                 if (requestedAction !== FALL) {
-                    this.setActionsLocked(true);
-                    this.performAction(character, FALL);
-
-                    setTimeout(function() {
-                        character.setStatus(DEAD);
-                        this.barbarianDeath(character, FALL);
-                        character.setAction(undefined);
-                        this.setActionsLocked(false);
-                    }, character.getDeathFallDelay());
+                    character.setAction(FALL);
+                    this.death(character);
                 }
             }
         }
     }
+
+    death(character) {
+        character.setDeathTime(new Date().getTime());
+        character.setStatus(DEAD);
+
+        if (character.isBarbarian()) {
+            showMessage(START_MESSAGE);
+            numLives = numLives - 1;
+            if (numLives < 1) {
+                this.showMessage(GAME_OVER_MESSAGE);
+            }
+            if (character.getAction() === FALL) {
+                this.sounds.playSound(FALL_SOUND);
+            } else {
+                this.sounds.playSound(GRUNT_SOUND);
+            }
+        } else {
+            this.playFireSound();
+        }
+
+        if (this.isWater()) {
+            character.getSprite().stop();
+            let timeToFall = character.getY() / DEFAULT_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
+
+            console.log('getting death frame for ' + character.getCharacterType() + ' for direction ' + character.getDirection());
+            let frame = character.getFrames(DEATH, character.getDirection())[4];
+            let heightOffset = character.getHeightOffset(DEATH, character.getDirection()) * character.getDeathSprite().height();
+            //character.getDirection()) * character.getSprite().height();
+            setCss(character.getDeathSprite(), 'background-position',
+                -1*frame*character.getDeathSprite().width() + 'px ' + -1*heightOffset + 'px');
+
+            character.moveToPosition(character.getX(), 0, DEFAULT_PIXELS_PER_SECOND);
+        } else {
+            this.performAction(character,character.getAction() == FALL ? FALL : DEATH)
+            if (character.getAction() === FALL) {
+                setTimeout(function () {
+                    character.hide();
+                }, character.getDeathFallDelay());
+            }
+        }
+
+
+    }
+
 
     startMonsterAttacks(unpausing = false) {
-        let monsterCharacters = this.getMonstersOnScreen();
+        let monsters = this.getMonstersOnScreen()
+            // Don't restart the monster if unpausing and the monster is already dead
+            .filter(monster => !(monster.isDead() && unpausing));
 
-        for (let monsterCharacter of monsterCharacters) {
-            if ((monsterCharacter.isDead() && !unpausing) ||
-                (monsterCharacter.isAlive() && unpausing)) {
-                monsterCharacter.show();
-                monsterCharacter.setStatus(ALIVE);
-                if (monsterCharacter.getSound() !== undefined) {
-                    this.playSound(monsterCharacter.getSound());
-                }
-                this.performAction(monsterCharacter, monsterCharacter.getResetAction());
-            }
+        for (let monster of monsters) {
+            monster.show();
+            monster.setStatus(ALIVE);
+            this.sounds.playSound(monster.getSound());
+            this.performAction(monster, monster.getResetAction());
         }
-    }
-
-    playSound(sound) {
-        this.sounds.playSound(sound);
     }
 
     playThemeSong() {
         if (!this.getIsPaused()) {
-            this.sounds.playThemeSong();
+            this.sounds.playSound(THEME_SONG);
         }
     }
 
     playGruntSound() {
-        this.sounds.playGruntSound();
+        this.sounds.playSound(GRUNT_SOUND);
     }
 
     playFireSound() {
         this.sounds.playFireSound();
+    }
+
+    playFallSound() {
+        this.sounds.playSound(FALL_SOUND);
     }
 
     stopAllSounds() {
@@ -145,29 +189,10 @@ class Game {
         this.sounds.setSoundsPauseState(this.getIsPaused());
     }
 
-    barbarianDeath(character, action) {
-        if (action !== FALL) {
-            this.playGruntSound();
-        } else {
-            this.getBarbarian().hide();
-        }
-        showMessage(START_MESSAGE);
-        numLives = numLives - 1;
-        if (numLives < 1) {
-            this.showMessage(GAME_OVER_MESSAGE);
-        }
-    }
-
     showMessage(message) {
         $.each(MESSAGES, function(idx, e) {
             setCss(e, 'display', e[0].classList !== message[0].classList ? 'none' : 'block');
         });
-    }
-
-    playGruntSound() {
-        if (isSoundOn) {
-            getProperty(SOUNDS, GRUNT_SOUND).play();
-        }
     }
 
     executeFightSequence(character) {
@@ -197,7 +222,7 @@ class Game {
             }
 
             if (!looser.isDead() && !looser.getIsInvincible()) {
-                death(looser);
+                this.death(looser);
                 winner.getSprite().stop();
             }
         }
@@ -301,9 +326,9 @@ class Game {
             await this.moveBackdrop(character, direction, true);
         }
 
-        game.setActionsLocked(false);
         initializeScreen();
         this.startMonsterAttacks();
+        game.setActionsLocked(false);
     }
 
     hideOpponents() {
@@ -311,35 +336,6 @@ class Game {
         for (let opponent of opponents) {
             setCharacterCss(opponent, 'display', 'none');
             setCss(opponent.getDeathSprite(), 'display', 'none');
-        }
-    }
-
-    async animateDeath(character) {
-        character.getSprite().stop();
-        character.getDeathSprite().css('left', character.getSprite().offset().left + 'px');
-        game.setActionsLocked(character.isBarbarian());
-        character.getDeathSprite().css('display', 'block');
-
-        if (!character.isBarbarian()) {
-            character.hide();
-        }
-
-        let frames = character.getDeathFrames(character.getDirection());
-        let heightOffset = character.getDeathSpriteHeightOffset(character.getDirection()) * character.getSprite().height();
-        for (let frame of frames) {
-            setCss(character.getDeathSprite(), 'background-position',
-                -1*frame*character.getSprite().width() + 'px ' + -1*heightOffset + 'px');
-
-            await sleep(MILLISECONDS_PER_SECOND / character.getDeathFramesPerSecond());
-        }
-
-        // sleep for an extra second to let the animations complete before the game gets restarted
-        await sleep(1 * MILLISECONDS_PER_SECOND);
-
-        game.setActionsLocked(false);
-
-        if (!character.isBarbarian()) {
-            setCss(character.getDeathSprite(), 'display', 'none');
         }
     }
 

@@ -34,7 +34,8 @@ class CharacterBuilder {
             sit: 0,
             jump: 1,
             stop: 1,
-            fall: 1
+            fall: 1,
+            death: 1
         };
 
         this.death = {
@@ -62,7 +63,8 @@ class CharacterBuilder {
             attack: DEFAULT_PIXELS_PER_SECOND,
             stop: 0,
             fall: DEFAULT_PIXELS_PER_SECOND,
-            sit: 0
+            sit: 0,
+            death: DEFAULT_PIXELS_PER_SECOND,
         };
 
         this.framesPerSecond = {
@@ -74,6 +76,7 @@ class CharacterBuilder {
             stop: 0,
             fall: SPRITE_FPS,
             sit: SPRITE_FPS,
+            death: SPRITE_FPS
         };
 
         this.jumpThresholds = {

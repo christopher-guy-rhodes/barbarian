@@ -57,32 +57,6 @@ class Obstacle {
         }
     }
 
-    didJumpEvade(character) {
-        if (this.getType() === PIT) {
-            if (character.getAction() === JUMP && character.getCurrentFrame(JUMP) === 4) {
-
-                // Move the character beyond the obstacle
-                //let newLeft = character.getDirection() === RIGHT ? 1300 : obstacle.getX() - 1;
-                //character.getSprite().css('left', newLeft + 'px');
-                //character.getSprite().offset({left: obstacle.getX() + (10)});
-
-                game.performAction(character, JUMP, character.getCurrentFrame(JUMP));
-                return;
-            }
-
-            if (requestedAction !== FALL) {
-                //character.setStatus(DEAD);
-                game.performAction(character, FALL, 1);
-
-                setTimeout(function() {
-                    character.setStatus(DEAD);
-                    barbarianDeath(character, FALL);
-                    character.setAction(undefined);
-                }, character.getDeathFallDelay());
-            }
-        }
-    }
-
     isDownHillFrom(y) {
         return this.y <= y && this.type !== PIT;
     }
@@ -126,7 +100,7 @@ class Obstacle {
         return this.jumpThresholds[MAX];
     }
 
-    didCharacterEvade(character) {
+    didCharacterJumpEvade(character) {
         return character.getAction() === JUMP && character.getCurrentFrame(JUMP) < JUMP_EVADE_THRESHOLD;
     }
 }

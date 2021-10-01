@@ -48,6 +48,16 @@ const BARBARIAN_FRAMES = {
         right : {
             frames : [0, 1, 2, 3],
             heightOffset : 16}
+    },
+    death: {
+        right: {
+            frames: [96, 97, 98, 99, 100],
+            heightOffset: 12
+        },
+        left: {
+            frames: [108, 107, 106, 105, 104],
+            heightOffset: 13
+        }
     }
 };
 
@@ -82,6 +92,16 @@ const DOG_FRAMES = {
             heightOffset : 2
         }
     },
+    death : {
+        right: {
+            frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            heightOffset: 0
+        },
+        left: {
+            frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            heightOffset: 0
+        },
+    }
 };
 
 const MONSTER_FRAMES = {
@@ -105,6 +125,16 @@ const MONSTER_FRAMES = {
             heightOffset: 2
         }
     },
+    death : {
+        right: {
+            frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            heightOffset: 0
+        },
+        left: {
+            frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+            heightOffset: 0
+        },
+    }
 };
 
 const ROCK_FRAMES = {

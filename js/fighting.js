@@ -46,14 +46,6 @@ function areBothAlive(character, opponent) {
     return opponent.getStatus() !== DEAD && character.getStatus() !== DEAD;
 }
 
-/**
- * Determines if all the monsters on the screen are dead.
- * @returns {boolean} true if all the monsters on the screen are dead, false otherwise.
- */
-function areAllMonstersDefeated() {
-    return game.getMonstersOnScreen().filter(m => !m.getCanLeaveBehind() && !m.isDead()).length < 1;
-}
-
 function launchCpuAttack(character) {
     if (character.isBarbarian() || character.isDead() || !game.doesScreenIncludeCharacter(character)) {
         return;
@@ -66,68 +58,6 @@ function launchCpuAttack(character) {
     }
 }
 
-
-/**
- * Handles the death of a character.
- * @param character the sprite that has died
- */
-function death(character) {
-    character.setDeathTime(new Date().getTime());
-    character.setStatus(DEAD);
-    if (!character.isBarbarian()) {
-        monsterDeath(character);
-    } else {
-        barbarianDeath(character, ATTACK);
-    }
-    if (game.isWater()) {
-        character.getSprite().stop();
-        let timeToFall = character.getY() / DEFAULT_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
-        //character.getSprite().css('transform', 'scaleY(-1)');
-        //character.getSprite().css('bottom', character.getY() - 300 + 'px');
-
-        // TODO, share this logic with animate death
-        let frame = character.getDeathFrames(character.getDirection())[4];
-        let heightOffset = character.getDeathSpriteHeightOffset(character.getDirection()) * character.getSprite().height();
-        setCss(character.getDeathSprite(), 'background-position',
-            -1*frame*character.getSprite().width() + 'px ' + -1*heightOffset + 'px');
-
-        character.moveToPosition(character.getX(), 0, DEFAULT_PIXELS_PER_SECOND);
-    } else {
-        game.animateDeath(character).catch(function(error) {
-            handlePromiseError(error);
-        });
-    }
-
-}
-
-/**
- * Handles the death of the barbarian.
- * @param character the barbarian character
- * @param action the action the barbarian was taking when he died
- */
-function barbarianDeath(character, action) {
-    if (action !== FALL) {
-        game.playGruntSound();
-    } else {
-        console.log('===> hiding1 ' + character.getCharacterType() + ' because he is falling ');
-        game.getBarbarian().hide();
-    }
-    showMessage(START_MESSAGE);
-    numLives = numLives - 1;
-    if (numLives < 1) {
-        showMessage(GAME_OVER_MESSAGE);
-    }
-}
-
-/**
- * Handles the death of a monster.
- * @param character the monster sprite
- */
-function monsterDeath(character) {
-    character.setDeathTime(new Date().getTime());
-    character.setStatus(DEAD);
-    game.playFireSound();
-}
 
 
 /**

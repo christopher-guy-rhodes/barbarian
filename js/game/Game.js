@@ -60,12 +60,47 @@ class Game {
     }
 
     /**
+     * Display a sound toggle message.
+     */
+    showSoundToggleMessage() {
+        this.messages.showSoundToggleMessage(game.getIsSoundOn());
+    }
+
+    /**
+     * Display a pause message.
+     */
+    showPauseMessage() {
+        return this.messages.showPauseMessage();
+    }
+
+    /**
+     * Hide all screen messages.
+     */
+    hideAllMessages() {
+        return this.messages.hideAllMessages();
+    }
+
+    /**
+     * Play the theme song.
+     */
+    playThemeSong() {
+        this.sounds.playThemeSong();
+    }
+
+    /**
+     * Stop any sounds.
+     */
+    stopAllSounds() {
+        this.sounds.stopAllSounds();
+    }
+
+    /**
      * Render rest frame for a character. Used to make the character look natural when stopped.
      * @param character the character to render the at rest frame for
      */
     renderAtRestFrame(character) {
-        let action = this.isWater() ? SWIM : WALK;
-        let position = character.getDirection() === LEFT
+        let action = this.isWater() ? SWIM_LABEL : WALK_LABEL;
+        let position = character.getDirection() === LEFT_LABEL
             ? character.getFrames(action, character.getDirection()).length
             : 0;
 
@@ -83,7 +118,7 @@ class Game {
 
         for (let monster of monsters) {
             monster.show();
-            monster.setStatus(ALIVE);
+            monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getSound());
             this.performAction(monster, monster.getResetAction());
         }
@@ -95,7 +130,7 @@ class Game {
     initializeScreen() {
 
         if (this.isWater()) {
-            this.performAction(this.getBarbarian(), SWIM);
+            this.performAction(this.getBarbarian(), SWIM_LABEL);
         }
 
         let monsters = this.getMonstersOnScreen();
@@ -104,7 +139,7 @@ class Game {
             monster.getSprite().css('left', monster.getResetLeft() + 'px');
             monster.getSprite().css('bottom', monster.getResetBottom(this.getScreenNumber()) + 'px');
             monster.getSprite().css('filter', "brightness(100%)");
-            monster.setStatus(DEAD);
+            monster.setStatus(DEAD_LABEL);
         }
     }
 
@@ -291,7 +326,7 @@ class Game {
 
         // If the barbarian has been defeated make the monster continue to move
         if (!character.isBarbarian() && this.isBarbarianDead() && !character.isWalking()) {
-            this.performAction(character, WALK);
+            this.performAction(character, WALK_LABEL);
         }
     }
 
@@ -339,14 +374,14 @@ class Game {
                 } else if (obstacle.didCharacterJumpEvade(character)) {
                     character.setBottom(obstacle.getHeight());
                     // Transition to walking motion since the jump was successful
-                    this.performAction(character, WALK);
+                    this.performAction(character, WALK_LABEL);
                 } else {
                     // Hid elevation and did not avoid, let the character remain stopped and render at rest frame
                     this.renderAtRestFrame(character);
                 }
             } else if (obstacle.getIsPit() && character.isBarbarian()) {
-                if (requestedAction !== FALL) {
-                    character.setAction(FALL);
+                if (requestedAction !== FALL_LABEL) {
+                    character.setAction(FALL_LABEL);
                     this.death(character);
                 }
             }
@@ -356,7 +391,7 @@ class Game {
     /* private */
     death(character) {
         character.setDeathTime(new Date().getTime());
-        character.setStatus(DEAD);
+        character.setStatus(DEAD_LABEL);
 
         if (character.isBarbarian()) {
             game.setNumLives(game.getNumLives() - 1);
@@ -366,7 +401,7 @@ class Game {
                 this.messages.showStartMessage();
             }
 
-            if (character.getAction() === FALL) {
+            if (character.getAction() === FALL_LABEL) {
                 this.sounds.playSound(FALL_SOUND);
             } else {
                 this.sounds.playSound(GRUNT_SOUND);
@@ -379,8 +414,8 @@ class Game {
             character.getSprite().stop();
             let timeToFall = character.getY() / DEFAULT_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
 
-            let frame = character.getFrames(DEATH, character.getDirection())[4];
-            let heightOffset = character.getHeightOffset(DEATH, character.getDirection()) *
+            let frame = character.getFrames(DEATH_LABEL, character.getDirection())[4];
+            let heightOffset = character.getHeightOffset(DEATH_LABEL, character.getDirection()) *
                 character.getDeathSprite().height();
 
             character.getDeathSprite().css('background-position',
@@ -388,8 +423,8 @@ class Game {
 
             character.moveToPosition(character.getX(), 0, DEFAULT_PIXELS_PER_SECOND);
         } else {
-            this.performAction(character,character.getAction() == FALL ? FALL : DEATH)
-            if (character.getAction() === FALL) {
+            this.performAction(character,character.getAction() == FALL_LABEL ? FALL_LABEL : DEATH_LABEL)
+            if (character.getAction() === FALL_LABEL) {
                 setTimeout(function () {
                     character.hide();
                 }, character.getDeathFallDelay());
@@ -414,7 +449,7 @@ class Game {
 
             let looser = undefined;
             let winner = undefined;
-            if (opponentAction === ATTACK && (opponentCurrentFrame >= MIN_ATTACK_THRESHOLD
+            if (opponentAction === ATTACK_LABEL && (opponentCurrentFrame >= MIN_ATTACK_THRESHOLD
                 && opponentCurrentFrame <= MAX_ATTACK_THRESHOLD) && !(opponent.isBarbarian()
                 && character.getIsInvincible())) {
                 looser = character;
@@ -440,7 +475,7 @@ class Game {
 
         for (let opponent of opponentsInProximity) {
             if (!character.isBarbarian()) {
-                this.performAction(character, ATTACK);
+                this.performAction(character, ATTACK_LABEL);
             }
         }
     }
@@ -448,8 +483,8 @@ class Game {
     /* private */
     handleMonsterTurnaround(character) {
         if (!character.isBarbarian() && character.shouldTurnaround()) {
-            character.setDirection(character.isPastBarbarianLeft() ? RIGHT : LEFT);
-            this.performAction(character, WALK);
+            character.setDirection(character.isPastBarbarianLeft() ? RIGHT_LABEL : LEFT_LABEL);
+            this.performAction(character, WALK_LABEL);
         }
     }
 
@@ -459,26 +494,27 @@ class Game {
             return;
         }
 
-        if (!this.gameBoard.isScrollAllowed(game.getScreenNumber(), LEFT) && character.isAtLeftBoundary()) {
+        if (!this.gameBoard.isScrollAllowed(game.getScreenNumber(), LEFT_LABEL) && character.isAtLeftBoundary()) {
             return;
         }
 
-        if (character.isAtLeftBoundary() && this.gameBoard.isScrollAllowed(game.getScreenNumber(), LEFT)) {
+        if (character.isAtLeftBoundary() && this.gameBoard.isScrollAllowed(game.getScreenNumber(), LEFT_LABEL)) {
             this.hideOpponents();
-            this.advanceBackdrop(character, RIGHT)
+            this.advanceBackdrop(character, RIGHT_LABEL)
                 .then(function() {}, error => handlePromiseError(error));
             this.setScreenNumber(this.getScreenNumber() - 1);
         } else if (character.isAtRightBoundary() &&
-            this.gameBoard.isScrollAllowed(game.getScreenNumber(), RIGHT) &&
-                character.getScreenNumber() < TOTAL_SCREENS && this.areAllMonstersDefeated()) {
+            this.gameBoard.isScrollAllowed(game.getScreenNumber(), RIGHT_LABEL) &&
+                character.getScreenNumber() < this.gameBoard.getScreenNumbers().length
+                    && this.areAllMonstersDefeated()) {
             this.hideOpponents();
             this.setScreenNumber(this.getScreenNumber() + 1);
             if (this.isScreenDefined(this.getScreenNumber())) {
-                this.advanceBackdrop(character, LEFT)
+                this.advanceBackdrop(character, LEFT_LABEL)
                     .then(function() {}, error => handlePromiseError(error));
             } else {
                 // At the end of the game
-                character.setStatus(DEAD);
+                character.setStatus(DEAD_LABEL);
                 this.setScreenNumber(0);
                 game.setNumLives(0);
             }
@@ -490,7 +526,7 @@ class Game {
             this.renderAtRestFrame(character);
         }
 
-        character.setAction(STOP);
+        character.setAction(STOP_LABEL);
     }
 
     /* private */
@@ -547,7 +583,7 @@ class Game {
             y = SCREEN_HEIGHT - character.getSprite().height() / 2;
             distance = Math.abs(y - stripPxSuffix(character.getSprite().css('bottom')));
         } else {
-            x = character.getDirection() === RIGHT ? 0 : windowWidth - character.getSprite().width();
+            x = character.getDirection() === RIGHT_LABEL ? 0 : windowWidth - character.getSprite().width();
             distance = SCREEN_WIDTH - character.getSprite().width();
         }
         let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
@@ -558,7 +594,7 @@ class Game {
 
         for (let i = 0; i < numberOfIterations; i++) {
             let offset = (i + 1) * pixelsPerIteration;
-            let directionCompare = isVertical ? UP : RIGHT;
+            let directionCompare = isVertical ? UP_LABEL : RIGHT_LABEL;
             let position = direction === directionCompare ? (currentPosition + offset) : (currentPosition - offset);
 
             this.getBackdrop().css(backgroundPosition,position + 'px');
@@ -599,7 +635,7 @@ class Game {
     resetGameOver() {
         this.setNumLives(3);
         this.getBarbarian().setScreenNumber(0);
-        this.getBarbarian().setDirection(RIGHT);
+        this.getBarbarian().setDirection(RIGHT_LABEL);
         this.getBarbarian().setAction(undefined);
         this.getBarbarian().setVerticalDirection(undefined);
         this.renderAtRestFrame(this.getBarbarian());

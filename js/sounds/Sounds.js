@@ -14,6 +14,10 @@ class Sounds {
 
     }
 
+    playThemeSong() {
+        this.playSound(THEME_SONG);
+    }
+
     playSound(sound) {
         if (sound !== undefined && this.isSoundOn) {
             let playPromise = this.sounds[sound].play();
@@ -44,17 +48,6 @@ class Sounds {
     stopAllSounds() {
         for (let sound of Object.values(this.sounds)) {
             sound.pause();
-        }
-    }
-
-
-    setSoundsPauseState(isPaused) {
-        if (this.isSoundOn) {
-            if (isPaused) {
-                this.stopAllSounds()
-            } else {
-                this.playSound(THEME_SONG);
-            }
         }
     }
 

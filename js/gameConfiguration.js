@@ -1,3 +1,9 @@
+const SHARK_CHARACTER_TYPE = 'SHARK';
+const MONSTER_CHARACTER_TYPE = 'MONSTER';
+const ROCK_CHARACTER_TYPE = 'ROCK';
+const DOG_CHARACTER_TYPE = 'DOG';
+const BARBARIAN_CHARACTER_TYPE = 'BARBARIAN';
+
 const BARBARIAN_FRAMES = {
         attack : {
                 left : {
@@ -215,50 +221,49 @@ const BARBARIAN_DEATH_FRAMES = {
 
 // TODO: the right x positions must be sorted in asc order and the left in desc, don't rely on the client to do the sorting
 const OBSTACLES = new ObstaclesBuilder()
-    .withObstacle(1, RIGHT,
-        new Obstacle(50, 82, ELEVATION, STOP, -100, 200))
-    .withObstacle(1, RIGHT,
-        new Obstacle(400, 160, ELEVATION, STOP, 350, 430))
-    .withObstacle(1, RIGHT,
-        new Obstacle(800, 160, PIT, FALL, 710, 830))
+    .withObstacle(1, RIGHT_LABEL,
+        new Obstacle(50, 82, ELEVATION_LABEL, STOP_LABEL, -100, 200))
+    .withObstacle(1, RIGHT_LABEL,
+        new Obstacle(400, 160, ELEVATION_LABEL, STOP_LABEL, 350, 430))
+    .withObstacle(1, RIGHT_LABEL,
+        new Obstacle(800, 160, PIT_LABEL, FALL_LABEL, 710, 830))
 
-    .withObstacle(1, LEFT,
-        new Obstacle(950, 160, PIT, FALL, 880, 1000))
-    .withObstacle(1, LEFT,
-        new Obstacle(400, 82, ELEVATION, STOP))
-    .withObstacle(1, LEFT,
-        new Obstacle(100, 12, ELEVATION, STOP))
+    .withObstacle(1, LEFT_LABEL,
+        new Obstacle(950, 160, PIT_LABEL, FALL_LABEL, 880, 1000))
+    .withObstacle(1, LEFT_LABEL,
+        new Obstacle(400, 82, ELEVATION_LABEL, STOP_LABEL))
+    .withObstacle(1, LEFT_LABEL,
+        new Obstacle(100, 12, ELEVATION_LABEL, STOP_LABEL))
 
 
-    .withObstacle(2, RIGHT,
-        new Obstacle(125, 122, ELEVATION, STOP))
-    .withObstacle(2, RIGHT,
-        new Obstacle(250, 74, ELEVATION, STOP))
-    .withObstacle(2, RIGHT,
-        new Obstacle(365, 12, ELEVATION, STOP))
+    .withObstacle(2, RIGHT_LABEL,
+        new Obstacle(125, 122, ELEVATION_LABEL, STOP_LABEL))
+    .withObstacle(2, RIGHT_LABEL,
+        new Obstacle(250, 74, ELEVATION_LABEL, STOP_LABEL))
+    .withObstacle(2, RIGHT_LABEL,
+        new Obstacle(365, 12, ELEVATION_LABEL, STOP_LABEL))
 
-    .withObstacle(2, LEFT,
-        new Obstacle(390, 74, ELEVATION, STOP, 350, 390))
-    .withObstacle(2, LEFT,
-        new Obstacle(290, 122, ELEVATION, STOP, 180, 330))
-    .withObstacle(2, LEFT,
-        new Obstacle(165, 165, ELEVATION, STOP, 65, 215))
+    .withObstacle(2, LEFT_LABEL,
+        new Obstacle(390, 74, ELEVATION_LABEL, STOP_LABEL, 350, 390))
+    .withObstacle(2, LEFT_LABEL,
+        new Obstacle(290, 122, ELEVATION_LABEL, STOP_LABEL, 180, 330))
+    .withObstacle(2, LEFT_LABEL,
+        new Obstacle(165, 165, ELEVATION_LABEL, STOP_LABEL, 65, 215))
     .build();
 
 let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES, BARBARIAN_FRAMES, BARBARIAN_CHARACTER_TYPE, $('.barbarian'))
-    .withAction(STOP)
-    .withName(BARBARIAN_SPRITE_NAME)
-    .withDirection(RIGHT)
+    .withAction(STOP_LABEL)
+    .withDirection(RIGHT_LABEL)
     .withCanHighlight(false)
     .withDeathSprite($('.barbarian'))
-    .withPixelsPerSecond(ATTACK, 0)
-    .withResetAction(STOP)
-    .withResetDirection(RIGHT)
+    .withPixelsPerSecond(ATTACK_LABEL, 0)
+    .withResetAction(STOP_LABEL)
+    .withResetDirection(RIGHT_LABEL)
     .withResetLeft(0)
     //.withScreenNumber(1)
-    .withResetStatus(ALIVE)
+    .withResetStatus(ALIVE_LABEL)
     //.withDeathFrames(BARBARIAN_DEATH_FRAMES)
-    .withActionNumberOfTimes(ATTACK, 1)
+    .withActionNumberOfTimes(ATTACK_LABEL, 1)
     .withResetBottom(2, 160)
     .withResetBottom(3, 600).build();
 
@@ -269,30 +274,30 @@ const GAME_BOARD = new GameBoardBuilder()
             //.withPixelsPerSecond(ATTACK, 200)
             //.withPixelsPerSecond(WALK, 200)
             .withDeathSprite($('.death'))
-            .withFramesPerSecond(ATTACK, 7.5)
+            .withFramesPerSecond(ATTACK_LABEL, 7.5)
             .withSound(MONSTER_SOUND).build()])
     .withOpponents(1, [barbarianCharacter,
         new CharacterBuilder(barbarianCharacter, OBSTACLES, DOG_FRAMES, DOG_CHARACTER_TYPE, $('.dog'))
-            .withAction(SIT)
-            .withFramesPerSecond(ATTACK, 7.5)
-            .withResetAction(SIT)
+            .withAction(SIT_LABEL)
+            .withFramesPerSecond(ATTACK_LABEL, 7.5)
+            .withResetAction(SIT_LABEL)
             .withResetBottom(1, 160)
             .withResetLeft(1050)
             .withSound(GROWL_SOUND)
             .withScreenNumber(1).build()])
     .withOpponents(2, [barbarianCharacter,
         new CharacterBuilder(barbarianCharacter, OBSTACLES, ROCK_FRAMES, ROCK_CHARACTER_TYPE, $('.rock'))
-            .withAction(SIT)
+            .withAction(SIT_LABEL)
             .withCanElevate(false)
             .withCanHighlight(false)
-            .withFramesPerSecond(SIT, 10)
-            .withFramesPerSecond(ATTACK, 10)
-            .withFramesPerSecond(WALK, 10)
-            .withPixelsPerSecond(WALK, 250)
-            .withPixelsPerSecond(ATTACK, 250)
+            .withFramesPerSecond(SIT_LABEL, 10)
+            .withFramesPerSecond(ATTACK_LABEL, 10)
+            .withFramesPerSecond(WALK_LABEL, 10)
+            .withPixelsPerSecond(WALK_LABEL, 250)
+            .withPixelsPerSecond(ATTACK_LABEL, 250)
             // Don't allow jump evade of rock
             // Don't allow barbarian to kill rock
-            .withResetAction(SIT)
+            .withResetAction(SIT_LABEL)
             .withResetLeft(1270)
             .withCanLeaveBehind(true)
             .withResetTurnaround(false)
@@ -301,14 +306,14 @@ const GAME_BOARD = new GameBoardBuilder()
         new CharacterBuilder(barbarianCharacter, OBSTACLES, MONSTER_FRAMES, MONSTER_CHARACTER_TYPE, $('.monster_invincible'))
             // Don't allow barbarian to kill the invincible monster
             .withResetLeft(500)
-            .withFramesPerSecond(ATTACK, 7.5)
+            .withFramesPerSecond(ATTACK_LABEL, 7.5)
             .withSound(MONSTER_SOUND)
             .withIsInvincible(false)
             .withScreenNumber(2).build()])
     .withOpponents(3, [barbarianCharacter,
         new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark1'))
-            .withFramesPerSecond(ATTACK, 10)
-            .withFramesPerSecond(WALK, 10)
+            .withFramesPerSecond(ATTACK_LABEL, 10)
+            .withFramesPerSecond(WALK_LABEL, 10)
             .withSound(SPLASH_SOUND)
             .withResetBottom(3, 0)
             .withCanLeaveBehind(true)
@@ -317,8 +322,8 @@ const GAME_BOARD = new GameBoardBuilder()
             .withResetLeft(0)
             .withScreenNumber(3).build(),
         new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark2'))
-            .withFramesPerSecond(ATTACK, 10)
-            .withFramesPerSecond(WALK, 10)
+            .withFramesPerSecond(ATTACK_LABEL, 10)
+            .withFramesPerSecond(WALK_LABEL, 10)
             .withSound(SPLASH_SOUND)
             .withResetBottom(3, 0)
             .withCanLeaveBehind(true)
@@ -327,8 +332,8 @@ const GAME_BOARD = new GameBoardBuilder()
             .withResetLeft(1400)
             .withScreenNumber(3).build(),
         new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark3'))
-            .withFramesPerSecond(ATTACK, 10)
-            .withFramesPerSecond(WALK, 10)
+            .withFramesPerSecond(ATTACK_LABEL, 10)
+            .withFramesPerSecond(WALK_LABEL, 10)
             .withSound(SPLASH_SOUND)
             .withResetBottom(3, 800)
             .withCanLeaveBehind(true)
@@ -337,8 +342,8 @@ const GAME_BOARD = new GameBoardBuilder()
             .withResetLeft(1400)
             .withScreenNumber(3).build(),
         new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark4'))
-            .withFramesPerSecond(ATTACK, 10)
-            .withFramesPerSecond(WALK, 10)
+            .withFramesPerSecond(ATTACK_LABEL, 10)
+            .withFramesPerSecond(WALK_LABEL, 10)
             .withSound(SPLASH_SOUND)
             .withResetBottom(3, 400)
             .withCanLeaveBehind(true)

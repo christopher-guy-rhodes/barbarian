@@ -37,12 +37,12 @@ class GameBoardBuilder {
     }
 
     withOpponents(screenNumber, opponents) {
-        this.gameBoard[screenNumber][OPPONENTS] = opponents;
+        this.gameBoard[screenNumber][OPPONENTS_LABEL] = opponents;
         return this;
     }
 
     withWater(screenNumber) {
-        this.gameBoard[screenNumber][WATER] = true;
+        this.gameBoard[screenNumber][WATER_LABEL] = true;
         return this;
     }
 

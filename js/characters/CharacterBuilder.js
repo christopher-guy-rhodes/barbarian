@@ -1,3 +1,5 @@
+const RUN_SPEED_INCREASE_FACTOR = 1.5;
+
 class CharacterBuilder {
 
     constructor(barbarian, obstacles, frames, characterType, sprite) {
@@ -6,17 +8,16 @@ class CharacterBuilder {
         this.frames = frames;
         this.characterType = characterType;
         this.sprite = sprite;
-        this.name = undefined;
         this.action = undefined;
-        this.status = DEAD;
-        this.direction = LEFT;
+        this.status = DEAD_LABEL;
+        this.direction = LEFT_LABEL;
         this.verticalDirection = undefined;
 
         this.reset = {
-            status : DEAD,
+            status : DEAD_LABEL,
             left : 850,
-            action : WALK,
-            direction : LEFT,
+            action : WALK_LABEL,
+            direction : LEFT_LABEL,
             turnaround : true,
             bottom : {
                 0: 12,
@@ -111,11 +112,6 @@ class CharacterBuilder {
 
     withVerticalDirection(direction) {
         this.verticalDirection = direction;
-    }
-
-    withName(name) {
-        this.name = name;
-        return this;
     }
 
     withAction(action) {
@@ -250,7 +246,6 @@ class CharacterBuilder {
             this.frames,
             this.characterType,
             this.sprite,
-            this.name,
             this.action,
             this.status,
             this.direction,

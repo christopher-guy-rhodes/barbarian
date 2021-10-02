@@ -1,10 +1,23 @@
+const SCREEN_BOTTOM = 12;
+const BOTTOM_LABEL = 'bottom';
+const ACTION_LABEL = 'action';
+const DIRECTION_LABEL = 'direction';
+const SPRITE_LABEL = 'sprite';
+const FRAMES_LABEL = 'frames';
+const HEIGHT_OFFSET_LABEL = 'heightOffset';
+const FRAMES_PER_SECOND_LABEL = 'framesPerSecond';
+const STATUS_LABEL = 'status';
+const FALL_DELAY_LABELS = 'fallDelay';
+const TIME_LABEL = 'time';
+const TURNAROUND_LABEL = 'turnaround';
+const PASSING_MULTIPLIER = 1.5;
+
 class Character {
     constructor(barbarian,
                 obstacles,
                 frames,
                 characterType,
                 sprite,
-                name,
                 action,
                 status,
                 direction,
@@ -29,7 +42,6 @@ class Character {
         this.frames = frames;
         this.characterType = characterType;
         this.sprite = sprite;
-        this.name = name;
         this.action = action;
         this.status = status;
         this.direction = direction;
@@ -68,10 +80,10 @@ class Character {
         }
 
         let x, y = undefined;
-        if (this.getAction() === FALL) {
+        if (this.getAction() === FALL_LABEL) {
             y = 0;
         } else {
-            if (gameBoard.isWater(this.getScreenNumber()) && this.getName() !== BARBARIAN_SPRITE_NAME) {
+            if (gameBoard.isWater(this.getScreenNumber()) && !this.isBarbarian()) {
                 // Make water creates chase the barbarian in 2 dimensions
                 let barbarianY = stripPxSuffix(this.barbarian.getSprite().css('bottom'));
                 y = stripPxSuffix(this.getSprite().css('bottom'));
@@ -80,15 +92,15 @@ class Character {
                 } else {
                     y = SCREEN_BOTTOM;
                 }
-            } else if (this.getVerticalDirection() === UP) {
+            } else if (this.getVerticalDirection() === UP_LABEL) {
                 y = SCREEN_HEIGHT - this.getSprite().height() / 2;
-            } else if (this.getVerticalDirection() === DOWN) {
+            } else if (this.getVerticalDirection() === DOWN_LABEL) {
                 y = SCREEN_BOTTOM;
             }
 
-            if (this.getDirection() === LEFT) {
+            if (this.getDirection() === LEFT_LABEL) {
                 x = 0;
-            } else if (this.getDirection() === RIGHT) {
+            } else if (this.getDirection() === RIGHT_LABEL) {
                 x = windowWidth - this.getSprite().width();
             }
         }
@@ -101,7 +113,7 @@ class Character {
     }
 
     isStopped() {
-        return this.action === STOP;
+        return this.action === STOP_LABEL;
     }
 
     isAtLeftBoundary() {
@@ -109,7 +121,7 @@ class Character {
         if (this.sprite.css('display') !== 'block') {
             return false;
         }
-        return this.direction !== RIGHT && this.sprite.offset().left === 0
+        return this.direction !== RIGHT_LABEL && this.sprite.offset().left === 0
     }
 
     isAtRightBoundary() {
@@ -117,7 +129,7 @@ class Character {
         if (this.sprite.css('display') !== 'block') {
             return false;
         }
-        return this.direction === RIGHT && this.sprite.offset().left === SCREEN_WIDTH - this.sprite.width();
+        return this.direction === RIGHT_LABEL && this.sprite.offset().left === SCREEN_WIDTH - this.sprite.width();
     }
 
     isAtBoundary(requestedDirection) {
@@ -129,7 +141,7 @@ class Character {
             return false;
         }
 
-        return this.getDirection() === LEFT &&
+        return this.getDirection() === LEFT_LABEL &&
         this.getSprite().offset().left + this.getSprite().width() * PASSING_MULTIPLIER <
         this.barbarian.getSprite().offset().left || this.isAtLeftBoundary();
     }
@@ -138,7 +150,7 @@ class Character {
         if (this.barbarian === undefined) {
             return false;
         }
-        return this.getDirection() === RIGHT &&
+        return this.getDirection() === RIGHT_LABEL &&
         this.getSprite().offset().left - this.getSprite().width() * PASSING_MULTIPLIER >
         this.barbarian.getSprite().offset().left || this.isAtRightBoundary();
     }
@@ -162,19 +174,20 @@ class Character {
     // TODO: move to fight class and set fight class object in this class
     shouldCpuFight(gameBoard) {
 
-        if (this.barbarian.didJumpEvade() || this.getAction() === DEATH) {
+        if (this.barbarian.didJumpEvade() || this.getAction() === DEATH_LABEL) {
             return false;
         }
 
-        return this.getName() !== BARBARIAN_SPRITE_NAME  && !this.barbarian.isDead() &&
-            this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS).filter(opponent => opponent.getCharacterType() != this.getCharacterType()).length > 0;
+        return !this.isBarbarian() && !this.barbarian.isDead() &&
+            this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
+                .filter(opponent => opponent.getCharacterType() != this.getCharacterType()).length > 0;
     }
 
     // TODO: move to fight class and set fight class object in this class
     shouldLaunchAttack(gameBoard) {
 
-        return !this.isBarbarian() && !this.barbarian.isDead() && this.getAction() !== ATTACK &&
-            this.getAction() !== DEATH && this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
+        return !this.isBarbarian() && !this.barbarian.isDead() && this.getAction() !== ATTACK_LABEL &&
+            this.getAction() !== DEATH_LABEL && this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
     }
 
     // TODO: move to fight class and set fight class object in this class
@@ -210,7 +223,7 @@ class Character {
      */
     async animate(gameBoard, requestedAction, requestedDirection, requestedVerticalDirection, numberOfTimes, idx) {
 
-        if (requestedAction !== DEATH) {
+        if (requestedAction !== DEATH_LABEL) {
             this.moveFromPositionToBoundary(gameBoard);
         }
 
@@ -235,7 +248,7 @@ class Character {
                frame < frames.length) {
 
             let sprite = undefined;
-            if (this.getAction() === DEATH) {
+            if (this.getAction() === DEATH_LABEL) {
                 sprite = this.getDeathSprite();
                 sprite.show();
                 if (this.getSprite().css('display') === 'block') {
@@ -337,7 +350,7 @@ class Character {
     }
 
     isBarbarian() {
-        return this.getName() === BARBARIAN_SPRITE_NAME;
+        return this === this.barbarian;
     }
 
     hide() {
@@ -349,59 +362,59 @@ class Character {
     }
 
     isDead() {
-        return this.getStatus() === DEAD;
+        return this.getStatus() === DEAD_LABEL;
     }
 
     isAlive() {
-        return this.getStatus() === ALIVE;
+        return this.getStatus() === ALIVE_LABEL;
     }
 
     isDirectionRight() {
-        return this.getDirection() === RIGHT;
+        return this.getDirection() === RIGHT_LABEL;
     }
 
     isDirectionLeft() {
-        return this.getDirection() === LEFT;
+        return this.getDirection() === LEFT_LABEL;
     }
 
     isDirectionUp() {
-        return this.getVerticalDirection() === UP;
+        return this.getVerticalDirection() === UP_LABEL;
     }
 
     isDirectionDown() {
-        return this.getVerticalDirection() === DOWN;
+        return this.getVerticalDirection() === DOWN_LABEL;
     }
 
     isWalking() {
-        return this.getAction() === WALK;
+        return this.getAction() === WALK_LABEL;
     }
 
     isRunning() {
-        return this.getAction() === RUN;
+        return this.getAction() === RUN_LABEL;
     }
 
     isFalling() {
-        return this.getAction() === FALL;
+        return this.getAction() === FALL_LABEL;
     }
 
     isDying() {
-        return this.getAction() === DEATH;
+        return this.getAction() === DEATH_LABEL;
     }
 
     isSwimming() {
-        return this.getAction() === SWIM;
+        return this.getAction() === SWIM_LABEL;
     }
 
     isDying() {
-        return this.getAction() === DEATH;
+        return this.getAction() === DEATH_LABEL;
     }
 
     isJumping() {
-        return this.getAction() === JUMP;
+        return this.getAction() === JUMP_LABEL;
     }
 
     isAttacking() {
-        return this.getAction() === ATTACK;
+        return this.getAction() === ATTACK_LABEL;
     }
 
     getObstacle() {
@@ -411,8 +424,8 @@ class Character {
 
         if (obstacle !== undefined &&
             this.isPastObstacle(obstacle) &&
-            (this.getY() != obstacle.getHeight() || obstacle.getType() === PIT) &&
-            (this.getName() !== BARBARIAN_SPRITE_NAME || this.getAction() !== ATTACK)) {
+            (this.getY() != obstacle.getHeight() || obstacle.getType() === PIT_LABEL) &&
+            (!this.isBarbarian() || this.getAction() !== ATTACK_LABEL)) {
             return obstacle;
         }
         return undefined;
@@ -426,16 +439,16 @@ class Character {
     }
 
     hitObstacle() {
-        if (this.getAction() === FALL) {
+        if (this.getAction() === FALL_LABEL) {
             return false;
         }
         let obstacle =  this.getObstacle();
 
         if (obstacle === undefined) {
             return false;
-        } else if (obstacle.getType() === PIT) {
+        } else if (obstacle.getType() === PIT_LABEL) {
             // TODO: put jump evade frame in config
-            if (this.didJumpEvade() || this.getName() !== BARBARIAN_SPRITE_NAME) {
+            if (this.didJumpEvade() || !this.isBarbarian()) {
                 return false;
             }
             return true;
@@ -445,14 +458,14 @@ class Character {
     }
 
     didJumpEvade() {
-        return this.getAction() === JUMP && this.getCurrentFrame(JUMP) >= 3;
+        return this.getAction() === JUMP_LABEL && this.getCurrentFrame(JUMP_LABEL) >= 3;
     }
 
     /*
      * Getters and setters
      */
     getFallDelay() {
-        return this.death[FALL_DELAY];
+        return this.death[FALL_DELAY_LABELS];
     }
 
     getCanLeaveBehind() {
@@ -468,37 +481,33 @@ class Character {
     }
 
     getDeathTime() {
-        return this.death[TIME];
+        return this.death[TIME_LABEL];
     }
 
     getDeathFallDelay() {
-        return this.death[FALL_DELAY];
+        return this.death[FALL_DELAY_LABELS];
     }
 
     getDeathSpriteHeightOffset(direction) {
         if (direction === undefined) {
             throw new Error("getDeathFrames: direction is a required parameter");
         }
-        return this.death[FRAMES][direction][HEIGHT_OFFSET];
+        return this.death[FRAMES_LABEL][direction][HEIGHT_OFFSET_LABEL];
     }
 
     getDeathFrames(direction) {
         if (direction === undefined) {
             throw new Error("getDeathFrames: direction is a required parameter");
         }
-        return this.death[FRAMES][direction][FRAMES];
+        return this.death[FRAMES_LABEL][direction][FRAMES_LABEL];
     }
 
     getDeathFramesPerSecond() {
-        return this.death[FRAMES_PER_SECOND];
+        return this.death[FRAMES_PER_SECOND_LABEL];
     }
 
     getStatus() {
         return this.status;
-    }
-
-    getName() {
-        return this.name;
     }
 
     getIsInvincible() {
@@ -528,19 +537,19 @@ class Character {
     }
 
     getResetAction() {
-        return this.reset[ACTION];
+        return this.reset[ACTION_LABEL];
     }
 
     getResetDirection() {
-        return this.reset[DIRECTION];
+        return this.reset[DIRECTION_LABEL];
     }
 
     getResetStatus() {
-        return this.reset[STATUS];
+        return this.reset[STATUS_LABEL];
     }
 
     getResetTurnaround() {
-        return this.reset[TURNAROUND];
+        return this.reset[TURNAROUND_LABEL];
     }
 
     getDirection() {
@@ -551,22 +560,22 @@ class Character {
         if (action === undefined || direction === undefined) {
             throw new Error("getHeightOffset: action and direction are required parameters");
         }
-        return this.frames[action][direction][HEIGHT_OFFSET];
+        return this.frames[action][direction][HEIGHT_OFFSET_LABEL];
     }
 
     getFrames(action, direction) {
         if (action === undefined || direction === undefined) {
             throw new Error("getHeightOffset: action and direction are required parameters");
         }
-        return this.frames[action][direction][FRAMES];
+        return this.frames[action][direction][FRAMES_LABEL];
     }
 
     getMinJumpThreshold() {
-        return this.jumpThresholds[MIN];
+        return this.jumpThresholds[MIN_LABEL];
     }
 
     getMaxJumpThreshold() {
-        return this.jumpThresholds[MAX];
+        return this.jumpThresholds[MAX_LABEL];
     }
 
     getSprite() {
@@ -574,11 +583,11 @@ class Character {
     }
 
     getResetLeft() {
-        return this.reset[LEFT];
+        return this.reset[LEFT_LABEL];
     }
 
     getDeathSprite() {
-        return this.death[SPRITE];
+        return this.death[SPRITE_LABEL];
     }
 
     getCharacterType() {
@@ -589,7 +598,7 @@ class Character {
         if (screenNumber === undefined) {
             throw new Error("getResetBottom: screenNumber parameter required");
         }
-        return this.reset[BOTTOM][screenNumber];
+        return this.reset[BOTTOM_LABEL][screenNumber];
     }
 
     getCanElevate() {
@@ -633,7 +642,7 @@ class Character {
     }
 
     setDeathTime(time) {
-        this.death[TIME] = time;
+        this.death[TIME_LABEL] = time;
     }
 
     setScreenNumber(screenNumber) {

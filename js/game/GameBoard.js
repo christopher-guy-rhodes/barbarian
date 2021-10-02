@@ -5,7 +5,7 @@ class GameBoard {
     }
 
     getOpponents(screenNumber) {
-        return this.gameBoard[screenNumber][OPPONENTS];
+        return this.gameBoard[screenNumber][OPPONENTS_LABEL];
     }
 
     getAllOpponents() {
@@ -27,7 +27,7 @@ class GameBoard {
     }
 
     isWater(screenNumber) {
-        return this.gameBoard[screenNumber][WATER];
+        return this.gameBoard[screenNumber][WATER_LABEL];
     }
 
     isScreenDefined(screenNumber) {

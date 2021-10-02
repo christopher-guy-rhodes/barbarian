@@ -1,3 +1,37 @@
+const KEYPRESS_THROTTLE_DELAY = 200;
+const KP_LEFT = 'KP_LEFT';
+const KP_RIGHT = 'KP_RIGHT';
+const KP_RUN = 'KP_RUN';
+const KP_JUMP = 'KP_JUMP';
+const KP_STOP = 'KP_STOP';
+const KP_ATTACK = 'KP_ATTACK';
+const KP_PAUSE = 'KP_PAUSE';
+const KP_SPACE = 'KP_SPACE';
+const KP_CONTROLS = 'KP_CONTROLS';
+const KP_MAIN = 'KP_MAIN';
+const KP_SOUND = 'KP_SOUND';
+const KP_UP = 'KP_UP';
+const KP_DOWN = 'KP_DOWN';
+const JUST_DIED_THRESHOLD = 500;
+
+// Keypress event names
+const KEYPRESS = {
+    KP_LEFT     : 37,
+    KP_RIGHT    : 39,
+    KP_ATTACK   : 65,
+    KP_RUN      : 82,
+    KP_STOP     : 83,
+    KP_JUMP     : 74,
+    KP_PAUSE    : 80,
+    KP_SPACE    : 32,
+    KP_CONTROLS : 67,
+    KP_MAIN     : 77,
+    KP_HINTS    : 72,
+    KP_SOUND    : 88,
+    KP_UP       : 38,
+    KP_DOWN     : 40,
+};
+
 class Events {
     constructor(game) {
         this.game = game;
@@ -76,16 +110,15 @@ class Events {
             this.game.resetGame();
             this.messages.hideAllMessages();
             this.game.startMonsterAttacks();
-            this.game.performAction(this.game.getBarbarian(), STOP);
+            this.game.performAction(this.game.getBarbarian(), STOP_LABEL);
             this.game.renderAtRestFrame(this.game.getBarbarian());
         }
     }
 
     handlePauseKeypress() {
-
         if (!this.game.isBarbarianDead()) {
             if (this.game.getIsPaused()) {
-                PAUSE_MESSAGE.css('display', 'none');
+                this.game.hideAllMessages();
                 this.game.setIsPaused(false);
                 if (this.game.isBarbarianActionDefined()) {
                     let action = this.game.getBarbarian().getAction();
@@ -93,41 +126,34 @@ class Events {
                     this.game.setPauseFrame(0);
                 }
                 this.game.startMonsterAttacks(true);
-                this.sounds.setSoundsPauseState(false);
+                if (this.game.getIsSoundOn()) {
+                    this.game.playThemeSong();
+                }
             } else {
-                PAUSE_MESSAGE.css('display', 'block');
+                this.game.showPauseMessage();
+                this.game.stopAllSounds();
                 this.game.setIsPaused(true);
-                this.sounds.setSoundsPauseState(true);
             }
         }
     }
 
     handleSoundKeypress() {
-        HINTS_ON_MESSAGE.css('display', 'none');
-        HINTS_OFF_MESSAGE.css('display', 'none')
-
-        (game.getIsSoundOn() ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE).css('display', 'none');
-        (game.getIsSoundOn() ? SOUND_ON_MESSAGE : SOUND_OFF_MESSAGE).css('display', 'block');
         this.game.setIsSoundOn(!this.game.getIsSoundOn());
 
+        this.game.showSoundToggleMessage();
+
         if (this.game.getIsSoundOn()) {
-            this.sounds.playSound(THEME_SONG);
+            this.game.playThemeSong();
         } else {
-            this.sounds.stopAllSounds();
+            this.game.stopAllSounds();
         }
-
-
-        setTimeout(function () {
-            SOUND_OFF_MESSAGE.css('display', 'none');
-            SOUND_ON_MESSAGE.css('display', 'none');
-        }, TOGGLE_MESSAGE_TIME);
     }
 
     handleAttackKeypress() {
         if (!this.game.isBarbarianSwimming() && this.isBarbarianAliveOrJustDied()) {
             this.game.stopBarbarianMovement();
             this.sounds.playSound(GRUNT_SOUND);
-            this.game.performAction(this.game.getBarbarian(), ATTACK);
+            this.game.performAction(this.game.getBarbarian(), ATTACK_LABEL);
         }
     }
 
@@ -136,19 +162,19 @@ class Events {
         if (!this.game.isBarbarianSwimming() &&
             !this.game.isBarbarianRunning() &&
             this.isBarbarianAliveOrJustDied()) {
-            this.game.performAction(this.game.getBarbarian(), RUN);
+            this.game.performAction(this.game.getBarbarian(), RUN_LABEL);
         }
     }
 
     handleJumpKeypress() {
         if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianJumping() && this.isBarbarianAliveOrJustDied()) {
-            this.game.performAction(this.game.getBarbarian(), JUMP);
+            this.game.performAction(this.game.getBarbarian(), JUMP_LABEL);
         }
     }
 
     handleStopKeypress() {
         if (!this.game.isBarbarianSwimming() && this.isBarbarianAliveOrJustDied()) {
-            this.game.performAction(this.game.getBarbarian(), STOP);
+            this.game.performAction(this.game.getBarbarian(), STOP_LABEL);
             this.game.stopBarbarianMovement();
             this.game.renderAtRestFrame(this.game.getBarbarian());
             this.game.getBarbarian().setVerticalDirection(undefined);
@@ -156,19 +182,19 @@ class Events {
     }
 
     handleRightKeypress() {
-        let action = this.game.isWater() ? SWIM : WALK;
+        let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action || !this.game.isBarbarianMovingRight())
             && this.isBarbarianAliveOrJustDied()) {
-            this.game.getBarbarian().setDirection(RIGHT);
+            this.game.getBarbarian().setDirection(RIGHT_LABEL);
             this.game.performAction(this.game.getBarbarian(), action);
         }
     }
 
     handleLeftKeypress() {
-        let action = this.game.isWater() ? SWIM : WALK;
+        let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action || !this.game.isBarbarianMovingLeft())
             && this.isBarbarianAliveOrJustDied()) {
-            this.game.getBarbarian().setDirection(LEFT);
+            this.game.getBarbarian().setDirection(LEFT_LABEL);
             this.game.performAction(this.game.getBarbarian(), action);
         }
     }
@@ -177,8 +203,8 @@ class Events {
         if (!this.game.isBarbarianDead()) {
             if (!this.game.isBarbarianSwimming() || !this.game.isBarbarianMovingUp()) {
                 if (this.game.isWater()) {
-                    this.game.getBarbarian().setVerticalDirection(UP);
-                    this.game.performAction(this.game.getBarbarian(), SWIM);
+                    this.game.getBarbarian().setVerticalDirection(UP_LABEL);
+                    this.game.performAction(this.game.getBarbarian(), SWIM_LABEL);
                 }
             }
         }
@@ -188,8 +214,8 @@ class Events {
         if (!this.game.isBarbarianDead()) {
             if (!this.game.isBarbarianSwimming() || !this.game.isBarbarianMovingDown()) {
                 if (this.game.isWater()) {
-                    this.game.getBarbarian().setVerticalDirection(DOWN);
-                    this.game.performAction(this.game.getBarbarian(), SWIM);
+                    this.game.getBarbarian().setVerticalDirection(DOWN_LABEL);
+                    this.game.performAction(this.game.getBarbarian(), SWIM_LABEL);
                 }
             }
         }

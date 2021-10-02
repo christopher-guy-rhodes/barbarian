@@ -36,7 +36,7 @@ class Obstacle {
     }
 
     isCloseButNotPast(x, direction) {
-        if (direction === RIGHT) {
+        if (direction === RIGHT_LABEL) {
             //return this.x  > x - 25;
             return x - 50 < this.x;
         } else {
@@ -50,7 +50,7 @@ class Obstacle {
     }
 
     isPast(x, direction) {
-        if (direction === RIGHT) {
+        if (direction === RIGHT_LABEL) {
             return x > this.x;
         } else {
             return x < this.x;
@@ -58,14 +58,14 @@ class Obstacle {
     }
 
     isDownHillFrom(y) {
-        return this.y <= y && this.type !== PIT;
+        return this.y <= y && this.type !== PIT_LABEL;
     }
 
     isEvadedWithJumpAt(x) {
         if (this.jumpThresholds === undefined) {
             return false;
         }
-        return x > this.jumpThresholds[MIN] && x < this.jumpThresholds[MAX];
+        return x > this.jumpThresholds[MIN_LABEL] && x < this.jumpThresholds[MAX_LABEL];
     }
 
     isTraversableDownhillElevation(character) {
@@ -81,11 +81,11 @@ class Obstacle {
     }
 
     getIsElevation() {
-        return this.type === ELEVATION;
+        return this.type === ELEVATION_LABEL;
     }
 
     getIsPit() {
-        return this.type === PIT;
+        return this.type === PIT_LABEL;
     }
 
     getHeight() {
@@ -93,14 +93,14 @@ class Obstacle {
     }
 
     getMinJumpThreshold() {
-        return this.jumpThresholds[MIN];
+        return this.jumpThresholds[MIN_LABEL];
     }
 
     getMaxJumpThreshold() {
-        return this.jumpThresholds[MAX];
+        return this.jumpThresholds[MAX_LABEL];
     }
 
     didCharacterJumpEvade(character) {
-        return character.getAction() === JUMP && character.getCurrentFrame(JUMP) < JUMP_EVADE_THRESHOLD;
+        return character.getAction() === JUMP_LABEL && character.getCurrentFrame(JUMP_LABEL) < JUMP_EVADE_THRESHOLD;
     }
 }

@@ -3,19 +3,35 @@ class GameBoardBuilder {
         this.gameBoard = {
             0: {
                 opponents: [],
-                water: false
+                water: false,
+                allowedScroll: {
+                    left: false,
+                    right: true
+                }
             },
             1: {
                 opponents: [],
-                water: false
+                water: false,
+                allowedScroll: {
+                    left: true,
+                    right: true
+                }
             },
             2: {
                 opponents: [],
-                water: false
+                water: false,
+                allowedScroll : {
+                    left: true,
+                    right: true
+                }
             },
             3: {
                 opponents: [],
-                water: false
+                water: false,
+                allowedScroll : {
+                    left: false,
+                    right: true
+                }
             }
         };
     }

@@ -1,3 +1,4 @@
+const ALLOWED_SCROLL_LABEL = 'allowedScroll';
 class GameBoard {
     constructor(gameBoard) {
         this.gameBoard = gameBoard;
@@ -31,5 +32,9 @@ class GameBoard {
 
     isScreenDefined(screenNumber) {
         return this.gameBoard[screenNumber] !== undefined;
+    }
+
+    isScrollAllowed(screenNumber, direction) {
+        return this.gameBoard[screenNumber][ALLOWED_SCROLL_LABEL][direction]
     }
 }

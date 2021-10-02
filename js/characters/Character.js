@@ -1,6 +1,3 @@
-/**
- * TODO: refactor this class and move some logic into new classes. This is a reasonable start but there is work to do.
- */
 class Character {
     constructor(barbarian,
                 obstacles,

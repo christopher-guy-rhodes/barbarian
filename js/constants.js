@@ -135,7 +135,6 @@ const MESSAGES = [CONTROL_MESSAGE, START_MESSAGE, GAME_OVER_MESSAGE, DEMO_OVER_M
 
 // Elements
 const BRIDGE = $('.bridge');
-const BACKDROP = $('.backdrop');
 
 const FIGHTING_RANGE_PIXELS = 100;
 const CPU_ATTACK_RANGE_PIXELS = 500;

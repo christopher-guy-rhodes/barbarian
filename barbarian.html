@@ -37,14 +37,13 @@ $(document).ready(function(){
 
     game.setViewPort();
     game.setBackdrop();
-    game.initializeScreen();
 
 
     // Bind click events
-    BACKDROP.on('swiperight', events.swipeRightHandler);
-    BACKDROP.on('swipeleft', events.swipeLeftHandler);
-    BACKDROP.on('taphold', events.tapHoldHandler);
-    BACKDROP.on('click', events.clickHandler);
+    game.getBackdrop().on('swiperight', events.swipeRightHandler);
+    game.getBackdrop().on('swipeleft', events.swipeLeftHandler);
+    game.getBackdrop().on('taphold', events.tapHoldHandler);
+    game.getBackdrop().on('click', events.clickHandler);
 
     // Don't allow screen resizing
     $(window).resize(function(){

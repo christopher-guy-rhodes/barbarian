@@ -1,12 +1,15 @@
 class Events {
     constructor(game) {
         this.game = game;
+        this.messages = new Messages();
+        this.sounds = new Sounds();
+
         this.keypressTime = undefined;
         this.lastKeypressTime = undefined;
     }
 
     handleKeypress(keypress) {
-        this.game.playThemeSong();
+        this.sounds.playSound(THEME_SONG);
 
         this.keypressTime = new Date().getTime();
 
@@ -14,50 +17,50 @@ class Events {
             this.lastKeypressTime = this.keypressTime;
             this.keypressTime = new Date().getTime();
 
-            if (!this.game.getIsPaused() || compareProperty(KEYPRESS, KP_PAUSE, keypress)) {
+            if (!this.game.getIsPaused() || KEYPRESS[KP_PAUSE] === keypress) {
 
                 switch (keypress) {
-                    case getProperty(KEYPRESS, KP_CONTROLS):
+                    case KEYPRESS[KP_CONTROLS]:
                         if(this.game.isBarbarianDead()) {
-                            this.game.showControlMessage();
+                            this.messages.showControlMessage();
                         }
                         break;
-                    case getProperty(KEYPRESS, KP_MAIN):
+                    case KEYPRESS[KP_MAIN]:
                         if(this.game.isBarbarianDead()) {
-                            this.game.showStartMessage();
+                            this.messages.showStartMessage();
                         }
                         break;
-                    case getProperty(KEYPRESS, KP_SPACE):
+                    case KEYPRESS[KP_SPACE]:
                         this.handleSpaceKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_PAUSE):
+                    case KEYPRESS[KP_PAUSE]:
                         this.handlePauseKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_SOUND):
+                    case KEYPRESS[KP_SOUND]:
                         this.handleSoundKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_RUN):
+                    case KEYPRESS[KP_RUN]:
                         this.handleRunKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_JUMP):
+                    case KEYPRESS[KP_JUMP]:
                         this.handleJumpKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_STOP):
+                    case KEYPRESS[KP_STOP]:
                         this.handleStopKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_RIGHT):
+                    case KEYPRESS[KP_RIGHT]:
                         this.handleRightKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_LEFT):
+                    case KEYPRESS[KP_LEFT]:
                         this.handleLeftKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_ATTACK):
+                    case KEYPRESS[KP_ATTACK]:
                         this.handleAttackKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_UP):
+                    case KEYPRESS[KP_UP]:
                         this.handleUpKeypress();
                         break;
-                    case getProperty(KEYPRESS, KP_DOWN):
+                    case KEYPRESS[KP_DOWN]:
                         this.handleDownKeypress();
                         break;
                     default:
@@ -71,7 +74,7 @@ class Events {
     handleSpaceKeypress(event) {
         if (this.game.isBarbarianDead()) {
             this.game.resetGame();
-            this.game.hideAllMessages();
+            this.messages.hideAllMessages();
             this.game.startMonsterAttacks();
             this.game.performAction(this.game.getBarbarian(), STOP);
             this.game.renderAtRestFrame(this.game.getBarbarian());
@@ -90,11 +93,11 @@ class Events {
                     this.game.setPauseFrame(0);
                 }
                 this.game.startMonsterAttacks(true);
-                this.game.setSoundsPauseState(false);
+                this.sounds.setSoundsPauseState(false);
             } else {
                 PAUSE_MESSAGE.css('display', 'block');
                 this.game.setIsPaused(true);
-                this.game.setSoundsPauseState(true);
+                this.sounds.setSoundsPauseState(true);
             }
         }
     }
@@ -108,9 +111,9 @@ class Events {
         this.game.setIsSoundOn(!this.game.getIsSoundOn());
 
         if (this.game.getIsSoundOn()) {
-            this.game.playThemeSong();
+            this.sounds.playSound(THEME_SONG);
         } else {
-            this.game.stopAllSounds();
+            this.sounds.stopAllSounds();
         }
 
 
@@ -123,7 +126,7 @@ class Events {
     handleAttackKeypress() {
         if (!this.game.isBarbarianSwimming() && this.isBarbarianAliveOrJustDied()) {
             this.game.stopBarbarianMovement();
-            this.game.playGruntSound();
+            this.sounds.playSound(GRUNT_SOUND);
             this.game.performAction(this.game.getBarbarian(), ATTACK);
         }
     }

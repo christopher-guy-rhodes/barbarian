@@ -32,6 +32,7 @@ class CharacterBuilder {
             walk: 0,
             swim : 0,
             attack: 0,
+            sink: 0,
             sit: 0,
             jump: 1,
             stop: 1,
@@ -99,7 +100,8 @@ class CharacterBuilder {
             fall: 0,
             run: 0,
             jump: 0,
-            swim: 0
+            swim: 0,
+            sink: 0
         }
 
         this.isInvincible = false;
@@ -127,15 +129,6 @@ class CharacterBuilder {
     withDeathSprite(sprite) {
         this.death.sprite = sprite;
         return this;
-    }
-
-    withDeathFrames(frames) {
-        this.death.frames = frames;
-        return this;
-    }
-
-    withDeathFramesPerSecond(fps) {
-        this.death.framesPerSecond = fps;
     }
 
     withSound(sound) {

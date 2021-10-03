@@ -38,6 +38,10 @@ const SIT_LABEL = 'sit';
 const FALL_LABEL = 'fall';
 const SWIM_LABEL = 'swim';
 const DEATH_LABEL = 'death';
+const SINK_LABEL = 'sink';
+
+// Actions that cannot be transitioned away from
+const TERMINAL_ACTIONS = new Set([SINK_LABEL, DEATH_LABEL, FALL_LABEL]);
 
 // Statuses
 const ALIVE_LABEL = 'ALIVE';
@@ -48,6 +52,15 @@ const LEFT_LABEL = 'left';
 const RIGHT_LABEL = 'right';
 const UP_LABEL = 'up';
 const DOWN_LABEL = 'down';
+
+// CSS constants
+const CSS_BLOCK_LABEL = 'block';
+const CSS_NONE_LABEL = 'none';
+const CSS_LEFT_LABEL = 'left';
+const CSS_BOTTOM_LABEL = 'bottom';
+const CSS_PX_LABEL = 'px';
+const CSS_DISPLAY_LABEL = 'display';
+const CSS_BACKGROUND_POSITION = 'background-position';
 
 const CPU_ATTACK_RANGE_PIXELS = 500;
 const FIGHTING_RANGE_PIXELS = 100;

@@ -9,12 +9,7 @@
 <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
 </head>
 <script>
-
-let windowWidth = undefined;
-let keypressTime;
-let lastKeypressTime;
-
-$(document).ready(function(){
+    $(document).ready(function(){
     // Classes
     $.getScript('/js/messages/Messages.js', function() {
     $.getScript('/js/animation/Animator.js', function() {
@@ -50,8 +45,6 @@ $(document).ready(function(){
         window.resizeTo(SCREEN_WIDTH, SCREEN_HEIGHT);
     });
 
-    windowWidth = 1400;
-
     $(document).keydown(function(e) {
         events.handleKeypress(e.which);
         e.preventDefault(); // prevent the default action (scroll / move caret)
@@ -74,8 +67,6 @@ $(document).ready(function(){
     <div class="rock"></div>
     <div class="shark1"></div>
     <div class="shark2"></div>
-    <div class="shark3"></div>
-    <div class="shark4"></div>
     <div class="death"></div>
     <div class="pause_message"><h2>Paused</h2></div>
     <div class="sound_message_off"><h2>Sound Off</h2></div>
@@ -87,7 +78,14 @@ $(document).ready(function(){
         </p>
     </div>
     <div class="game_over">
-        <h1>Game Over</h1>
+        <h1>You Loose</h1>
+        <p>
+            Press <strong>[spacebar]</strong> to play again<br/>
+            Press <strong>C</strong> to see controls
+        </p>
+    </div>
+    <div class="game_won">
+        <h1>You Win!</h1>
         <p>
             Press <strong>[spacebar]</strong> to play again<br/>
             Press <strong>C</strong> to see controls

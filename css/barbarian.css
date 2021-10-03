@@ -40,27 +40,7 @@
     bottom: 0px;
     display: none;
 }
-.shark3 {
-    border: 0px solid red;
-    height: 75px;
-    width: 200px;
-    background-image: url(../sprites/shark.png);
-    position: absolute;
-    left: 1400px;
-    bottom: 800px;
-    display: none;
-}
 
-.shark4 {
-    border: 0px solid red;
-    height: 75px;
-    width: 200px;
-    background-image: url(../sprites/shark.png);
-    position: absolute;
-    left: 1400px;
-    bottom: 400px;
-    display: none;
-}
 .monster_invincible {
     border: 0px solid red;
     height: 400px;
@@ -170,6 +150,15 @@
 }
 
 .game_over {
+    display: none;
+    position: absolute;
+    color: red;
+    left: 625px;
+    height: 0;
+    bottom: 600px;
+}
+
+.game_won {
     display: none;
     position: absolute;
     color: red;

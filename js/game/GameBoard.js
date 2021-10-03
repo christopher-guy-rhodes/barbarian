@@ -2,6 +2,7 @@ const ALLOWED_SCROLL_LABEL = 'allowedScroll';
 class GameBoard {
     constructor(gameBoard) {
         this.gameBoard = gameBoard;
+        this.isPaused = false;
     }
 
     getOpponents(screenNumber) {
@@ -27,6 +28,9 @@ class GameBoard {
     }
 
     isWater(screenNumber) {
+        if (screenNumber === undefined) {
+            throw new Error("isWater: screenNumber is a required parameter")
+        }
         return this.gameBoard[screenNumber][WATER_LABEL];
     }
 
@@ -36,5 +40,16 @@ class GameBoard {
 
     isScrollAllowed(screenNumber, direction) {
         return this.gameBoard[screenNumber][ALLOWED_SCROLL_LABEL][direction]
+    }
+
+    getIsPaused() {
+        return this.isPaused;
+    }
+
+    setIsPaused(flag) {
+        if (flag === undefined) {
+            throw new Error("setIsPaused: flag is a required parameter");
+        }
+        this.isPaused = flag;
     }
 }

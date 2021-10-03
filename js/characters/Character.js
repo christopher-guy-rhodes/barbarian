@@ -12,6 +12,9 @@ const TIME_LABEL = 'time';
 const TURNAROUND_LABEL = 'turnaround';
 const PASSING_MULTIPLIER = 1.5;
 
+/**
+ * Class that supports character actions
+ */
 class Character {
     constructor(barbarian,
                 obstacles,
@@ -65,13 +68,170 @@ class Character {
         this.sounds = new Sounds();
     }
 
-    stopAnimation() {
-        this.getSprite().stop();
+    /**
+     * Animate a character across the game board while also animating the sprite.
+     *
+     * @param gameBoard the game board to perform the animation on
+     * @param action the requested action (run, walk, attack etc.)
+     * @param direction the requested direction to move the character (left or right)
+     * @param vertDirection the requested virtical direction to move the character (up or down)
+     * @param numberOfTimes the number of times to perform the animation loop (zero for infinite)
+     * @param idx the frame index offset
+     * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
+     */
+    async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
+
+        this.moveCharacter(action, gameBoard);
+
+        let frames = this.getFrames(action, direction);
+        let frameIdx = idx;
+        let counter = numberOfTimes;
+
+        this.setCurrentFrame(action, frameIdx);
+
+        while (!this.isAnimationInterrupted(action, direction, vertDirection, gameBoard) && frameIdx < frames.length) {
+            let sprite = this.prepareSprite();
+            let heightOffset = -1 * this.getHeightOffset(action, this.getDirection()) * sprite.height();
+            let offset = -1*frames[frameIdx++]*sprite.width();
+            sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
+
+            this.setCurrentFrame(action, frameIdx);
+
+            await sleep(MILLISECONDS_PER_SECOND / this.getFramesPerSecond(action));
+
+            if (frameIdx === frames.length) {
+                // If times is 0 we loop infinitely, if times is set decrement it and keep looping
+                if (counter === 0 || --counter > 0) {
+                    frameIdx = 0;
+                    this.setCurrentFrame(action, frameIdx);
+                }
+            }
+        }
+
+        // uncomment to see why animation stopped for debugging
+        //if (this.isBarbarian()) {
+        //    this.debugAnimationTermination(action, direction, vertDirection, gameBoard, frameIdx, frames);
+        //}
+
+        return frameIdx;
     }
 
     /**
-     * Moves from the current position to the boundary.
+     * Move the character to position x, y at the specified pixels per second.
+     * @param x the x coordinate to move to
+     * @param y the y coordinate to move to
+     * @param pixelsPerSecond the pixels per second rate to move at
      */
+    moveToPosition(x, y, pixelsPerSecond) {
+        this.animator.moveElementToPosition(x, y, pixelsPerSecond)
+    }
+
+    /**
+     * Returns true if the character is at a horizontal boundary, false otherwise.
+     * @param gameBoard the game board
+     * @returns {boolean}
+     */
+    isAtBoundary(gameBoard) {
+        return !gameBoard.isWater(this.getScreenNumber()) && this.isAtLeftBoundary() || this.isAtRightBoundary();
+    }
+
+    /**
+     * Returns true if the character is at the left boundary and trying to move left, false otherwise.
+     * @returns {boolean|boolean}
+     */
+    isAtLeftBoundary() {
+        return !this.isDirectionRight() && this.getX() === 0;
+    }
+
+    /**
+     * Returns true if the character is at the right boundary and trying to move right, false otherwise.
+     * @returns {boolean|boolean}
+     */
+    isAtRightBoundary() {
+        return !this.isDirectionLeft() && this.getX() === SCREEN_WIDTH - this.sprite.width();
+    }
+
+    /**
+     * True if this character is not the barbarian and has passed while moving left.
+     * @returns {boolean}
+     */
+    isPastBarbarianLeft() {
+        return !this.isBarbarian() && this.isDirectionLeft() &&
+            this.getX() + this.getWidth() * PASSING_MULTIPLIER < this.barbarian.getX() || this.isAtLeftBoundary();
+    }
+
+    /**
+     * True if this character is not the Barbarian and has passed while moving right.
+     * @returns {boolean}
+     */
+    isPastBarbarianRight() {
+        return !this.isBarbarian() && this.isDirectionRight() &&
+            this.getX() - this.getWidth() * PASSING_MULTIPLIER > this.barbarian.getX() || this.isAtRightBoundary();
+    }
+
+    /* private */
+    isBarbarian() {
+        return this.barbarian === undefined;
+    }
+
+    /* private */
+    isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
+        return (this.getAction() !== requestedAction ||
+            this.getDirection() !== requestedDirection ||
+            this.getVerticalDirection() !== requestedVerticalDirection ||
+            this.isStopped() ||
+            this.shouldTurnaround() ||
+            this.isAtBoundary(gameBoard) ||
+            this.hitObstacle() ||
+            this.isDeadButNotDying() ||
+            !this.isOnScreen(gameBoard) ||
+            this.shouldLaunchAttack(gameBoard) ||
+            this.shouldCpuFight(gameBoard) ||
+            gameBoard.getIsPaused());
+    }
+
+    /* private */
+    moveCharacter(action, gameBoard) {
+        if (action !== DEATH_LABEL) {
+            if (action === FALL_LABEL || action === SINK_LABEL) {
+                this.moveToPosition(undefined, 0, this.getPixelsPerSecond(FALL_LABEL));
+            } else {
+                this.moveFromPositionToBoundary(gameBoard);
+            }
+        }
+    }
+
+    /* private */
+    prepareSprite() {
+        if (this.isDead()) {
+            let deathSprite = this.getDeathSprite();
+            deathSprite.show();
+            deathSprite.css(CSS_LEFT_LABEL, this.getX() + CSS_PX_LABEL);
+            if (!this.isBarbarian()) {
+                this.getSprite().hide();
+            }
+            return deathSprite;
+        } else {
+            return this.getSprite();
+        }
+    }
+
+    /* private */
+    isVisible() {
+        return this.getSprite().css(CSS_DISPLAY_LABEL) === CSS_BLOCK_LABEL;
+    }
+
+    /* private */
+    isDeadButNotDying() {
+        return this.isDead() && !this.isFalling() && !this.isDying() && !this.isSinking();
+    }
+
+    /* private */
+    stopMovement() {
+        this.getSprite().stop();
+    }
+
+    /* private */
     moveFromPositionToBoundary(gameBoard) {
         let pixelsPerSecond = this.getPixelsPerSecond(this.getAction());
         if (pixelsPerSecond <= 0) {
@@ -79,81 +239,18 @@ class Character {
             return;
         }
 
-        let x, y = undefined;
-        if (this.getAction() === FALL_LABEL) {
-            y = 0;
-        } else {
-            if (gameBoard.isWater(this.getScreenNumber()) && !this.isBarbarian()) {
-                // Make water creates chase the barbarian in 2 dimensions
-                let barbarianY = stripPxSuffix(this.barbarian.getSprite().css('bottom'));
-                y = stripPxSuffix(this.getSprite().css('bottom'));
-                if (barbarianY > y) {
-                    y = SCREEN_HEIGHT - this.getSprite().height() / 2;
-                } else {
-                    y = SCREEN_BOTTOM;
-                }
-            } else if (this.getVerticalDirection() === UP_LABEL) {
-                y = SCREEN_HEIGHT - this.getSprite().height() / 2;
-            } else if (this.getVerticalDirection() === DOWN_LABEL) {
-                y = SCREEN_BOTTOM;
-            }
+        let y = !gameBoard.isWater(this.getScreenNumber()) ? undefined :
+            this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
+        let x = this.isDirectionLeft() ? 0 : SCREEN_WIDTH - this.getWidth();
 
-            if (this.getDirection() === LEFT_LABEL) {
-                x = 0;
-            } else if (this.getDirection() === RIGHT_LABEL) {
-                x = windowWidth - this.getSprite().width();
-            }
-        }
         this.moveToPosition(x, y, pixelsPerSecond);
     }
 
-
-    moveToPosition(x, y, pixelsPerSecond) {
-        this.animator.moveElementToPosition(x, y, pixelsPerSecond)
-    }
-
+    /* private */
     isStopped() {
         return this.action === STOP_LABEL;
     }
 
-    isAtLeftBoundary() {
-        // non visible items with have an offset of zero, don't consider that a boundary
-        if (this.sprite.css('display') !== 'block') {
-            return false;
-        }
-        return this.direction !== RIGHT_LABEL && this.sprite.offset().left === 0
-    }
-
-    isAtRightBoundary() {
-        // non visible items with have an offset of zero, don't consider that a boundary
-        if (this.sprite.css('display') !== 'block') {
-            return false;
-        }
-        return this.direction === RIGHT_LABEL && this.sprite.offset().left === SCREEN_WIDTH - this.sprite.width();
-    }
-
-    isAtBoundary(requestedDirection) {
-        return this.isAtLeftBoundary() || this.isAtRightBoundary();
-    }
-
-    isPastBarbarianLeft() {
-        if (this.barbarian === undefined) {
-            return false;
-        }
-
-        return this.getDirection() === LEFT_LABEL &&
-        this.getSprite().offset().left + this.getSprite().width() * PASSING_MULTIPLIER <
-        this.barbarian.getSprite().offset().left || this.isAtLeftBoundary();
-    }
-
-    isPastBarbarianRight() {
-        if (this.barbarian === undefined) {
-            return false;
-        }
-        return this.getDirection() === RIGHT_LABEL &&
-        this.getSprite().offset().left - this.getSprite().width() * PASSING_MULTIPLIER >
-        this.barbarian.getSprite().offset().left || this.isAtRightBoundary();
-    }
 
     shouldTurnaround() {
         return (!this.isBarbarian() && this.isPassedBarbarian() && this.getResetTurnaround());
@@ -164,11 +261,11 @@ class Character {
     }
 
     getObstacleEncountered() {
-        return this.obstacles.getNextObstacle(this.sprite.offset().left, this.getDirection(), this.getScreenNumber());
+        return this.obstacles.getNextObstacle(this.getX(), this.getDirection(), this.getScreenNumber());
     }
 
     isPastObstacle(obstacle) {
-        return obstacle.isPast(this.sprite.offset().left, this.getDirection());
+        return obstacle.isPast(this.getX(), this.getDirection());
     }
 
     // TODO: move to fight class and set fight class object in this class
@@ -205,132 +302,14 @@ class Character {
 
     // TODO: move to fight class and set fight class object in this class
     getProximity(opponent) {
-        let distanceX = Math.abs(this.getSprite().offset().left - opponent.getSprite().offset().left);
+        let distanceX = Math.abs(this.getX() - opponent.getX());
         let distanceY = Math.abs(stripPxSuffix(this.getSprite().css('bottom'))
             - stripPxSuffix(opponent.getSprite().css('bottom')));
         return Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
     }
 
-    /**
-     * Animate a character across the game board. Relies on the isPaused global variable.
-     * @param gameBoard the game board to perform the animation on
-     * @param requestedAction the requested action (run, walk, attack etc.)
-     * @param requestedDirection the requested direction to move the character (left or right)
-     * @param requestedVerticalDirection the requested virtical direction to move the character (up or down)
-     * @param numberOfTimes the number of times to perform the animation loop (zero for infinite)
-     * @param idx the frame index offset
-     * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
-     */
-    async animate(gameBoard, requestedAction, requestedDirection, requestedVerticalDirection, numberOfTimes, idx) {
-
-        if (requestedAction !== DEATH_LABEL) {
-            this.moveFromPositionToBoundary(gameBoard);
-        }
-
-        let frames = this.getFrames(requestedAction, this.getDirection());
-
-        let frame = idx;
-        this.setCurrentFrame(requestedAction, frame);
-        let counter = numberOfTimes;
-
-        while (this.getAction() === requestedAction &&
-               this.getDirection() === requestedDirection &&
-               this.getVerticalDirection() === requestedVerticalDirection &&
-               !this.isStopped() &&
-               !this.shouldTurnaround() &&
-               !this.isAtBoundary(requestedDirection) &&
-               !this.hitObstacle() &&
-               !(this.isDead() && !this.isFalling() && !this.isDying()) &&
-               this.isOnScreen(gameBoard) &&
-               !(this.shouldLaunchAttack(gameBoard)) &&
-               !this.shouldCpuFight(gameBoard) &&
-               !game.getIsPaused() &&
-               frame < frames.length) {
-
-            let sprite = undefined;
-            if (this.getAction() === DEATH_LABEL) {
-                sprite = this.getDeathSprite();
-                sprite.show();
-                if (this.getSprite().css('display') === 'block') {
-                    sprite.css('left', this.getX() + 'px');
-                }
-                if (!this.isBarbarian()) {
-                    this.getSprite().hide();
-                }
-            } else {
-                sprite = this.getSprite();
-            }
-
-            let heightOffset = this.getHeightOffset(requestedAction,
-                this.getDirection()) * sprite.height();
-            sprite.css('background-position',
-                -1*frames[frame++]*sprite.width() + 'px ' + -1 *heightOffset + 'px');
-            this.setCurrentFrame(requestedAction, frame);
-
-            await sleep(MILLISECONDS_PER_SECOND / this.getFramesPerSecond(requestedAction));
-
-            if (frame === frames.length) {
-                // If times is 0 we loop infinitely, if times is set decrement it and keep looping
-                if (counter === 0 || --counter > 0) {
-                    frame = 0;
-                    this.setCurrentFrame(requestedAction, frame);
-                }
-            }
-        }
-
-        /*
-        uncomment to find out why character was stopped if it was unexpected
-        if (this.isBarbarian()) {
-            console.log(this.getCharacterType() + ' is done ' + requestedAction + 'ing');
-
-            if (!(this.getAction() === requestedAction)) {
-                console.log('a');
-            }
-            if (!(this.getDirection() === requestedDirection)) {
-                console.log('b');
-            }
-            if (!(this.getVerticalDirection() === requestedVerticalDirection)) {
-                console.log('c');
-            }
-            if (!(!this.isStopped())) {
-                console.log('d');
-            }
-            if (!(!this.shouldTurnaround())) {
-                console.log('e');
-            }
-            if (!(!this.isAtBoundary())) {
-                console.log('f');
-            }
-            if (!(!this.hitObstacle())) {
-                console.log('g');
-            }
-            if (!(!(this.isDead() && !this.isFalling() && !this.isDying()))) {
-                console.log('h');
-            }
-            if (!(this.isOnScreen(gameBoard))) {
-                console.log('i');
-            }
-            if (!(!this.shouldLaunchAttack(gameBoard))) {
-                console.log('j');
-            }
-            if (!(!this.shouldCpuFight(gameBoard))) {
-                console.log('k');
-            }
-            if (!(!game.isPaused)) {
-                console.log('l');
-            }
-            if (!(frame < frames.length)) {
-                console.log('frame ' + frame + ' of ' + this.characterType + ' ' + this.action +  ' is not less than ' + frames.length);
-            }
-
-        }
-
-         */
-        return frame;
-    }
-
     getX() {
-        return this.sprite.offset().left;
+        return parseInt(stripPxSuffix(this.sprite.css(CSS_LEFT_LABEL)));
     }
 
     getY() {
@@ -399,6 +378,10 @@ class Character {
 
     isDying() {
         return this.getAction() === DEATH_LABEL;
+    }
+
+    isSinking() {
+        return this.getAction() === SINK_LABEL;
     }
 
     isSwimming() {
@@ -655,6 +638,51 @@ class Character {
 
     setBottom(y) {
         this.sprite.css('bottom', y + 'px')
+    }
+
+    /* private */
+    debugAnimationTermination(action, direction, vertDirection, gameBoard, frameIdx, frames) {
+        console.log(this.getCharacterType() + ' is done ' + action + 'ing');
+
+        if (!(this.getAction() === action)) {
+            console.log('a');
+        }
+        if (!(this.getDirection() === direction)) {
+            console.log('b');
+        }
+        if (!(this.getVerticalDirection() === vertDirection)) {
+            console.log('c');
+        }
+        if (!(!this.isStopped())) {
+            console.log('d');
+        }
+        if (!(!this.shouldTurnaround())) {
+            console.log('e');
+        }
+        if (!(!this.isAtBoundary(gameBoard))) {
+            console.log('f');
+        }
+        if (!(!this.hitObstacle())) {
+            console.log('g');
+        }
+        if (!(!(this.isDeadButNotDying()))) {
+            console.log('h');
+        }
+        if (!(this.isOnScreen(gameBoard))) {
+            console.log('i');
+        }
+        if (!(!this.shouldLaunchAttack(gameBoard))) {
+            console.log('j');
+        }
+        if (!(!this.shouldCpuFight(gameBoard))) {
+            console.log('k');
+        }
+        if (!(!gameBoard.isPaused)) {
+            console.log('l');
+        }
+        if (!(frameIdx < frames.length)) {
+            console.log('frame ' + frameIdx + ' of ' + this.characterType + ' ' + this.action +  ' is not less than ' + frames.length);
+        }
     }
 }
 

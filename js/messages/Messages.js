@@ -4,19 +4,22 @@ class Messages {
     constructor() {
         this.controlMessage = $('.controls_message');
         this.gameOverMessage = $('.game_over');
-        this.demoOverMessage = $('.demo_over_message');
+        this.gameWonMessage = $('.game_won');
         this.startMessage = $('.start_message');
+        this.demoOverMessage = $('.demo_over_message');
         this.soundOnMessage = $('.sound_message_on');
         this.soundOffMessage = $('.sound_message_off');
         this.pauseMessage = $('.pause_message');
 
         this.messages = [
             this.controlMessage,
-            this.startMessage,
             this.gameOverMessage,
+            this.gameWonMessage,
+            this.startMessage,
             this.demoOverMessage,
             this.soundOnMessage,
-            this.soundOffMessage
+            this.soundOffMessage,
+            this.pauseMessage
         ];
     }
 
@@ -38,6 +41,7 @@ class Messages {
     }
 
     showPauseMessage() {
+        console.log('showing pause message');
         this.showMessage(this.pauseMessage);
     }
 
@@ -47,6 +51,10 @@ class Messages {
 
     showGameOverMessage() {
         this.showMessage(this.gameOverMessage);
+    }
+
+    showGameWonMessage() {
+        this.showMessage(this.gameWonMessage);
     }
 
     showControlMessage() {

@@ -20,7 +20,6 @@ class Game {
 
         this.barbarian = barbarian;
         this.gameBoard = gameBoard;
-        this.isPaused = false;
         this.pauseFrame = 0;
         this.actionsLocked = false;
         this.numLives = 3;
@@ -43,7 +42,13 @@ class Game {
             throw new Error("performAction: action is a required parameter");
         }
 
-        character.stopAnimation();
+        character.stopMovement();
+
+        if (this.isTransitionFromTerminalAction(character, action)) {
+            console.log('aborted attempt to transition from terminal action ' + character.getAction() + ' to ' + action);
+            action = character.getAction();
+        }
+
         character.setAction(action);
 
         let self = this;
@@ -99,12 +104,13 @@ class Game {
      * @param character the character to render the at rest frame for
      */
     renderAtRestFrame(character) {
-        let action = this.isWater() ? SWIM_LABEL : WALK_LABEL;
-        let position = character.getDirection() === LEFT_LABEL
-            ? character.getFrames(action, character.getDirection()).length
-            : 0;
+        let action = this.isWater() ? SWIM_LABEL : STOP_LABEL;
 
-        this.renderSpriteFrame(character, action, character.getDirection(), position);
+        let heightOffset = character.getHeightOffset(action, character.getDirection()) * character.getSprite().height();
+
+        let offset = character.getFrames(action, character.getDirection())[0];
+        character.getSprite().css(CSS_BACKGROUND_POSITION,
+            -1*offset*character.getWidth() + CSS_PX_LABEL + ' ' + -1*heightOffset + CSS_PX_LABEL);
     }
 
     /**
@@ -120,6 +126,7 @@ class Game {
             monster.show();
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getSound());
+            this.setCpuVerticalDirection(monster);
             this.performAction(monster, monster.getResetAction());
         }
     }
@@ -299,7 +306,6 @@ class Game {
         return this.barbarian.isRunning();
     }
 
-
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
 
@@ -308,7 +314,7 @@ class Game {
         if (character.isDying()) {
             this.handleDeath(character);
         }
-        if (character.isAtBoundary()) {
+        if (character.isAtBoundary(this.gameBoard)) {
             this.handleBoundary(character);
         }
         if (character.shouldTurnaround()) {
@@ -328,6 +334,11 @@ class Game {
         if (!character.isBarbarian() && this.isBarbarianDead() && !character.isWalking()) {
             this.performAction(character, WALK_LABEL);
         }
+    }
+
+    /* private */
+    isTransitionFromTerminalAction(character, action) {
+        character.isBarbarian() && character.getAction() !== action && TERMINAL_ACTIONS.has(character.getAction())
     }
 
     /* private */
@@ -410,25 +421,14 @@ class Game {
             this.sounds.playFireSound();
         }
 
-        if (this.isWater()) {
-            character.getSprite().stop();
-            let timeToFall = character.getY() / DEFAULT_PIXELS_PER_SECOND * MILLISECONDS_PER_SECOND;
+        let action = this.isWater() ? SINK_LABEL
+                                    : character.isFalling() ? FALL_LABEL : DEATH_LABEL;
+        this.performAction(character, action);
 
-            let frame = character.getFrames(DEATH_LABEL, character.getDirection())[4];
-            let heightOffset = character.getHeightOffset(DEATH_LABEL, character.getDirection()) *
-                character.getDeathSprite().height();
-
-            character.getDeathSprite().css('background-position',
-                -1*frame*character.getDeathSprite().width() + 'px ' + -1*heightOffset + 'px');
-
-            character.moveToPosition(character.getX(), 0, DEFAULT_PIXELS_PER_SECOND);
-        } else {
-            this.performAction(character,character.getAction() == FALL_LABEL ? FALL_LABEL : DEATH_LABEL)
-            if (character.getAction() === FALL_LABEL) {
-                setTimeout(function () {
-                    character.hide();
-                }, character.getDeathFallDelay());
-            }
+        if (action === FALL_LABEL) {
+            setTimeout(function () {
+                character.hide();
+            }, character.getDeathFallDelay());
         }
     }
 
@@ -483,8 +483,23 @@ class Game {
     /* private */
     handleMonsterTurnaround(character) {
         if (!character.isBarbarian() && character.shouldTurnaround()) {
+
+            if (this.gameBoard.isWater(this.getScreenNumber()) && !character.isBarbarian()) {
+                // Make water monsters chase the barbarian vertically
+                this.setCpuVerticalDirection(character)
+            }
+
             character.setDirection(character.isPastBarbarianLeft() ? RIGHT_LABEL : LEFT_LABEL);
             this.performAction(character, WALK_LABEL);
+        }
+    }
+
+    /* private */
+    setCpuVerticalDirection(character) {
+        if (this.getBarbarian().getY() > character.getY()) {
+            character.setVerticalDirection(UP_LABEL);
+        } else {
+            character.setVerticalDirection(DOWN_LABEL);
         }
     }
 
@@ -494,17 +509,18 @@ class Game {
             return;
         }
 
-        if (!this.gameBoard.isScrollAllowed(game.getScreenNumber(), LEFT_LABEL) && character.isAtLeftBoundary()) {
+        if (!this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL) && character.isAtLeftBoundary()) {
+            this.renderAtRestFrame(character);
             return;
         }
 
-        if (character.isAtLeftBoundary() && this.gameBoard.isScrollAllowed(game.getScreenNumber(), LEFT_LABEL)) {
+        if (character.isAtLeftBoundary() && this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL)) {
             this.hideOpponents();
             this.advanceBackdrop(character, RIGHT_LABEL)
                 .then(function() {}, error => handlePromiseError(error));
             this.setScreenNumber(this.getScreenNumber() - 1);
         } else if (character.isAtRightBoundary() &&
-            this.gameBoard.isScrollAllowed(game.getScreenNumber(), RIGHT_LABEL) &&
+            this.gameBoard.isScrollAllowed(this.getScreenNumber(), RIGHT_LABEL) &&
                 character.getScreenNumber() < this.gameBoard.getScreenNumbers().length
                     && this.areAllMonstersDefeated()) {
             this.hideOpponents();
@@ -515,26 +531,18 @@ class Game {
             } else {
                 // At the end of the game
                 character.setStatus(DEAD_LABEL);
+                //character.hide();
+                this.messages.showGameWonMessage();
                 this.setScreenNumber(0);
-                game.setNumLives(0);
+                this.setNumLives(0);
             }
         }
 
-        if (game.getNumLives() !== 0) {
-            // Don't render at rest frame if the game has ended since the screen number context to set it appropriately
-            // is no longer set. For example if the game ends while swimming we don't want to render a walking frame.
+        if (this.getNumLives() > 0) {
             this.renderAtRestFrame(character);
         }
 
         character.setAction(STOP_LABEL);
-    }
-
-    /* private */
-    renderSpriteFrame(character, requestedAction, direction, position) {
-        let heightOffset = character.getHeightOffset(requestedAction, direction) * character.getSprite().height();
-
-        character.getSprite().css('background-position',
-            -1*position*character.getSprite().width() + 'px ' + -1*heightOffset + 'px');
     }
 
     /* private */
@@ -583,7 +591,7 @@ class Game {
             y = SCREEN_HEIGHT - character.getSprite().height() / 2;
             distance = Math.abs(y - stripPxSuffix(character.getSprite().css('bottom')));
         } else {
-            x = character.getDirection() === RIGHT_LABEL ? 0 : windowWidth - character.getSprite().width();
+            x = character.getDirection() === RIGHT_LABEL ? 0 : SCREEN_WIDTH - character.getSprite().width();
             distance = SCREEN_WIDTH - character.getSprite().width();
         }
         let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
@@ -622,6 +630,7 @@ class Game {
         let spritesOnScreen = this.getOpponentsOnScreen();
         for (const character of characters) {
             let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
+            character.getDeathSprite().hide();
             character.setAction(character.getResetAction());
             character.setDirection(character.getResetDirection());
             character.setStatus(character.getResetStatus());
@@ -706,7 +715,7 @@ class Game {
     }
 
     getIsPaused() {
-        return this.isPaused;
+        return this.gameBoard.getIsPaused();
     }
 
     getPausedFrame() {
@@ -722,10 +731,7 @@ class Game {
     }
 
     setIsPaused(flag) {
-        if (flag === undefined) {
-            throw new Error("setIsPaused: flag argument is required");
-        }
-        this.isPaused = flag;
+        this.gameBoard.setIsPaused(flag);
     }
 
     setActionsLocked(flag) {

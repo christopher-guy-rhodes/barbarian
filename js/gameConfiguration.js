@@ -5,6 +5,16 @@ const DOG_CHARACTER_TYPE = 'DOG';
 const BARBARIAN_CHARACTER_TYPE = 'BARBARIAN';
 
 const BARBARIAN_FRAMES = {
+        sink : {
+                right: {
+                        frames: [100],
+                        heightOffset: 12
+                },
+                left: {
+                        frames: [104],
+                        heightOffset: 13
+                }
+        },
         attack : {
                 left : {
                         frames : [7, 6, 5, 4, 3, 2, 1, 0],
@@ -49,11 +59,11 @@ const BARBARIAN_FRAMES = {
                         heightOffset: 14}},
         stop: {
                 left : {
-                        frames :  [3, 2, 1, 0],
-                        heightOffset : 17},
+                        frames :  [14],
+                        heightOffset : 1},
                 right : {
-                        frames : [0, 1, 2, 3],
-                        heightOffset : 16}
+                        frames : [0],
+                        heightOffset : 0}
         },
         death: {
                 right: {
@@ -260,7 +270,7 @@ let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES, BARBARIAN_FR
     .withResetAction(STOP_LABEL)
     .withResetDirection(RIGHT_LABEL)
     .withResetLeft(0)
-    //.withScreenNumber(1)
+    //.withScreenNumber(2)
     .withResetStatus(ALIVE_LABEL)
     //.withDeathFrames(BARBARIAN_DEATH_FRAMES)
     .withActionNumberOfTimes(ATTACK_LABEL, 1)
@@ -314,6 +324,7 @@ const GAME_BOARD = new GameBoardBuilder()
         new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark1'))
             .withFramesPerSecond(ATTACK_LABEL, 10)
             .withFramesPerSecond(WALK_LABEL, 10)
+            .withPixelsPerSecond(ATTACK_LABEL, 1.7 * DEFAULT_PIXELS_PER_SECOND)
             .withSound(SPLASH_SOUND)
             .withResetBottom(3, 0)
             .withCanLeaveBehind(true)
@@ -324,32 +335,13 @@ const GAME_BOARD = new GameBoardBuilder()
         new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark2'))
             .withFramesPerSecond(ATTACK_LABEL, 10)
             .withFramesPerSecond(WALK_LABEL, 10)
+            .withPixelsPerSecond(ATTACK_LABEL, 1.7 * DEFAULT_PIXELS_PER_SECOND)
             .withSound(SPLASH_SOUND)
-            .withResetBottom(3, 0)
+            .withResetBottom(3, 700)
             .withCanLeaveBehind(true)
             .withCanHighlight(false)
             .withIsInvincible(true)
             .withResetLeft(1400)
-            .withScreenNumber(3).build(),
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark3'))
-            .withFramesPerSecond(ATTACK_LABEL, 10)
-            .withFramesPerSecond(WALK_LABEL, 10)
-            .withSound(SPLASH_SOUND)
-            .withResetBottom(3, 800)
-            .withCanLeaveBehind(true)
-            .withCanHighlight(false)
-            .withIsInvincible(true)
-            .withResetLeft(1400)
-            .withScreenNumber(3).build(),
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark4'))
-            .withFramesPerSecond(ATTACK_LABEL, 10)
-            .withFramesPerSecond(WALK_LABEL, 10)
-            .withSound(SPLASH_SOUND)
-            .withResetBottom(3, 400)
-            .withCanLeaveBehind(true)
-            .withCanHighlight(false)
-            .withIsInvincible(true)
-            .withResetLeft(0)
             .withScreenNumber(3).build()])
     .withWater(3).build();
 

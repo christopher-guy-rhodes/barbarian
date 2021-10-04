@@ -63,7 +63,6 @@ class Character {
         this.currentFrame = currentFrame;
         this.isInvincible = isInvincible;
 
-        this.previousAction = undefined;
         this.animator = new Animator(this.sprite);
         this.sounds = new Sounds();
     }
@@ -80,6 +79,21 @@ class Character {
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
      */
     async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
+        if (gameBoard === undefined) {
+            throw new Error("animate: gameBoard parameter is required");
+        }
+        if (action === undefined) {
+            throw new Error("animate: the action parameter is required");
+        }
+        if (direction === undefined) {
+            throw new Error("animate: direction parameter is required");
+        }
+        if (numberOfTimes === undefined) {
+            throw new Error("animate: numberOfTimes parameter is required");
+        }
+        if (idx === undefined){
+            throw new Error("animate: idx parameter is required");
+        }
 
         this.moveCharacter(action, gameBoard);
 
@@ -123,6 +137,9 @@ class Character {
      * @param pixelsPerSecond the pixels per second rate to move at
      */
     moveToPosition(x, y, pixelsPerSecond) {
+        if (pixelsPerSecond === undefined) {
+            throw new Error("moveToPosition: pixelsPerSecond parameter is required");
+        }
         this.animator.moveElementToPosition(x, y, pixelsPerSecond)
     }
 
@@ -132,6 +149,9 @@ class Character {
      * @returns {boolean}
      */
     isAtBoundary(gameBoard) {
+        if (gameBoard === undefined) {
+            throw new Error("isAtBoundary: gameBoard parameter is required");
+        }
         return !gameBoard.isWater(this.getScreenNumber()) && this.isAtLeftBoundary() || this.isAtRightBoundary();
     }
 
@@ -169,13 +189,600 @@ class Character {
             this.getX() - this.getWidth() * PASSING_MULTIPLIER > this.barbarian.getX() || this.isAtRightBoundary();
     }
 
+    /**
+     * Returns true if the character is moving up or down, false otherwise.
+     * @returns {boolean}
+     */
     isMovingVertically() {
         return this.getVerticalDirection() !== undefined;
     }
 
+    /**
+     * Returns true if the monster should turn around to chase the Barbarian, false otherwise
+     * @returns {boolean|*}
+     */
+    shouldCpuTurnaround() {
+        return (!this.isBarbarian() && this.isPassedBarbarian() && this.getResetTurnaround());
+    }
+
+    /**
+     * Returns true if the character is not the barbarian and should start fighting, false otherwise. Characters will
+     * not fight chracters of the same type.
+     * @param gameBoard the game board
+     * @returns {boolean}
+     */
+    shouldCpuFight(gameBoard) {
+        if (gameBoard === undefined) {
+            throw new Error("shouldCpuFight: gameBoard parameter is required");
+        }
+        if (this.barbarian.didJumpEvade() || this.getAction() === DEATH_LABEL) {
+            return false;
+        }
+
+        return !this.isBarbarian() && !this.barbarian.isDead() &&
+            this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
+                .filter(opponent => opponent.getCharacterType() != this.getCharacterType()).length > 0;
+    }
+
+    /**
+     * Returns true if the character is not the Barbarian and is within range to launch an attack, false otherwise.
+     * @param gameBoard the game board
+     * @returns {boolean}
+     */
+    shouldCpuLaunchAttack(gameBoard) {
+        if (gameBoard === undefined) {
+            throw new Error("shouldCpuFight: gameBoard parameter is required");
+        }
+        return !this.isBarbarian() && !this.barbarian.isDead() && this.getAction() !== ATTACK_LABEL &&
+            this.getAction() !== DEATH_LABEL && this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
+    }
+
+    /**
+     * Gets the opponents with x horizontal pixels of the character.
+     * @param gameBoard the game board
+     * @param x the proximity to check
+     * @returns {[]}
+     */
+    getOpponentsWithinX(gameBoard, x) {
+        if (gameBoard === undefined) {
+            throw new Error("shouldCpuFight: gameBoard parameter is required");
+        }
+        if (x === undefined) {
+            throw new Error("getOpponentsWithinX: x parameter is required");
+        }
+        let attackers = [];
+        let opponents = gameBoard.getOpponents(this.barbarian.getScreenNumber());
+        for (let opponent of opponents) {
+            let proximity = this.getProximity(opponent);
+            if (proximity > 0 && proximity < x) {
+                attackers.push(opponent);
+            }
+        }
+        return attackers;
+    }
+
+    /**
+     * Get the x coordinate for the character.
+     * @returns {number}
+     */
+    getX() {
+        return parseInt(stripPxSuffix(this.sprite.css(CSS_LEFT_LABEL)));
+    }
+
+    /**
+     * Get the y coordinate for the character.
+     * @returns {number}
+     */
+    getY() {
+        return parseInt(stripPxSuffix(this.sprite.css('bottom')));
+    }
+
+    /**
+     * Get the height of the character.
+     * @returns {number}
+     */
+    getHeight() {
+        return parseInt(stripPxSuffix(this.getSprite().css('height')));
+    }
+
+    /**
+     * Get the width of the character.
+     * @returns {number}
+     */
+    getWidth() {
+        return parseInt(stripPxSuffix(this.getSprite().css('height')));
+    }
+
+    /**
+     * Returns true if this character object is the Barbarian, false otherwise.
+     * @returns {boolean}
+     */
+    isBarbarian() {
+        return this === this.barbarian;
+    }
+
+    /**
+     * Hide this character.
+     */
+    hide() {
+        this.getSprite().css(CSS_DISPLAY_LABEL, CSS_NONE_LABEL);
+    }
+
+    /**
+     * Show this character.
+     */
+    show() {
+        this.getSprite().css(CSS_DISPLAY_LABEL, CSS_BLOCK_LABEL);
+    }
+
+    /**
+     * Returns true if the character is dead, false otherwise.
+     * @returns {boolean}
+     */
+    isDead() {
+        return this.getStatus() === DEAD_LABEL;
+    }
+
+    /**
+     * Returns true if the character is alive, false otherwise.
+     * @returns {boolean}
+     */
+    isAlive() {
+        return this.getStatus() === ALIVE_LABEL;
+    }
+
+    /**
+     * Returns true if the character is facing right, false otherwise.
+     * @returns {boolean}
+     */
+    isDirectionRight() {
+        return this.getDirection() === RIGHT_LABEL;
+    }
+
+    /**
+     * Returns true if the character is facing left, false otherwise.
+     * @returns {boolean}
+     */
+    isDirectionLeft() {
+        return this.getDirection() === LEFT_LABEL;
+    }
+
+    /**
+     * Returns true if the character is facing up, false otherwise.
+     * @returns {boolean}
+     */
+    isDirectionUp() {
+        return this.getVerticalDirection() === UP_LABEL;
+    }
+
+    /**
+     * Returns true if the character is facing down, false otherwise.
+     * @returns {boolean}
+     */
+    isDirectionDown() {
+        return this.getVerticalDirection() === DOWN_LABEL;
+    }
+
+    /**
+     * Returns true if the character is walking, false otherwise.
+     * @returns {boolean}
+     */
+    isWalking() {
+        return this.getAction() === WALK_LABEL;
+    }
+
+    /**
+     * Returns true if the character is running, false otherwise.
+     * @returns {boolean}
+     */
+    isRunning() {
+        return this.getAction() === RUN_LABEL;
+    }
+
+    /**
+     * Returns true if the character is falling, false otherwise.
+     * @returns {boolean}
+     */
+    isFalling() {
+        return this.getAction() === FALL_LABEL;
+    }
+
+    /**
+     * Returns true if the character is dying, false otherwise.
+     * @returns {boolean}
+     */
+    isDying() {
+        return this.getAction() === DEATH_LABEL;
+    }
+
+    /**
+     * Returns true if the character is sinking, false otherwise.
+     * @returns {boolean}
+     */
+    isSinking() {
+        return this.getAction() === SINK_LABEL;
+    }
+
+    /**
+     * Returns true if the character is swimming, false otherwise.
+     * @returns {boolean}
+     */
+    isSwimming() {
+        return this.getAction() === SWIM_LABEL;
+    }
+
+    /**
+     * Returns true if the character is jumping, false otherwise.
+     * @returns {boolean}
+     */
+    isJumping() {
+        return this.getAction() === JUMP_LABEL;
+    }
+
+    /**
+     * Returns true if the character is attacking, false otherwise.
+     * @returns {boolean}
+     */
+    isAttacking() {
+        return this.getAction() === ATTACK_LABEL;
+    }
+
+    /**
+     * Returns the obstacle that the character has encountered, undefined if no obstacle was encountered.
+     * @returns {undefined|*}
+     */
+    getObstacle() {
+        // Get the most recently passed obstacle
+        let obstacle = this.getObstacleEncountered();
+
+        if (obstacle !== undefined &&
+            this.isPastObstacle(obstacle) &&
+            (this.getY() != obstacle.getHeight() || obstacle.getType() === PIT_LABEL) &&
+            (!this.isBarbarian() || this.getAction() !== ATTACK_LABEL)) {
+            return obstacle;
+        }
+        return undefined;
+    }
+
+    /**
+     * Returns true if the action is repeated indefinitely, false otherwise.
+     * @param action the action to check
+     * @returns {boolean}
+     */
+    isActionInfinite(action) {
+        if (action === undefined) {
+            throw new Error("isActionInfinite: action is a required parameter");
+        }
+        return this.getActionNumberOfTimes(action) === 0;
+    }
+
+    /**
+     * Returns true if the character hit an obstacle, false otherwise.
+     * @returns {boolean}
+     */
+    hitObstacle() {
+        if (this.getAction() === FALL_LABEL) {
+            return false;
+        }
+        let obstacle =  this.getObstacle();
+
+        if (obstacle === undefined) {
+            return false;
+        } else if (obstacle.getType() === PIT_LABEL) {
+            // TODO: put jump evade frame in config
+            if (this.didJumpEvade() || !this.isBarbarian()) {
+                return false;
+            }
+            return true;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Returns true if the character does not have to be dead for the Barbarian to advance, false otherwise.
+     * @returns {*}
+     */
+    getCanLeaveBehind() {
+        return this.canLeaveBehind;
+    }
+
+    /**
+     * Returns the number of times an action is to be executed. Zero values imply infinite.
+     * @param action the action to check
+     * @returns {*}
+     */
+    getActionNumberOfTimes(action) {
+        return this.actionNumberOfTimes[action];
+    }
+
+    /**
+     * Returns the time that the character died.
+     * @returns {*}
+     */
+    getDeathTime() {
+        return this.death[TIME_LABEL];
+    }
+
+    /**
+     * Returns true if the character cannot be killed by the Barbarian, false otherwise.
+     * @returns {*}
+     */
+    getIsInvincible() {
+        return this.isInvincible;
+    }
+
+    /**
+     * Returns the current action of the character.
+     * @returns {*}
+     */
+    getAction() {
+        return this.action;
+    }
+
+    /**
+     * Get the current vertical direction of the character. Returns undefined if there is no vertical direction.
+     * @returns {*}
+     */
+    getVerticalDirection() {
+        return this.verticalDirection;
+    }
+
+    /**
+     * Gets the pixels per second the movement should happen for a particular action.
+     * @param action
+     * @returns {*}
+     */
+    getPixelsPerSecond(action) {
+        if (action === undefined) {
+            throw new Error("getPixelsPerSecond: action parameter is required");
+        }
+        return this.pixelsPerSecond[action];
+    }
+
+    /**
+     * Gets the default action for the character.
+     * @returns {*}
+     */
+    getResetAction() {
+        return this.reset[ACTION_LABEL];
+    }
+
+    /**
+     * Gets the default direction for the character.
+     * @returns {*}
+     */
+    getResetDirection() {
+        return this.reset[DIRECTION_LABEL];
+    }
+
+    /**
+     * Gets the default status for the character.
+     * @returns {*}
+     */
+    getResetStatus() {
+        return this.reset[STATUS_LABEL];
+    }
+
+    /**
+     * Returns true if the character will turn around and chase the Barbarian, false otherwise.
+     * @returns {*}
+     */
+    getResetTurnaround() {
+        return this.reset[TURNAROUND_LABEL];
+    }
+
+    /**
+     * Gets the default direction for the customer.
+     * @returns {*}
+     */
+    getResetLeft() {
+        return this.reset[LEFT_LABEL];
+    }
+
+    /**
+     * Gets the default y coordinate for the character.
+     * @param screenNumber
+     * @returns {*}
+     */
+    getResetBottom(screenNumber) {
+        if (screenNumber === undefined) {
+            throw new Error("getResetBottom: screenNumber parameter required");
+        }
+        return this.reset[BOTTOM_LABEL][screenNumber];
+    }
+
+    /**
+     * Get the current direction of the character.
+     * @returns {*}
+     */
+    getDirection() {
+        return this.direction;
+    }
+
+    /**
+     * Gets the sprite height offset for a particular action and direction.
+     * @param action the action
+     * @param directiont the direction
+     * @returns {*}
+     */
+    getHeightOffset(action, direction) {
+        if (action === undefined || direction === undefined) {
+            throw new Error("getHeightOffset: action and direction are required parameters");
+        }
+        return this.frames[action][direction][HEIGHT_OFFSET_LABEL];
+    }
+
+    /**
+     * Get the frames for a particular action and direction.
+     * @param action the action
+     * @param direction the direction
+     * @returns {*}
+     */
+    getFrames(action, direction) {
+        if (action === undefined) {
+            throw new Error("getHeightOffset: action parameter required");
+        }
+        if (direction === undefined) {
+            throw new Error("getHeightOffset: direction parameter required");
+        }
+        return this.frames[action][direction][FRAMES_LABEL];
+    }
+
+    /**
+     * Get the sprite css element.
+     * @returns {*}
+     */
+    getSprite() {
+        return this.sprite;
+    }
+
+    /**
+     * Gets the death sprite element for the character.
+     * @returns {*}
+     */
+    getDeathSprite() {
+        return this.death[SPRITE_LABEL];
+    }
+
+    /**
+     * Gets the type of the character.
+     * @returns {*}
+     */
+    getCharacterType() {
+        return this.characterType;
+    }
+
+    /**
+     * Returns true if the character can elevate, false otherwise.
+     * @returns {*}
+     */
+    getCanElevate() {
+        return this.canElevate;
+    }
+
+    /**
+     * Get the sound that the character makes.
+     * @returns {*}
+     */
+    getSound() {
+        return this.sound;
+    }
+
+    /**
+     * Gets the screen number that the character is on.
+     * @returns {*}
+     */
+    getScreenNumber() {
+        return this.screenNumber;
+    }
+
+    /**
+     * Get the current frame for a particular action for the character.
+     * @param action
+     * @returns {*}
+     */
+    getCurrentFrame(action) {
+        if (action === undefined) {
+            throw new Error("getCurrentFrame: action parameter is required");
+        }
+        return this.currentFrame[action];
+    }
+
+    /**
+     * Set the action for the character.
+     * @param action the action to set.
+     */
+    setAction(action) {
+        this.action = action;
+    }
+
+    /**
+     * Set the direction of the character.
+     * @param direction
+     */
+    setDirection(direction) {
+        if (direction === undefined) {
+            throw new Error("setDirection: direction parameter is required");
+        }
+        this.direction = direction;
+    }
+
+    /**
+     * Set the vertical direction of the character.
+     * @param direction
+     */
+    setVerticalDirection(direction) {
+        this.verticalDirection = direction;
+    }
+
+    /**
+     * Set the status for the character.
+     * @param status
+     */
+    setStatus(status) {
+        if (status === undefined) {
+            throw new Error("setStatus: the status parameter is required");
+        }
+        this.status = status;
+    }
+
+    /**
+     * Set the time of death for the character.
+     * @param time the time
+     */
+    setDeathTime(time) {
+        if (time === undefined) {
+            throw new Error("setDeathTime: time is a required parameter");
+        }
+        this.death[TIME_LABEL] = time;
+    }
+
+    /**
+     * Set the screen number for the character.
+     * @param screenNumber the screen number
+     */
+    setScreenNumber(screenNumber) {
+        if (screenNumber === undefined) {
+            throw new Error("setScreenNumber: screenNumber is a required parameter");
+        }
+        this.screenNumber = screenNumber;
+    }
+
+    /**
+     * Set the current frame for the given action and frame.
+     * @param action the action
+     * @param frame the frame
+     */
+    setCurrentFrame(action, frame) {
+        if (action === undefined) {
+            throw new Error("setCurrentFrame: action is a required parameter");
+        }
+        if (frame === undefined) {
+            throw new Error("setCurrentFrame: frame ia a required parameter");
+        }
+        this.currentFrame[action] = frame;
+    }
+
+    /**
+     * Set the y coordinate for the character.
+     * @param y the y coordinate
+     */
+    setY(y) {
+        if (y === undefined) {
+            throw new Error("setY: y parameter is required");
+        }
+        this.sprite.css(CSS_BOTTOM_LABEL, y + CSS_PX_LABEL)
+    }
+
+    /* private */
+    didJumpEvade() {
+        return this.getAction() === JUMP_LABEL && this.getCurrentFrame(JUMP_LABEL) >= 3;
+    }
+
     /* private */
     isBarbarian() {
-        return this.barbarian === undefined;
+        return this.barbarian === this;
     }
 
     /* private */
@@ -184,12 +791,12 @@ class Character {
             this.getDirection() !== requestedDirection ||
             this.getVerticalDirection() !== requestedVerticalDirection ||
             this.isStopped() ||
-            this.shouldTurnaround() ||
+            this.shouldCpuTurnaround() ||
             this.isAtBoundary(gameBoard) ||
             this.hitObstacle() ||
             this.isDeadButNotDying() ||
             !this.isOnScreen(gameBoard) ||
-            this.shouldLaunchAttack(gameBoard) ||
+            this.shouldCpuLaunchAttack(gameBoard) ||
             this.shouldCpuFight(gameBoard) ||
             gameBoard.getIsPaused());
     }
@@ -258,56 +865,22 @@ class Character {
         return this.action === STOP_LABEL;
     }
 
-
-    shouldTurnaround() {
-        return (!this.isBarbarian() && this.isPassedBarbarian() && this.getResetTurnaround());
-    }
-
+    /* private */
     isPassedBarbarian() {
         return this.isPastBarbarianLeft() || this.isPastBarbarianRight();
     }
 
+    /* private */
     getObstacleEncountered() {
         return this.obstacles.getNextObstacle(this.getX(), this.getDirection(), this.getScreenNumber());
     }
 
+    /* private */
     isPastObstacle(obstacle) {
         return obstacle.isPast(this.getX(), this.getDirection());
     }
 
-    // TODO: move to fight class and set fight class object in this class
-    shouldCpuFight(gameBoard) {
-
-        if (this.barbarian.didJumpEvade() || this.getAction() === DEATH_LABEL) {
-            return false;
-        }
-
-        return !this.isBarbarian() && !this.barbarian.isDead() &&
-            this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
-                .filter(opponent => opponent.getCharacterType() != this.getCharacterType()).length > 0;
-    }
-
-    // TODO: move to fight class and set fight class object in this class
-    shouldLaunchAttack(gameBoard) {
-
-        return !this.isBarbarian() && !this.barbarian.isDead() && this.getAction() !== ATTACK_LABEL &&
-            this.getAction() !== DEATH_LABEL && this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
-    }
-
-    // TODO: move to fight class and set fight class object in this class
-    getOpponentsWithinX(gameBoard, proximityThreshold) {
-        let attackers = [];
-        let opponents = gameBoard.getOpponents(this.barbarian.getScreenNumber());
-        for (let opponent of opponents) {
-            let proximity = this.getProximity(opponent);
-            if (proximity > 0 && proximity < proximityThreshold) {
-                attackers.push(opponent);
-            }
-        }
-        return attackers;
-    }
-
-    // TODO: move to fight class and set fight class object in this class
+    /* private */
     getProximity(opponent) {
         let distanceX = Math.abs(this.getX() - opponent.getX());
         let distanceY = Math.abs(stripPxSuffix(this.getSprite().css('bottom'))
@@ -315,336 +888,19 @@ class Character {
         return Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
     }
 
-    getX() {
-        return parseInt(stripPxSuffix(this.sprite.css(CSS_LEFT_LABEL)));
-    }
-
-    getY() {
-        return parseInt(stripPxSuffix(this.sprite.css('bottom')));
-    }
-
-    getHeight() {
-        return parseInt(stripPxSuffix(this.getSprite().css('height')));
-    }
-
-    getWidth() {
-        return parseInt(stripPxSuffix(this.getSprite().css('height')));
-    }
-
+    /* private */
     isOnScreen(gameBoard) {
         return gameBoard.getOpponents(this.barbarian.getScreenNumber()).includes(this);
     }
 
-    isBarbarian() {
-        return this === this.barbarian;
-    }
-
-    hide() {
-        this.getSprite().css('display', 'none');
-    }
-
-    show() {
-        this.getSprite().css('display', 'block');
-    }
-
-    isDead() {
-        return this.getStatus() === DEAD_LABEL;
-    }
-
-    isAlive() {
-        return this.getStatus() === ALIVE_LABEL;
-    }
-
-    isDirectionRight() {
-        return this.getDirection() === RIGHT_LABEL;
-    }
-
-    isDirectionLeft() {
-        return this.getDirection() === LEFT_LABEL;
-    }
-
-    isDirectionUp() {
-        return this.getVerticalDirection() === UP_LABEL;
-    }
-
-    isDirectionDown() {
-        return this.getVerticalDirection() === DOWN_LABEL;
-    }
-
-    isWalking() {
-        return this.getAction() === WALK_LABEL;
-    }
-
-    isRunning() {
-        return this.getAction() === RUN_LABEL;
-    }
-
-    isFalling() {
-        return this.getAction() === FALL_LABEL;
-    }
-
-    isDying() {
-        return this.getAction() === DEATH_LABEL;
-    }
-
-    isSinking() {
-        return this.getAction() === SINK_LABEL;
-    }
-
-    isSwimming() {
-        return this.getAction() === SWIM_LABEL;
-    }
-
-    isDying() {
-        return this.getAction() === DEATH_LABEL;
-    }
-
-    isJumping() {
-        return this.getAction() === JUMP_LABEL;
-    }
-
-    isAttacking() {
-        return this.getAction() === ATTACK_LABEL;
-    }
-
-    getObstacle() {
-
-        // Get the most recently passed obstacle
-        let obstacle = this.getObstacleEncountered();
-
-        if (obstacle !== undefined &&
-            this.isPastObstacle(obstacle) &&
-            (this.getY() != obstacle.getHeight() || obstacle.getType() === PIT_LABEL) &&
-            (!this.isBarbarian() || this.getAction() !== ATTACK_LABEL)) {
-            return obstacle;
-        }
-        return undefined;
-    }
-
-    isActionInfinite(action) {
-        if (action === undefined) {
-            throw new Error("isActionInfinite: action is a required parameter");
-        }
-        return this.getActionNumberOfTimes(action) === 0;
-    }
-
-    hitObstacle() {
-        if (this.getAction() === FALL_LABEL) {
-            return false;
-        }
-        let obstacle =  this.getObstacle();
-
-        if (obstacle === undefined) {
-            return false;
-        } else if (obstacle.getType() === PIT_LABEL) {
-            // TODO: put jump evade frame in config
-            if (this.didJumpEvade() || !this.isBarbarian()) {
-                return false;
-            }
-            return true;
-        } else {
-            return true;
-        }
-    }
-
-    didJumpEvade() {
-        return this.getAction() === JUMP_LABEL && this.getCurrentFrame(JUMP_LABEL) >= 3;
-    }
-
-    /*
-     * Getters and setters
-     */
-    getFallDelay() {
-        return this.death[FALL_DELAY_LABELS];
-    }
-
-    getCanLeaveBehind() {
-        return this.canLeaveBehind;
-    }
-
-    getActionNumberOfTimes(action) {
-        return this.actionNumberOfTimes[action];
-    }
-
+    /* private */
     getStatus() {
         return this.status;
     }
 
-    getDeathTime() {
-        return this.death[TIME_LABEL];
-    }
-
-    getDeathFallDelay() {
-        return this.death[FALL_DELAY_LABELS];
-    }
-
-    getDeathSpriteHeightOffset(direction) {
-        if (direction === undefined) {
-            throw new Error("getDeathFrames: direction is a required parameter");
-        }
-        return this.death[FRAMES_LABEL][direction][HEIGHT_OFFSET_LABEL];
-    }
-
-    getDeathFrames(direction) {
-        if (direction === undefined) {
-            throw new Error("getDeathFrames: direction is a required parameter");
-        }
-        return this.death[FRAMES_LABEL][direction][FRAMES_LABEL];
-    }
-
-    getDeathFramesPerSecond() {
-        return this.death[FRAMES_PER_SECOND_LABEL];
-    }
-
-    getStatus() {
-        return this.status;
-    }
-
-    getIsInvincible() {
-        return this.isInvincible;
-    }
-
-    getAction() {
-        return this.action;
-    }
-
-    getVerticalDirection() {
-        return this.verticalDirection;
-    }
-
-    getPixelsPerSecond(action) {
-        if (action === undefined) {
-            throw new Error("getPixelsPerSecond: action parameter is required");
-        }
-        return this.pixelsPerSecond[action];
-    }
-
+    /* private */
     getFramesPerSecond(action) {
-        if (action === undefined) {
-            throw new Error("getPixelsPerSecond: action parameter is required");
-        }
         return this.framesPerSecond[action];
-    }
-
-    getResetAction() {
-        return this.reset[ACTION_LABEL];
-    }
-
-    getResetDirection() {
-        return this.reset[DIRECTION_LABEL];
-    }
-
-    getResetStatus() {
-        return this.reset[STATUS_LABEL];
-    }
-
-    getResetTurnaround() {
-        return this.reset[TURNAROUND_LABEL];
-    }
-
-    getDirection() {
-        return this.direction;
-    }
-
-    getHeightOffset(action, direction) {
-        if (action === undefined || direction === undefined) {
-            throw new Error("getHeightOffset: action and direction are required parameters");
-        }
-        return this.frames[action][direction][HEIGHT_OFFSET_LABEL];
-    }
-
-    getFrames(action, direction) {
-        if (action === undefined || direction === undefined) {
-            throw new Error("getHeightOffset: action and direction are required parameters");
-        }
-        return this.frames[action][direction][FRAMES_LABEL];
-    }
-
-    getMinJumpThreshold() {
-        return this.jumpThresholds[MIN_LABEL];
-    }
-
-    getMaxJumpThreshold() {
-        return this.jumpThresholds[MAX_LABEL];
-    }
-
-    getSprite() {
-        return this.sprite;
-    }
-
-    getResetLeft() {
-        return this.reset[LEFT_LABEL];
-    }
-
-    getDeathSprite() {
-        return this.death[SPRITE_LABEL];
-    }
-
-    getCharacterType() {
-        return this.characterType;
-    }
-
-    getResetBottom(screenNumber) {
-        if (screenNumber === undefined) {
-            throw new Error("getResetBottom: screenNumber parameter required");
-        }
-        return this.reset[BOTTOM_LABEL][screenNumber];
-    }
-
-    getCanElevate() {
-        return this.canElevate;
-    }
-
-    getCanHighlight() {
-        return this.canHighlight;
-    }
-
-    getSound() {
-        return this.sound;
-    }
-
-    getScreenNumber() {
-        return this.screenNumber;
-    }
-
-    getCurrentFrame(action) {
-        return this.currentFrame[action];
-    }
-
-    setAction(action) {
-        this.action = action;
-    }
-
-    setDirection(direction) {
-        this.direction = direction;
-    }
-
-    setVerticalDirection(direction) {
-        this.verticalDirection = direction;
-    }
-
-    setStatus(status) {
-        this.status = status;
-    }
-
-    setPreviousAction(action) {
-        this.previousAction = action;
-    }
-
-    setDeathTime(time) {
-        this.death[TIME_LABEL] = time;
-    }
-
-    setScreenNumber(screenNumber) {
-        this.screenNumber = screenNumber;
-    }
-
-    setCurrentFrame(action, frame) {
-        this.currentFrame[action] = frame;
-    }
-
-    setBottom(y) {
-        this.sprite.css('bottom', y + 'px')
     }
 
     /* private */
@@ -663,7 +919,7 @@ class Character {
         if (!(!this.isStopped())) {
             console.log('d');
         }
-        if (!(!this.shouldTurnaround())) {
+        if (!(!this.shouldCpuTurnaround())) {
             console.log('e');
         }
         if (!(!this.isAtBoundary(gameBoard))) {
@@ -678,7 +934,7 @@ class Character {
         if (!(this.isOnScreen(gameBoard))) {
             console.log('i');
         }
-        if (!(!this.shouldLaunchAttack(gameBoard))) {
+        if (!(!this.shouldCpuLaunchAttack(gameBoard))) {
             console.log('j');
         }
         if (!(!this.shouldCpuFight(gameBoard))) {

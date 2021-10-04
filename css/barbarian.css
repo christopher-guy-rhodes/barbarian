@@ -185,15 +185,6 @@
     bottom: 670px;
 }
 
-.demo_over_message {
-    display: none;
-    position: absolute;
-    color: green;
-    left: 485px;
-    height: 0;
-    bottom: 600px;
-}
-
 .life1 {
     height: 43px;
     width: 35px;

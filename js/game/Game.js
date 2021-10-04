@@ -104,6 +104,9 @@ class Game {
      * @param character the character to render the at rest frame for
      */
     renderAtRestFrame(character) {
+        if (character === undefined) {
+            throw new Error("renderAtRestFrame: the character parameter is required");
+        }
         let action = this.isWater() ? SWIM_LABEL : STOP_LABEL;
 
         let heightOffset = character.getHeightOffset(action, character.getDirection()) * character.getSprite().height();
@@ -317,10 +320,10 @@ class Game {
         if (character.isAtBoundary(this.gameBoard)) {
             this.handleBoundary(character);
         }
-        if (character.shouldTurnaround()) {
+        if (character.shouldCpuTurnaround()) {
             this.handleMonsterTurnaround(character);
         }
-        if (character.shouldLaunchAttack(this.gameBoard)) {
+        if (character.shouldCpuLaunchAttack(this.gameBoard)) {
             this.handleCpuAttack(character)
         }
         if (character.shouldCpuFight(this.gameBoard)) {
@@ -379,11 +382,11 @@ class Game {
 
             if (obstacle.getIsElevation()) {
                 if (obstacle.isTraversableDownhillElevation(character)) {
-                    character.setBottom(obstacle.getHeight());
+                    character.setY(obstacle.getHeight());
                     // Continue whatever action the character was performing since they traversed the elevation
-                    this.performAction(character, requestedAction, character.getCurrentFrame());
+                    this.performAction(character, requestedAction, character.getCurrentFrame(requestedAction));
                 } else if (obstacle.didCharacterJumpEvade(character)) {
-                    character.setBottom(obstacle.getHeight());
+                    character.setY(obstacle.getHeight());
                     // Transition to walking motion since the jump was successful
                     this.performAction(character, WALK_LABEL);
                 } else {
@@ -426,9 +429,10 @@ class Game {
         this.performAction(character, action);
 
         if (action === FALL_LABEL) {
+
             setTimeout(function () {
                 character.hide();
-            }, character.getDeathFallDelay());
+            }, character.getY() / character.getPixelsPerSecond(FALL_LABEL) * MILLISECONDS_PER_SECOND);
         }
     }
 
@@ -482,7 +486,7 @@ class Game {
 
     /* private */
     handleMonsterTurnaround(character) {
-        if (!character.isBarbarian() && character.shouldTurnaround()) {
+        if (!character.isBarbarian() && character.shouldCpuTurnaround()) {
 
             if (this.gameBoard.isWater(this.getScreenNumber()) && !character.isBarbarian()) {
                 // Make water monsters chase the barbarian vertically

@@ -169,6 +169,10 @@ class Character {
             this.getX() - this.getWidth() * PASSING_MULTIPLIER > this.barbarian.getX() || this.isAtRightBoundary();
     }
 
+    isMovingVertically() {
+        return this.getVerticalDirection() !== undefined;
+    }
+
     /* private */
     isBarbarian() {
         return this.barbarian === undefined;
@@ -239,8 +243,11 @@ class Character {
             return;
         }
 
-        let y = !gameBoard.isWater(this.getScreenNumber()) ? undefined :
-            this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
+        let y = undefined;
+        if (this.getVerticalDirection() !== undefined) {
+            y = !gameBoard.isWater(this.getScreenNumber()) ? undefined :
+                this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
+        }
         let x = this.isDirectionLeft() ? 0 : SCREEN_WIDTH - this.getWidth();
 
         this.moveToPosition(x, y, pixelsPerSecond);

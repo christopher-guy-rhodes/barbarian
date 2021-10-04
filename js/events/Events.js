@@ -183,8 +183,10 @@ class Events {
 
     handleRightKeypress() {
         let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
-        if ((this.game.getBarbarian().getAction() !== action || !this.game.isBarbarianMovingRight())
-            && this.isBarbarianAliveOrJustDied()) {
+        if ((this.game.getBarbarian().getAction() !== action ||
+            (!this.game.isBarbarianMovingRight() || this.game.getBarbarian().isMovingVertically())) &&
+                this.isBarbarianAliveOrJustDied()) {
+            this.game.getBarbarian().setVerticalDirection(undefined);
             this.game.getBarbarian().setDirection(RIGHT_LABEL);
             this.game.performAction(this.game.getBarbarian(), action);
         }
@@ -192,8 +194,10 @@ class Events {
 
     handleLeftKeypress() {
         let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
-        if ((this.game.getBarbarian().getAction() !== action || !this.game.isBarbarianMovingLeft())
-            && this.isBarbarianAliveOrJustDied()) {
+        if ((this.game.getBarbarian().getAction() !== action ||
+            (!this.game.isBarbarianMovingLeft() || this.game.getBarbarian().isMovingVertically())) &&
+                this.isBarbarianAliveOrJustDied()) {
+            this.game.getBarbarian().setVerticalDirection(undefined);
             this.game.getBarbarian().setDirection(LEFT_LABEL);
             this.game.performAction(this.game.getBarbarian(), action);
         }

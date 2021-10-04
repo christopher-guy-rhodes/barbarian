@@ -270,7 +270,7 @@ let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES, BARBARIAN_FR
     .withResetAction(STOP_LABEL)
     .withResetDirection(RIGHT_LABEL)
     .withResetLeft(0)
-    //.withScreenNumber(2)
+    //.withScreenNumber(3)
     .withResetStatus(ALIVE_LABEL)
     //.withDeathFrames(BARBARIAN_DEATH_FRAMES)
     .withActionNumberOfTimes(ATTACK_LABEL, 1)

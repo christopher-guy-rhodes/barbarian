@@ -1,6 +1,6 @@
 class Sounds {
     constructor() {
-        this.isSoundOn = false;
+        this.isSoundOn = true;
 
         this.sounds = {
             THEME_SONG : new Audio('/sounds/theme.mp3'),

@@ -93,6 +93,13 @@ class Game {
     }
 
     /**
+     * Play the grunt sound.
+     */
+    playGruntSound() {
+        this.sounds.playGruntSound();
+    }
+
+    /**
      * Stop any sounds.
      */
     stopAllSounds() {
@@ -128,7 +135,7 @@ class Game {
         for (let monster of monsters) {
             monster.show();
             monster.setStatus(ALIVE_LABEL);
-            this.sounds.playSound(monster.getSound());
+            this.sounds.playMonsterSound();
             this.setCpuVerticalDirection(monster);
             this.performAction(monster, monster.getResetAction());
         }
@@ -416,9 +423,9 @@ class Game {
             }
 
             if (character.getAction() === FALL_LABEL) {
-                this.sounds.playSound(FALL_SOUND);
+                this.sounds.playFallSound();
             } else {
-                this.sounds.playSound(GRUNT_SOUND);
+                this.sounds.playGruntSound();
             }
         } else {
             this.sounds.playFireSound();

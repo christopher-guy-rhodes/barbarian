@@ -21,6 +21,10 @@ class Messages {
         ];
     }
 
+    isControlMessageDisplayed() {
+        return this.controlMessage.css(CSS_DISPLAY_LABEL) === CSS_BLOCK_LABEL;
+    }
+
     showSoundToggleMessage(isSoundOn) {
         this.hideAllMessages();
         (isSoundOn ? this.soundOnMessage : this.soundOffMessage).css('display', 'none');

@@ -43,7 +43,7 @@ class Events {
     }
 
     handleKeypress(keypress) {
-        this.sounds.playSound(THEME_SONG);
+        this.sounds.playThemeSong();
 
         this.keypressTime = new Date().getTime();
 
@@ -152,7 +152,7 @@ class Events {
     handleAttackKeypress() {
         if (!this.game.isBarbarianSwimming() && this.isBarbarianAliveOrJustDied()) {
             this.game.stopBarbarianMovement();
-            this.sounds.playSound(GRUNT_SOUND);
+            this.game.playGruntSound();
             this.game.performAction(this.game.getBarbarian(), ATTACK_LABEL);
         }
     }
@@ -238,7 +238,7 @@ class Events {
     }
 
     swipeRightHandler(event){
-        if (CONTROL_MESSAGE.css('display') === 'block') {
+        if (this.messages.isControlMessageDisplayed()) {
             events.handleKeypress(KEYPRESS[KP_MAIN])
         } else if (game.isBarbarianDead()) {
             events.handleKeypress(KEYPRESS[KP_CONTROLS])
@@ -250,7 +250,7 @@ class Events {
     }
 
     swipeLeftHandler(event){
-        if (CONTROL_MESSAGE.css('display') === 'block') {
+        if (this.messages.isControlMessageDisplayed()) {
             events.handleKeypress(KEYPRESS[KP_MAIN])
         } else if (game.isBarbarianDead()) {
             events.handleKeypress(KEYPRESS[KP_CONTROLS])

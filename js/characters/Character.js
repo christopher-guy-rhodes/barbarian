@@ -46,16 +46,15 @@ class Character {
         this.characterType = characterType;
         this.sprite = sprite;
         this.action = action;
-        this.status = status;
         this.direction = direction;
         this.verticalDirection = verticalDirection;
         this.reset = reset;
         this.actionNumberOfTimes = actionNumberOfTimes;
         this.death = death;
+        this.status = status;
         this.pixelsPerSecond = pixelsPerSecond;
         this.framesPerSecond = framesPerSecond;
         this.canElevate = canElevate;
-        this.canHighlight = canHighlight;
         this.canLeaveBehind = canLeaveBehind;
         this.sound = sound;
         this.obstacles = obstacles;

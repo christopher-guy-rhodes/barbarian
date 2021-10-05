@@ -19,15 +19,6 @@ const MAX_LABEL = 'max';
 const OPPONENTS_LABEL = 'opponents';
 const WATER_LABEL = 'water';
 
-// Sounds
-const THEME_SONG = 'THEME_SONG';
-const GROWL_SOUND = 'GROWL_SOUND';
-const MONSTER_SOUND = 'MONSTER_SOUND';
-const GRUNT_SOUND = 'GRUNT_SOUND';
-const SPLASH_SOUND = 'SPLASH_SOUND';
-const FIRE_SOUND = 'FIRE_SOUND';
-const FALL_SOUND = 'FALL_SOUND';
-
 // Actions
 const STOP_LABEL = 'stop';
 const RUN_LABEL = 'run';

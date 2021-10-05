@@ -907,7 +907,7 @@ class Character {
         console.log(this.getCharacterType() + ' is done ' + action + 'ing');
 
         if (!(this.getAction() === action)) {
-            console.log('a');
+            console.log(this.getAction() + ' is not equal to requested action ' + action);
         }
         if (!(this.getDirection() === direction)) {
             console.log('b');

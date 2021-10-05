@@ -348,7 +348,7 @@ class Game {
 
     /* private */
     isTransitionFromTerminalAction(character, action) {
-        character.isBarbarian() && character.getAction() !== action && TERMINAL_ACTIONS.has(character.getAction())
+        return character.isBarbarian() && character.getAction() !== action && TERMINAL_ACTIONS.has(character.getAction());
     }
 
     /* private */

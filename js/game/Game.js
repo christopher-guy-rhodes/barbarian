@@ -1,5 +1,6 @@
 const MIN_ATTACK_THRESHOLD = 3;
 const MAX_ATTACK_THRESHOLD = 4;
+const JUST_DIED_THRESHOLD = 500;
 
 /**
  * Main class to support playing the Barbarian game
@@ -220,6 +221,20 @@ class Game {
                 'height=' + height);
         });
     }
+
+    /**
+     * Returns true if the Barbarian is alive or has just died.
+     * @returns {boolean}
+     */
+    isBarbarianAliveOrJustDied() {
+        return !this.isBarbarianDead() || this.isBarbarianJustDied();
+    }
+
+    isBarbarianJustDied() {
+        return new Date().getTime() - this.getBarbarian().getDeathTime() < JUST_DIED_THRESHOLD;
+    }
+
+
 
     /**
      * Returns true if the current screen is water, false otherwise.

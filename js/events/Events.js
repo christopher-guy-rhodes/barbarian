@@ -12,7 +12,6 @@ const KP_MAIN = 'KP_MAIN';
 const KP_SOUND = 'KP_SOUND';
 const KP_UP = 'KP_UP';
 const KP_DOWN = 'KP_DOWN';
-const JUST_DIED_THRESHOLD = 500;
 
 // Keypress event names
 const KEYPRESS = {
@@ -150,7 +149,7 @@ class Events {
     }
 
     handleAttackKeypress() {
-        if (!this.game.isBarbarianSwimming() && this.isBarbarianAliveOrJustDied()) {
+        if (!this.game.isBarbarianSwimming() && this.game.isBarbarianAliveOrJustDied()) {
             this.game.stopBarbarianMovement();
             this.game.playGruntSound();
             this.game.performAction(this.game.getBarbarian(), ATTACK_LABEL);
@@ -161,19 +160,19 @@ class Events {
     handleRunKeypress() {
         if (!this.game.isBarbarianSwimming() &&
             !this.game.isBarbarianRunning() &&
-            this.isBarbarianAliveOrJustDied()) {
+            !this.game.isBarbarianDead()) {
             this.game.performAction(this.game.getBarbarian(), RUN_LABEL);
         }
     }
 
     handleJumpKeypress() {
-        if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianJumping() && this.isBarbarianAliveOrJustDied()) {
+        if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianJumping() && !this.game.isBarbarianDead()) {
             this.game.performAction(this.game.getBarbarian(), JUMP_LABEL);
         }
     }
 
     handleStopKeypress() {
-        if (!this.game.isBarbarianSwimming() && this.isBarbarianAliveOrJustDied()) {
+        if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianDead()) {
             this.game.performAction(this.game.getBarbarian(), STOP_LABEL);
             this.game.stopBarbarianMovement();
             this.game.renderAtRestFrame(this.game.getBarbarian());
@@ -185,7 +184,7 @@ class Events {
         let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action ||
             (!this.game.isBarbarianMovingRight() || this.game.getBarbarian().isMovingVertically())) &&
-                this.isBarbarianAliveOrJustDied()) {
+                !this.game.isBarbarianDead()) {
             this.game.getBarbarian().setVerticalDirection(undefined);
             this.game.getBarbarian().setDirection(RIGHT_LABEL);
             this.game.performAction(this.game.getBarbarian(), action);
@@ -196,7 +195,7 @@ class Events {
         let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action ||
             (!this.game.isBarbarianMovingLeft() || this.game.getBarbarian().isMovingVertically())) &&
-                this.isBarbarianAliveOrJustDied()) {
+                !this.game.isBarbarianDead()) {
             this.game.getBarbarian().setVerticalDirection(undefined);
             this.game.getBarbarian().setDirection(LEFT_LABEL);
             this.game.performAction(this.game.getBarbarian(), action);
@@ -223,14 +222,6 @@ class Events {
                 }
             }
         }
-    }
-
-    isBarbarianAliveOrJustDied() {
-        return !this.game.isBarbarianDead() || this.isBarbarianJustDied();
-    }
-
-    isBarbarianJustDied() {
-        return new Date().getTime() - this.game.getBarbarian().getDeathTime() < JUST_DIED_THRESHOLD;
     }
 
     tapHoldHandler(event) {

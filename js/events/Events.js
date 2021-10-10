@@ -42,8 +42,6 @@ class Events {
     }
 
     handleKeypress(keypress) {
-        this.sounds.playThemeSong();
-
         this.keypressTime = new Date().getTime();
 
         if (!this.shouldThrottle() && !this.game.getActionsLocked()) {

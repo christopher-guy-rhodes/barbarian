@@ -5,19 +5,28 @@ const GRUNT_SOUND = 'GRUNT_SOUND';
 const SPLASH_SOUND = 'SPLASH_SOUND';
 const FIRE_SOUND = 'FIRE_SOUND';
 const FALL_SOUND = 'FALL_SOUND';
+const FIRE_SOUND_DURATION = 2800;
+
+const THEME_SONG_FILE = new Audio('/sounds/theme.mp3');
+const FALL_SOUND_FILE = new Audio('/sounds/fall.mp3');
+const GRUNT_SOUND_FILE = new Audio('/sounds/grunt.mp3');
+const GROWL_SOUND_FILE = new Audio('/sounds/growl.mp3');
+const FIRE_SOUND_FILE = new Audio('/sounds/fire.mp3');
+const MONSTER_SOUND_FILE = new Audio('/sounds/monster.mp3');
+const SPLASH_SOUND_FILE = new Audio('/sounds/splash.mp3');
 
 class Sounds {
     constructor() {
         this.isSoundOn = true;
 
         this.sounds = {
-            THEME_SONG : new Audio('/sounds/theme.mp3'),
-            FALL_SOUND : new Audio('/sounds/fall.mp3'),
-            GRUNT_SOUND : new Audio('/sounds/grunt.mp3'),
-            GROWL_SOUND : new Audio('/sounds/growl.mp3'),
-            FIRE_SOUND : new Audio('/sounds/fire.mp3'),
-            MONSTER_SOUND : new Audio('/sounds/monster.mp3'),
-            SPLASH_SOUND : new Audio('/sounds/splash.mp3')
+            THEME_SONG : THEME_SONG_FILE,
+            FALL_SOUND : FALL_SOUND_FILE,
+            GRUNT_SOUND : GRUNT_SOUND_FILE,
+            GROWL_SOUND : GROWL_SOUND_FILE,
+            FIRE_SOUND : FIRE_SOUND_FILE,
+            MONSTER_SOUND : MONSTER_SOUND_FILE,
+            SPLASH_SOUND : SPLASH_SOUND_FILE
         };
 
     }
@@ -104,6 +113,10 @@ class Sounds {
      */
     playFireSound() {
         this.playSound(this.getFireSound());
+        let self = this;
+        setTimeout(function () {
+            self.getFireSound().pause();
+        }, FIRE_SOUND_DURATION);
     }
 
     /**

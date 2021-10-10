@@ -1,16 +1,13 @@
 
 .barbarian {
-    /*border: 1px solid red;*/
     height: 400px;
     width: 400px;
     background-image: url(../sprites/sprite.png);
     position: absolute;
     bottom: 12px;
-    left: 0px;
 }
 
 .monster {
-    /*border: 1px solid red;*/
     height: 400px;
     width: 400px;
     background-image: url(../sprites/monsters.png);
@@ -20,12 +17,10 @@
 }
 
 .shark1 {
-    border: 0px solid red;
     height: 75px;
     width: 200px;
     background-image: url(../sprites/shark.png);
     position: absolute;
-    left: 0px;
     bottom: 400px;
     display: none;
 }
@@ -36,7 +31,6 @@
     width: 200px;
     background-image: url(../sprites/shark.png);
     position: absolute;
-    left: 1400px;
     bottom: 0px;
     display: none;
 }
@@ -47,7 +41,6 @@
     width: 400px;
     background-image: url(../sprites/monster_invincible.png);
     position: absolute;
-    left: 850px;
     bottom: 12px;
     display: none;
 }
@@ -60,7 +53,6 @@
     background-image: url(../sprites/dog.png);
     background-position: -1200px -400px;
     position: absolute;
-    left:1050px;
     bottom: 160px;
     display: none;
 }
@@ -70,7 +62,6 @@
     width: 400px;
     background-image: url(../sprites/rock.png);
     position: absolute;
-    left: 1270px;
     bottom: 12px;
     display: none;
 }

@@ -136,7 +136,7 @@ class Game {
         for (let monster of monsters) {
             monster.show();
             monster.setStatus(ALIVE_LABEL);
-            this.sounds.playMonsterSound();
+            this.sounds.playSound(monster.getSound());
             this.setCpuVerticalDirection(monster);
             this.performAction(monster, monster.getResetAction());
         }

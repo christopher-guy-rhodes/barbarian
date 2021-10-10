@@ -29,5 +29,4 @@ class Animator {
 
         this.moveToPosition(duration, x, y);
     }
-
 }

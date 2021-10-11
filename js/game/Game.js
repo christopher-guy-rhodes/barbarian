@@ -50,6 +50,10 @@ class Game {
             action = character.getAction();
         }
 
+        if (action === character.getAction()) {
+            console.log('requesting' + action + ' when character is already ' + character.getAction() + ' ing');
+        }
+
         character.setAction(action);
 
         let self = this;

@@ -7,17 +7,19 @@ const FIRE_SOUND = 'FIRE_SOUND';
 const FALL_SOUND = 'FALL_SOUND';
 const FIRE_SOUND_DURATION = 2800;
 
-const THEME_SONG_FILE = new Audio('/sounds/theme.mp3');
-const FALL_SOUND_FILE = new Audio('/sounds/fall.mp3');
-const GRUNT_SOUND_FILE = new Audio('/sounds/grunt.mp3');
-const GROWL_SOUND_FILE = new Audio('/sounds/growl.mp3');
-const FIRE_SOUND_FILE = new Audio('/sounds/fire.mp3');
-const MONSTER_SOUND_FILE = new Audio('/sounds/monster.mp3');
-const SPLASH_SOUND_FILE = new Audio('/sounds/splash.mp3');
+const IS_SOUND_DISABLED = false;
+
+const THEME_SONG_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/theme.mp3');
+const FALL_SOUND_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/fall.mp3');
+const GRUNT_SOUND_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/grunt.mp3');
+const GROWL_SOUND_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/growl.mp3');
+const FIRE_SOUND_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/fire.mp3');
+const MONSTER_SOUND_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/monster.mp3');
+const SPLASH_SOUND_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/splash.mp3');
 
 class Sounds {
     constructor() {
-        this.isSoundOn = true;
+        this.isSoundOn = IS_SOUND_DISABLED;
 
         this.sounds = {
             THEME_SONG : THEME_SONG_FILE,
@@ -112,6 +114,9 @@ class Sounds {
      * Play the fire sound.
      */
     playFireSound() {
+        if (IS_SOUND_DISABLED) {
+            return;
+        }
         this.playSound(this.getFireSound());
         let self = this;
         setTimeout(function () {
@@ -130,6 +135,9 @@ class Sounds {
      * Stop all sounds.
      */
     stopAllSounds() {
+        if (IS_SOUND_DISABLED) {
+            return;
+        }
         for (let sound of Object.values(this.sounds)) {
             sound.pause();
         }

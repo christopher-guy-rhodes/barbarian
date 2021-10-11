@@ -35,11 +35,11 @@
     display: none;
 }
 
-.monster_invincible {
+.red_monster {
     border: 0px solid red;
     height: 400px;
     width: 400px;
-    background-image: url(../sprites/monster_invincible.png);
+    background-image: url(../sprites/red_monster.png);
     position: absolute;
     bottom: 12px;
     display: none;

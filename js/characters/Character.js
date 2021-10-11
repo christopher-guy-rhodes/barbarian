@@ -1,15 +1,3 @@
-const SCREEN_BOTTOM = 12;
-const BOTTOM_LABEL = 'bottom';
-const ACTION_LABEL = 'action';
-const DIRECTION_LABEL = 'direction';
-const SPRITE_LABEL = 'sprite';
-const FRAMES_LABEL = 'frames';
-const HEIGHT_OFFSET_LABEL = 'heightOffset';
-const FRAMES_PER_SECOND_LABEL = 'framesPerSecond';
-const STATUS_LABEL = 'status';
-const FALL_DELAY_LABELS = 'fallDelay';
-const TIME_LABEL = 'time';
-const TURNAROUND_LABEL = 'turnaround';
 const PASSING_MULTIPLIER = 1.5;
 
 /**
@@ -78,21 +66,7 @@ class Character {
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
      */
     async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
-        if (gameBoard === undefined) {
-            throw new Error("animate: gameBoard parameter is required");
-        }
-        if (action === undefined) {
-            throw new Error("animate: the action parameter is required");
-        }
-        if (direction === undefined) {
-            throw new Error("animate: direction parameter is required");
-        }
-        if (numberOfTimes === undefined) {
-            throw new Error("animate: numberOfTimes parameter is required");
-        }
-        if (idx === undefined){
-            throw new Error("animate: idx parameter is required");
-        }
+        validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes', 'idx');
 
         this.moveCharacter(action, gameBoard);
 
@@ -136,9 +110,7 @@ class Character {
      * @param pixelsPerSecond the pixels per second rate to move at
      */
     moveToPosition(x, y, pixelsPerSecond) {
-        if (pixelsPerSecond === undefined) {
-            throw new Error("moveToPosition: pixelsPerSecond parameter is required");
-        }
+        validateRequiredParams(this.moveToPosition, arguments, 'pixelsPerSecond');
         this.animator.moveElementToPosition(x, y, pixelsPerSecond)
     }
 
@@ -148,9 +120,7 @@ class Character {
      * @returns {boolean}
      */
     isAtBoundary(gameBoard) {
-        if (gameBoard === undefined) {
-            throw new Error("isAtBoundary: gameBoard parameter is required");
-        }
+        validateRequiredParams(this.isAtBoundary, arguments, 'gameBoard');
         return !gameBoard.isWater(this.getScreenNumber()) && this.isAtLeftBoundary() || this.isAtRightBoundary();
     }
 
@@ -211,9 +181,7 @@ class Character {
      * @returns {boolean}
      */
     shouldCpuFight(gameBoard) {
-        if (gameBoard === undefined) {
-            throw new Error("shouldCpuFight: gameBoard parameter is required");
-        }
+        validateRequiredParams(this.shouldCpuFight, arguments, 'gameBoard');
         if (this.barbarian.didJumpEvade() || this.getAction() === DEATH_LABEL) {
             return false;
         }
@@ -229,9 +197,7 @@ class Character {
      * @returns {boolean}
      */
     shouldCpuLaunchAttack(gameBoard) {
-        if (gameBoard === undefined) {
-            throw new Error("shouldCpuFight: gameBoard parameter is required");
-        }
+        validateRequiredParams(this.shouldCpuLaunchAttack, arguments, 'gameBoard');
         return !this.isBarbarian() && !this.barbarian.isDead() && this.getAction() !== ATTACK_LABEL &&
             this.getAction() !== DEATH_LABEL && this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
     }
@@ -243,12 +209,7 @@ class Character {
      * @returns {[]}
      */
     getOpponentsWithinX(gameBoard, x) {
-        if (gameBoard === undefined) {
-            throw new Error("shouldCpuFight: gameBoard parameter is required");
-        }
-        if (x === undefined) {
-            throw new Error("getOpponentsWithinX: x parameter is required");
-        }
+        validateRequiredParams(this.getOpponentsWithinX, arguments, 'gameBoard', 'x');
         let attackers = [];
         let opponents = gameBoard.getOpponents(this.barbarian.getScreenNumber());
         for (let opponent of opponents) {
@@ -449,9 +410,7 @@ class Character {
      * @returns {boolean}
      */
     isActionInfinite(action) {
-        if (action === undefined) {
-            throw new Error("isActionInfinite: action is a required parameter");
-        }
+        validateRequiredParams(this.isActionInfinite, arguments, 'action');
         return this.getActionNumberOfTimes(action) === 0;
     }
 
@@ -492,6 +451,7 @@ class Character {
      * @returns {*}
      */
     getActionNumberOfTimes(action) {
+        validateRequiredParams(this.getActionNumberOfTimes, arguments, 'action');
         return this.actionNumberOfTimes[action];
     }
 
@@ -533,9 +493,7 @@ class Character {
      * @returns {*}
      */
     getPixelsPerSecond(action) {
-        if (action === undefined) {
-            throw new Error("getPixelsPerSecond: action parameter is required");
-        }
+        validateRequiredParams(this.getPixelsPerSecond, arguments, 'action');
         return this.pixelsPerSecond[action];
     }
 
@@ -585,9 +543,7 @@ class Character {
      * @returns {*}
      */
     getResetBottom(screenNumber) {
-        if (screenNumber === undefined) {
-            throw new Error("getResetBottom: screenNumber parameter required");
-        }
+        validateRequiredParams(this.getResetBottom, arguments, 'screenNumber');
         return this.reset[BOTTOM_LABEL][screenNumber];
     }
 
@@ -606,9 +562,7 @@ class Character {
      * @returns {*}
      */
     getHeightOffset(action, direction) {
-        if (action === undefined || direction === undefined) {
-            throw new Error("getHeightOffset: action and direction are required parameters");
-        }
+        validateRequiredParams(this.getHeightOffset, arguments, 'action', 'direction');
         return this.frames[action][direction][HEIGHT_OFFSET_LABEL];
     }
 
@@ -619,12 +573,7 @@ class Character {
      * @returns {*}
      */
     getFrames(action, direction) {
-        if (action === undefined) {
-            throw new Error("getHeightOffset: action parameter required");
-        }
-        if (direction === undefined) {
-            throw new Error("getHeightOffset: direction parameter required");
-        }
+        validateRequiredParams(this.getFrames, arguments, 'action', 'direction');
         return this.frames[action][direction][FRAMES_LABEL];
     }
 
@@ -682,9 +631,7 @@ class Character {
      * @returns {*}
      */
     getCurrentFrame(action) {
-        if (action === undefined) {
-            throw new Error("getCurrentFrame: action parameter is required");
-        }
+        validateRequiredParams(this.getCurrentFrame, arguments, 'action');
         return this.currentFrame[action];
     }
 
@@ -701,9 +648,7 @@ class Character {
      * @param direction
      */
     setDirection(direction) {
-        if (direction === undefined) {
-            throw new Error("setDirection: direction parameter is required");
-        }
+        validateRequiredParams(this.setDirection, arguments, 'direction');
         this.direction = direction;
     }
 
@@ -720,9 +665,7 @@ class Character {
      * @param status
      */
     setStatus(status) {
-        if (status === undefined) {
-            throw new Error("setStatus: the status parameter is required");
-        }
+        validateRequiredParams(this.setStatus, arguments, 'status');
         this.status = status;
     }
 
@@ -731,9 +674,7 @@ class Character {
      * @param time the time
      */
     setDeathTime(time) {
-        if (time === undefined) {
-            throw new Error("setDeathTime: time is a required parameter");
-        }
+        validateRequiredParams(this.setDeathTime, arguments, 'time');
         this.death[TIME_LABEL] = time;
     }
 
@@ -742,9 +683,7 @@ class Character {
      * @param screenNumber the screen number
      */
     setScreenNumber(screenNumber) {
-        if (screenNumber === undefined) {
-            throw new Error("setScreenNumber: screenNumber is a required parameter");
-        }
+        validateRequiredParams(this.setScreenNumber, arguments, 'screenNumber');
         this.screenNumber = screenNumber;
     }
 
@@ -754,12 +693,7 @@ class Character {
      * @param frame the frame
      */
     setCurrentFrame(action, frame) {
-        if (action === undefined) {
-            throw new Error("setCurrentFrame: action is a required parameter");
-        }
-        if (frame === undefined) {
-            throw new Error("setCurrentFrame: frame ia a required parameter");
-        }
+        validateRequiredParams(this.setCurrentFrame, arguments, 'action', 'frame');
         this.currentFrame[action] = frame;
     }
 
@@ -768,9 +702,7 @@ class Character {
      * @param y the y coordinate
      */
     setY(y) {
-        if (y === undefined) {
-            throw new Error("setY: y parameter is required");
-        }
+        validateRequiredParams(this.setY, arguments, 'y');
         this.sprite.css(CSS_BOTTOM_LABEL, y + CSS_PX_LABEL)
     }
 

@@ -1,6 +1,8 @@
 // Dimensions
 const SCREEN_HEIGHT = 800;
 const SCREEN_WIDTH = 1400;
+const SCREEN_BOTTOM = 12;
+
 
 // How long does it take to advance the screen?
 const ADVANCE_SCREEN_DURATION_SECONDS = 1;
@@ -18,6 +20,16 @@ const MIN_LABEL = 'min';
 const MAX_LABEL = 'max';
 const OPPONENTS_LABEL = 'opponents';
 const WATER_LABEL = 'water';
+const BOTTOM_LABEL = 'bottom';
+const ACTION_LABEL = 'action';
+const DIRECTION_LABEL = 'direction';
+const SPRITE_LABEL = 'sprite';
+const FRAMES_LABEL = 'frames';
+const HEIGHT_OFFSET_LABEL = 'heightOffset';
+const FRAMES_PER_SECOND_LABEL = 'framesPerSecond';
+const STATUS_LABEL = 'status';
+const TIME_LABEL = 'time';
+const TURNAROUND_LABEL = 'turnaround';
 
 // Actions
 const STOP_LABEL = 'stop';

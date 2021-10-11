@@ -227,7 +227,7 @@ class Events {
     }
 
     swipeRightHandler(event){
-        if (this.messages.isControlMessageDisplayed()) {
+        if (game.messages.isControlMessageDisplayed()) {
             events.handleKeypress(KEYPRESS[KP_MAIN])
         } else if (game.isBarbarianDead()) {
             events.handleKeypress(KEYPRESS[KP_CONTROLS])

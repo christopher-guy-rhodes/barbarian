@@ -315,7 +315,7 @@ const GAME_BOARD = new GameBoardBuilder()
             .withResetTurnaround(false)
             .withIsInvincible(true)
             .withScreenNumber(2).build(),
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, MONSTER_FRAMES, MONSTER_CHARACTER_TYPE, $('.monster_invincible'))
+        new CharacterBuilder(barbarianCharacter, OBSTACLES, MONSTER_FRAMES, MONSTER_CHARACTER_TYPE, $('.red_monster'))
             // Don't allow barbarian to kill the invincible monster
             .withResetLeft(500)
             .withFramesPerSecond(ATTACK_LABEL, 7.5)

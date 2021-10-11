@@ -37,6 +37,12 @@ function getParamNames(func) {
 }
 
 function validateRequiredParams(func, values) {
+    if (func === undefined) {
+        throw new Error("Cannot validate parameters if function is not passed in");
+    }
+    if (values === undefined || values.length < 1) {
+        throw new Error("Cannot validate parameters if parameters to validate is empty or undefined");
+    }
 
     let argumentNames = getParamNames(func);
     let argumentNameIndex = argumentNames.reduce(

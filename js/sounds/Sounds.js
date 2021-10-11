@@ -19,7 +19,7 @@ const SPLASH_SOUND_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/spl
 
 class Sounds {
     constructor() {
-        this.isSoundOn = IS_SOUND_DISABLED;
+        this.isSoundOn = !IS_SOUND_DISABLED;
 
         this.sounds = {
             THEME_SONG : THEME_SONG_FILE,

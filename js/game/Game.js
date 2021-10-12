@@ -1,6 +1,7 @@
 const MIN_ATTACK_THRESHOLD = 3;
 const MAX_ATTACK_THRESHOLD = 4;
 const JUST_DIED_THRESHOLD = 500;
+const DEATH_DELAY = 2000;
 
 /**
  * Main class to support playing the Barbarian game
@@ -48,10 +49,6 @@ class Game {
         if (this.isTransitionFromTerminalAction(character, action)) {
             console.log('aborted attempt to transition from terminal action ' + character.getAction() + ' to ' + action);
             action = character.getAction();
-        }
-
-        if (action === character.getAction()) {
-            console.log('requesting' + action + ' when character is already ' + character.getAction() + ' ing');
         }
 
         character.setAction(action);
@@ -142,6 +139,7 @@ class Game {
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getSound());
             this.setCpuVerticalDirection(monster);
+            console.log(monster.getCharacterType() + ' is going to ' + monster.getResetAction());
             this.performAction(monster, monster.getResetAction());
         }
     }
@@ -362,6 +360,11 @@ class Game {
         // If the barbarian has been defeated make the monster continue to move
         if (!character.isBarbarian() && this.isBarbarianDead() && !character.isWalking()) {
             this.performAction(character, WALK_LABEL);
+            let self = this;
+            setTimeout(function () {
+                character.setStatus(DEAD_LABEL);
+                character.stopMovement();
+            }, DEATH_DELAY);
         }
     }
 
@@ -393,7 +396,7 @@ class Game {
             setTimeout(function () {
                 game.setActionsLocked(false);
                 //character.setAction(undefined);
-            }, 1000);
+            }, DEATH_DELAY);
         } else {
             character.getDeathSprite().hide();
         }

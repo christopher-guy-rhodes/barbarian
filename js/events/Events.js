@@ -44,6 +44,7 @@ class Events {
     handleKeypress(keypress) {
         this.keypressTime = new Date().getTime();
 
+        console.log('actions locked?' + this.game.getActionsLocked());
         if (!this.shouldThrottle() && !this.game.getActionsLocked()) {
             this.lastKeypressTime = this.keypressTime;
             this.keypressTime = new Date().getTime();

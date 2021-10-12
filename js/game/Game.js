@@ -455,9 +455,11 @@ class Game {
         this.performAction(character, action);
 
         if (action === FALL_LABEL) {
-
+            let self = this;
+            this.setActionsLocked(true);
             setTimeout(function () {
                 character.hide();
+                self.setActionsLocked(false);
             }, character.getY() / character.getPixelsPerSecond(FALL_LABEL) * MILLISECONDS_PER_SECOND);
         }
     }

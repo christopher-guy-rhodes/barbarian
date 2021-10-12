@@ -43,6 +43,7 @@ class Character {
         this.pixelsPerSecond = pixelsPerSecond;
         this.framesPerSecond = framesPerSecond;
         this.canElevate = canElevate;
+        this.canHighlight = canHighlight;
         this.canLeaveBehind = canLeaveBehind;
         this.sound = sound;
         this.obstacles = obstacles;
@@ -607,6 +608,14 @@ class Character {
      */
     getCanElevate() {
         return this.canElevate;
+    }
+
+    /**
+     * Returns true if the character highlights during an attack.
+     * @returns {*}
+     */
+    getCanHighlight() {
+        return this.canHighlight;
     }
 
     /**

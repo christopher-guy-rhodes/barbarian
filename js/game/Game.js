@@ -510,6 +510,9 @@ class Game {
 
         for (let opponent of opponentsInProximity) {
             if (!character.isBarbarian()) {
+                if (character.getCanHighlight()) {
+                    character.getSprite().css('filter', "brightness(300%)");
+                }
                 this.performAction(character, ATTACK_LABEL);
             }
         }
@@ -525,6 +528,9 @@ class Game {
             }
 
             character.setDirection(character.isPastBarbarianLeft() ? RIGHT_LABEL : LEFT_LABEL);
+            if (character.getCanHighlight()) {
+                character.getSprite().css('filter', "brightness(100%)");
+            }
             this.performAction(character, WALK_LABEL);
         }
     }

@@ -30,6 +30,8 @@ const FRAMES_PER_SECOND_LABEL = 'framesPerSecond';
 const STATUS_LABEL = 'status';
 const TIME_LABEL = 'time';
 const TURNAROUND_LABEL = 'turnaround';
+const VERTICAL_LABEL = 'y';
+const HORIZONTAL_LABEL = 'x';
 
 // Actions
 const STOP_LABEL = 'stop';

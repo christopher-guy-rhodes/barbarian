@@ -10,8 +10,10 @@ class CharacterBuilder {
         this.sprite = sprite;
         this.action = undefined;
         this.status = DEAD_LABEL;
-        this.direction = LEFT_LABEL;
-        this.verticalDirection = undefined;
+        this.direction = {
+            HORIZONTAL_LABEL : LEFT_LABEL,
+            VERTICAL_LABEL : undefined
+        };
 
         this.reset = {
             status : DEAD_LABEL,
@@ -113,7 +115,8 @@ class CharacterBuilder {
     }
 
     withVerticalDirection(direction) {
-        this.verticalDirection = direction;
+        this.direction[VERTICAL_LABEL] = direction;
+        return this;
     }
 
     withAction(action) {
@@ -175,7 +178,7 @@ class CharacterBuilder {
     }
 
     withDirection(direction) {
-        this.direction = direction;
+        this.direction[HORIZONTAL_LABEL] = direction;
         return this;
     }
 
@@ -242,7 +245,6 @@ class CharacterBuilder {
             this.action,
             this.status,
             this.direction,
-            this.verticalDirection,
             this.reset,
             this.actionNumberOfTimes,
             this.death,

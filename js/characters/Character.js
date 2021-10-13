@@ -12,7 +12,6 @@ class Character {
                 action,
                 status,
                 direction,
-                verticalDirection,
                 reset,
                 actionNumberOfTimes,
                 death,
@@ -35,7 +34,6 @@ class Character {
         this.sprite = sprite;
         this.action = action;
         this.direction = direction;
-        this.verticalDirection = verticalDirection;
         this.reset = reset;
         this.actionNumberOfTimes = actionNumberOfTimes;
         this.death = death;
@@ -485,7 +483,7 @@ class Character {
      * @returns {*}
      */
     getVerticalDirection() {
-        return this.verticalDirection;
+        return this.direction[VERTICAL_LABEL];
     }
 
     /**
@@ -553,7 +551,7 @@ class Character {
      * @returns {*}
      */
     getDirection() {
-        return this.direction;
+        return this.direction[HORIZONTAL_LABEL];
     }
 
     /**
@@ -658,7 +656,7 @@ class Character {
      */
     setDirection(direction) {
         validateRequiredParams(this.setDirection, arguments, 'direction');
-        this.direction = direction;
+        this.direction[HORIZONTAL_LABEL] = direction;
     }
 
     /**
@@ -666,7 +664,7 @@ class Character {
      * @param direction
      */
     setVerticalDirection(direction) {
-        this.verticalDirection = direction;
+        this.direction[VERTICAL_LABEL] = direction;
     }
 
     /**

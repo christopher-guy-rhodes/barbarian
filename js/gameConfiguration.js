@@ -274,7 +274,6 @@ let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES, BARBARIAN_FR
     .withResetLeft(0)
     //.withScreenNumber(3)
     .withResetStatus(ALIVE_LABEL)
-    //.withDeathFrames(BARBARIAN_DEATH_FRAMES)
     .withActionNumberOfTimes(ATTACK_LABEL, 1)
     .withResetBottom(2, 160)
     .withResetBottom(3, 600).build();

@@ -138,6 +138,8 @@ class Game {
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getSound());
             this.setCpuVerticalDirection(monster);
+            console.log('monster direction is ' + monster.getDirection());
+            monster.setDirection(monster.getResetDirection());
             this.performAction(monster, monster.getResetAction());
         }
     }
@@ -355,14 +357,21 @@ class Game {
             this.handleObstacle(character, requestedAction);
         }
 
-        // If the barbarian has been defeated make the monster continue to move
+        // If the Barbarian has been defeated make the monster continue to move for a bit. Make sure the monster stops
+        // moving before the death delay has expired so that it is not moving when it gets restarted
         if (!character.isBarbarian() && this.isBarbarianDead() && !character.isWalking()) {
             this.performAction(character, WALK_LABEL);
             let self = this;
             setTimeout(function () {
-                character.setStatus(DEAD_LABEL);
-                character.stopMovement();
-            }, DEATH_DELAY);
+                let monstersOnScreen = self.getMonstersOnScreen();
+                for (let monster of monstersOnScreen) {
+                    monster.setStatus(DEAD_LABEL);
+                    monster.stopMovement();
+                }
+            }, DEATH_DELAY - 500);
+        }
+        if (!character.isBarbarian() && this.isBarbarianDead()) {
+
         }
     }
 
@@ -455,13 +464,19 @@ class Game {
                                     : character.isFalling() ? FALL_LABEL : DEATH_LABEL;
         this.performAction(character, action);
 
-        if (action === FALL_LABEL || action === SINK_LABEL) {
+        if (action === FALL_LABEL || action === SINK_LABEL && character.isBarbarian()) {
+            // lock the Barbarians actions while it is falling or sinking. We need to wait until the Barbarian finishes
+            // falling or sinking. We also need the monsters to have an opportunity to stop before the game is restarted
+            // so the minimum lock time will be a little more than the death delay
+            let lockActionsTime = Math.max(DEATH_DELAY + 500,
+                character.getY() / character.getPixelsPerSecond(FALL_LABEL) * MILLISECONDS_PER_SECOND);
+
             let self = this;
             this.setActionsLocked(true);
             setTimeout(function () {
                 character.hide();
                 self.setActionsLocked(false);
-            }, character.getY() / character.getPixelsPerSecond(FALL_LABEL) * MILLISECONDS_PER_SECOND);
+            },  lockActionsTime);
         }
     }
 

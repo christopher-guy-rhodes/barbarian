@@ -6,21 +6,27 @@ class CharacterBuilder {
         this.barbarian = barbarian;
         this.obstacles = obstacles;
         this.frames = frames;
+
         this.characterType = characterType;
+        this.canElevate = true;
+        this.canHighlight = true;
+        this.canLeaveBehind = false;
+        this.turnaround = true;
         this.sprite = sprite;
+
         this.action = undefined;
         this.status = DEAD_LABEL;
+
         this.direction = {
             x : LEFT_LABEL,
             y : undefined
         };
 
-        this.reset = {
+        this.defaults = {
             status : DEAD_LABEL,
             left : 850,
             action : WALK_LABEL,
             direction : LEFT_LABEL,
-            turnaround : true,
             bottom : {
                 0: 12,
                 1: 12,
@@ -88,9 +94,6 @@ class CharacterBuilder {
             max: 100
         };
 
-        this.canElevate = true;
-        this.canHighlight = true;
-        this.canLeaveBehind = false;
         this.sound = undefined;
         this.screenNumber = 0;
 
@@ -139,8 +142,8 @@ class CharacterBuilder {
         return this;
     }
 
-    withResetAction(action) {
-        this.reset.action = action;
+    withDefaultAction(action) {
+        this.defaults.action = action;
         return this;
     }
 
@@ -149,31 +152,31 @@ class CharacterBuilder {
         return this;
     }
 
-    withResetBottom(screenNumber, value) {
+    withDefaultBottom(screenNumber, value) {
         if (screenNumber === undefined || value == undefined) {
             throw new Error("withBottom: Both screenNumber and value must be set");
         }
-        this.reset.bottom[screenNumber] = value;
+        this.defaults.bottom[screenNumber] = value;
         return this;
     }
 
-    withResetLeft(left) {
-        this.reset.left = left;
+    withDefaultLeft(left) {
+        this.defaults.left = left;
         return this;
     }
 
-    withResetTurnaround(isEnabled) {
-        this.reset.turnaround = isEnabled;
+    withTurnaround(isEnabled) {
+        this.turnaround = isEnabled;
         return this;
     }
 
-    withResetDirection(direction) {
-        this.reset.direction = direction;
+    withDefaultDirection(direction) {
+        this.defaults.direction = direction;
         return this;
     }
 
-    withResetStatus(status) {
-        this.reset.status= status;
+    withDefaultStatus(status) {
+        this.defaults.status= status;
         return this;
     }
 
@@ -240,19 +243,22 @@ class CharacterBuilder {
             this.barbarian,
             this.obstacles,
             this.frames,
+
             this.characterType,
+            this.canElevate,
+            this.canHighlight,
+            this.canLeaveBehind,
+            this.turnaround,
             this.sprite,
+
             this.action,
             this.status,
             this.direction,
-            this.reset,
+            this.defaults,
             this.actionNumberOfTimes,
             this.death,
             this.pixelsPerSecond,
             this.framesPerSecond,
-            this.canElevate,
-            this.canHighlight,
-            this.canLeaveBehind,
             this.sound,
             this.screenNumber,
             this.currentFrame,

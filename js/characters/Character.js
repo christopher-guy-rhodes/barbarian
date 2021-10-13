@@ -7,19 +7,22 @@ class Character {
     constructor(barbarian,
                 obstacles,
                 frames,
+
                 characterType,
+                canElevate,
+                canHighlight,
+                canLeaveBehind,
+                turnaround,
                 sprite,
+
                 action,
                 status,
                 direction,
-                reset,
+                defaults,
                 actionNumberOfTimes,
                 death,
                 pixelsPerSecond,
                 framesPerSecond,
-                canElevate,
-                canHighlight,
-                canLeaveBehind,
                 sound,
                 screenNumber,
                 currentFrame,
@@ -27,18 +30,19 @@ class Character {
         this.barbarian = barbarian === undefined ? this : barbarian;
         this.frames = frames;
         this.characterType = characterType;
+        this.canElevate = canElevate;
+        this.canHighlight = canHighlight;
+        this.canLeaveBehind = canLeaveBehind;
+        this.turnaround = turnaround;
         this.sprite = sprite;
         this.action = action;
         this.direction = direction;
-        this.reset = reset;
+        this.defaults = defaults;
         this.actionNumberOfTimes = actionNumberOfTimes;
         this.death = death;
         this.status = status;
         this.pixelsPerSecond = pixelsPerSecond;
         this.framesPerSecond = framesPerSecond;
-        this.canElevate = canElevate;
-        this.canHighlight = canHighlight;
-        this.canLeaveBehind = canLeaveBehind;
         this.sound = sound;
         this.obstacles = obstacles;
         this.screenNumber = screenNumber;
@@ -166,7 +170,7 @@ class Character {
      * @returns {boolean|*}
      */
     shouldCpuTurnaround() {
-        return (!this.isBarbarian() && this.isPassedBarbarian() && this.getResetTurnaround());
+        return (!this.isBarbarian() && this.isPassedBarbarian() && this.getTurnaround());
     }
 
     /**
@@ -496,40 +500,40 @@ class Character {
      * Gets the default action for the character.
      * @returns {*}
      */
-    getResetAction() {
-        return this.reset[ACTION_LABEL];
+    getDefaultAction() {
+        return this.defaults[ACTION_LABEL];
     }
 
     /**
      * Gets the default direction for the character.
      * @returns {*}
      */
-    getResetDirection() {
-        return this.reset[DIRECTION_LABEL];
+    getDefaultDirection() {
+        return this.defaults[DIRECTION_LABEL];
     }
 
     /**
      * Gets the default status for the character.
      * @returns {*}
      */
-    getResetStatus() {
-        return this.reset[STATUS_LABEL];
+    getDefaultStatus() {
+        return this.defaults[STATUS_LABEL];
     }
 
     /**
      * Returns true if the character will turn around and chase the Barbarian, false otherwise.
      * @returns {*}
      */
-    getResetTurnaround() {
-        return this.reset[TURNAROUND_LABEL];
+    getTurnaround() {
+        return this.turnaround;
     }
 
     /**
      * Gets the default direction for the customer.
      * @returns {*}
      */
-    getResetLeft() {
-        return this.reset[LEFT_LABEL];
+    getDefaultLeft() {
+        return this.defaults[LEFT_LABEL];
     }
 
     /**
@@ -537,9 +541,9 @@ class Character {
      * @param screenNumber
      * @returns {*}
      */
-    getResetBottom(screenNumber) {
-        validateRequiredParams(this.getResetBottom, arguments, 'screenNumber');
-        return this.reset[BOTTOM_LABEL][screenNumber];
+    getDefaultBottom(screenNumber) {
+        validateRequiredParams(this.getDefaultBottom, arguments, 'screenNumber');
+        return this.defaults[BOTTOM_LABEL][screenNumber];
     }
 
     /**

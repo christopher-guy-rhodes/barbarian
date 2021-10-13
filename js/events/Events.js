@@ -103,7 +103,8 @@ class Events {
     }
 
     handleSpaceKeypress(event) {
-        if (this.game.isBarbarianDead()) {
+        // Don't allow space keypress if the barbarian just died to avoid race conditions
+        if (this.game.isBarbarianDead() && !this.game.isBarbarianJustDied()) {
             this.game.resetGame();
             this.messages.hideAllMessages();
             this.game.startMonsterAttacks();

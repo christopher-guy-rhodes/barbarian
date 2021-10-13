@@ -138,7 +138,7 @@ class Game {
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getSound());
             this.setCpuVerticalDirection(monster);
-            this.performAction(monster, monster.getResetAction());
+            this.performAction(monster, monster.getDefaultAction());
         }
     }
 
@@ -154,8 +154,8 @@ class Game {
         let monsters = this.getMonstersOnScreen();
 
         for (let monster of monsters) {
-            monster.getSprite().css('left', monster.getResetLeft() + 'px');
-            monster.getSprite().css('bottom', monster.getResetBottom(this.getScreenNumber()) + 'px');
+            monster.getSprite().css('left', monster.getDefaultLeft() + 'px');
+            monster.getSprite().css('bottom', monster.getDefaultBottom(this.getScreenNumber()) + 'px');
             monster.getSprite().css('filter', "brightness(100%)");
             monster.setStatus(DEAD_LABEL);
         }
@@ -354,11 +354,22 @@ class Game {
         if (character.hitObstacle()) {
             this.handleObstacle(character, requestedAction);
         }
+        if (this.isBarbarianDead()) {
+            this.handleEndingSequence(character);
+        }
 
+
+    }
+
+    /* private */
+    handleEndingSequence(character) {
         // If the Barbarian has been defeated make the monster continue to move for a bit. Make sure the monster stops
         // moving before the death delay has expired so that it is not moving when it gets restarted
         if (!character.isBarbarian() && this.isBarbarianDead() && !character.isWalking()) {
-            this.performAction(character, WALK_LABEL);
+            console.log('walking ' + character.getCharacterType());
+            if (character.getDefaultAction() === WALK_LABEL) {
+                this.performAction(character, WALK_LABEL);
+            }
             let self = this;
             setTimeout(function () {
                 let monstersOnScreen = self.getMonstersOnScreen();
@@ -366,11 +377,9 @@ class Game {
                     monster.setStatus(DEAD_LABEL);
                     monster.stopMovement();
                 }
-            }, DEATH_DELAY - 500);
+            }, DEATH_DELAY - 1000);
         }
-        if (!character.isBarbarian() && this.isBarbarianDead()) {
 
-        }
     }
 
     /* private */
@@ -683,12 +692,12 @@ class Game {
         for (const character of characters) {
             let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
             character.getDeathSprite().hide();
-            character.setAction(character.getResetAction());
-            character.setDirection(character.getResetDirection());
-            character.setStatus(character.getResetStatus());
+            character.setAction(character.getDefaultAction());
+            character.setDirection(character.getDefaultDirection());
+            character.setStatus(character.getDefaultStatus());
             character.getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
-            character.getSprite().css('left',  character.getResetLeft() + 'px');
-            character.getSprite().css('bottom', character.getResetBottom(this.getBarbarian().getScreenNumber()) + 'px');
+            character.getSprite().css('left',  character.getDefaultLeft() + 'px');
+            character.getSprite().css('bottom', character.getDefaultBottom(this.getBarbarian().getScreenNumber()) + 'px');
         }
     }
 

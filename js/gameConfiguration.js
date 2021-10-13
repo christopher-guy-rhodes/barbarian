@@ -272,7 +272,7 @@ let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES, BARBARIAN_FR
     .withResetAction(STOP_LABEL)
     .withResetDirection(RIGHT_LABEL)
     .withResetLeft(0)
-    .withScreenNumber(3)
+    //.withScreenNumber(3)
     .withResetStatus(ALIVE_LABEL)
     //.withDeathFrames(BARBARIAN_DEATH_FRAMES)
     .withActionNumberOfTimes(ATTACK_LABEL, 1)
@@ -334,7 +334,6 @@ const GAME_BOARD = new GameBoardBuilder()
             .withIsInvincible(true)
             .withResetLeft(0)
             .withScreenNumber(3).build(),
-        /*
         new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark2'))
             .withFramesPerSecond(ATTACK_LABEL, 10)
             .withFramesPerSecond(WALK_LABEL, 10)
@@ -344,7 +343,7 @@ const GAME_BOARD = new GameBoardBuilder()
             .withCanHighlight(true)
             .withIsInvincible(true)
             .withResetLeft(1400)
-            .withScreenNumber(3).build()*/])
+            .withScreenNumber(3).build()])
     .withWater(3).build();
 
 let game = new Game(barbarianCharacter, GAME_BOARD);

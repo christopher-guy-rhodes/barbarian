@@ -11,8 +11,8 @@ class CharacterBuilder {
         this.action = undefined;
         this.status = DEAD_LABEL;
         this.direction = {
-            HORIZONTAL_LABEL : LEFT_LABEL,
-            VERTICAL_LABEL : undefined
+            x : LEFT_LABEL,
+            y : undefined
         };
 
         this.reset = {

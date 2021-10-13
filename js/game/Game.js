@@ -138,8 +138,6 @@ class Game {
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getSound());
             this.setCpuVerticalDirection(monster);
-            console.log('monster direction is ' + monster.getDirection());
-            monster.setDirection(monster.getResetDirection());
             this.performAction(monster, monster.getResetAction());
         }
     }

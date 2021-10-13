@@ -24,11 +24,7 @@ class Character {
                 screenNumber,
                 currentFrame,
                 isInvincible) {
-        if (barbarian === undefined) {
-            this.barbarian = this;
-        } else {
-            this.barbarian = barbarian;
-        }
+        this.barbarian = barbarian === undefined ? this : barbarian;
         this.frames = frames;
         this.characterType = characterType;
         this.sprite = sprite;

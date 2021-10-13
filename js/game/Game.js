@@ -47,7 +47,6 @@ class Game {
         character.stopMovement();
 
         if (this.isTransitionFromTerminalAction(character, action)) {
-            console.log('aborted attempt to transition from terminal action ' + character.getAction() + ' to ' + action);
             action = character.getAction();
         }
 
@@ -139,7 +138,6 @@ class Game {
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getSound());
             this.setCpuVerticalDirection(monster);
-            console.log(monster.getCharacterType() + ' is going to ' + monster.getResetAction());
             this.performAction(monster, monster.getResetAction());
         }
     }
@@ -457,7 +455,7 @@ class Game {
                                     : character.isFalling() ? FALL_LABEL : DEATH_LABEL;
         this.performAction(character, action);
 
-        if (action === FALL_LABEL) {
+        if (action === FALL_LABEL || action === SINK_LABEL) {
             let self = this;
             this.setActionsLocked(true);
             setTimeout(function () {

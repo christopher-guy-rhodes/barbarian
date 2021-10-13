@@ -97,7 +97,7 @@ class Character {
         }
 
         // uncomment to see why animation stopped for debugging
-        //if (this.isBarbarian()) {
+        //if (!this.isBarbarian()) {
         //    this.debugAnimationTermination(action, direction, vertDirection, gameBoard, frameIdx, frames);
         //}
 

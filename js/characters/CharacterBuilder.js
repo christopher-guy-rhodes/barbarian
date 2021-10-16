@@ -2,20 +2,12 @@ const RUN_SPEED_INCREASE_FACTOR = 1.5;
 
 class CharacterBuilder {
 
-    constructor(barbarian, obstacles, frames, characterType, sprite) {
+    constructor(barbarian, obstacles, frames) {
         this.barbarian = barbarian;
         this.obstacles = obstacles;
         this.frames = frames;
 
-        this.characterType = characterType;
-        this.canElevate = true;
-        this.canHighlight = true;
-        this.canLeaveBehind = false;
-        this.turnaround = true;
-        this.sprite = sprite;
-
         this.action = undefined;
-        this.status = DEAD_LABEL;
 
         this.direction = {
             x : LEFT_LABEL,
@@ -94,7 +86,6 @@ class CharacterBuilder {
             max: 100
         };
 
-        this.sound = undefined;
         this.screenNumber = 0;
 
         this.currentFrame = {
@@ -109,11 +100,10 @@ class CharacterBuilder {
             sink: 0
         }
 
-        this.isInvincible = false;
     }
 
-    withCanLeaveBehind(flag) {
-        this.canLeaveBehind = flag;
+    withProperties(properties) {
+        this.properties = properties;
         return this;
     }
 
@@ -137,18 +127,8 @@ class CharacterBuilder {
         return this;
     }
 
-    withSound(sound) {
-        this.sound = sound;
-        return this;
-    }
-
     withDefaultAction(action) {
         this.defaults.action = action;
-        return this;
-    }
-
-    withIsInvincible(flag) {
-        this.isInvincible = flag;
         return this;
     }
 
@@ -165,11 +145,6 @@ class CharacterBuilder {
         return this;
     }
 
-    withTurnaround(isEnabled) {
-        this.turnaround = isEnabled;
-        return this;
-    }
-
     withDefaultDirection(direction) {
         this.defaults.direction = direction;
         return this;
@@ -182,16 +157,6 @@ class CharacterBuilder {
 
     withDirection(direction) {
         this.direction[HORIZONTAL_LABEL] = direction;
-        return this;
-    }
-
-    withCanElevate(canElevate) {
-        this.canElevate = canElevate;
-        return this;
-    }
-
-    withCanHighlight(canHighlight) {
-        this.canHighlight = canHighlight;
         return this;
     }
 
@@ -224,44 +189,30 @@ class CharacterBuilder {
         return this;
     }
 
-    withStatus(status) {
-        this.status = status;
-        return this;
-    }
-
     build() {
-        if (this.sprite === undefined) {
-            throw new Error('CharacterBuilder build error: sprite is missing')
-        }
-        if (this.characterType === undefined) {
-            throw new Error('CharacterBuilder build error: character type is missing');
+        if (this.properties.getType() === undefined) {
+            throw new Error('CharacterBuilder build error: character type property is missing');
         }
         if (this.frames === undefined) {
             throw new Error('CharacterBuilder build error: frames are missing');
         }
+        if (this.obstacles === undefined) {
+            throw new Error('CharacterBuilder build error: obstacles are missing');
+        }
+
         return new Character(
             this.barbarian,
             this.obstacles,
             this.frames,
-
-            this.characterType,
-            this.canElevate,
-            this.canHighlight,
-            this.canLeaveBehind,
-            this.turnaround,
-            this.sprite,
-
+            this.properties,
             this.action,
-            this.status,
             this.direction,
             this.defaults,
             this.actionNumberOfTimes,
             this.death,
             this.pixelsPerSecond,
             this.framesPerSecond,
-            this.sound,
             this.screenNumber,
-            this.currentFrame,
-            this.isInvincible);
+            this.currentFrame);
     }
 }

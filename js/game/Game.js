@@ -364,9 +364,9 @@ class Game {
     /* private */
     handleEndingSequence(character) {
         // If the Barbarian has been defeated make the monster continue to move for a bit. Make sure the monster stops
-        // moving before the death delay has expired so that it is not moving when it gets restarted
+        // moving before the death delay has expired so that it is not moving when when the game is reset to prevent
+        // doubling up on the monster's movement
         if (!character.isBarbarian() && this.isBarbarianDead() && !character.isWalking()) {
-            console.log('walking ' + character.getCharacterType());
             if (character.getDefaultAction() === WALK_LABEL) {
                 this.performAction(character, WALK_LABEL);
             }

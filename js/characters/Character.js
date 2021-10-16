@@ -7,49 +7,31 @@ class Character {
     constructor(barbarian,
                 obstacles,
                 frames,
-
-                characterType,
-                canElevate,
-                canHighlight,
-                canLeaveBehind,
-                turnaround,
-                sprite,
-
+                properties,
                 action,
-                status,
                 direction,
                 defaults,
                 actionNumberOfTimes,
                 death,
                 pixelsPerSecond,
                 framesPerSecond,
-                sound,
                 screenNumber,
-                currentFrame,
-                isInvincible) {
+                currentFrame) {
         this.barbarian = barbarian === undefined ? this : barbarian;
         this.frames = frames;
-        this.characterType = characterType;
-        this.canElevate = canElevate;
-        this.canHighlight = canHighlight;
-        this.canLeaveBehind = canLeaveBehind;
-        this.turnaround = turnaround;
-        this.sprite = sprite;
+        this.properties = properties;
         this.action = action;
         this.direction = direction;
         this.defaults = defaults;
         this.actionNumberOfTimes = actionNumberOfTimes;
         this.death = death;
-        this.status = status;
         this.pixelsPerSecond = pixelsPerSecond;
         this.framesPerSecond = framesPerSecond;
-        this.sound = sound;
         this.obstacles = obstacles;
         this.screenNumber = screenNumber;
         this.currentFrame = currentFrame;
-        this.isInvincible = isInvincible;
 
-        this.animator = new Animator(this.sprite);
+        this.animator = new Animator(this.properties.getSprite());
         this.sounds = new Sounds();
     }
 
@@ -136,7 +118,7 @@ class Character {
      * @returns {boolean|boolean}
      */
     isAtRightBoundary() {
-        return !this.isDirectionLeft() && this.getX() === SCREEN_WIDTH - this.sprite.width();
+        return !this.isDirectionLeft() && this.getX() === SCREEN_WIDTH - this.getSprite().width();
     }
 
     /**
@@ -225,7 +207,7 @@ class Character {
      * @returns {number}
      */
     getX() {
-        return parseInt(stripPxSuffix(this.sprite.css(CSS_LEFT_LABEL)));
+        return parseInt(stripPxSuffix(this.getSprite().css(CSS_LEFT_LABEL)));
     }
 
     /**
@@ -233,7 +215,14 @@ class Character {
      * @returns {number}
      */
     getY() {
-        return parseInt(stripPxSuffix(this.sprite.css('bottom')));
+        return parseInt(stripPxSuffix(this.getSprite().css('bottom')));
+    }
+
+    /**
+     * Gets the character sprite.
+     */
+    getSprite() {
+        this.properties.getSprite();
     }
 
     /**
@@ -441,7 +430,7 @@ class Character {
      * @returns {*}
      */
     getCanLeaveBehind() {
-        return this.canLeaveBehind;
+        return this.properties.getCanLeaveBehind();
     }
 
     /**
@@ -467,7 +456,7 @@ class Character {
      * @returns {*}
      */
     getIsInvincible() {
-        return this.isInvincible;
+        return this.properties.getIsInvincible();
     }
 
     /**
@@ -525,7 +514,7 @@ class Character {
      * @returns {*}
      */
     getTurnaround() {
-        return this.turnaround;
+        return this.properties.getCanTurnAround();
     }
 
     /**
@@ -581,7 +570,7 @@ class Character {
      * @returns {*}
      */
     getSprite() {
-        return this.sprite;
+        return this.properties.getSprite();
     }
 
     /**
@@ -597,7 +586,7 @@ class Character {
      * @returns {*}
      */
     getCharacterType() {
-        return this.characterType;
+        return this.properties.getType();
     }
 
     /**
@@ -605,7 +594,7 @@ class Character {
      * @returns {*}
      */
     getCanElevate() {
-        return this.canElevate;
+        return this.properties.getCanElevate();
     }
 
     /**
@@ -613,7 +602,7 @@ class Character {
      * @returns {*}
      */
     getCanHighlight() {
-        return this.canHighlight;
+        return this.properties.getCanHighlight();
     }
 
     /**
@@ -621,7 +610,7 @@ class Character {
      * @returns {*}
      */
     getSound() {
-        return this.sound;
+        return this.properties.getSound();
     }
 
     /**
@@ -673,7 +662,7 @@ class Character {
      */
     setStatus(status) {
         validateRequiredParams(this.setStatus, arguments, 'status');
-        this.status = status;
+        this.properties.setStatus(status);
     }
 
     /**
@@ -710,7 +699,7 @@ class Character {
      */
     setY(y) {
         validateRequiredParams(this.setY, arguments, 'y');
-        this.sprite.css(CSS_BOTTOM_LABEL, y + CSS_PX_LABEL)
+        this.getSprite().css(CSS_BOTTOM_LABEL, y + CSS_PX_LABEL)
     }
 
     /* private */
@@ -833,7 +822,7 @@ class Character {
 
     /* private */
     getStatus() {
-        return this.status;
+        return this.properties.getStatus();
     }
 
     /* private */
@@ -882,7 +871,7 @@ class Character {
             console.log('l');
         }
         if (!(frameIdx < frames.length)) {
-            console.log('frame ' + frameIdx + ' of ' + this.characterType + ' ' + this.action +  ' is not less than ' + frames.length);
+            console.log('frame ' + frameIdx + ' of ' + this.getCharacterType() + ' ' + this.getAction() +  ' is not less than ' + frames.length);
         }
     }
 }

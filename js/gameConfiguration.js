@@ -184,6 +184,16 @@ const ROCK_FRAMES = {
                         heightOffset : 0
                 }
         },
+        stop : {
+                left : {
+                        frames : [5],
+                        heightOffset : 0
+                },
+                right : {
+                        frames : [0],
+                        heightOffset: 0
+                }
+        }
 };
 
 const SHARK_FRAMES = {
@@ -263,16 +273,18 @@ const OBSTACLES = new ObstaclesBuilder()
 
 let sounds = new Sounds();
 
-let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES, BARBARIAN_FRAMES, BARBARIAN_CHARACTER_TYPE, $('.barbarian'))
+let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES, BARBARIAN_FRAMES)
+    .withProperties(new CharacterPropertiesBuilder($('.barbarian'), BARBARIAN_CHARACTER_TYPE)
+        .withCanHighlight(false)
+        .build())
     .withAction(STOP_LABEL)
     .withDirection(RIGHT_LABEL)
-    .withCanHighlight(false)
     .withDeathSprite($('.barbarian'))
     .withPixelsPerSecond(ATTACK_LABEL, 0)
     .withDefaultAction(STOP_LABEL)
     .withDefaultDirection(RIGHT_LABEL)
     .withDefaultLeft(0)
-    .withScreenNumber(2)
+    //.withScreenNumber(3)
     .withDefaultStatus(ALIVE_LABEL)
     .withActionNumberOfTimes(ATTACK_LABEL, 1)
     .withDefaultBottom(2, 160)
@@ -280,27 +292,36 @@ let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES, BARBARIAN_FR
 
 const GAME_BOARD = new GameBoardBuilder()
     .withOpponents(0, [barbarianCharacter,
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, MONSTER_FRAMES, MONSTER_CHARACTER_TYPE, $('.monster'))
+        new CharacterBuilder(barbarianCharacter, OBSTACLES, MONSTER_FRAMES)
+            .withProperties(new CharacterPropertiesBuilder($('.monster'), MONSTER_CHARACTER_TYPE)
+                .withSound(sounds.getMonsterSound())
+                .build())
             //.withResetLeft(1400)
             //.withPixelsPerSecond(ATTACK, 200)
             //.withPixelsPerSecond(WALK, 200)
             .withDeathSprite($('.death'))
             .withFramesPerSecond(ATTACK_LABEL, 7.5)
-            .withSound(sounds.getMonsterSound()).build()])
+            .build()])
     .withOpponents(1, [barbarianCharacter,
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, DOG_FRAMES, DOG_CHARACTER_TYPE, $('.dog'))
+        new CharacterBuilder(barbarianCharacter, OBSTACLES, DOG_FRAMES)
+            .withProperties(new CharacterPropertiesBuilder($('.dog'), DOG_CHARACTER_TYPE)
+                .withSound(sounds.getGrowlSound())
+                .build())
             .withAction(SIT_LABEL)
             .withFramesPerSecond(ATTACK_LABEL, 7.5)
             .withDefaultAction(SIT_LABEL)
             .withDefaultBottom(1, 160)
             .withDefaultLeft(1050)
-            .withSound(sounds.getGrowlSound())
             .withScreenNumber(1).build()])
     .withOpponents(2, [barbarianCharacter,
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, ROCK_FRAMES, ROCK_CHARACTER_TYPE, $('.rock'))
+        new CharacterBuilder(barbarianCharacter, OBSTACLES, ROCK_FRAMES)
+            .withProperties(new CharacterPropertiesBuilder($('.rock'), ROCK_CHARACTER_TYPE)
+                .withIsInvincible(true)
+                .withCanHighlight(false)
+                .withCanLeaveBehind(true)
+                .withCanTurnAround(false)
+                .withCanElevate(false).build())
             .withAction(SIT_LABEL)
-            .withCanElevate(false)
-            .withCanHighlight(false)
             .withFramesPerSecond(SIT_LABEL, 10)
             .withFramesPerSecond(ATTACK_LABEL, 10)
             .withFramesPerSecond(WALK_LABEL, 10)
@@ -310,37 +331,38 @@ const GAME_BOARD = new GameBoardBuilder()
             // Don't allow barbarian to kill rock
             .withDefaultAction(SIT_LABEL)
             .withDefaultLeft(1270)
-            .withCanLeaveBehind(true)
-            .withTurnaround(false)
-            .withIsInvincible(true)
             .withScreenNumber(2).build(),
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, MONSTER_FRAMES, MONSTER_CHARACTER_TYPE, $('.red_monster'))
+        new CharacterBuilder(barbarianCharacter, OBSTACLES, MONSTER_FRAMES)
+            .withProperties(new CharacterPropertiesBuilder($('.red_monster'), MONSTER_CHARACTER_TYPE)
+                .withSound(sounds.getMonsterSound())
+                .build())
             // Don't allow barbarian to kill the invincible monster
             .withDefaultLeft(500)
             .withFramesPerSecond(ATTACK_LABEL, 7.5)
-            .withSound(sounds.getMonsterSound())
-            .withIsInvincible(false)
             .withScreenNumber(2).build()])
     .withOpponents(3, [barbarianCharacter,
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark1'))
+        new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES)
+            .withProperties(new CharacterPropertiesBuilder($('.shark1'), SHARK_CHARACTER_TYPE)
+                .withSound(sounds.getSplashSound())
+                .withCanLeaveBehind(true)
+                .withIsInvincible(true)
+                .build())
             .withFramesPerSecond(ATTACK_LABEL, 10)
             .withFramesPerSecond(WALK_LABEL, 10)
             .withPixelsPerSecond(ATTACK_LABEL, 1.2 * DEFAULT_PIXELS_PER_SECOND)
-            .withSound(sounds.getSplashSound())
             .withDefaultBottom(3, 0)
-            .withCanLeaveBehind(true)
-            .withCanHighlight(true)
-            .withIsInvincible(true)
             .withDefaultLeft(0)
             .withScreenNumber(3).build(),
-        new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES, SHARK_CHARACTER_TYPE, $('.shark2'))
+        new CharacterBuilder(barbarianCharacter, OBSTACLES, SHARK_FRAMES)
+            .withProperties(new CharacterPropertiesBuilder($('.shark2'), SHARK_CHARACTER_TYPE)
+                .withCanLeaveBehind(true)
+                .withIsInvincible(true)
+                .build())
             .withFramesPerSecond(ATTACK_LABEL, 10)
             .withFramesPerSecond(WALK_LABEL, 10)
             .withPixelsPerSecond(ATTACK_LABEL, 1.2 * DEFAULT_PIXELS_PER_SECOND)
             .withDefaultBottom(3, 700)
-            .withCanLeaveBehind(true)
-            .withCanHighlight(true)
-            .withIsInvincible(true)
+
             .withDefaultLeft(1400)
             .withScreenNumber(3).build()])
     .withWater(3).build();

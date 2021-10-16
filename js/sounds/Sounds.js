@@ -7,7 +7,7 @@ const FIRE_SOUND = 'FIRE_SOUND';
 const FALL_SOUND = 'FALL_SOUND';
 const FIRE_SOUND_DURATION = 2800;
 
-const IS_SOUND_DISABLED = false;
+const IS_SOUND_DISABLED = true;
 
 const THEME_SONG_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/theme.mp3');
 const FALL_SOUND_FILE = IS_SOUND_DISABLED ? undefined : new Audio('/sounds/fall.mp3');

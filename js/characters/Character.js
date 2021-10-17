@@ -220,13 +220,6 @@ class Character {
     }
 
     /**
-     * Gets the character sprite.
-     */
-    getSprite() {
-        this.properties.getSprite();
-    }
-
-    /**
      * Get the character properties
      * @returns {*}
      */
@@ -416,7 +409,7 @@ class Character {
      */
     isActionInfinite(action) {
         validateRequiredParams(this.isActionInfinite, arguments, 'action');
-        return this.getActionNumberOfTimes(action) === 0;
+        return this.getProperties().getActionNumberOfTimes(action) === 0;
     }
 
     /**
@@ -432,7 +425,6 @@ class Character {
         if (obstacle === undefined) {
             return false;
         } else if (obstacle.getType() === PIT_LABEL) {
-            // TODO: put jump evade frame in config
             if (this.didJumpEvade() || !this.isBarbarian()) {
                 return false;
             }
@@ -440,31 +432,6 @@ class Character {
         } else {
             return true;
         }
-    }
-
-    /**
-     * Returns true if the character does not have to be dead for the Barbarian to advance, false otherwise.
-     * @returns {*}
-     */
-    getCanLeaveBehind() {
-        return this.properties.getCanLeaveBehind();
-    }
-
-    /**
-     * Returns the number of times an action is to be executed. Zero values imply infinite.
-     * @param action the action to check
-     * @returns {*}
-     */
-    getActionNumberOfTimes(action) {
-        return this.properties.getActionNumberOfTimes(action);
-    }
-
-    /**
-     * Returns true if the character cannot be killed by the Barbarian, false otherwise.
-     * @returns {*}
-     */
-    getIsInvincible() {
-        return this.properties.getIsInvincible();
     }
 
     /**
@@ -481,15 +448,6 @@ class Character {
      */
     getVerticalDirection() {
         return this.direction[VERTICAL_LABEL];
-    }
-
-    /**
-     * Gets the pixels per second the movement should happen for a particular action.
-     * @param action
-     * @returns {*}
-     */
-    getPixelsPerSecond(action) {
-        return this.properties.getPixelsPerSecond(action);
     }
 
     /**
@@ -690,6 +648,11 @@ class Character {
         this.getProperties().getSprite().css(CSS_BOTTOM_LABEL, y + CSS_PX_LABEL)
     }
 
+    setX(x) {
+        validateRequiredParams(this.setX, arguments, 'x');
+        this.getProperties().getSprite().css(CSS_LEFT_LABEL, x);
+    }
+
     /* private */
     didJumpEvade() {
         return this.getAction() === JUMP_LABEL && this.getCurrentFrame(JUMP_LABEL) >= 3;
@@ -720,7 +683,7 @@ class Character {
     moveCharacter(action, gameBoard) {
         if (action !== DEATH_LABEL) {
             if (action === FALL_LABEL || action === SINK_LABEL) {
-                this.moveToPosition(undefined, 0, this.getPixelsPerSecond(FALL_LABEL));
+                this.moveToPosition(undefined, 0, this.getProperties().getPixelsPerSecond(FALL_LABEL));
             } else {
                 this.moveFromPositionToBoundary(gameBoard);
             }
@@ -759,7 +722,7 @@ class Character {
 
     /* private */
     moveFromPositionToBoundary(gameBoard) {
-        let pixelsPerSecond = this.getPixelsPerSecond(this.getAction());
+        let pixelsPerSecond = this.getProperties().getPixelsPerSecond(this.getAction());
         if (pixelsPerSecond <= 0) {
             // If the sprite isn't moving (stop, non-moving attack etc.) to not move it to the boundary
             return;

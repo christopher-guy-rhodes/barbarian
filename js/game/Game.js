@@ -57,7 +57,7 @@ class Game {
         character.animate(this.gameBoard, action,
             character.getDirection(),
             character.getVerticalDirection(),
-            character.getActionNumberOfTimes(action),
+            character.getProperties().getActionNumberOfTimes(action),
             frame).then(function(frame) {
                 self.handleActionInterruption(character, action, frame);
         }).catch(function(error) {
@@ -421,8 +421,10 @@ class Game {
                     character.setY(obstacle.getHeight());
                     // Transition to walking motion since the jump was successful
                     this.performAction(character, WALK_LABEL);
-                } else {
-                    // Hid elevation and did not avoid, let the character remain stopped and render at rest frame
+                } else if (character)  {
+                    // reset action so character can jump again
+                    character.setAction(undefined);
+                    // Hit elevation and did not avoid, let the character remain stopped and render at rest frame
                     this.renderAtRestFrame(character);
                 }
             } else if (obstacle.getIsPit() && character.isBarbarian()) {
@@ -464,7 +466,7 @@ class Game {
             // falling or sinking. We also need the monsters to have an opportunity to stop before the game is restarted
             // so the minimum lock time will be a little more than the death delay
             let lockActionsTime = Math.max(DEATH_DELAY + 500,
-                character.getY() / character.getPixelsPerSecond(FALL_LABEL) * MILLISECONDS_PER_SECOND);
+                character.getY() / character.getProperties().getPixelsPerSecond(FALL_LABEL) * MILLISECONDS_PER_SECOND);
 
             let self = this;
             this.setActionsLocked(true);
@@ -494,7 +496,7 @@ class Game {
             let winner = undefined;
             if (opponentAction === ATTACK_LABEL && (opponentCurrentFrame >= MIN_ATTACK_THRESHOLD
                 && opponentCurrentFrame <= MAX_ATTACK_THRESHOLD) && !(opponent.isBarbarian()
-                && character.getIsInvincible())) {
+                && character.getProperties().getIsInvincible())) {
                 looser = character;
                 winner = opponent;
             } else {
@@ -502,7 +504,7 @@ class Game {
                 winner = character;
             }
 
-            if (!looser.isDead() && !looser.getIsInvincible()) {
+            if (!looser.isDead() && !looser.getProperties().getIsInvincible()) {
                 this.death(looser);
                 winner.getProperties().getSprite().stop();
             }
@@ -596,7 +598,7 @@ class Game {
 
     /* private */
     areAllMonstersDefeated() {
-        return this.getMonstersOnScreen().filter(m => !m.getCanLeaveBehind() && !m.isDead()).length < 1;
+        return this.getMonstersOnScreen().filter(m => !m.getProperties().getCanLeaveBehind() && !m.isDead()).length < 1;
     }
 
     /* private */

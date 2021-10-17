@@ -166,6 +166,7 @@ class Events {
 
     handleJumpKeypress() {
         if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianJumping() && !this.game.isBarbarianDead()) {
+            console.log('performing jump action');
             this.game.performAction(this.game.getBarbarian(), JUMP_LABEL);
         }
     }

@@ -117,10 +117,11 @@ class Game {
         }
         let action = this.isWater() ? SWIM_LABEL : STOP_LABEL;
 
-        let heightOffset = character.getHeightOffset(action, character.getDirection()) * character.getSprite().height();
+        let heightOffset = character.getHeightOffset(action, character.getDirection()) *
+            character.getProperties().getSprite().height();
 
         let offset = character.getFrames(action, character.getDirection())[0];
-        character.getSprite().css(CSS_BACKGROUND_POSITION,
+        character.getProperties().getSprite().css(CSS_BACKGROUND_POSITION,
             -1*offset*character.getWidth() + CSS_PX_LABEL + ' ' + -1*heightOffset + CSS_PX_LABEL);
     }
 
@@ -154,9 +155,9 @@ class Game {
         let monsters = this.getMonstersOnScreen();
 
         for (let monster of monsters) {
-            monster.getSprite().css('left', monster.getDefaultLeft() + 'px');
-            monster.getSprite().css('bottom', monster.getDefaultBottom(this.getScreenNumber()) + 'px');
-            monster.getSprite().css('filter', "brightness(100%)");
+            monster.getProperties().getSprite().css('left', monster.getDefaultLeft() + 'px');
+            monster.getProperties().getSprite().css('bottom', monster.getDefaultBottom(this.getScreenNumber()) + 'px');
+            monster.getProperties().getSprite().css('filter', "brightness(100%)");
             monster.setStatus(DEAD_LABEL);
         }
     }
@@ -234,7 +235,7 @@ class Game {
      * Stops the Barbarian's motion (not sprite movement)
      */
     stopBarbarianMovement() {
-        this.barbarian.getSprite().stop();
+        this.barbarian.getProperties().getSprite().stop();
     }
 
     /**
@@ -387,7 +388,7 @@ class Game {
     handleFiniteAnimations(character, requestedAction) {
         if ((!character.isActionInfinite(requestedAction) && character.getAction() === requestedAction)
             || this.getIsPaused()) {
-            character.getSprite().stop();
+            character.getProperties().getSprite().stop();
         }
     }
 
@@ -409,7 +410,7 @@ class Game {
     handleObstacle(character, requestedAction) {
         let obstacle = character.getObstacle();
         if (obstacle !== undefined ) {
-            character.getSprite().stop();
+            character.getProperties().getSprite().stop();
 
             if (obstacle.getIsElevation()) {
                 if (obstacle.isTraversableDownhillElevation(character)) {
@@ -503,7 +504,7 @@ class Game {
 
             if (!looser.isDead() && !looser.getIsInvincible()) {
                 this.death(looser);
-                winner.getSprite().stop();
+                winner.getProperties().getSprite().stop();
             }
         }
     }
@@ -518,7 +519,7 @@ class Game {
         for (let opponent of opponentsInProximity) {
             if (!character.isBarbarian()) {
                 if (character.getCanHighlight()) {
-                    character.getSprite().css('filter', "brightness(300%)");
+                    character.getProperties().getSprite().css('filter', "brightness(300%)");
                 }
                 this.performAction(character, ATTACK_LABEL);
             }
@@ -536,7 +537,7 @@ class Game {
 
             character.setDirection(character.isPastBarbarianLeft() ? RIGHT_LABEL : LEFT_LABEL);
             if (character.getCanHighlight()) {
-                character.getSprite().css('filter', "brightness(100%)");
+                character.getProperties().getSprite().css('filter', "brightness(100%)");
             }
             this.performAction(character, WALK_LABEL);
         }
@@ -620,7 +621,7 @@ class Game {
     hideOpponents() {
         let opponents = this.getMonstersOnScreen();
         for (let opponent of opponents) {
-            opponent.getSprite().css('display', 'none');
+            opponent.getProperties().getSprite().css('display', 'none');
             opponent.getDeathSprite().css('display', 'none');
         }
     }
@@ -636,11 +637,12 @@ class Game {
 
         let x, y, distance, screenOffset = undefined;
         if (isVertical) {
-            y = SCREEN_HEIGHT - character.getSprite().height() / 2;
-            distance = Math.abs(y - stripPxSuffix(character.getSprite().css('bottom')));
+            y = SCREEN_HEIGHT - character.getProperties().getSprite().height() / 2;
+            distance = Math.abs(y - stripPxSuffix(character.getProperties().getSprite().css('bottom')));
         } else {
-            x = character.getDirection() === RIGHT_LABEL ? 0 : SCREEN_WIDTH - character.getSprite().width();
-            distance = SCREEN_WIDTH - character.getSprite().width();
+            x = character.getDirection() === RIGHT_LABEL ? 0 : SCREEN_WIDTH -s
+                character.getProperties().getSprite().width();
+            distance = SCREEN_WIDTH - character.getProperties().getSprite().width();
         }
         let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
         character.moveToPosition(x, y, adjustedPixelsPerSecond);
@@ -682,9 +684,9 @@ class Game {
             character.setAction(character.getDefaultAction());
             character.setDirection(character.getDefaultDirection());
             character.setStatus(character.getDefaultStatus());
-            character.getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
-            character.getSprite().css('left',  character.getDefaultLeft() + 'px');
-            character.getSprite().css('bottom', character.getDefaultBottom(this.getBarbarian().getScreenNumber()) + 'px');
+            character.getProperties().getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
+            character.getProperties().getSprite().css('left',  character.getDefaultLeft() + 'px');
+            character.getProperties().getSprite().css('bottom', character.getDefaultBottom(this.getBarbarian().getScreenNumber()) + 'px');
         }
     }
 

@@ -119,7 +119,7 @@ class Character {
      * @returns {boolean|boolean}
      */
     isAtRightBoundary() {
-        return !this.isDirectionLeft() && this.getX() === SCREEN_WIDTH - this.getSprite().width();
+        return !this.isDirectionLeft() && this.getX() === SCREEN_WIDTH - this.getProperties().getSprite().width();
     }
 
     /**
@@ -208,7 +208,7 @@ class Character {
      * @returns {number}
      */
     getX() {
-        return parseInt(stripPxSuffix(this.getSprite().css(CSS_LEFT_LABEL)));
+        return parseInt(stripPxSuffix(this.getProperties().getSprite().css(CSS_LEFT_LABEL)));
     }
 
     /**
@@ -216,7 +216,7 @@ class Character {
      * @returns {number}
      */
     getY() {
-        return parseInt(stripPxSuffix(this.getSprite().css('bottom')));
+        return parseInt(stripPxSuffix(this.getProperties().getSprite().css('bottom')));
     }
 
     /**
@@ -227,11 +227,19 @@ class Character {
     }
 
     /**
+     * Get the character properties
+     * @returns {*}
+     */
+    getProperties() {
+        return this.properties;
+    }
+
+    /**
      * Get the height of the character.
      * @returns {number}
      */
     getHeight() {
-        return parseInt(stripPxSuffix(this.getSprite().css('height')));
+        return parseInt(stripPxSuffix(this.getProperties().getSprite().css('height')));
     }
 
     /**
@@ -239,7 +247,7 @@ class Character {
      * @returns {number}
      */
     getWidth() {
-        return parseInt(stripPxSuffix(this.getSprite().css('height')));
+        return parseInt(stripPxSuffix(this.getProperties().getSprite().css('height')));
     }
 
     /**
@@ -254,14 +262,14 @@ class Character {
      * Hide this character.
      */
     hide() {
-        this.getSprite().css(CSS_DISPLAY_LABEL, CSS_NONE_LABEL);
+        this.getProperties().getSprite().css(CSS_DISPLAY_LABEL, CSS_NONE_LABEL);
     }
 
     /**
      * Show this character.
      */
     show() {
-        this.getSprite().css(CSS_DISPLAY_LABEL, CSS_BLOCK_LABEL);
+        this.getProperties().getSprite().css(CSS_DISPLAY_LABEL, CSS_BLOCK_LABEL);
     }
 
     /**
@@ -563,14 +571,6 @@ class Character {
     }
 
     /**
-     * Get the sprite css element.
-     * @returns {*}
-     */
-    getSprite() {
-        return this.properties.getSprite();
-    }
-
-    /**
      * Gets the death sprite element for the character.
      * @returns {*}
      */
@@ -687,7 +687,7 @@ class Character {
      */
     setY(y) {
         validateRequiredParams(this.setY, arguments, 'y');
-        this.getSprite().css(CSS_BOTTOM_LABEL, y + CSS_PX_LABEL)
+        this.getProperties().getSprite().css(CSS_BOTTOM_LABEL, y + CSS_PX_LABEL)
     }
 
     /* private */
@@ -734,17 +734,17 @@ class Character {
             deathSprite.show();
             deathSprite.css(CSS_LEFT_LABEL, this.getX() + CSS_PX_LABEL);
             if (!this.isBarbarian()) {
-                this.getSprite().hide();
+                this.getProperties().getSprite().hide();
             }
             return deathSprite;
         } else {
-            return this.getSprite();
+            return this.getProperties().getSprite();
         }
     }
 
     /* private */
     isVisible() {
-        return this.getSprite().css(CSS_DISPLAY_LABEL) === CSS_BLOCK_LABEL;
+        return this.getProperties().getSprite().css(CSS_DISPLAY_LABEL) === CSS_BLOCK_LABEL;
     }
 
     /* private */
@@ -754,7 +754,7 @@ class Character {
 
     /* private */
     stopMovement() {
-        this.getSprite().stop();
+        this.getProperties().getSprite().stop();
     }
 
     /* private */
@@ -798,8 +798,8 @@ class Character {
     /* private */
     getProximity(opponent) {
         let distanceX = Math.abs(this.getX() - opponent.getX());
-        let distanceY = Math.abs(stripPxSuffix(this.getSprite().css('bottom'))
-            - stripPxSuffix(opponent.getSprite().css('bottom')));
+        let distanceY = Math.abs(stripPxSuffix(this.getProperties().getSprite().css('bottom'))
+            - stripPxSuffix(opponent.getProperties().getSprite().css('bottom')));
         return Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
     }
 

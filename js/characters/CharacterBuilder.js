@@ -14,48 +14,7 @@ class CharacterBuilder {
             y : undefined
         };
 
-        this.defaults = {
-            status : DEAD_LABEL,
-            left : 850,
-            action : WALK_LABEL,
-            direction : LEFT_LABEL,
-            bottom : {
-                0: 12,
-                1: 12,
-                2: 12,
-                3: 12
-            }
-        };
-
-        this.actionNumberOfTimes = {
-            run : 0,
-            walk: 0,
-            swim : 0,
-            attack: 0,
-            sink: 0,
-            sit: 0,
-            jump: 1,
-            stop: 1,
-            fall: 1,
-            death: 1
-        };
-
-        this.death = {
-            sprite : $('.death'),
-            frames : {
-                right: {
-                    frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    heightOffset: 0
-                },
-                left: {
-                    frames: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-                    heightOffset: 0
-                },
-            },
-            framesPerSecond : SPRITE_FPS,
-            fallDelay : 800,
-            time : 0
-        };
+        this.status = DEAD_LABEL;
 
         this.pixelsPerSecond = {
             walk: DEFAULT_PIXELS_PER_SECOND,
@@ -117,70 +76,8 @@ class CharacterBuilder {
         return this;
     }
 
-    withDeathTime(time) {
-        this.death.time = time;
-        return this;
-    }
-
-    withDeathSprite(sprite) {
-        this.death.sprite = sprite;
-        return this;
-    }
-
-    withDefaultAction(action) {
-        this.defaults.action = action;
-        return this;
-    }
-
-    withDefaultBottom(screenNumber, value) {
-        if (screenNumber === undefined || value == undefined) {
-            throw new Error("withBottom: Both screenNumber and value must be set");
-        }
-        this.defaults.bottom[screenNumber] = value;
-        return this;
-    }
-
-    withDefaultLeft(left) {
-        this.defaults.left = left;
-        return this;
-    }
-
-    withDefaultDirection(direction) {
-        this.defaults.direction = direction;
-        return this;
-    }
-
-    withDefaultStatus(status) {
-        this.defaults.status= status;
-        return this;
-    }
-
     withDirection(direction) {
         this.direction[HORIZONTAL_LABEL] = direction;
-        return this;
-    }
-
-    withFramesPerSecond(action, fps) {
-        if (action === undefined || fps === undefined) {
-            throw new Error("withFps: Both action and fps arguments must be set");
-        }
-        this.framesPerSecond[action] = fps;
-        return this;
-    }
-
-    withPixelsPerSecond(action, pixelsPerSecond) {
-        if (action === undefined || pixelsPerSecond === undefined) {
-            throw new Error("withPixelsPerSecond: Both action and pixelsPerSecond arguments must be set");
-        }
-        this.pixelsPerSecond[action] = pixelsPerSecond;
-        return this;
-    }
-
-    withActionNumberOfTimes(action, numberOfTimes) {
-        if (action === undefined || numberOfTimes === undefined) {
-            throw new Error("withActionNumberOfTimes: Action and numberOfTimes arguments must be set");
-        }
-        this.actionNumberOfTimes[action] = numberOfTimes;
         return this;
     }
 
@@ -207,11 +104,7 @@ class CharacterBuilder {
             this.properties,
             this.action,
             this.direction,
-            this.defaults,
-            this.actionNumberOfTimes,
-            this.death,
-            this.pixelsPerSecond,
-            this.framesPerSecond,
+            this.status,
             this.screenNumber,
             this.currentFrame);
     }

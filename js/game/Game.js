@@ -223,20 +223,6 @@ class Game {
     }
 
     /**
-     * Returns true if the Barbarian is alive or has just died.
-     * @returns {boolean}
-     */
-    isBarbarianAliveOrJustDied() {
-        return !this.isBarbarianDead() || this.isBarbarianJustDied();
-    }
-
-    isBarbarianJustDied() {
-        return new Date().getTime() - this.getBarbarian().getDeathTime() < JUST_DIED_THRESHOLD;
-    }
-
-
-
-    /**
      * Returns true if the current screen is water, false otherwise.
      * @returns {*}
      */
@@ -366,9 +352,11 @@ class Game {
         // If the Barbarian has been defeated make the monster continue to move for a bit. Make sure the monster stops
         // moving before the death delay has expired so that it is not moving when when the game is reset to prevent
         // doubling up on the monster's movement
-        if (!character.isBarbarian() && this.isBarbarianDead() && !character.isWalking()) {
+        if (!character.isBarbarian() && this.isBarbarianDead() && !(character.isWalking() || character.isSitting())) {
             if (character.getDefaultAction() === WALK_LABEL) {
                 this.performAction(character, WALK_LABEL);
+            } else if (character.getDefaultAction() === SIT_LABEL) {
+                this.performAction(character, SIT_LABEL);
             }
             let self = this;
             setTimeout(function () {
@@ -447,7 +435,6 @@ class Game {
 
     /* private */
     death(character) {
-        character.setDeathTime(new Date().getTime());
         character.setStatus(DEAD_LABEL);
 
         if (character.isBarbarian()) {

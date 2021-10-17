@@ -10,11 +10,7 @@ class Character {
                 properties,
                 action,
                 direction,
-                defaults,
-                actionNumberOfTimes,
-                death,
-                pixelsPerSecond,
-                framesPerSecond,
+                status,
                 screenNumber,
                 currentFrame) {
         this.barbarian = barbarian === undefined ? this : barbarian;
@@ -22,11 +18,7 @@ class Character {
         this.properties = properties;
         this.action = action;
         this.direction = direction;
-        this.defaults = defaults;
-        this.actionNumberOfTimes = actionNumberOfTimes;
-        this.death = death;
-        this.pixelsPerSecond = pixelsPerSecond;
-        this.framesPerSecond = framesPerSecond;
+        this.status = status;
         this.obstacles = obstacles;
         this.screenNumber = screenNumber;
         this.currentFrame = currentFrame;
@@ -320,6 +312,14 @@ class Character {
     }
 
     /**
+     * Returns true if the character is sitting, false othewise.
+     * @returns {boolean}
+     */
+    isSitting() {
+        return this.getAction() === SIT_LABEL;
+    }
+
+    /**
      * Returns true if the character is running, false otherwise.
      * @returns {boolean}
      */
@@ -439,16 +439,7 @@ class Character {
      * @returns {*}
      */
     getActionNumberOfTimes(action) {
-        validateRequiredParams(this.getActionNumberOfTimes, arguments, 'action');
-        return this.actionNumberOfTimes[action];
-    }
-
-    /**
-     * Returns the time that the character died.
-     * @returns {*}
-     */
-    getDeathTime() {
-        return this.death[TIME_LABEL];
+        return this.properties.getActionNumberOfTimes(action);
     }
 
     /**
@@ -481,8 +472,7 @@ class Character {
      * @returns {*}
      */
     getPixelsPerSecond(action) {
-        validateRequiredParams(this.getPixelsPerSecond, arguments, 'action');
-        return this.pixelsPerSecond[action];
+        return this.properties.getPixelsPerSecond(action);
     }
 
     /**
@@ -490,7 +480,7 @@ class Character {
      * @returns {*}
      */
     getDefaultAction() {
-        return this.defaults[ACTION_LABEL];
+        return this.properties.getDefaultAction();
     }
 
     /**
@@ -498,7 +488,7 @@ class Character {
      * @returns {*}
      */
     getDefaultDirection() {
-        return this.defaults[DIRECTION_LABEL];
+        return this.properties.getDefaultDirection();
     }
 
     /**
@@ -506,7 +496,7 @@ class Character {
      * @returns {*}
      */
     getDefaultStatus() {
-        return this.defaults[STATUS_LABEL];
+        return this.properties.getDefaultStatus();
     }
 
     /**
@@ -522,7 +512,7 @@ class Character {
      * @returns {*}
      */
     getDefaultLeft() {
-        return this.defaults[LEFT_LABEL];
+        return this.properties.getDefaultX();
     }
 
     /**
@@ -532,7 +522,7 @@ class Character {
      */
     getDefaultBottom(screenNumber) {
         validateRequiredParams(this.getDefaultBottom, arguments, 'screenNumber');
-        return this.defaults[BOTTOM_LABEL][screenNumber];
+        return this.properties.getDefaultBottom(screenNumber);
     }
 
     /**
@@ -578,7 +568,7 @@ class Character {
      * @returns {*}
      */
     getDeathSprite() {
-        return this.death[SPRITE_LABEL];
+        return this.properties.getDeathSprite();
     }
 
     /**
@@ -662,16 +652,7 @@ class Character {
      */
     setStatus(status) {
         validateRequiredParams(this.setStatus, arguments, 'status');
-        this.properties.setStatus(status);
-    }
-
-    /**
-     * Set the time of death for the character.
-     * @param time the time
-     */
-    setDeathTime(time) {
-        validateRequiredParams(this.setDeathTime, arguments, 'time');
-        this.death[TIME_LABEL] = time;
+        this.status = status;
     }
 
     /**
@@ -822,12 +803,12 @@ class Character {
 
     /* private */
     getStatus() {
-        return this.properties.getStatus();
+        return this.status;
     }
 
     /* private */
     getFramesPerSecond(action) {
-        return this.framesPerSecond[action];
+        return this.properties.getFramesPerSecond(action);
     }
 
     /* private */

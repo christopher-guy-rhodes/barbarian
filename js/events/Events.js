@@ -104,7 +104,7 @@ class Events {
 
     handleSpaceKeypress(event) {
         // Don't allow space keypress if the barbarian just died to avoid race conditions
-        if (this.game.isBarbarianDead() && !this.game.isBarbarianJustDied()) {
+        if (this.game.isBarbarianDead()) {
             this.game.resetGame();
             this.messages.hideAllMessages();
             this.game.startMonsterAttacks();
@@ -148,7 +148,7 @@ class Events {
     }
 
     handleAttackKeypress() {
-        if (!this.game.isBarbarianSwimming() && this.game.isBarbarianAliveOrJustDied()) {
+        if (!this.game.isBarbarianSwimming() && !game.isBarbarianDead()) {
             this.game.stopBarbarianMovement();
             this.game.playGruntSound();
             this.game.performAction(this.game.getBarbarian(), ATTACK_LABEL);

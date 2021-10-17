@@ -6,7 +6,6 @@ const PASSING_MULTIPLIER = 1.5;
 class Character {
     constructor(barbarian,
                 obstacles,
-                frames,
                 properties,
                 action,
                 direction,
@@ -14,7 +13,6 @@ class Character {
                 screenNumber,
                 currentFrame) {
         this.barbarian = barbarian === undefined ? this : barbarian;
-        this.frames = frames;
         this.properties = properties;
         this.action = action;
         this.direction = direction;
@@ -540,8 +538,7 @@ class Character {
      * @returns {*}
      */
     getHeightOffset(action, direction) {
-        validateRequiredParams(this.getHeightOffset, arguments, 'action', 'direction');
-        return this.frames[action][direction][HEIGHT_OFFSET_LABEL];
+        return this.properties.getFrameHeightOffset(action, direction);
     }
 
     /**
@@ -551,8 +548,7 @@ class Character {
      * @returns {*}
      */
     getFrames(action, direction) {
-        validateRequiredParams(this.getFrames, arguments, 'action', 'direction');
-        return this.frames[action][direction][FRAMES_LABEL];
+        return this.properties.getFrames(action, direction);
     }
 
     /**

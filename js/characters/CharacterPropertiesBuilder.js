@@ -2,6 +2,7 @@ class CharacterPropertiesBuilder {
     constructor(sprite, characterType, defaultX) {
         validateRequiredParams(this.constructor, arguments, 'sprite', 'characterType', 'defaultX');
         this.sprite = sprite;
+        this.frames = {};
         this.deathSprite = $('.death');
         this.characterType = characterType;
         this.defaultX = defaultX;
@@ -147,8 +148,17 @@ class CharacterPropertiesBuilder {
         return this;
     }
 
+    withFrames(frames) {
+        this.frames = frames;
+        return this;
+    }
+
     build() {
-        return new CharacterProperties(this.sprite, this.deathSprite, this.characterType, this.defaultX,
+        if (this.frames === undefined) {
+            throw new Error("CharacterPropertiesBuilder: frames is required although not a part of the constructor " +
+                "for readability, please use 'withFrames'");
+        }
+        return new CharacterProperties(this.sprite, this.frames, this.deathSprite, this.characterType, this.defaultX,
             this.canElevate, this.canHighlight, this.canLeaveBehind, this.canTurnAround, this.isInvincible, this.sound,
             this.actionNumberOfTimes, this.pixelsPerSecond, this.framesPerSecond, this.defaultStatus,
             this.defaultAction, this.defaultDirection, this.defaultBottom);

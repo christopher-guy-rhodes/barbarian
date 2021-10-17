@@ -1,12 +1,13 @@
 const DEFAULT_BOTTOM = 12;
 class CharacterProperties {
-    constructor(sprite, deathSprite, characterType, defaultX, canElevate, canHighlight, canLeaveBehind, canTurnAround,
-                isInvincible, sound, actionNumberOfTimes, pixelsPerSecond, framesPerSecond, defaultStatus,
-                defaultAction, defaultDirection, defaultBottom) {
+    constructor(sprite, frames, deathSprite, characterType, defaultX, canElevate, canHighlight, canLeaveBehind,
+                canTurnAround, isInvincible, sound, actionNumberOfTimes, pixelsPerSecond, framesPerSecond,
+                defaultStatus, defaultAction, defaultDirection, defaultBottom) {
         validateRequiredParams(this.constructor, arguments, 'sprite', 'deathSprite', 'characterType', 'canElevate',
             'canHighlight', 'canLeaveBehind', 'canTurnAround', 'isInvincible', 'actionNumberOfTimes', 'defaultStatus',
             'defaultAction', 'defaultX', 'defaultDirection', 'defaultBottom');
         this.sprite = sprite;
+        this.frames = frames;
         this.deathSprite = deathSprite;
         this.characterType = characterType;
         this.defaultX = defaultX;
@@ -24,6 +25,14 @@ class CharacterProperties {
         this.defaultX = defaultX;
         this.defaultDirection = defaultDirection;
         this.defaultBottom = defaultBottom;
+    }
+
+    getFrames(action, direction) {
+        return this.frames.getFrames(action, direction);
+    }
+
+    getFrameHeightOffset(action, direction) {
+        return this.frames.getFrameHeightOffset(action, direction);
     }
 
     getType() {

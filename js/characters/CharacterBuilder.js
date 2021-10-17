@@ -2,10 +2,9 @@ const RUN_SPEED_INCREASE_FACTOR = 1.5;
 
 class CharacterBuilder {
 
-    constructor(barbarian, obstacles, frames) {
+    constructor(barbarian, obstacles) {
         this.barbarian = barbarian;
         this.obstacles = obstacles;
-        this.frames = frames;
 
         this.action = undefined;
 
@@ -15,30 +14,6 @@ class CharacterBuilder {
         };
 
         this.status = DEAD_LABEL;
-
-        this.pixelsPerSecond = {
-            walk: DEFAULT_PIXELS_PER_SECOND,
-            swim : DEFAULT_PIXELS_PER_SECOND,
-            run : DEFAULT_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
-            jump: DEFAULT_PIXELS_PER_SECOND,
-            attack: DEFAULT_PIXELS_PER_SECOND,
-            stop: 0,
-            fall: DEFAULT_PIXELS_PER_SECOND,
-            sit: 0,
-            death: DEFAULT_PIXELS_PER_SECOND,
-        };
-
-        this.framesPerSecond = {
-            walk: SPRITE_FPS,
-            swim: SWIM_FPS,
-            run: SPRITE_FPS * RUN_SPEED_INCREASE_FACTOR,
-            jump: SPRITE_FPS,
-            attack: SPRITE_FPS,
-            stop: 0,
-            fall: SPRITE_FPS,
-            sit: SPRITE_FPS,
-            death: SPRITE_FPS
-        };
 
         this.jumpThresholds = {
             min: 15,
@@ -90,9 +65,6 @@ class CharacterBuilder {
         if (this.properties.getType() === undefined) {
             throw new Error('CharacterBuilder build error: character type property is missing');
         }
-        if (this.frames === undefined) {
-            throw new Error('CharacterBuilder build error: frames are missing');
-        }
         if (this.obstacles === undefined) {
             throw new Error('CharacterBuilder build error: obstacles are missing');
         }
@@ -100,7 +72,6 @@ class CharacterBuilder {
         return new Character(
             this.barbarian,
             this.obstacles,
-            this.frames,
             this.properties,
             this.action,
             this.direction,

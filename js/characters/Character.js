@@ -4,6 +4,17 @@ const PASSING_MULTIPLIER = 1.5;
  * Class that supports character actions
  */
 class Character {
+    /**
+     * Construct a character
+     * @param barbarian the Barbarian character, leave undefined if this is the Barbarian character
+     * @param obstacles the obstacles the character will face
+     * @param properties CharacterProperty object that represents the static properties of the character
+     * @param action the action the character is taking
+     * @param direction the direction vector the character is moving
+     * @param status the status of the character
+     * @param screenNumber the current screen number for the character
+     * @param currentFrame the current frame that is rendering for the character's current action
+     */
     constructor(barbarian,
                 obstacles,
                 properties,

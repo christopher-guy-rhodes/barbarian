@@ -6,7 +6,7 @@ const BARBARIAN_CHARACTER_TYPE = 'BARBARIAN';
 
 
 // TODO: the right x positions must be sorted in asc order and the left in desc, don't rely on the client to do the sorting
-const OBSTACLES = new ObstaclesBuilder()
+let obstacles = new ObstaclesBuilder()
     .withObstacle(1, RIGHT_LABEL,
         new Obstacle(50, 82, ELEVATION_LABEL, STOP_LABEL, -100, 200))
     .withObstacle(1, RIGHT_LABEL,
@@ -39,7 +39,7 @@ const OBSTACLES = new ObstaclesBuilder()
 
 let sounds = new Sounds();
 
-let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES)
+let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
     .withProperties(new CharacterPropertiesBuilder($('.barbarian'), BARBARIAN_CHARACTER_TYPE, 0)
         .withFrames(new FramesBuilder()
             .withFrames('sink', 'left', [104], 13)
@@ -72,28 +72,45 @@ let barbarianCharacter = new CharacterBuilder(undefined, OBSTACLES)
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(1)
+    .withScreenNumber(3)
     .withDirection(RIGHT_LABEL)
+    .build();
+
+let sharkFrames = new FramesBuilder()
+    .withFrames('attack', 'left', [2, 1, 0], 3)
+    .withFrames('attack', 'right', [0, 1, 2], 2)
+    .withFrames('walk', 'left', [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 1)
+    .withFrames('walk', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], 0)
+    .build();
+
+let monsterFrames = new FramesBuilder()
+    .withFrames('walk', 'left', [13, 12, 11, 10, 9, 8], 1)
+    .withFrames('walk', 'right', [0, 1, 2, 3, 4, 5], 0)
+    .withFrames('attack', 'left', [31, 30, 29, 28, 27, 26, 25, 24], 3)
+    .withFrames('attack', 'right', [16, 17 , 18, 19, 20, 21, 23, 23], 2)
+    .withFrames('death', 'left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
+    .withFrames('death', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
     .build();
 
 const GAME_BOARD = new GameBoardBuilder()
     .withOpponents(0, [barbarianCharacter,
-        new CharacterBuilder(barbarianCharacter, OBSTACLES)
+        new CharacterBuilder(barbarianCharacter, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.monster'), MONSTER_CHARACTER_TYPE, 850)
-                .withFrames(new FramesBuilder()
-                    .withFrames('walk', 'left', [13, 12, 11, 10, 9, 8], 1)
-                    .withFrames('walk', 'right', [0, 1, 2, 3, 4, 5], 0)
-                    .withFrames('attack', 'left', [31, 30, 29, 28, 27, 26, 25, 24], 3)
-                    .withFrames('attack', 'right', [16, 17 , 18, 19, 20, 21, 23, 23], 2)
-                    .withFrames('death', 'left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
-                    .withFrames('death', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
-                    .build())
+                .withFrames(monsterFrames)
                 .withSound(sounds.getMonsterSound())
                 .withFramesPerSecond(ATTACK_LABEL, 7.5)
                 .build())
             .build()])
     .withOpponents(1, [barbarianCharacter,
-        new CharacterBuilder(barbarianCharacter, OBSTACLES)
+        new CharacterBuilder(barbarianCharacter, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.dog'), DOG_CHARACTER_TYPE, 1050)
                 .withFrames(new FramesBuilder()
                     .withFrames('sit', 'left', [3, 2, 1, 0], 1)
@@ -113,7 +130,7 @@ const GAME_BOARD = new GameBoardBuilder()
             .withAction(SIT_LABEL)
             .withScreenNumber(1).build()])
     .withOpponents(2, [barbarianCharacter,
-        new CharacterBuilder(barbarianCharacter, OBSTACLES)
+        new CharacterBuilder(barbarianCharacter, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.rock'), ROCK_CHARACTER_TYPE, 1270)
                 .withFrames(new FramesBuilder()
                     .withFrames('sit', 'left', [5, 4], 0)
@@ -138,38 +155,18 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withCanElevate(false).build())
             .withAction(SIT_LABEL)
             .withScreenNumber(2).build(),
-        new CharacterBuilder(barbarianCharacter, OBSTACLES)
+        new CharacterBuilder(barbarianCharacter, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.red_monster'), MONSTER_CHARACTER_TYPE, 500)
-                .withFrames(new FramesBuilder()
-                    .withFrames('walk', 'left', [13, 12, 11, 10, 9, 8], 1)
-                    .withFrames('walk', 'right', [0, 1, 2, 3, 4, 5], 0)
-                    .withFrames('attack', 'left', [31, 30, 29, 28, 27, 26, 25, 24], 3)
-                    .withFrames('attack', 'right', [16, 17 , 18, 19, 20, 21, 23, 23], 2)
-                    .withFrames('death', 'left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
-                    .withFrames('death', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
-                    .build())
+                .withFrames(monsterFrames)
                 .withSound(sounds.getMonsterSound())
                 .withFramesPerSecond(ATTACK_LABEL, 7.5)
                 .build())
             // Don't allow barbarian to kill the invincible monster
             .withScreenNumber(2).build()])
     .withOpponents(3, [barbarianCharacter,
-        new CharacterBuilder(barbarianCharacter, OBSTACLES)
+        new CharacterBuilder(barbarianCharacter, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.shark1'), SHARK_CHARACTER_TYPE, 0)
-                .withFrames(new FramesBuilder()
-                    .withFrames('attack', 'left', [2, 1, 0], 3)
-                    .withFrames('attack', 'right', [0, 1, 2], 2)
-                    .withFrames('walk', 'left', [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-                        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-                        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-                        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-                        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 1)
-                    .withFrames('walk', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], 0)
-                    .build())
+                .withFrames(sharkFrames)
                 .withSound(sounds.getSplashSound())
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
@@ -179,22 +176,9 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withPixelsPerSecond(ATTACK_LABEL, 1.2 * DEFAULT_PIXELS_PER_SECOND)
                 .build())
             .withScreenNumber(3).build(),
-        new CharacterBuilder(barbarianCharacter, OBSTACLES)
+        new CharacterBuilder(barbarianCharacter, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.shark2'), SHARK_CHARACTER_TYPE, 1400)
-                .withFrames(new FramesBuilder()
-                    .withFrames('attack', 'left', [2, 1, 0], 3)
-                    .withFrames('attack', 'right', [0, 1, 2], 2)
-                    .withFrames('walk', 'left', [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-                        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-                        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-                        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
-                        11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 1)
-                    .withFrames('walk', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
-                        6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], 0)
-                    .build())
+                .withFrames(sharkFrames)
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
                 .withDefaultBottom(3, 700)

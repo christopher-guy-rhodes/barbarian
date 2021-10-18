@@ -69,7 +69,8 @@ class Obstacle {
     }
 
     isTraversableDownhillElevation(character) {
-        return this.isDownHillFrom(character.getY()) || (!character.isBarbarian() && character.getCanElevate());
+        return this.isDownHillFrom(character.getY()) || (!character.isBarbarian()
+            && character.getProperties().getCanElevate());
     }
 
     getFailAction() {

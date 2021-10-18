@@ -52,7 +52,7 @@ class Character {
 
         this.moveCharacter(action, gameBoard);
 
-        let frames = this.getFrames(action, direction);
+        let frames = this.getProperties().getFrames(action, direction);
         let frameIdx = idx;
         let counter = numberOfTimes;
 
@@ -60,13 +60,14 @@ class Character {
 
         while (!this.isAnimationInterrupted(action, direction, vertDirection, gameBoard) && frameIdx < frames.length) {
             let sprite = this.prepareSprite();
-            let heightOffset = -1 * this.getHeightOffset(action, this.getDirection()) * sprite.height();
+            let heightOffset = -1 *
+                this.getProperties().getFrameHeightOffset(action, this.getDirection()) * sprite.height();
             let offset = -1*frames[frameIdx++]*sprite.width();
             sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
 
             this.setCurrentFrame(action, frameIdx);
 
-            await sleep(MILLISECONDS_PER_SECOND / this.getFramesPerSecond(action));
+            await sleep(MILLISECONDS_PER_SECOND / this.getProperties().getFramesPerSecond(action));
 
             if (frameIdx === frames.length) {
                 // If times is 0 we loop infinitely, if times is set decrement it and keep looping
@@ -153,7 +154,7 @@ class Character {
      * @returns {boolean|*}
      */
     shouldCpuTurnaround() {
-        return (!this.isBarbarian() && this.isPassedBarbarian() && this.getTurnaround());
+        return (!this.isBarbarian() && this.isPassedBarbarian() && this.getProperties().getCanTurnAround());
     }
 
     /**
@@ -170,7 +171,8 @@ class Character {
 
         return !this.isBarbarian() && !this.barbarian.isDead() &&
             this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
-                .filter(opponent => opponent.getCharacterType() != this.getCharacterType()).length > 0;
+                .filter(opponent => opponent.getProperties().getType() !=
+                    this.getProperties().getType()).length > 0;
     }
 
     /**
@@ -451,121 +453,11 @@ class Character {
     }
 
     /**
-     * Gets the default action for the character.
-     * @returns {*}
-     */
-    getDefaultAction() {
-        return this.properties.getDefaultAction();
-    }
-
-    /**
-     * Gets the default direction for the character.
-     * @returns {*}
-     */
-    getDefaultDirection() {
-        return this.properties.getDefaultDirection();
-    }
-
-    /**
-     * Gets the default status for the character.
-     * @returns {*}
-     */
-    getDefaultStatus() {
-        return this.properties.getDefaultStatus();
-    }
-
-    /**
-     * Returns true if the character will turn around and chase the Barbarian, false otherwise.
-     * @returns {*}
-     */
-    getTurnaround() {
-        return this.properties.getCanTurnAround();
-    }
-
-    /**
-     * Gets the default direction for the customer.
-     * @returns {*}
-     */
-    getDefaultLeft() {
-        return this.properties.getDefaultX();
-    }
-
-    /**
-     * Gets the default y coordinate for the character.
-     * @param screenNumber
-     * @returns {*}
-     */
-    getDefaultBottom(screenNumber) {
-        validateRequiredParams(this.getDefaultBottom, arguments, 'screenNumber');
-        return this.properties.getDefaultBottom(screenNumber);
-    }
-
-    /**
      * Get the current direction of the character.
      * @returns {*}
      */
     getDirection() {
         return this.direction[HORIZONTAL_LABEL];
-    }
-
-    /**
-     * Gets the sprite height offset for a particular action and direction.
-     * @param action the action
-     * @param directiont the direction
-     * @returns {*}
-     */
-    getHeightOffset(action, direction) {
-        return this.properties.getFrameHeightOffset(action, direction);
-    }
-
-    /**
-     * Get the frames for a particular action and direction.
-     * @param action the action
-     * @param direction the direction
-     * @returns {*}
-     */
-    getFrames(action, direction) {
-        return this.properties.getFrames(action, direction);
-    }
-
-    /**
-     * Gets the death sprite element for the character.
-     * @returns {*}
-     */
-    getDeathSprite() {
-        return this.properties.getDeathSprite();
-    }
-
-    /**
-     * Gets the type of the character.
-     * @returns {*}
-     */
-    getCharacterType() {
-        return this.properties.getType();
-    }
-
-    /**
-     * Returns true if the character can elevate, false otherwise.
-     * @returns {*}
-     */
-    getCanElevate() {
-        return this.properties.getCanElevate();
-    }
-
-    /**
-     * Returns true if the character highlights during an attack.
-     * @returns {*}
-     */
-    getCanHighlight() {
-        return this.properties.getCanHighlight();
-    }
-
-    /**
-     * Get the sound that the character makes.
-     * @returns {*}
-     */
-    getSound() {
-        return this.properties.getSound();
     }
 
     /**
@@ -693,7 +585,7 @@ class Character {
     /* private */
     prepareSprite() {
         if (this.isDead()) {
-            let deathSprite = this.getDeathSprite();
+            let deathSprite = this.getProperties().getDeathSprite();
             deathSprite.show();
             deathSprite.css(CSS_LEFT_LABEL, this.getX() + CSS_PX_LABEL);
             if (!this.isBarbarian()) {
@@ -777,13 +669,8 @@ class Character {
     }
 
     /* private */
-    getFramesPerSecond(action) {
-        return this.properties.getFramesPerSecond(action);
-    }
-
-    /* private */
     debugAnimationTermination(action, direction, vertDirection, gameBoard, frameIdx, frames) {
-        console.log(this.getCharacterType() + ' is done ' + action + 'ing');
+        console.log(this.getProperties().getType() + ' is done ' + action + 'ing');
 
         if (!(this.getAction() === action)) {
             console.log(this.getAction() + ' is not equal to requested action ' + action);
@@ -822,7 +709,8 @@ class Character {
             console.log('l');
         }
         if (!(frameIdx < frames.length)) {
-            console.log('frame ' + frameIdx + ' of ' + this.getCharacterType() + ' ' + this.getAction() +  ' is not less than ' + frames.length);
+            console.log('frame ' + frameIdx + ' of ' + this.getProperties().getType() + ' ' +
+                this.getAction() +  ' is not less than ' + frames.length);
         }
     }
 }

@@ -104,8 +104,8 @@ class CharacterProperties {
         return this.framesPerSecond[action];
     }
 
-    getDefaultBottom(screenNumber) {
-        validateRequiredParams(this.getDefaultBottom, arguments, 'screenNumber');
+    getDefaultY(screenNumber) {
+        validateRequiredParams(this.getDefaultY, arguments, 'screenNumber');
         if (this.defaultBottom[screenNumber] === undefined) {
             return DEFAULT_BOTTOM;
         } else {

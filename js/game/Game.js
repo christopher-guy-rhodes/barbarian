@@ -117,10 +117,10 @@ class Game {
         }
         let action = this.isWater() ? SWIM_LABEL : STOP_LABEL;
 
-        let heightOffset = character.getHeightOffset(action, character.getDirection()) *
+        let heightOffset = character.getProperties().getFrameHeightOffset(action, character.getDirection()) *
             character.getProperties().getSprite().height();
 
-        let offset = character.getFrames(action, character.getDirection())[0];
+        let offset = character.getProperties().getFrames(action, character.getDirection())[0];
         character.getProperties().getSprite().css(CSS_BACKGROUND_POSITION,
             -1*offset*character.getWidth() + CSS_PX_LABEL + ' ' + -1*heightOffset + CSS_PX_LABEL);
     }
@@ -137,9 +137,9 @@ class Game {
         for (let monster of monsters) {
             monster.show();
             monster.setStatus(ALIVE_LABEL);
-            this.sounds.playSound(monster.getSound());
+            this.sounds.playSound(monster.getProperties().getSound());
             this.setCpuVerticalDirection(monster);
-            this.performAction(monster, monster.getDefaultAction());
+            this.performAction(monster, monster.getProperties().getDefaultAction());
         }
     }
 
@@ -155,8 +155,8 @@ class Game {
         let monsters = this.getMonstersOnScreen();
 
         for (let monster of monsters) {
-            monster.getProperties().getSprite().css('left', monster.getDefaultLeft() + 'px');
-            monster.getProperties().getSprite().css('bottom', monster.getDefaultBottom(this.getScreenNumber()) + 'px');
+            monster.getProperties().getSprite().css('left', monster.getProperties().getDefaultX() + 'px');
+            monster.getProperties().getSprite().css('bottom', monster.getProperties().getDefaultY(this.getScreenNumber()) + 'px');
             monster.getProperties().getSprite().css('filter', "brightness(100%)");
             monster.setStatus(DEAD_LABEL);
         }
@@ -354,9 +354,9 @@ class Game {
         // moving before the death delay has expired so that it is not moving when when the game is reset to prevent
         // doubling up on the monster's movement
         if (!character.isBarbarian() && this.isBarbarianDead() && !(character.isWalking() || character.isSitting())) {
-            if (character.getDefaultAction() === WALK_LABEL) {
+            if (character.getProperties().getDefaultAction() === WALK_LABEL) {
                 this.performAction(character, WALK_LABEL);
-            } else if (character.getDefaultAction() === SIT_LABEL) {
+            } else if (character.getProperties().getDefaultAction() === SIT_LABEL) {
                 this.performAction(character, SIT_LABEL);
             }
             let self = this;
@@ -401,7 +401,7 @@ class Game {
                 //character.setAction(undefined);
             }, DEATH_DELAY);
         } else {
-            character.getDeathSprite().hide();
+            character.getProperties().getDeathSprite().hide();
         }
 
     }
@@ -520,7 +520,7 @@ class Game {
 
         for (let opponent of opponentsInProximity) {
             if (!character.isBarbarian()) {
-                if (character.getCanHighlight()) {
+                if (character.getProperties().getCanHighlight()) {
                     character.getProperties().getSprite().css('filter', "brightness(300%)");
                 }
                 this.performAction(character, ATTACK_LABEL);
@@ -538,7 +538,7 @@ class Game {
             }
 
             character.setDirection(character.isPastBarbarianLeft() ? RIGHT_LABEL : LEFT_LABEL);
-            if (character.getCanHighlight()) {
+            if (character.getProperties().getCanHighlight()) {
                 character.getProperties().getSprite().css('filter', "brightness(100%)");
             }
             this.performAction(character, WALK_LABEL);
@@ -624,7 +624,7 @@ class Game {
         let opponents = this.getMonstersOnScreen();
         for (let opponent of opponents) {
             opponent.getProperties().getSprite().css('display', 'none');
-            opponent.getDeathSprite().css('display', 'none');
+            opponent.getProperties().getDeathSprite().css('display', 'none');
         }
     }
 
@@ -682,13 +682,14 @@ class Game {
         let spritesOnScreen = this.getOpponentsOnScreen();
         for (const character of characters) {
             let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
-            character.getDeathSprite().hide();
-            character.setAction(character.getDefaultAction());
-            character.setDirection(character.getDefaultDirection());
-            character.setStatus(character.getDefaultStatus());
+            character.getProperties().getDeathSprite().hide();
+            character.setAction(character.getProperties().getDefaultAction());
+            character.setDirection(character.getProperties().getDefaultDirection());
+            character.setStatus(character.getProperties().getDefaultStatus());
             character.getProperties().getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
-            character.getProperties().getSprite().css('left',  character.getDefaultLeft() + 'px');
-            character.getProperties().getSprite().css('bottom', character.getDefaultBottom(this.getBarbarian().getScreenNumber()) + 'px');
+            character.getProperties().getSprite().css('left',  character.getProperties().getDefaultX() + 'px');
+            character.getProperties().getSprite().css('bottom',
+                character.getProperties().getDefaultY(this.getBarbarian().getScreenNumber()) + 'px');
         }
     }
 

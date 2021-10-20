@@ -166,7 +166,6 @@ class Events {
 
     handleJumpKeypress() {
         if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianJumping() && !this.game.isBarbarianDead()) {
-            console.log('performing jump action');
             this.game.performAction(this.game.getBarbarian(), JUMP_LABEL);
         }
     }
@@ -277,8 +276,8 @@ class Events {
         if (!game.isWater() &&  clickY > 600) {
             events.handleKeypress(KEYPRESS[KP_JUMP]);
         } else {
-            let changingDirection = game.getBarbarian().isDirectionRight() && pageX < barbarianLeft ||
-                game.getBarbarian().isDirectionLeft() && pageX > barbarianLeft;
+            let changingDirection = game.getBarbarian().isFacingRight() && pageX < barbarianLeft ||
+                game.getBarbarian().isFacingLeft() && pageX > barbarianLeft;
             if (game.getBarbarian().isWalking() && !changingDirection) {
                 events.handleKeypress(KEYPRESS[KP_RUN]);
             } else {

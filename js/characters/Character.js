@@ -24,15 +24,15 @@ class Character {
                 screenNumber,
                 currentFrame) {
         this.barbarian = barbarian === undefined ? this : barbarian;
+        this.obstacles = obstacles;
         this.properties = properties;
         this.action = action;
         this.direction = direction;
         this.status = status;
-        this.obstacles = obstacles;
         this.screenNumber = screenNumber;
         this.currentFrame = currentFrame;
 
-        this.animator = new Animator(this.properties.getSprite());
+        this.animator = new Animator(this.getProperties().getSprite());
         this.sounds = new Sounds();
     }
 
@@ -42,7 +42,7 @@ class Character {
      * @param gameBoard the game board to perform the animation on
      * @param action the requested action (run, walk, attack etc.)
      * @param direction the requested direction to move the character (left or right)
-     * @param vertDirection the requested virtical direction to move the character (up or down)
+     * @param vertDirection the requested vertical direction to move the character (up or down)
      * @param numberOfTimes the number of times to perform the animation loop (zero for infinite)
      * @param idx the frame index offset
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
@@ -70,7 +70,7 @@ class Character {
             await sleep(MILLISECONDS_PER_SECOND / this.getProperties().getFramesPerSecond(action));
 
             if (frameIdx === frames.length) {
-                // If times is 0 we loop infinitely, if times is set decrement it and keep looping
+                // If counter is 0 loop infinitely otherwise loop again if counter has not expired
                 if (counter === 0 || --counter > 0) {
                     frameIdx = 0;
                     this.setCurrentFrame(action, frameIdx);
@@ -87,151 +87,128 @@ class Character {
     }
 
     /**
-     * Move the character to position x, y at the specified pixels per second.
-     * @param x the x coordinate to move to
-     * @param y the y coordinate to move to
-     * @param pixelsPerSecond the pixels per second rate to move at
-     */
-    moveToPosition(x, y, pixelsPerSecond) {
-        validateRequiredParams(this.moveToPosition, arguments, 'pixelsPerSecond');
-        this.animator.moveElementToPosition(x, y, pixelsPerSecond)
-    }
-
-    /**
-     * Returns true if the character is at a horizontal boundary, false otherwise.
+     * Determines if the character is at a screen boundary.
      * @param gameBoard the game board
-     * @returns {boolean}
+     * @returns {boolean} true if the character is at a horizontal boundary, false otherwise.
      */
     isAtBoundary(gameBoard) {
         validateRequiredParams(this.isAtBoundary, arguments, 'gameBoard');
-        return !gameBoard.isWater(this.getScreenNumber()) && this.isAtLeftBoundary() || this.isAtRightBoundary();
+        return !gameBoard.isWater(this.getScreenNumber()) &&
+            this.isAtLeftBoundary() ||
+            this.isAtRightBoundary();
     }
 
     /**
-     * Returns true if the character is at the left boundary and trying to move left, false otherwise.
-     * @returns {boolean|boolean}
-     */
-    isAtLeftBoundary() {
-        return !this.isDirectionRight() && this.getX() === 0;
-    }
-
-    /**
-     * Returns true if the character is at the right boundary and trying to move right, false otherwise.
-     * @returns {boolean|boolean}
-     */
-    isAtRightBoundary() {
-        return !this.isDirectionLeft() && this.getX() === SCREEN_WIDTH - this.getProperties().getSprite().width();
-    }
-
-    /**
-     * True if this character is not the barbarian and has passed while moving left.
-     * @returns {boolean}
-     */
-    isPastBarbarianLeft() {
-        return !this.isBarbarian() && this.isDirectionLeft() &&
-            this.getX() + this.getWidth() * PASSING_MULTIPLIER < this.barbarian.getX() || this.isAtLeftBoundary();
-    }
-
-    /**
-     * True if this character is not the Barbarian and has passed while moving right.
-     * @returns {boolean}
-     */
-    isPastBarbarianRight() {
-        return !this.isBarbarian() && this.isDirectionRight() &&
-            this.getX() - this.getWidth() * PASSING_MULTIPLIER > this.barbarian.getX() || this.isAtRightBoundary();
-    }
-
-    /**
-     * Returns true if the character is moving up or down, false otherwise.
-     * @returns {boolean}
+     * Determines if the character is moving vertically.
+     * @returns {boolean} returns true if the character is moving up or down, false otherwise.
      */
     isMovingVertically() {
         return this.getVerticalDirection() !== undefined;
     }
 
     /**
-     * Returns true if the monster should turn around to chase the Barbarian, false otherwise
-     * @returns {boolean|*}
+     * Determines if the character is facing left.
+     * @returns {boolean} true if the character is facing left, false otherwise
      */
-    shouldCpuTurnaround() {
-        return (!this.isBarbarian() && this.isPassedBarbarian() && this.getProperties().getCanTurnAround());
+    isFacingLeft() {
+        return this.getDirection() === LEFT_LABEL;
     }
 
     /**
-     * Returns true if the character is not the barbarian and should start fighting, false otherwise. Characters will
-     * not fight chracters of the same type.
+     * Determines if the character is facing right.
+     * @returns {boolean} true if the character is facing left, false otherwise
+     */
+    isFacingRight() {
+        return this.getDirection() === RIGHT_LABEL;
+    }
+
+    /**
+     * Determines if the character should turn around.
+     * @returns {boolean} true if the character is the CPU and should turn around, false otherwise
+     */
+    shouldCpuTurnaround() {
+        return !this.isBarbarian() && this.isPastCharacter(this.getBarbarian()) &&
+            this.getProperties().getCanTurnAround();
+    }
+
+    /**
+     * Determines if the character should start a fight. Characters will not fight characters of the same type.
      * @param gameBoard the game board
-     * @returns {boolean}
+     * @returns {boolean} true if the character is the CPU and should attack, false otherwise.
      */
     shouldCpuFight(gameBoard) {
         validateRequiredParams(this.shouldCpuFight, arguments, 'gameBoard');
-        if (this.barbarian.didJumpEvade() || this.getAction() === DEATH_LABEL) {
+
+        if (this.isBarbarian() || this.getBarbarian().didJumpEvade() || this.isDead()) {
             return false;
         }
 
-        return !this.isBarbarian() && !this.barbarian.isDead() &&
-            this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
-                .filter(opponent => opponent.getProperties().getType() !=
-                    this.getProperties().getType()).length > 0;
+        return !this.getBarbarian().isDead() && this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
+            .filter(opponent => opponent.getProperties().getType() != this.getProperties().getType()).length > 0;
     }
 
     /**
-     * Returns true if the character is not the Barbarian and is within range to launch an attack, false otherwise.
+     * Determines if the CPU character should launch an attack.
      * @param gameBoard the game board
-     * @returns {boolean}
+     * @returns {boolean} true if the CPU character is within range to launch an attack, false otherwise.
      */
     shouldCpuLaunchAttack(gameBoard) {
         validateRequiredParams(this.shouldCpuLaunchAttack, arguments, 'gameBoard');
-        return !this.isBarbarian() && !this.barbarian.isDead() && this.getAction() !== ATTACK_LABEL &&
-            this.getAction() !== DEATH_LABEL && this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
+        return !this.isBarbarian() && !this.getBarbarian().isDead() && !this.isAttacking() && !this.isDead() &&
+            this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
     }
 
     /**
      * Gets the opponents with x horizontal pixels of the character.
      * @param gameBoard the game board
      * @param x the proximity to check
-     * @returns {[]}
+     * @returns {[Character]} other characters within x pixels
      */
     getOpponentsWithinX(gameBoard, x) {
         validateRequiredParams(this.getOpponentsWithinX, arguments, 'gameBoard', 'x');
-        let attackers = [];
-        let opponents = gameBoard.getOpponents(this.barbarian.getScreenNumber());
-        for (let opponent of opponents) {
-            let proximity = this.getProximity(opponent);
-            if (proximity > 0 && proximity < x) {
-                attackers.push(opponent);
-            }
-        }
-        return attackers;
+        let self = this;
+        return gameBoard.getOpponents(this.getBarbarian().getScreenNumber())
+            .filter(function (opponent) {
+                let proximity = self.getProximity(opponent);
+                return proximity > 0 && proximity < x;
+            });
     }
 
     /**
-     * Get the x coordinate for the character.
-     * @returns {number}
+     * Get the x coordinate for this character.
+     * @returns {number} the x coordinate
      */
     getX() {
         return parseInt(stripPxSuffix(this.getProperties().getSprite().css(CSS_LEFT_LABEL)));
     }
 
     /**
-     * Get the y coordinate for the character.
-     * @returns {number}
+     * Get the y coordinate for this character.
+     * @returns {number} the y coordinate
      */
     getY() {
         return parseInt(stripPxSuffix(this.getProperties().getSprite().css('bottom')));
     }
 
     /**
-     * Get the character properties
-     * @returns {*}
+     * Get the static character properties.
+     * @returns {CharacterProperties} the character properties object for this character
      */
     getProperties() {
         return this.properties;
     }
 
     /**
+     * Get the character animator.
+     * @returns {Animator} the animator object for the sprite for the character
+     */
+    getAnimator() {
+        return this.animator;
+    }
+
+    /**
      * Get the height of the character.
-     * @returns {number}
+     * @returns {number} the character height
      */
     getHeight() {
         return parseInt(stripPxSuffix(this.getProperties().getSprite().css('height')));
@@ -239,18 +216,18 @@ class Character {
 
     /**
      * Get the width of the character.
-     * @returns {number}
+     * @returns {number} the character width
      */
     getWidth() {
         return parseInt(stripPxSuffix(this.getProperties().getSprite().css('height')));
     }
 
     /**
-     * Returns true if this character object is the Barbarian, false otherwise.
-     * @returns {boolean}
+     * Determine if this character is the Barbarian.
+     * @returns {boolean} true if this character object is the Barbarian, false otherwise
      */
     isBarbarian() {
-        return this === this.barbarian;
+        return this === this.getBarbarian();
     }
 
     /**
@@ -268,120 +245,96 @@ class Character {
     }
 
     /**
-     * Returns true if the character is dead, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is dead.
+     * @returns {boolean} true if the character is dead, false otherwise
      */
     isDead() {
         return this.getStatus() === DEAD_LABEL;
     }
 
     /**
-     * Returns true if the character is alive, false otherwise.
-     * @returns {boolean}
-     */
-    isAlive() {
-        return this.getStatus() === ALIVE_LABEL;
-    }
-
-    /**
-     * Returns true if the character is facing right, false otherwise.
-     * @returns {boolean}
-     */
-    isDirectionRight() {
-        return this.getDirection() === RIGHT_LABEL;
-    }
-
-    /**
-     * Returns true if the character is facing left, false otherwise.
-     * @returns {boolean}
-     */
-    isDirectionLeft() {
-        return this.getDirection() === LEFT_LABEL;
-    }
-
-    /**
-     * Returns true if the character is facing up, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is going up.
+     * @returns {boolean} true if the character is facing up, false otherwise
      */
     isDirectionUp() {
         return this.getVerticalDirection() === UP_LABEL;
     }
 
     /**
-     * Returns true if the character is facing down, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is going down.
+     * @returns {boolean} true if the character is facing down, false otherwise
      */
     isDirectionDown() {
         return this.getVerticalDirection() === DOWN_LABEL;
     }
 
     /**
-     * Returns true if the character is walking, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is walking.
+     * @returns {boolean} true if the character is walking, false otherwise
      */
     isWalking() {
         return this.getAction() === WALK_LABEL;
     }
 
     /**
-     * Returns true if the character is sitting, false othewise.
-     * @returns {boolean}
+     * Determine if the character is sitting.
+     * @returns {boolean} true if the character is sitting, false otherwise
      */
     isSitting() {
         return this.getAction() === SIT_LABEL;
     }
 
     /**
-     * Returns true if the character is running, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is running.
+     * @returns {boolean} true if the character is running, false otherwise
      */
     isRunning() {
         return this.getAction() === RUN_LABEL;
     }
 
     /**
-     * Returns true if the character is falling, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is falling.
+     * @returns {boolean} true if the character is falling, false otherwise
      */
     isFalling() {
         return this.getAction() === FALL_LABEL;
     }
 
     /**
-     * Returns true if the character is dying, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is dying.
+     * @returns {boolean} true if the character is dying, false otherwise
      */
     isDying() {
         return this.getAction() === DEATH_LABEL;
     }
 
     /**
-     * Returns true if the character is sinking, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is sinking.
+     * @returns {boolean} true if the character is sinking, false otherwise
      */
     isSinking() {
         return this.getAction() === SINK_LABEL;
     }
 
     /**
-     * Returns true if the character is swimming, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is swimming.
+     * @returns {boolean} true if the character is swimming, false otherwise
      */
     isSwimming() {
         return this.getAction() === SWIM_LABEL;
     }
 
     /**
-     * Returns true if the character is jumping, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is jumping.
+     * @returns {boolean} true if the character is jumping, false otherwise
      */
     isJumping() {
         return this.getAction() === JUMP_LABEL;
     }
 
     /**
-     * Returns true if the character is attacking, false otherwise.
-     * @returns {boolean}
+     * Determine if the character is attacking.
+     * @returns {boolean} true if the character is attacking, false otherwise
      */
     isAttacking() {
         return this.getAction() === ATTACK_LABEL;
@@ -389,25 +342,16 @@ class Character {
 
     /**
      * Returns the obstacle that the character has encountered, undefined if no obstacle was encountered.
-     * @returns {undefined|*}
+     * @returns {undefined|Obstacle} the obstacle that the character has hit, undefined if no obstacle was hit
      */
     getObstacle() {
-        // Get the most recently passed obstacle
-        let obstacle = this.getObstacleEncountered();
-
-        if (obstacle !== undefined &&
-            this.isPastObstacle(obstacle) &&
-            (this.getY() != obstacle.getHeight() || obstacle.getType() === PIT_LABEL) &&
-            (!this.isBarbarian() || this.getAction() !== ATTACK_LABEL)) {
-            return obstacle;
-        }
-        return undefined;
+        return this.getObstacleEncountered().fetchIfCharacterHit(this);
     }
 
     /**
-     * Returns true if the action is repeated indefinitely, false otherwise.
+     * Determines if the action is infinite for the character.
      * @param action the action to check
-     * @returns {boolean}
+     * @returns {boolean} true if the action is repeated indefinitely, false otherwise
      */
     isActionInfinite(action) {
         validateRequiredParams(this.isActionInfinite, arguments, 'action');
@@ -419,21 +363,7 @@ class Character {
      * @returns {boolean}
      */
     hitObstacle() {
-        if (this.getAction() === FALL_LABEL) {
-            return false;
-        }
-        let obstacle =  this.getObstacle();
-
-        if (obstacle === undefined) {
-            return false;
-        } else if (obstacle.getType() === PIT_LABEL) {
-            if (this.didJumpEvade() || !this.isBarbarian()) {
-                return false;
-            }
-            return true;
-        } else {
-            return true;
-        }
+        return this.getObstacle() !== undefined;
     }
 
     /**
@@ -474,7 +404,9 @@ class Character {
      * @returns {*}
      */
     getCurrentFrame(action) {
-        validateRequiredParams(this.getCurrentFrame, arguments, 'action');
+        if (action === undefined) {
+            return 0;
+        }
         return this.currentFrame[action];
     }
 
@@ -540,9 +472,45 @@ class Character {
         this.getProperties().getSprite().css(CSS_BOTTOM_LABEL, y + CSS_PX_LABEL)
     }
 
+    /**
+     * Set the x coordinate for the character.
+     * @param x the x coordinate
+     */
     setX(x) {
         validateRequiredParams(this.setX, arguments, 'x');
         this.getProperties().getSprite().css(CSS_LEFT_LABEL, x);
+    }
+
+    /* private */
+    getBarbarian() {
+        return this.barbarian;
+    }
+
+    /* private */
+    isAtLeftBoundary() {
+        return !this.isFacingRight() && this.getX() === 0;
+    }
+
+    /* private */
+    isAtRightBoundary() {
+        return !this.isFacingLeft() && this.getX() === SCREEN_WIDTH - this.getProperties().getSprite().width();
+    }
+
+    /* private */
+    isPastCharacterLeft(otherCharacter) {
+        return this.isFacingLeft() && this.getX() + this.getWidth() * PASSING_MULTIPLIER < otherCharacter.getX() ||
+            this.isAtLeftBoundary();
+    }
+
+    /* private */
+    isPastCharacterRight(otherCharacter) {
+        return this.isFacingRight() && this.getX() - this.getWidth() * PASSING_MULTIPLIER > otherCharacter.getX() ||
+            this.isAtRightBoundary();
+    }
+
+    /* private */
+    isPastCharacter(otherCharacter) {
+        return this.isPastCharacterLeft(otherCharacter) || this.isPastCharacterRight(otherCharacter);
     }
 
     /* private */
@@ -575,7 +543,9 @@ class Character {
     moveCharacter(action, gameBoard) {
         if (action !== DEATH_LABEL) {
             if (action === FALL_LABEL || action === SINK_LABEL) {
-                this.moveToPosition(undefined, 0, this.getProperties().getPixelsPerSecond(FALL_LABEL));
+                this.getAnimator().moveElementToPosition(undefined,
+                    0,
+                    this.getProperties().getPixelsPerSecond(FALL_LABEL));
             } else {
                 this.moveFromPositionToBoundary(gameBoard);
             }
@@ -625,9 +595,9 @@ class Character {
             y = !gameBoard.isWater(this.getScreenNumber()) ? undefined :
                 this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
         }
-        let x = this.isDirectionLeft() ? 0 : SCREEN_WIDTH - this.getWidth();
+        let x = this.isFacingLeft() ? 0 : SCREEN_WIDTH - this.getWidth();
 
-        this.moveToPosition(x, y, pixelsPerSecond);
+        this.getAnimator().moveElementToPosition(x, y, pixelsPerSecond);
     }
 
     /* private */
@@ -636,13 +606,10 @@ class Character {
     }
 
     /* private */
-    isPassedBarbarian() {
-        return this.isPastBarbarianLeft() || this.isPastBarbarianRight();
-    }
-
-    /* private */
     getObstacleEncountered() {
-        return this.obstacles.getNextObstacle(this.getX(), this.getDirection(), this.getScreenNumber());
+        let obstacle = this.obstacles.getNextObstacle(this.getX(), this.getDirection(), this.getScreenNumber());
+        let emptyObstacle = new Obstacle(0, 0, "NONE", STOP_LABEL, 0, 0);
+        return obstacle === undefined ? emptyObstacle : obstacle;
     }
 
     /* private */

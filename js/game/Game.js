@@ -283,7 +283,7 @@ class Game {
      * @returns {boolean}
      */
     isBarbarianMovingRight() {
-        return this.barbarian.isDirectionRight();
+        return this.barbarian.isFacingRight();
     }
 
     /**
@@ -291,7 +291,7 @@ class Game {
      * @returns {boolean}
      */
     isBarbarianMovingLeft() {
-        return this.barbarian.isDirectionLeft();
+        return this.barbarian.isFacingLeft();
     }
 
     /**
@@ -537,7 +537,7 @@ class Game {
                 this.setCpuVerticalDirection(character)
             }
 
-            character.setDirection(character.isPastBarbarianLeft() ? RIGHT_LABEL : LEFT_LABEL);
+            character.setDirection(character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL);
             if (character.getProperties().getCanHighlight()) {
                 character.getProperties().getSprite().css('filter', "brightness(100%)");
             }
@@ -560,20 +560,18 @@ class Game {
             return;
         }
 
-        if (!this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL) && character.isAtLeftBoundary()) {
+        if (!this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL) && character.isFacingLeft()) {
             this.renderAtRestFrame(character);
             return;
         }
 
-        if (character.isAtLeftBoundary() && this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL)) {
+        if (character.isFacingLeft() && this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL)) {
             this.hideOpponents();
             this.advanceBackdrop(character, RIGHT_LABEL)
                 .then(function() {}, error => handlePromiseError(error));
             this.setScreenNumber(this.getScreenNumber() - 1);
-        } else if (character.isAtRightBoundary() &&
-            this.gameBoard.isScrollAllowed(this.getScreenNumber(), RIGHT_LABEL) &&
-                character.getScreenNumber() < this.gameBoard.getScreenNumbers().length
-                    && this.areAllMonstersDefeated()) {
+        } else if (character.isFacingRight() && this.gameBoard.isScrollAllowed(this.getScreenNumber(), RIGHT_LABEL)
+            && character.getScreenNumber() < this.gameBoard.getScreenNumbers().length && this.areAllMonstersDefeated()) {
             this.hideOpponents();
             this.setScreenNumber(this.getScreenNumber() + 1);
             if (this.isScreenDefined(this.getScreenNumber())) {
@@ -642,12 +640,12 @@ class Game {
             y = SCREEN_HEIGHT - character.getProperties().getSprite().height() / 2;
             distance = Math.abs(y - stripPxSuffix(character.getProperties().getSprite().css('bottom')));
         } else {
-            x = character.getDirection() === RIGHT_LABEL ? 0 : SCREEN_WIDTH -s
+            x = character.isFacingRight() ? 0 : SCREEN_WIDTH -
                 character.getProperties().getSprite().width();
             distance = SCREEN_WIDTH - character.getProperties().getSprite().width();
         }
         let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
-        character.moveToPosition(x, y, adjustedPixelsPerSecond);
+        character.getAnimator().moveElementToPosition(x, y, adjustedPixelsPerSecond);
 
         let backgroundPosition = isVertical ? 'background-position-y' : 'background-position-x';
         let currentPosition = parseInt(stripPxSuffix(this.getBackdrop().css(backgroundPosition)));

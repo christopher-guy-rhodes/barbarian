@@ -73,6 +73,31 @@ class Obstacle {
             && character.getProperties().getCanElevate());
     }
 
+    hitElevation(character) {
+        return this.getIsElevation() && character.getY() != this.getHeight();
+    }
+
+    isCharacterPastObstacle(character) {
+        return !character.isDead() && this.isPast(character.getX(), character.getDirection());
+    }
+
+    fetchIfCharacterHit(character) {
+        return this.didCharacterHitObstacle(character) ? this : undefined;
+    }
+
+    didCharacterHitObstacle(character) {
+        return this.isCharacterPastObstacle(character) &&
+            (this.didCharacterHitElevation(character) || this.didBarbarianFallInPit(character));
+    }
+
+    didCharacterHitElevation(character) {
+        return this.hitElevation(character) && (!character.isBarbarian() || !character.isAttacking());
+    }
+
+    didBarbarianFallInPit(character) {
+        return this.getIsPit() && character.isBarbarian() && !character.didJumpEvade() && !character.isFalling();
+    }
+
     getFailAction() {
         return this.action;
     }

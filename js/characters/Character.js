@@ -345,7 +345,7 @@ class Character {
      * @returns {undefined|Obstacle} the obstacle that the character has hit, undefined if no obstacle was hit
      */
     getObstacle() {
-        return this.getObstacleEncountered().fetchIfCharacterHit(this);
+        return this.getObstacleEncountered().filterIfCharacterAvoided(this);
     }
 
     /**
@@ -367,8 +367,8 @@ class Character {
     }
 
     /**
-     * Returns the current action of the character.
-     * @returns {*}
+     * Get the current character action.
+     * @returns {String|undefined} the current action of the character
      */
     getAction() {
         return this.action;
@@ -376,7 +376,7 @@ class Character {
 
     /**
      * Get the current vertical direction of the character. Returns undefined if there is no vertical direction.
-     * @returns {*}
+     * @returns {String|undefined} the current vertical direction of the character
      */
     getVerticalDirection() {
         return this.direction[VERTICAL_LABEL];
@@ -384,7 +384,7 @@ class Character {
 
     /**
      * Get the current direction of the character.
-     * @returns {*}
+     * @returns {String} the direction of the character
      */
     getDirection() {
         return this.direction[HORIZONTAL_LABEL];

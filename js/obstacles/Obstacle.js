@@ -81,7 +81,7 @@ class Obstacle {
         return !character.isDead() && this.isPast(character.getX(), character.getDirection());
     }
 
-    fetchIfCharacterHit(character) {
+    filterIfCharacterAvoided(character) {
         return this.didCharacterHitObstacle(character) ? this : undefined;
     }
 

@@ -1,4 +1,5 @@
 const PASSING_MULTIPLIER = 1.5;
+const JUMP_EVADE_FRAME = 3;
 
 /**
  * Class that supports character actions
@@ -79,9 +80,7 @@ class Character {
         }
 
         // uncomment to see why animation stopped for debugging
-        //if (!this.isBarbarian()) {
-        //    this.debugAnimationTermination(action, direction, vertDirection, gameBoard, frameIdx, frames);
-        //}
+        //this.debugAnimationTermination(this.getProperties().getType(), action, direction, vertDirection, gameBoard, frameIdx, frames);
 
         return frameIdx;
     }
@@ -123,7 +122,7 @@ class Character {
     }
 
     /**
-     * Determines if the character should turn around.
+     * Determines if the CPU character should turn around in order to chase the Barbarian.
      * @returns {boolean} true if the character is the CPU and should turn around, false otherwise
      */
     shouldCpuTurnaround() {
@@ -187,7 +186,7 @@ class Character {
      * @returns {number} the y coordinate
      */
     getY() {
-        return parseInt(stripPxSuffix(this.getProperties().getSprite().css('bottom')));
+        return parseInt(stripPxSuffix(this.getProperties().getSprite().css(CSS_BOTTOM_LABEL)));
     }
 
     /**
@@ -211,7 +210,7 @@ class Character {
      * @returns {number} the character height
      */
     getHeight() {
-        return parseInt(stripPxSuffix(this.getProperties().getSprite().css('height')));
+        return parseInt(stripPxSuffix(this.getProperties().getSprite().css(CSS_HEIGHT_LABEL)));
     }
 
     /**
@@ -219,7 +218,7 @@ class Character {
      * @returns {number} the character width
      */
     getWidth() {
-        return parseInt(stripPxSuffix(this.getProperties().getSprite().css('height')));
+        return parseInt(stripPxSuffix(this.getProperties().getSprite().css(CSS_WIDTH_LABEL)));
     }
 
     /**
@@ -341,7 +340,8 @@ class Character {
     }
 
     /**
-     * Returns the obstacle that the character has encountered, undefined if no obstacle was encountered.
+     * Returns the obstacle that the character has encountered and not avoided, undefined if no obstacle was
+     * encountered.
      * @returns {undefined|Obstacle} the obstacle that the character has hit, undefined if no obstacle was hit
      */
     getObstacle() {
@@ -359,8 +359,8 @@ class Character {
     }
 
     /**
-     * Returns true if the character hit an obstacle, false otherwise.
-     * @returns {boolean}
+     * Determines if the character has hit an obstacle.
+     * @returns {boolean} returns true if the character hit an obstacle, false otherwise.
      */
     hitObstacle() {
         return this.getObstacle() !== undefined;
@@ -392,7 +392,7 @@ class Character {
 
     /**
      * Gets the screen number that the character is on.
-     * @returns {*}
+     * @returns {Number} the screen number
      */
     getScreenNumber() {
         return this.screenNumber;
@@ -401,7 +401,7 @@ class Character {
     /**
      * Get the current frame for a particular action for the character.
      * @param action
-     * @returns {*}
+     * @returns {Number}
      */
     getCurrentFrame(action) {
         if (action === undefined) {
@@ -412,7 +412,7 @@ class Character {
 
     /**
      * Set the action for the character.
-     * @param action the action to set.
+     * @param action the action to set. Can be undefined.
      */
     setAction(action) {
         this.action = action;
@@ -420,7 +420,7 @@ class Character {
 
     /**
      * Set the direction of the character.
-     * @param direction
+     * @param direction the direction of the character. Can be undefined.
      */
     setDirection(direction) {
         validateRequiredParams(this.setDirection, arguments, 'direction');
@@ -429,7 +429,7 @@ class Character {
 
     /**
      * Set the vertical direction of the character.
-     * @param direction
+     * @param direction the vertical direction. Can be undefined.
      */
     setVerticalDirection(direction) {
         this.direction[VERTICAL_LABEL] = direction;
@@ -437,7 +437,7 @@ class Character {
 
     /**
      * Set the status for the character.
-     * @param status
+     * @param status the status
      */
     setStatus(status) {
         validateRequiredParams(this.setStatus, arguments, 'status');
@@ -481,7 +481,18 @@ class Character {
         this.getProperties().getSprite().css(CSS_LEFT_LABEL, x);
     }
 
-    /* private */
+    /**
+     * Determines if this character jump evaded an obstacle.
+     * @returns {boolean} true of the character evaded the obstacle, false otherwise
+     */
+    didJumpEvade() {
+        return this.getAction() === JUMP_LABEL && this.getCurrentFrame(JUMP_LABEL) >= JUMP_EVADE_FRAME;
+    }
+
+    /**
+     * Gets the Barbarian character.
+     * @returns {Character} the Barbarian character
+     */
     getBarbarian() {
         return this.barbarian;
     }
@@ -514,41 +525,15 @@ class Character {
     }
 
     /* private */
-    didJumpEvade() {
-        return this.getAction() === JUMP_LABEL && this.getCurrentFrame(JUMP_LABEL) >= 3;
-    }
-
-    /* private */
-    isBarbarian() {
-        return this.barbarian === this;
-    }
-
-    /* private */
-    isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
-        return (this.getAction() !== requestedAction ||
-            this.getDirection() !== requestedDirection ||
-            this.getVerticalDirection() !== requestedVerticalDirection ||
-            this.isStopped() ||
-            this.shouldCpuTurnaround() ||
-            this.isAtBoundary(gameBoard) ||
-            this.hitObstacle() ||
-            this.isDeadButNotDying() ||
-            !this.isOnScreen(gameBoard) ||
-            this.shouldCpuLaunchAttack(gameBoard) ||
-            this.shouldCpuFight(gameBoard) ||
-            gameBoard.getIsPaused());
-    }
-
-    /* private */
     moveCharacter(action, gameBoard) {
-        if (action !== DEATH_LABEL) {
-            if (action === FALL_LABEL || action === SINK_LABEL) {
-                this.getAnimator().moveElementToPosition(undefined,
-                    0,
-                    this.getProperties().getPixelsPerSecond(FALL_LABEL));
-            } else {
-                this.moveFromPositionToBoundary(gameBoard);
-            }
+        if (action === DEATH_LABEL) {
+            return;
+        }
+        if (action === FALL_LABEL || action === SINK_LABEL) {
+            let pps = this.getProperties().getPixelsPerSecond(action);
+            this.getAnimator().moveElementToPosition(undefined, 0, pps);
+        } else {
+            this.moveFromPositionToBoundary(gameBoard);
         }
     }
 
@@ -565,11 +550,6 @@ class Character {
         } else {
             return this.getProperties().getSprite();
         }
-    }
-
-    /* private */
-    isVisible() {
-        return this.getProperties().getSprite().css(CSS_DISPLAY_LABEL) === CSS_BLOCK_LABEL;
     }
 
     /* private */
@@ -636,44 +616,63 @@ class Character {
     }
 
     /* private */
-    debugAnimationTermination(action, direction, vertDirection, gameBoard, frameIdx, frames) {
+    isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
+        return (this.getAction() !== requestedAction ||
+            this.getDirection() !== requestedDirection ||
+            this.getVerticalDirection() !== requestedVerticalDirection ||
+            this.isStopped() ||
+            this.shouldCpuTurnaround() ||
+            this.isAtBoundary(gameBoard) ||
+            this.hitObstacle() ||
+            this.isDeadButNotDying() ||
+            !this.isOnScreen(gameBoard) ||
+            this.shouldCpuLaunchAttack(gameBoard) ||
+            this.shouldCpuFight(gameBoard) ||
+            gameBoard.getIsPaused());
+    }
+
+    /* private */
+    debugAnimationTermination(characterType, action, direction, vertDirection, gameBoard, frameIdx, frames) {
         console.log(this.getProperties().getType() + ' is done ' + action + 'ing');
 
         if (!(this.getAction() === action)) {
-            console.log(this.getAction() + ' is not equal to requested action ' + action);
+            console.log('character: ' + characterType + ' action: "' + this.getAction()
+                + '" is not equal to requested action "' + action + '"');
         }
         if (!(this.getDirection() === direction)) {
-            console.log('b');
+            console.log('character: ' + characterType + ' action: "' + this.getDirection()
+                + '" is not equal to requested direction "' + direction + '"');
         }
         if (!(this.getVerticalDirection() === vertDirection)) {
-            console.log('c');
+            console.log('character: ' + characterType + ' vertical direction: "' + this.getVerticalDirection()
+                + '" is not equal to requested vertical direction "' + vertDirection + '"');
         }
         if (!(!this.isStopped())) {
-            console.log('d');
+            console.log('character: ' + characterType + ' is stopped');
         }
         if (!(!this.shouldCpuTurnaround())) {
-            console.log('e');
+            console.log('character: ' + characterType + ' should turn around');
         }
         if (!(!this.isAtBoundary(gameBoard))) {
-            console.log('f');
+            console.log('character: ' + characterType + ' is at boundary');
         }
         if (!(!this.hitObstacle())) {
-            console.log('g');
+            console.log('character: ' + characterType + ' hit obstacle');
         }
         if (!(!(this.isDeadButNotDying()))) {
-            console.log('h');
+            console.log('character: ' + characterType + ' is dead but not dying');
         }
         if (!(this.isOnScreen(gameBoard))) {
-            console.log('i');
+            console.log('character: ' + characterType + ' is not on screen');
         }
         if (!(!this.shouldCpuLaunchAttack(gameBoard))) {
-            console.log('j');
+            console.log('character: ' + characterType + ' should launch a CPU attack');
         }
         if (!(!this.shouldCpuFight(gameBoard))) {
-            console.log('k');
+            console.log('character: ' + characterType + ' is CPU and should fight');
         }
         if (!(!gameBoard.isPaused)) {
-            console.log('l');
+            console.log('game is paused');
         }
         if (!(frameIdx < frames.length)) {
             console.log('frame ' + frameIdx + ' of ' + this.getProperties().getType() + ' ' +

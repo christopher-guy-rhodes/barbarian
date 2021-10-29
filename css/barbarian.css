@@ -35,6 +35,16 @@
     display: none;
 }
 
+.shark3 {
+    border: 0px solid red;
+    height: 75px;
+    width: 200px;
+    background-image: url(../sprites/shark.png);
+    position: absolute;
+    bottom: 0px;
+    display: none;
+}
+
 .red_monster {
     border: 0px solid red;
     height: 400px;

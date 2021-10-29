@@ -59,6 +59,8 @@ const UP_LABEL = 'up';
 const DOWN_LABEL = 'down';
 
 // CSS constants
+const CSS_HEIGHT_LABEL = 'height';
+const CSS_WIDTH_LABEL = 'width';
 const CSS_BLOCK_LABEL = 'block';
 const CSS_NONE_LABEL = 'none';
 const CSS_LEFT_LABEL = 'left';

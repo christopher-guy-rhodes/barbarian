@@ -138,7 +138,7 @@ class Game {
             monster.show();
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getProperties().getSound());
-            this.setCpuVerticalDirection(monster);
+            monster.setVerticalDirection(monster.getCpuVerticalDirection(monster));
             this.performAction(monster, monster.getProperties().getDefaultAction());
         }
     }
@@ -329,8 +329,8 @@ class Game {
         if (character.isAtBoundary(this.gameBoard)) {
             this.handleBoundary(character);
         }
-        if (character.shouldCpuTurnaround()) {
-            this.handleMonsterTurnaround(character);
+        if (character.shouldCpuChase(this.gameBoard)) {
+            this.handleCpuChase(character);
         }
         if (character.shouldCpuLaunchAttack(this.gameBoard)) {
             this.handleCpuAttack(character)
@@ -529,30 +529,25 @@ class Game {
     }
 
     /* private */
-    handleMonsterTurnaround(character) {
-        if (!character.isBarbarian() && character.shouldCpuTurnaround()) {
+    handleCpuChase(character) {
+        if (!character.isBarbarian() && character.shouldCpuChase(this.gameBoard)) {
 
             if (this.gameBoard.isWater(this.getScreenNumber()) && !character.isBarbarian()) {
                 // Make water monsters chase the barbarian vertically
-                this.setCpuVerticalDirection(character)
+                character.setVerticalDirection(character.getCpuVerticalDirection());
             }
 
-            character.setDirection(character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL);
+            let oppositeDirection = character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL;
+            character.setDirection(character.isPastCharacter(character.getBarbarian())
+                ? oppositeDirection : character.getDirection());
             if (character.getProperties().getCanHighlight()) {
                 character.getProperties().getSprite().css('filter', "brightness(100%)");
             }
-            this.performAction(character, WALK_LABEL);
+            this.performAction(character, game.isWater() ? SWIM_LABEL : WALK_LABEL);
         }
     }
 
-    /* private */
-    setCpuVerticalDirection(character) {
-        if (this.getBarbarian().getY() > character.getY()) {
-            character.setVerticalDirection(UP_LABEL);
-        } else {
-            character.setVerticalDirection(DOWN_LABEL);
-        }
-    }
+
 
     /* private */
     handleBoundary(character) {
@@ -584,6 +579,12 @@ class Game {
                 this.messages.showGameWonMessage();
                 this.setScreenNumber(0);
                 this.setNumLives(0);
+                this.setActionsLocked(true);
+                let self = this;
+                // Wait for the ending sequence to finish to all all the monsters to stop before starting over
+                setTimeout(function () {
+                    self.setActionsLocked(false);
+                }, DEATH_DELAY)
             }
         }
 

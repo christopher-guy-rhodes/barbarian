@@ -79,12 +79,12 @@ let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
 let sharkFrames = new FramesBuilder()
     .withFrames('attack', 'left', [2, 1, 0], 3)
     .withFrames('attack', 'right', [0, 1, 2], 2)
-    .withFrames('walk', 'left', [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+    .withFrames('swim', 'left', [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
         11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
         11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
         11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
         11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 1)
-    .withFrames('walk', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+    .withFrames('swim', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
         6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
         6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
         6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
@@ -170,9 +170,10 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withSound(sounds.getSplashSound())
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
+                .withDefaultAction(SWIM_LABEL)
                 .withDefaultBottom(3, 0)
                 .withFramesPerSecond(ATTACK_LABEL, 10)
-                .withFramesPerSecond(WALK_LABEL, 10)
+                .withFramesPerSecond(SWIM_LABEL, 10)
                 .withPixelsPerSecond(ATTACK_LABEL, 1.2 * DEFAULT_PIXELS_PER_SECOND)
                 .build())
             .withScreenNumber(3).build(),
@@ -181,9 +182,10 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withFrames(sharkFrames)
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
+                .withDefaultAction(SWIM_LABEL)
                 .withDefaultBottom(3, 700)
                 .withFramesPerSecond(ATTACK_LABEL, 10)
-                .withFramesPerSecond(WALK_LABEL, 10)
+                .withFramesPerSecond(SWIM_LABEL, 10)
                 .withPixelsPerSecond(ATTACK_LABEL, 1.2 * DEFAULT_PIXELS_PER_SECOND)
                 .build())
             .withScreenNumber(3).build(),
@@ -192,9 +194,10 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withFrames(sharkFrames)
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
+                .withDefaultAction(SWIM_LABEL)
                 .withDefaultBottom(3, 0)
                 .withFramesPerSecond(ATTACK_LABEL, 10)
-                .withFramesPerSecond(WALK_LABEL, 10)
+                .withFramesPerSecond(SWIM_LABEL, 10)
                 .withPixelsPerSecond(ATTACK_LABEL, 1.2 * DEFAULT_PIXELS_PER_SECOND)
                 .build())
             .withScreenNumber(3).build()])

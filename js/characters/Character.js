@@ -1,5 +1,6 @@
 const PASSING_MULTIPLIER = 1.5;
 const JUMP_EVADE_FRAME = 3;
+const CHASE_PROXIMITY = 200;
 
 /**
  * Class that supports character actions
@@ -123,11 +124,30 @@ class Character {
 
     /**
      * Determines if the CPU character should turn around in order to chase the Barbarian.
+     * @param gameBoard the game board
      * @returns {boolean} true if the character is the CPU and should turn around, false otherwise
      */
-    shouldCpuTurnaround() {
-        return !this.isBarbarian() && this.isPastCharacter(this.getBarbarian()) &&
+    shouldCpuChase(gameBoard) {
+        if (this.isBarbarian()) {
+            return false;
+        }
+        if (gameBoard.isWater(this.getScreenNumber())) {
+            // If the vertical direction needed to chase the Barbarian is different than the vertical direction we need
+            // to chase assuming we are at least CHASE_PROXIMITY away so the water monster does not follow too closely
+            if (this.getCpuVerticalDirection() !== this.getVerticalDirection()
+                && Math.abs(this.getY() - this.getBarbarian().getY()) > CHASE_PROXIMITY) {
+                return true;
+            }
+        }
+        return this.isPastCharacter(this.getBarbarian()) &&
             this.getProperties().getCanTurnAround();
+    }
+
+    /**
+     * Get the CPU direction needed to chase the Barbarian
+     */
+    getCpuVerticalDirection() {
+        return (this.getBarbarian().getY() > this.getY()) ? UP_LABEL : DOWN_LABEL;
     }
 
     /**
@@ -572,8 +592,13 @@ class Character {
 
         let y = undefined;
         if (this.getVerticalDirection() !== undefined) {
-            y = !gameBoard.isWater(this.getScreenNumber()) ? undefined :
-                this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
+            if (gameBoard.isWater(this.getScreenNumber())) {
+                if (!this.isBarbarian() && !this.getBarbarian().isMovingVertically()) {
+                    y = this.getBarbarian().getY();
+                } else {
+                    y = this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
+                }
+            }
         }
         let x = this.isFacingLeft() ? 0 : SCREEN_WIDTH - this.getWidth();
 
@@ -621,7 +646,7 @@ class Character {
             this.getDirection() !== requestedDirection ||
             this.getVerticalDirection() !== requestedVerticalDirection ||
             this.isStopped() ||
-            this.shouldCpuTurnaround() ||
+            this.shouldCpuChase(gameBoard) ||
             this.isAtBoundary(gameBoard) ||
             this.hitObstacle() ||
             this.isDeadButNotDying() ||
@@ -650,8 +675,8 @@ class Character {
         if (!(!this.isStopped())) {
             console.log('character: ' + characterType + ' is stopped');
         }
-        if (!(!this.shouldCpuTurnaround())) {
-            console.log('character: ' + characterType + ' should turn around');
+        if (!(!this.shouldCpuChase(gameBoard))) {
+            console.log('character: ' + characterType + ' should chase the Barbarian');
         }
         if (!(!this.isAtBoundary(gameBoard))) {
             console.log('character: ' + characterType + ' is at boundary');

@@ -1,3 +1,5 @@
+const EMPTY_OBSTACLE = new Obstacle(0, 0, OBSTACLE_NONE_LABEL, STOP_LABEL, 0, 0);
+
 class Obstacles {
 
     constructor(obstacles) {
@@ -6,9 +8,11 @@ class Obstacles {
 
     getNextObstacle(x, direction, screenNumber) {
         if (this.obstacles[screenNumber] === undefined || this.obstacles[screenNumber][direction] === undefined) {
-            return undefined;
+            return EMPTY_OBSTACLE;
         }
-        return this.obstacles[screenNumber][direction].filter(obstacle => obstacle.isCloseButNotPast(x, direction))[0];
+        let obstacle =
+            this.obstacles[screenNumber][direction].filter(obstacle => obstacle.isCloseButNotPast(x, direction))[0];
+        return obstacle === undefined ? EMPTY_OBSTACLE : obstacle;
     }
 
     get(screenNumber, direction) {

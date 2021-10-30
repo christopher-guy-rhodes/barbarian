@@ -22,6 +22,9 @@ class Animator {
      * @param pixelsPerSecond the rate at which to move
      */
     moveElementToPosition(x, y, pixelsPerSecond) {
+        if (pixelsPerSecond <= 0) {
+            return;
+        }
         let distanceX = x === undefined ? 0 : Math.abs(x - this.element.offset().left);
         let distanceY = y === undefined ? 0 : Math.abs(y - stripPxSuffix(this.element.css('bottom')));
         let distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));

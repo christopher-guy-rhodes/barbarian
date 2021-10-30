@@ -12,10 +12,10 @@ let obstacles = new ObstaclesBuilder()
     .withObstacle(1, RIGHT_LABEL,
         new Obstacle(400, 160, ELEVATION_LABEL, STOP_LABEL, 350, 430))
     .withObstacle(1, RIGHT_LABEL,
-        new Obstacle(800, 160, PIT_LABEL, FALL_LABEL, 710, 830))
+        new Obstacle(800, 160, OBSTACLE_PIT_LABEL, FALL_LABEL, 710, 830))
 
     .withObstacle(1, LEFT_LABEL,
-        new Obstacle(950, 160, PIT_LABEL, FALL_LABEL, 880, 1000))
+        new Obstacle(950, 160, OBSTACLE_PIT_LABEL, FALL_LABEL, 880, 1000))
     .withObstacle(1, LEFT_LABEL,
         new Obstacle(400, 82, ELEVATION_LABEL, STOP_LABEL))
     .withObstacle(1, LEFT_LABEL,

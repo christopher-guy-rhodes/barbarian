@@ -365,7 +365,8 @@ class Character {
      * @returns {undefined|Obstacle} the obstacle that the character has hit, undefined if no obstacle was hit
      */
     getObstacle() {
-        return this.getObstacleEncountered().filterIfCharacterAvoided(this);
+        return this.obstacles.getNextObstacle(this.getX(), this.getDirection(), this.getScreenNumber())
+            .filterIfCharacterAvoided(this);
     }
 
     /**
@@ -584,25 +585,33 @@ class Character {
 
     /* private */
     moveFromPositionToBoundary(gameBoard) {
-        let pixelsPerSecond = this.getProperties().getPixelsPerSecond(this.getAction());
-        if (pixelsPerSecond <= 0) {
-            // If the sprite isn't moving (stop, non-moving attack etc.) to not move it to the boundary
-            return;
-        }
+        this.getAnimator().moveElementToPosition(this.getMoveToX(),
+            this.getMoveToY(gameBoard),
+            this.getProperties().getPixelsPerSecond(this.getAction()));
+    }
 
+    /* private */
+    getMoveToX() {
+        return this.isFacingLeft() ? 0 : SCREEN_WIDTH - this.getWidth();
+    }
+
+    /* private */
+    getMoveToY(gameBoard) {
         let y = undefined;
-        if (this.getVerticalDirection() !== undefined) {
-            if (gameBoard.isWater(this.getScreenNumber())) {
-                if (!this.isBarbarian() && !this.getBarbarian().isMovingVertically()) {
-                    y = this.getBarbarian().getY();
-                } else {
-                    y = this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
-                }
-            }
+        if (gameBoard.isWater(this.getScreenNumber())) {
+            y = this.shouldCPUGoToBarbarianY() ? this.getBarbarian().getY() : this.getVerticalBoundary();
         }
-        let x = this.isFacingLeft() ? 0 : SCREEN_WIDTH - this.getWidth();
+        return y;
+    }
 
-        this.getAnimator().moveElementToPosition(x, y, pixelsPerSecond);
+    /* private */
+    shouldCPUGoToBarbarianY() {
+        return !this.isBarbarian() && !this.getBarbarian().isMovingVertically();
+    }
+
+    /* private */
+    getVerticalBoundary() {
+        return this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
     }
 
     /* private */
@@ -611,23 +620,9 @@ class Character {
     }
 
     /* private */
-    getObstacleEncountered() {
-        let obstacle = this.obstacles.getNextObstacle(this.getX(), this.getDirection(), this.getScreenNumber());
-        let emptyObstacle = new Obstacle(0, 0, "NONE", STOP_LABEL, 0, 0);
-        return obstacle === undefined ? emptyObstacle : obstacle;
-    }
-
-    /* private */
-    isPastObstacle(obstacle) {
-        return obstacle.isPast(this.getX(), this.getDirection());
-    }
-
-    /* private */
     getProximity(opponent) {
-        let distanceX = Math.abs(this.getX() - opponent.getX());
-        let distanceY = Math.abs(stripPxSuffix(this.getProperties().getSprite().css('bottom'))
-            - stripPxSuffix(opponent.getProperties().getSprite().css('bottom')));
-        return Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
+        return Math.sqrt(Math.pow(Math.abs(this.getX() - opponent.getX()), 2)
+            + Math.pow(Math.abs(this.getY() - opponent.getY()), 2));
     }
 
     /* private */

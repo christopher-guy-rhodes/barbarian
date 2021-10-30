@@ -11,6 +11,8 @@
 <script>
     $(document).ready(function(){
     // Classes
+    // Include constants
+    $.getScript('/js/constants.js', function() {
     $.getScript('/js/messages/Messages.js', function() {
     $.getScript('/js/animation/Animator.js', function() {
     $.getScript('/js/animation/Frames.js', function() {
@@ -27,8 +29,6 @@
     $.getScript('/js/game/GameBoard.js', function() {
     $.getScript('/js/game/GameBoardBuilder.js', function() {
     $.getScript('/js/game/Game.js', function() {
-    // Include constants
-    $.getScript('/js/constants.js', function() {
     // Include util module
     $.getScript('/js/util.js', function() {
     // Include sprite definition

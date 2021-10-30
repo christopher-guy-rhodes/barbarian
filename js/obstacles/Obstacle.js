@@ -58,7 +58,7 @@ class Obstacle {
     }
 
     isDownHillFrom(y) {
-        return this.y <= y && this.type !== PIT_LABEL;
+        return this.y <= y && this.type !== OBSTACLE_PIT_LABEL;
     }
 
     isEvadedWithJumpAt(x) {
@@ -111,7 +111,7 @@ class Obstacle {
     }
 
     getIsPit() {
-        return this.type === PIT_LABEL;
+        return this.type === OBSTACLE_PIT_LABEL;
     }
 
     getHeight() {

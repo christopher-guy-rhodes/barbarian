@@ -278,7 +278,7 @@ class Events {
         } else {
             let changingDirection = game.getBarbarian().isFacingRight() && pageX < barbarianLeft ||
                 game.getBarbarian().isFacingLeft() && pageX > barbarianLeft;
-            if (game.getBarbarian().isWalking() && !changingDirection) {
+            if (game.getBarbarian().isAction(WALK_LABEL) && !changingDirection) {
                 events.handleKeypress(KEYPRESS[KP_RUN]);
             } else {
                 events.handleKeypress(KEYPRESS[pageX > barbarianLeft ? KP_RIGHT : KP_LEFT]);

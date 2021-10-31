@@ -35,6 +35,41 @@ class Obstacle {
         }
     }
 
+    static isStoppedByBoundary(character, gameBoard) {
+        return !this.isAtWaterBoundary(character, gameBoard) && character.isAtBoundary(gameBoard);
+    }
+
+    static isAtWaterBoundary(character, gameBoard) {
+        return !gameBoard.isScrollAllowed(character.getScreenNumber(), character.getDirection()) &&
+            gameBoard.isWater(character.getScreenNumber());
+    }
+
+    static isPastCharacter(character, otherCharacter) {
+        return this.isPastCharacterLeft(character, otherCharacter) ||
+            this.isPastCharacterRight(character, otherCharacter);
+    }
+s
+    static isPastCharacterLeft(character, otherCharacter) {
+        return character.isFacingLeft()
+            && character.getX() + character.getWidth() * PASSING_MULTIPLIER < otherCharacter.getX() ||
+                Obstacle.isCharacterAtLeftBoundary(character);
+    }
+
+    static isPastCharacterRight(character, otherCharacter) {
+        return character.isFacingRight() &&
+            character.getX() - character.getWidth() * PASSING_MULTIPLIER > otherCharacter.getX() ||
+                Obstacle.isCharacterAtRightBoundary(character);
+    }
+
+    static isCharacterAtLeftBoundary(character) {
+        return !character.isFacingRight() && character.getX() === 0;
+    }
+
+    static isCharacterAtRightBoundary(character) {
+        return !character.isFacingLeft()
+            && character.getX() === SCREEN_WIDTH - character.getProperties().getSprite().width();
+    }
+
     isCloseButNotPast(x, direction) {
         if (direction === RIGHT_LABEL) {
             //return this.x  > x - 25;
@@ -91,11 +126,12 @@ class Obstacle {
     }
 
     didCharacterHitElevation(character) {
-        return this.hitElevation(character) && (!character.isBarbarian() || !character.isAttacking());
+        return this.hitElevation(character) && (!character.isBarbarian() || !character.isAction(ATTACK_LABEL));
     }
 
     didBarbarianFallInPit(character) {
-        return this.getIsPit() && character.isBarbarian() && !character.didJumpEvade() && !character.isFalling();
+        return this.getIsPit() && character.isBarbarian() && !character.didJumpEvade()
+            && !character.isAction(FALL_LABEL);
     }
 
     getFailAction() {

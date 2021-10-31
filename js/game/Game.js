@@ -299,7 +299,7 @@ class Game {
      * @returns {boolean}
      */
     isBarbarianSwimming() {
-        return this.barbarian.isSwimming();
+        return this.barbarian.isAction(SWIM_LABEL);
     }
 
     /**
@@ -307,7 +307,7 @@ class Game {
      * @returns {boolean}
      */
     isBarbarianJumping() {
-        return this.barbarian.isJumping();
+        return this.barbarian.isAction(JUMP_LABEL);
     }
 
     /**
@@ -315,7 +315,7 @@ class Game {
      * @returns {boolean}
      */
     isBarbarianRunning() {
-        return this.barbarian.isRunning();
+        return this.barbarian.isAction(RUN_LABEL);
     }
 
     /* private */
@@ -323,7 +323,7 @@ class Game {
 
         this.handlePause(character, frame);
         this.handleFiniteAnimations(character, requestedAction);
-        if (character.isDying()) {
+        if (character.isAction(DEATH_LABEL)) {
             this.handleDeath(character);
         }
         if (character.isAtBoundary(this.gameBoard)) {
@@ -353,7 +353,8 @@ class Game {
         // If the Barbarian has been defeated make the monster continue to move for a bit. Make sure the monster stops
         // moving before the death delay has expired so that it is not moving when when the game is reset to prevent
         // doubling up on the monster's movement
-        if (!character.isBarbarian() && this.isBarbarianDead() && !(character.isWalking() || character.isSitting())) {
+        if (!character.isBarbarian() && this.isBarbarianDead() && !(character.isAction(WALK_LABEL)
+            || character.isAction(SIT_LABEL))) {
             if (character.getProperties().getDefaultAction() === WALK_LABEL) {
                 this.performAction(character, WALK_LABEL);
             } else if (character.getProperties().getDefaultAction() === SIT_LABEL) {
@@ -458,7 +459,7 @@ class Game {
         }
 
         let action = this.isWater() ? SINK_LABEL
-                                    : character.isFalling() ? FALL_LABEL : DEATH_LABEL;
+                                    : character.isAction(FALL_LABEL) ? FALL_LABEL : DEATH_LABEL;
         this.performAction(character, action);
 
         if (action === FALL_LABEL || action === SINK_LABEL && character.isBarbarian()) {
@@ -538,7 +539,7 @@ class Game {
             }
 
             let oppositeDirection = character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL;
-            character.setDirection(character.isPastCharacter(character.getBarbarian())
+            character.setDirection(Obstacle.isPastCharacter(character, character.getBarbarian())
                 ? oppositeDirection : character.getDirection());
             if (character.getProperties().getCanHighlight()) {
                 character.getProperties().getSprite().css('filter', "brightness(100%)");

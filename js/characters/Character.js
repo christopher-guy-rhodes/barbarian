@@ -8,7 +8,7 @@ const CHASE_PROXIMITY = 200;
 class Character {
     /**
      * Construct a character
-     * @param barbarian the Barbarian character, leave undefined if this is the Barbarian character
+     * @param barbarian the Barbarian character, undefined if this is the Barbarian character
      * @param obstacles the obstacles the character will face
      * @param properties CharacterProperty object that represents the static properties of the character
      * @param action the action the character is taking
@@ -39,7 +39,7 @@ class Character {
     }
 
     /**
-     * Animate a character across the game board while also animating the sprite.
+     * Move this character across the game board while also animating the sprite.
      *
      * @param gameBoard the game board to perform the animation on
      * @param action the requested action (run, walk, attack etc.)
@@ -93,9 +93,7 @@ class Character {
      */
     isAtBoundary(gameBoard) {
         validateRequiredParams(this.isAtBoundary, arguments, 'gameBoard');
-        return !gameBoard.isWater(this.getScreenNumber()) &&
-            this.isAtLeftBoundary() ||
-            this.isAtRightBoundary();
+        return Obstacle.isCharacterAtLeftBoundary(this) || Obstacle.isCharacterAtRightBoundary(this);
     }
 
     /**
@@ -139,8 +137,7 @@ class Character {
                 return true;
             }
         }
-        return this.isPastCharacter(this.getBarbarian()) &&
-            this.getProperties().getCanTurnAround();
+        return Obstacle.isPastCharacter(this, this.getBarbarian()) && this.getProperties().getCanTurnAround();
     }
 
     /**
@@ -173,7 +170,7 @@ class Character {
      */
     shouldCpuLaunchAttack(gameBoard) {
         validateRequiredParams(this.shouldCpuLaunchAttack, arguments, 'gameBoard');
-        return !this.isBarbarian() && !this.getBarbarian().isDead() && !this.isAttacking() && !this.isDead() &&
+        return !this.isBarbarian() && !this.getBarbarian().isDead() && !this.isAction(ATTACK_LABEL) && !this.isDead() &&
             this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
     }
 
@@ -288,75 +285,12 @@ class Character {
     }
 
     /**
-     * Determine if the character is walking.
-     * @returns {boolean} true if the character is walking, false otherwise
+     * Determine if the character is performing the aciton
+     * @param action
      */
-    isWalking() {
-        return this.getAction() === WALK_LABEL;
-    }
-
-    /**
-     * Determine if the character is sitting.
-     * @returns {boolean} true if the character is sitting, false otherwise
-     */
-    isSitting() {
-        return this.getAction() === SIT_LABEL;
-    }
-
-    /**
-     * Determine if the character is running.
-     * @returns {boolean} true if the character is running, false otherwise
-     */
-    isRunning() {
-        return this.getAction() === RUN_LABEL;
-    }
-
-    /**
-     * Determine if the character is falling.
-     * @returns {boolean} true if the character is falling, false otherwise
-     */
-    isFalling() {
-        return this.getAction() === FALL_LABEL;
-    }
-
-    /**
-     * Determine if the character is dying.
-     * @returns {boolean} true if the character is dying, false otherwise
-     */
-    isDying() {
-        return this.getAction() === DEATH_LABEL;
-    }
-
-    /**
-     * Determine if the character is sinking.
-     * @returns {boolean} true if the character is sinking, false otherwise
-     */
-    isSinking() {
-        return this.getAction() === SINK_LABEL;
-    }
-
-    /**
-     * Determine if the character is swimming.
-     * @returns {boolean} true if the character is swimming, false otherwise
-     */
-    isSwimming() {
-        return this.getAction() === SWIM_LABEL;
-    }
-
-    /**
-     * Determine if the character is jumping.
-     * @returns {boolean} true if the character is jumping, false otherwise
-     */
-    isJumping() {
-        return this.getAction() === JUMP_LABEL;
-    }
-
-    /**
-     * Determine if the character is attacking.
-     * @returns {boolean} true if the character is attacking, false otherwise
-     */
-    isAttacking() {
-        return this.getAction() === ATTACK_LABEL;
+    isAction(action) {
+        validateRequiredParams(this.isAction, arguments, 'action');
+        return this.getAction() === action;
     }
 
     /**
@@ -396,7 +330,7 @@ class Character {
     }
 
     /**
-     * Get the current vertical direction of the character. Returns undefined if there is no vertical direction.
+     * Get the current vertical direction of the character.
      * @returns {String|undefined} the current vertical direction of the character
      */
     getVerticalDirection() {
@@ -519,33 +453,6 @@ class Character {
     }
 
     /* private */
-    isAtLeftBoundary() {
-        return !this.isFacingRight() && this.getX() === 0;
-    }
-
-    /* private */
-    isAtRightBoundary() {
-        return !this.isFacingLeft() && this.getX() === SCREEN_WIDTH - this.getProperties().getSprite().width();
-    }
-
-    /* private */
-    isPastCharacterLeft(otherCharacter) {
-        return this.isFacingLeft() && this.getX() + this.getWidth() * PASSING_MULTIPLIER < otherCharacter.getX() ||
-            this.isAtLeftBoundary();
-    }
-
-    /* private */
-    isPastCharacterRight(otherCharacter) {
-        return this.isFacingRight() && this.getX() - this.getWidth() * PASSING_MULTIPLIER > otherCharacter.getX() ||
-            this.isAtRightBoundary();
-    }
-
-    /* private */
-    isPastCharacter(otherCharacter) {
-        return this.isPastCharacterLeft(otherCharacter) || this.isPastCharacterRight(otherCharacter);
-    }
-
-    /* private */
     moveCharacter(action, gameBoard) {
         if (action === DEATH_LABEL) {
             return;
@@ -575,7 +482,7 @@ class Character {
 
     /* private */
     isDeadButNotDying() {
-        return this.isDead() && !this.isFalling() && !this.isDying() && !this.isSinking();
+        return this.isDead() && !this.isAction(FALL_LABEL) && !this.isAction(DEATH_LABEL) && !this.isAction(SINK_LABEL);
     }
 
     /* private */
@@ -597,11 +504,9 @@ class Character {
 
     /* private */
     getMoveToY(gameBoard) {
-        let y = undefined;
-        if (gameBoard.isWater(this.getScreenNumber())) {
-            y = this.shouldCPUGoToBarbarianY() ? this.getBarbarian().getY() : this.getVerticalBoundary();
-        }
-        return y;
+        return gameBoard.isWater(this.getScreenNumber())
+            ? this.shouldCPUGoToBarbarianY() ? this.getBarbarian().getY() : this.getVerticalBoundary()
+            : undefined;
     }
 
     /* private */
@@ -642,7 +547,7 @@ class Character {
             this.getVerticalDirection() !== requestedVerticalDirection ||
             this.isStopped() ||
             this.shouldCpuChase(gameBoard) ||
-            this.isAtBoundary(gameBoard) ||
+            Obstacle.isStoppedByBoundary(this, gameBoard) ||
             this.hitObstacle() ||
             this.isDeadButNotDying() ||
             !this.isOnScreen(gameBoard) ||
@@ -673,8 +578,8 @@ class Character {
         if (!(!this.shouldCpuChase(gameBoard))) {
             console.log('character: ' + characterType + ' should chase the Barbarian');
         }
-        if (!(!this.isAtBoundary(gameBoard))) {
-            console.log('character: ' + characterType + ' is at boundary');
+        if (!(!Obstacle.isStoppedByBoundary(gameBoard))) {
+            console.log('character: ' + characterType + ' is stopped by boundary');
         }
         if (!(!this.hitObstacle())) {
             console.log('character: ' + characterType + ' hit obstacle');

@@ -6,6 +6,15 @@ class Obstacles {
         this.obstacles = obstacles;
     }
 
+    didCharacterHitObstacle(character) {
+        return this.getCharacterObstacle(character) !== undefined;
+    }
+
+    getCharacterObstacle(character) {
+        return this.getNextObstacle(character.getX(), character.getDirection(), character.getScreenNumber())
+            .filterIfCharacterAvoided(character);
+    }
+
     getNextObstacle(x, direction, screenNumber) {
         if (this.obstacles[screenNumber] === undefined || this.obstacles[screenNumber][direction] === undefined) {
             return EMPTY_OBSTACLE;

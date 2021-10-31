@@ -338,7 +338,7 @@ class Game {
         if (character.shouldCpuFight(this.gameBoard)) {
             this.handleFightSequence(character);
         }
-        if (character.hitObstacle()) {
+        if (character.getObstacles().didCharacterHitObstacle(character)) {
             this.handleObstacle(character, requestedAction);
         }
         if (this.isBarbarianDead()) {
@@ -409,7 +409,7 @@ class Game {
 
     /* private */
     handleObstacle(character, requestedAction) {
-        let obstacle = character.getObstacle();
+        let obstacle = character.getObstacles().getCharacterObstacle(character);
         if (obstacle !== undefined ) {
             character.getProperties().getSprite().stop();
 

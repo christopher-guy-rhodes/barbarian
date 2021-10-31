@@ -1,6 +1,8 @@
 const PASSING_MULTIPLIER = 1.5;
-const JUMP_EVADE_FRAME = 3;
+const PIT_JUMP_EVADE_FRAME = 4;
 const CHASE_PROXIMITY = 200;
+const MIN_AVOID_JUMP_FRAME = 3;
+const MAX_AVOID_JUMP_FRAME = 7;
 
 /**
  * Class that supports character actions
@@ -155,12 +157,13 @@ class Character {
     shouldCpuFight(gameBoard) {
         validateRequiredParams(this.shouldCpuFight, arguments, 'gameBoard');
 
-        if (this.isBarbarian() || this.getBarbarian().didJumpEvade() || this.isDead()) {
+        if (this.isBarbarian() || this.isDead()) {
             return false;
         }
 
         return !this.getBarbarian().isDead() && this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
-            .filter(opponent => opponent.getProperties().getType() != this.getProperties().getType()).length > 0;
+            .filter(opponent => opponent.getProperties().getType() != this.getProperties().getType()
+                && !this.getBarbarian().didBarbarianEvadeAttack(this)).length > 0;
     }
 
     /**
@@ -294,13 +297,11 @@ class Character {
     }
 
     /**
-     * Returns the obstacle that the character has encountered and not avoided, undefined if no obstacle was
-     * encountered.
-     * @returns {undefined|Obstacle} the obstacle that the character has hit, undefined if no obstacle was hit
+     * Get the character's obstacles object.
+     * @returns {Obstacles}
      */
-    getObstacle() {
-        return this.obstacles.getNextObstacle(this.getX(), this.getDirection(), this.getScreenNumber())
-            .filterIfCharacterAvoided(this);
+    getObstacles() {
+        return this.obstacles;
     }
 
     /**
@@ -311,14 +312,6 @@ class Character {
     isActionInfinite(action) {
         validateRequiredParams(this.isActionInfinite, arguments, 'action');
         return this.getProperties().getActionNumberOfTimes(action) === 0;
-    }
-
-    /**
-     * Determines if the character has hit an obstacle.
-     * @returns {boolean} returns true if the character hit an obstacle, false otherwise.
-     */
-    hitObstacle() {
-        return this.getObstacle() !== undefined;
     }
 
     /**
@@ -440,8 +433,19 @@ class Character {
      * Determines if this character jump evaded an obstacle.
      * @returns {boolean} true of the character evaded the obstacle, false otherwise
      */
-    didJumpEvade() {
-        return this.getAction() === JUMP_LABEL && this.getCurrentFrame(JUMP_LABEL) >= JUMP_EVADE_FRAME;
+    didJumpEvadePit() {
+        let frame = this.getCurrentFrame(JUMP_LABEL);
+        // The Barbarian must jump from the edge of the pit which puts him at jump frame PIT_JUMP_EVADE_FRAME
+        return this.getAction() === JUMP_LABEL && frame === PIT_JUMP_EVADE_FRAME;
+    }
+
+    didBarbarianEvadeAttack(monster) {
+        let frame = this.getCurrentFrame(JUMP_LABEL);
+        // While in the attack proximity the Barbarian has not evaded if he
+        // 1. Reaches the MAX_AVOID_JUMP_FRAME jump frame (jumped too early)
+        // 1. Experiences a jump frame < MIN_AVOID_JUMP_FRAME (jumped too late)
+        return monster.isAction(ATTACK_LABEL) && this.isAction(JUMP_LABEL)
+            && frame >= MIN_AVOID_JUMP_FRAME && frame < MAX_AVOID_JUMP_FRAME;
     }
 
     /**
@@ -548,7 +552,7 @@ class Character {
             this.isStopped() ||
             this.shouldCpuChase(gameBoard) ||
             Obstacle.isStoppedByBoundary(this, gameBoard) ||
-            this.hitObstacle() ||
+            this.getObstacles().didCharacterHitObstacle(this) ||
             this.isDeadButNotDying() ||
             !this.isOnScreen(gameBoard) ||
             this.shouldCpuLaunchAttack(gameBoard) ||
@@ -581,7 +585,7 @@ class Character {
         if (!(!Obstacle.isStoppedByBoundary(gameBoard))) {
             console.log('character: ' + characterType + ' is stopped by boundary');
         }
-        if (!(!this.hitObstacle())) {
+        if (!(!this.getObstacles().didCharacterHitObstacle(this))) {
             console.log('character: ' + characterType + ' hit obstacle');
         }
         if (!(!(this.isDeadButNotDying()))) {

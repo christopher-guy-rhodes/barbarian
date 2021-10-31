@@ -130,7 +130,7 @@ s
     }
 
     didBarbarianFallInPit(character) {
-        return this.getIsPit() && character.isBarbarian() && !character.didJumpEvade()
+        return this.getIsPit() && character.isBarbarian() && !character.didJumpEvadePit()
             && !character.isAction(FALL_LABEL);
     }
 

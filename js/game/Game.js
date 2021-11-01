@@ -138,7 +138,7 @@ class Game {
             monster.show();
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getProperties().getSound());
-            monster.setVerticalDirection(monster.getCpuVerticalChaseDirection(monster));
+            monster.setVerticalDirection(Fighting.getCpuVerticalChaseDirection(monster));
             this.performAction(monster, monster.getProperties().getDefaultAction());
         }
     }
@@ -329,13 +329,13 @@ class Game {
         if (Obstacle.isAtBoundary(character, this.gameBoard)) {
             this.handleBoundary(character);
         }
-        if (character.shouldCpuChase(this.gameBoard)) {
+        if (Fighting.shouldCpuChase(character, this.gameBoard)) {
             this.handleCpuChase(character);
         }
-        if (character.shouldCpuLaunchAttack(this.gameBoard)) {
+        if (Fighting.shouldCpuLaunchAttack(character, this.gameBoard)) {
             this.handleCpuAttack(character)
         }
-        if (character.shouldCpuFight(this.gameBoard)) {
+        if (Fighting.shouldCpuFight(character, this.gameBoard)) {
             this.handleFightSequence(character);
         }
         if (character.getObstacles().didCharacterHitObstacle(character)) {
@@ -484,7 +484,7 @@ class Game {
         if (character.isBarbarian() || character.isDead() || !this.doesScreenIncludeCharacter(character)) {
             return;
         }
-        let opponentsInProximity = character.getOpponentsWithinX(this.gameBoard, FIGHTING_RANGE_PIXELS);
+        let opponentsInProximity = Fighting.getOpponentsWithinX(character, this.gameBoard, FIGHTING_RANGE_PIXELS);
 
         for (let i = 0; i < opponentsInProximity.length; i++) {
             let opponent = opponentsInProximity[i];
@@ -518,7 +518,7 @@ class Game {
         if (character.isBarbarian() || character.isDead() || !this.doesScreenIncludeCharacter(character)) {
             return;
         }
-        let opponentsInProximity = character.getOpponentsWithinX(this.gameBoard, CPU_ATTACK_RANGE_PIXELS);
+        let opponentsInProximity = Fighting.getOpponentsWithinX(character, this.gameBoard, CPU_ATTACK_RANGE_PIXELS);
 
         for (let opponent of opponentsInProximity) {
             if (!character.isBarbarian()) {
@@ -532,11 +532,11 @@ class Game {
 
     /* private */
     handleCpuChase(character) {
-        if (!character.isBarbarian() && character.shouldCpuChase(this.gameBoard)) {
+        if (!character.isBarbarian() && Fighting.shouldCpuChase(character, this.gameBoard)) {
 
             if (this.gameBoard.isWater(this.getScreenNumber()) && !character.isBarbarian()) {
                 // Make water monsters chase the barbarian vertically
-                character.setVerticalDirection(character.getCpuVerticalChaseDirection());
+                character.setVerticalDirection(Fighting.getCpuVerticalChaseDirection(character));
             }
 
             let oppositeDirection = character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL;

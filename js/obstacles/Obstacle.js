@@ -134,8 +134,14 @@ s
         return this.hitElevation(character) && (!character.isBarbarian() || !character.isAction(ATTACK_LABEL));
     }
 
+    didJumpEvadePit(character) {
+        let frame = character.getCurrentFrame(JUMP_LABEL);
+        // The Barbarian must jump from the edge of the pit which puts him at jump frame PIT_JUMP_EVADE_FRAME
+        return character.getAction() === JUMP_LABEL && frame === PIT_JUMP_EVADE_FRAME;
+    }
+
     didBarbarianFallInPit(character) {
-        return this.getIsPit() && character.isBarbarian() && !character.didJumpEvadePit()
+        return this.getIsPit() && character.isBarbarian() && !this.didJumpEvadePit(character)
             && !character.isAction(FALL_LABEL);
     }
 

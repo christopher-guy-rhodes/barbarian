@@ -113,63 +113,6 @@ class Character {
     }
 
     /**
-     * Determines if the CPU character should change direction in order to chase the Barbarian.
-     * @param gameBoard the game board
-     * @returns {boolean} true if the character is the CPU and should change direction, false otherwise
-     */
-    shouldCpuChase(gameBoard) {
-        return this.shouldCpuChaseVertically(gameBoard) || this.shouldCpuChaseHorizontally();
-    }
-
-    /**
-     * Get the CPU direction needed to chase the Barbarian.
-     */
-    getCpuVerticalChaseDirection() {
-        return (this.getBarbarian().getY() > this.getY()) ? UP_LABEL : DOWN_LABEL;
-    }
-
-    /**
-     * Determines if the CPU character should start a fight. Characters will not fight characters of the same type.
-     * @param gameBoard the game board
-     * @returns {boolean} true if the character is the CPU and should attack, false otherwise.
-     */
-    shouldCpuFight(gameBoard) {
-        validateRequiredParams(this.shouldCpuFight, arguments, 'gameBoard');
-
-        return !this.isBarbarian() && !this.isDead() &&
-            !this.getBarbarian().isDead() && this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
-                .filter(opponent => opponent.getProperties().getType() != this.getProperties().getType()
-                    && !this.getBarbarian().didBarbarianEvadeAttack(this)).length > 0;
-    }
-
-    /**
-     * Determines if the CPU character should launch an attack.
-     * @param gameBoard the game board
-     * @returns {boolean} true if the CPU character is within range to launch an attack, false otherwise.
-     */
-    shouldCpuLaunchAttack(gameBoard) {
-        validateRequiredParams(this.shouldCpuLaunchAttack, arguments, 'gameBoard');
-        return !this.isBarbarian() && !this.getBarbarian().isDead() && !this.isAction(ATTACK_LABEL) && !this.isDead() &&
-            this.getOpponentsWithinX(gameBoard, CPU_ATTACK_RANGE_PIXELS).length > 0
-    }
-
-    /**
-     * Gets the opponents with x horizontal pixels of the character.
-     * @param gameBoard the game board
-     * @param x the proximity to check
-     * @returns {[Character]} other characters within x pixels
-     */
-    getOpponentsWithinX(gameBoard, x) {
-        validateRequiredParams(this.getOpponentsWithinX, arguments, 'gameBoard', 'x');
-        let self = this;
-        return gameBoard.getOpponents(this.getBarbarian().getScreenNumber())
-            .filter(function (opponent) {
-                let proximity = self.getProximity(opponent);
-                return proximity > 0 && proximity < x;
-            });
-    }
-
-    /**
      * Get the x coordinate for this character.
      * @returns {number} the x coordinate
      */
@@ -403,42 +346,11 @@ class Character {
     }
 
     /**
-     * Determines if this character jump evaded an obstacle.
-     * @returns {boolean} true of the character evaded the obstacle, false otherwise
-     */
-    didJumpEvadePit() {
-        let frame = this.getCurrentFrame(JUMP_LABEL);
-        // The Barbarian must jump from the edge of the pit which puts him at jump frame PIT_JUMP_EVADE_FRAME
-        return this.getAction() === JUMP_LABEL && frame === PIT_JUMP_EVADE_FRAME;
-    }
-
-    didBarbarianEvadeAttack(monster) {
-        let frame = this.getCurrentFrame(JUMP_LABEL);
-        // While in the attack proximity the Barbarian has not evaded if he
-        // 1. Reaches the MAX_AVOID_JUMP_FRAME jump frame (jumped too early)
-        // 1. Experiences a jump frame < MIN_AVOID_JUMP_FRAME (jumped too late)
-        return monster.isAction(ATTACK_LABEL) && this.isAction(JUMP_LABEL)
-            && frame >= MIN_AVOID_JUMP_FRAME && frame < MAX_AVOID_JUMP_FRAME;
-    }
-
-    /**
      * Gets the Barbarian character.
      * @returns {Character} the Barbarian character
      */
     getBarbarian() {
         return this.barbarian;
-    }
-
-    /* private */
-    shouldCpuChaseVertically(gameBoard) {
-        return gameBoard.isWater(this.getScreenNumber()) &&
-            this.getCpuVerticalChaseDirection() !== this.getVerticalDirection() &&
-            !this.isBarbarian() && Math.abs(this.getY() - this.getBarbarian().getY()) > CHASE_PROXIMITY;
-    }
-
-    /* private */
-    shouldCpuChaseHorizontally() {
-        return Obstacle.isPastCharacter(this, this.getBarbarian()) && this.getProperties().getCanTurnAround();
     }
 
     /* private */
@@ -531,13 +443,13 @@ class Character {
             this.getDirection() !== requestedDirection ||
             this.getVerticalDirection() !== requestedVerticalDirection ||
             this.isAction(STOP_LABEL) ||
-            this.shouldCpuChase(gameBoard) ||
+            Fighting.shouldCpuChase(this, gameBoard) ||
             Obstacle.isStoppedByBoundary(this, gameBoard) ||
             this.getObstacles().didCharacterHitObstacle(this) ||
             this.isDeadButNotDying() ||
             !this.isOnScreen(gameBoard) ||
-            this.shouldCpuLaunchAttack(gameBoard) ||
-            this.shouldCpuFight(gameBoard) ||
+            Fighting.shouldCpuLaunchAttack(this, gameBoard) ||
+            Fighting.shouldCpuFight(this, gameBoard) ||
             gameBoard.getIsPaused());
     }
 
@@ -560,7 +472,7 @@ class Character {
         if (!(!this.isAction(STOP_LABEL))) {
             console.log('character: ' + characterType + ' is stopped');
         }
-        if (!(!this.shouldCpuChase(gameBoard))) {
+        if (!(!Fighting.shouldCpuChase(this, gameBoard))) {
             console.log('character: ' + characterType + ' should chase the Barbarian');
         }
         if (!(!Obstacle.isStoppedByBoundary(gameBoard))) {
@@ -575,10 +487,10 @@ class Character {
         if (!(this.isOnScreen(gameBoard))) {
             console.log('character: ' + characterType + ' is not on screen');
         }
-        if (!(!this.shouldCpuLaunchAttack(gameBoard))) {
+        if (!(!Fighting.shouldCpuLaunchAttack(this, gameBoard))) {
             console.log('character: ' + characterType + ' should launch a CPU attack');
         }
-        if (!(!this.shouldCpuFight(gameBoard))) {
+        if (!(!Fighting.shouldCpuFight(this, gameBoard))) {
             console.log('character: ' + characterType + ' is CPU and should fight');
         }
         if (!(!gameBoard.isPaused)) {

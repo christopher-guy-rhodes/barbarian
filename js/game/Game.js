@@ -138,7 +138,7 @@ class Game {
             monster.show();
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getProperties().getSound());
-            monster.setVerticalDirection(monster.getCpuVerticalDirection(monster));
+            monster.setVerticalDirection(monster.getCpuVerticalChaseDirection(monster));
             this.performAction(monster, monster.getProperties().getDefaultAction());
         }
     }
@@ -326,7 +326,7 @@ class Game {
         if (character.isAction(DEATH_LABEL)) {
             this.handleDeath(character);
         }
-        if (character.isAtBoundary(this.gameBoard)) {
+        if (Obstacle.isAtBoundary(character, this.gameBoard)) {
             this.handleBoundary(character);
         }
         if (character.shouldCpuChase(this.gameBoard)) {
@@ -421,6 +421,7 @@ class Game {
                 } else if (obstacle.didCharacterJumpEvade(character)) {
                     character.setY(obstacle.getHeight());
                     // Transition to walking motion since the jump was successful
+                    console.log('continuing walk after jump evading');
                     this.performAction(character, WALK_LABEL);
                 } else if (character)  {
                     // reset action so character can jump again
@@ -535,7 +536,7 @@ class Game {
 
             if (this.gameBoard.isWater(this.getScreenNumber()) && !character.isBarbarian()) {
                 // Make water monsters chase the barbarian vertically
-                character.setVerticalDirection(character.getCpuVerticalDirection());
+                character.setVerticalDirection(character.getCpuVerticalChaseDirection());
             }
 
             let oppositeDirection = character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL;

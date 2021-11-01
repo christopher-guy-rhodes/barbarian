@@ -89,16 +89,6 @@ class Character {
     }
 
     /**
-     * Determines if the character is at a screen boundary.
-     * @param gameBoard the game board
-     * @returns {boolean} true if the character is at a horizontal boundary, false otherwise.
-     */
-    isAtBoundary(gameBoard) {
-        validateRequiredParams(this.isAtBoundary, arguments, 'gameBoard');
-        return Obstacle.isCharacterAtLeftBoundary(this) || Obstacle.isCharacterAtRightBoundary(this);
-    }
-
-    /**
      * Determines if the character is moving vertically.
      * @returns {boolean} returns true if the character is moving up or down, false otherwise.
      */
@@ -123,47 +113,33 @@ class Character {
     }
 
     /**
-     * Determines if the CPU character should turn around in order to chase the Barbarian.
+     * Determines if the CPU character should change direction in order to chase the Barbarian.
      * @param gameBoard the game board
-     * @returns {boolean} true if the character is the CPU and should turn around, false otherwise
+     * @returns {boolean} true if the character is the CPU and should change direction, false otherwise
      */
     shouldCpuChase(gameBoard) {
-        if (this.isBarbarian()) {
-            return false;
-        }
-        if (gameBoard.isWater(this.getScreenNumber())) {
-            // If the vertical direction needed to chase the Barbarian is different than the vertical direction we need
-            // to chase assuming we are at least CHASE_PROXIMITY away so the water monster does not follow too closely
-            if (this.getCpuVerticalDirection() !== this.getVerticalDirection()
-                && Math.abs(this.getY() - this.getBarbarian().getY()) > CHASE_PROXIMITY) {
-                return true;
-            }
-        }
-        return Obstacle.isPastCharacter(this, this.getBarbarian()) && this.getProperties().getCanTurnAround();
+        return this.shouldCpuChaseVertically(gameBoard) || this.shouldCpuChaseHorizontally();
     }
 
     /**
-     * Get the CPU direction needed to chase the Barbarian
+     * Get the CPU direction needed to chase the Barbarian.
      */
-    getCpuVerticalDirection() {
+    getCpuVerticalChaseDirection() {
         return (this.getBarbarian().getY() > this.getY()) ? UP_LABEL : DOWN_LABEL;
     }
 
     /**
-     * Determines if the character should start a fight. Characters will not fight characters of the same type.
+     * Determines if the CPU character should start a fight. Characters will not fight characters of the same type.
      * @param gameBoard the game board
      * @returns {boolean} true if the character is the CPU and should attack, false otherwise.
      */
     shouldCpuFight(gameBoard) {
         validateRequiredParams(this.shouldCpuFight, arguments, 'gameBoard');
 
-        if (this.isBarbarian() || this.isDead()) {
-            return false;
-        }
-
-        return !this.getBarbarian().isDead() && this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
-            .filter(opponent => opponent.getProperties().getType() != this.getProperties().getType()
-                && !this.getBarbarian().didBarbarianEvadeAttack(this)).length > 0;
+        return !this.isBarbarian() && !this.isDead() &&
+            !this.getBarbarian().isDead() && this.getOpponentsWithinX(gameBoard, FIGHTING_RANGE_PIXELS)
+                .filter(opponent => opponent.getProperties().getType() != this.getProperties().getType()
+                    && !this.getBarbarian().didBarbarianEvadeAttack(this)).length > 0;
     }
 
     /**
@@ -352,10 +328,7 @@ class Character {
      * @returns {Number}
      */
     getCurrentFrame(action) {
-        if (action === undefined) {
-            return 0;
-        }
-        return this.currentFrame[action];
+        return action === undefined ? 0 : this.currentFrame[action];
     }
 
     /**
@@ -457,6 +430,18 @@ class Character {
     }
 
     /* private */
+    shouldCpuChaseVertically(gameBoard) {
+        return gameBoard.isWater(this.getScreenNumber()) &&
+            this.getCpuVerticalChaseDirection() !== this.getVerticalDirection() &&
+            !this.isBarbarian() && Math.abs(this.getY() - this.getBarbarian().getY()) > CHASE_PROXIMITY;
+    }
+
+    /* private */
+    shouldCpuChaseHorizontally() {
+        return Obstacle.isPastCharacter(this, this.getBarbarian()) && this.getProperties().getCanTurnAround();
+    }
+
+    /* private */
     moveCharacter(action, gameBoard) {
         if (action === DEATH_LABEL) {
             return;
@@ -471,17 +456,18 @@ class Character {
 
     /* private */
     prepareSprite() {
-        if (this.isDead()) {
-            let deathSprite = this.getProperties().getDeathSprite();
-            deathSprite.show();
-            deathSprite.css(CSS_LEFT_LABEL, this.getX() + CSS_PX_LABEL);
-            if (!this.isBarbarian()) {
-                this.getProperties().getSprite().hide();
-            }
-            return deathSprite;
-        } else {
-            return this.getProperties().getSprite();
+        return this.isDead() ? this.prepareDeathSprite() : this.getProperties().getSprite();
+    }
+
+    /* private */
+    prepareDeathSprite() {
+        let deathSprite = this.getProperties().getDeathSprite();
+        deathSprite.show();
+        deathSprite.css(CSS_LEFT_LABEL, this.getX() + CSS_PX_LABEL);
+        if (!this.isBarbarian()) {
+            this.getProperties().getSprite().hide();
         }
+        return deathSprite;
     }
 
     /* private */
@@ -524,11 +510,6 @@ class Character {
     }
 
     /* private */
-    isStopped() {
-        return this.action === STOP_LABEL;
-    }
-
-    /* private */
     getProximity(opponent) {
         return Math.sqrt(Math.pow(Math.abs(this.getX() - opponent.getX()), 2)
             + Math.pow(Math.abs(this.getY() - opponent.getY()), 2));
@@ -549,7 +530,7 @@ class Character {
         return (this.getAction() !== requestedAction ||
             this.getDirection() !== requestedDirection ||
             this.getVerticalDirection() !== requestedVerticalDirection ||
-            this.isStopped() ||
+            this.isAction(STOP_LABEL) ||
             this.shouldCpuChase(gameBoard) ||
             Obstacle.isStoppedByBoundary(this, gameBoard) ||
             this.getObstacles().didCharacterHitObstacle(this) ||
@@ -576,7 +557,7 @@ class Character {
             console.log('character: ' + characterType + ' vertical direction: "' + this.getVerticalDirection()
                 + '" is not equal to requested vertical direction "' + vertDirection + '"');
         }
-        if (!(!this.isStopped())) {
+        if (!(!this.isAction(STOP_LABEL))) {
             console.log('character: ' + characterType + ' is stopped');
         }
         if (!(!this.shouldCpuChase(gameBoard))) {

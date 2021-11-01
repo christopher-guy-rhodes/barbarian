@@ -36,7 +36,7 @@ class Obstacle {
     }
 
     static isStoppedByBoundary(character, gameBoard) {
-        return !this.isAtWaterBoundary(character, gameBoard) && character.isAtBoundary(gameBoard);
+        return !this.isAtWaterBoundary(character, gameBoard) && Obstacle.isAtBoundary(character, gameBoard);
     }
 
     static isAtWaterBoundary(character, gameBoard) {
@@ -68,6 +68,11 @@ s
     static isCharacterAtRightBoundary(character) {
         return !character.isFacingLeft()
             && character.getX() === SCREEN_WIDTH - character.getProperties().getSprite().width();
+    }
+
+    static isAtBoundary(character, gameBoard) {
+        validateRequiredParams(this.isAtBoundary, arguments, 'gameBoard');
+        return Obstacle.isCharacterAtLeftBoundary(character) || Obstacle.isCharacterAtRightBoundary(character);
     }
 
     isCloseButNotPast(x, direction) {

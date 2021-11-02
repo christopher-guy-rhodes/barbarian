@@ -2,6 +2,16 @@ class Fighting {
     constructor() {
     }
 
+    static prepareDeathSprite(character) {
+        let deathSprite = character.getProperties().getDeathSprite();
+        deathSprite.show();
+        deathSprite.css(CSS_LEFT_LABEL, character.getX() + CSS_PX_LABEL);
+        if (!character.isBarbarian()) {
+            character.getProperties().getSprite().hide();
+        }
+        return deathSprite;
+    }
+
     static getOpponentsWithinX(character, gameBoard, x) {
         validateRequiredParams(this.getOpponentsWithinX, arguments, 'character', 'gameBoard', 'x');
         let self = this;

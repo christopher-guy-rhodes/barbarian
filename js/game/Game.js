@@ -44,7 +44,7 @@ class Game {
             throw new Error("performAction: action is a required parameter");
         }
 
-        character.stopMovement();
+        character.getAnimator().stopMovement();
 
         if (this.isTransitionFromTerminalAction(character, action)) {
             action = character.getAction();
@@ -54,7 +54,7 @@ class Game {
 
         let self = this;
 
-        character.animate(this.gameBoard, action,
+        character.getAnimator().animate(this.gameBoard, action,
             character.getDirection(),
             character.getVerticalDirection(),
             character.getProperties().getActionNumberOfTimes(action),
@@ -365,7 +365,7 @@ class Game {
                 let monstersOnScreen = self.getMonstersOnScreen();
                 for (let monster of monstersOnScreen) {
                     monster.setStatus(DEAD_LABEL);
-                    monster.stopMovement();
+                    monster.getAnimator().stopMovement();
                 }
             }, DEATH_DELAY - 1000);
         }

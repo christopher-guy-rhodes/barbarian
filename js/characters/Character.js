@@ -36,56 +36,32 @@ class Character {
         this.screenNumber = screenNumber;
         this.currentFrame = currentFrame;
 
-        this.animator = new Animator(this.getProperties().getSprite());
+        this.animator = new Animator(this);
         this.sounds = new Sounds();
     }
 
     /**
-     * Move this character across the game board while also animating the sprite.
-     *
-     * @param gameBoard the game board to perform the animation on
-     * @param action the requested action (run, walk, attack etc.)
-     * @param direction the requested direction to move the character (left or right)
-     * @param vertDirection the requested vertical direction to move the character (up or down)
-     * @param numberOfTimes the number of times to perform the animation loop (zero for infinite)
-     * @param idx the frame index offset
-     * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
+     * Get the static character properties.
+     * @returns {CharacterProperties} the character properties object for this character
      */
-    async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
-        validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes', 'idx');
+    getProperties() {
+        return this.properties;
+    }
 
-        this.moveCharacter(action, gameBoard);
+    /**
+     * Get the character animator.
+     * @returns {Animator} the animator object for the sprite for the character
+     */
+    getAnimator() {
+        return this.animator;
+    }
 
-        let frames = this.getProperties().getFrames(action, direction);
-        let frameIdx = idx;
-        let counter = numberOfTimes;
-
-        this.setCurrentFrame(action, frameIdx);
-
-        while (!this.isAnimationInterrupted(action, direction, vertDirection, gameBoard) && frameIdx < frames.length) {
-            let sprite = this.prepareSprite();
-            let heightOffset = -1 *
-                this.getProperties().getFrameHeightOffset(action, this.getDirection()) * sprite.height();
-            let offset = -1*frames[frameIdx++]*sprite.width();
-            sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
-
-            this.setCurrentFrame(action, frameIdx);
-
-            await sleep(MILLISECONDS_PER_SECOND / this.getProperties().getFramesPerSecond(action));
-
-            if (frameIdx === frames.length) {
-                // If counter is 0 loop infinitely otherwise loop again if counter has not expired
-                if (counter === 0 || --counter > 0) {
-                    frameIdx = 0;
-                    this.setCurrentFrame(action, frameIdx);
-                }
-            }
-        }
-
-        // uncomment to see why animation stopped for debugging
-        //this.debugAnimationTermination(this.getProperties().getType(), action, direction, vertDirection, gameBoard, frameIdx, frames);
-
-        return frameIdx;
+    /**
+     * Get the character's obstacles object.
+     * @returns {Obstacles}
+     */
+    getObstacles() {
+        return this.obstacles;
     }
 
     /**
@@ -126,22 +102,6 @@ class Character {
      */
     getY() {
         return parseInt(stripPxSuffix(this.getProperties().getSprite().css(CSS_BOTTOM_LABEL)));
-    }
-
-    /**
-     * Get the static character properties.
-     * @returns {CharacterProperties} the character properties object for this character
-     */
-    getProperties() {
-        return this.properties;
-    }
-
-    /**
-     * Get the character animator.
-     * @returns {Animator} the animator object for the sprite for the character
-     */
-    getAnimator() {
-        return this.animator;
     }
 
     /**
@@ -215,13 +175,6 @@ class Character {
         return this.getAction() === action;
     }
 
-    /**
-     * Get the character's obstacles object.
-     * @returns {Obstacles}
-     */
-    getObstacles() {
-        return this.obstacles;
-    }
 
     /**
      * Determines if the action is infinite for the character.
@@ -353,75 +306,19 @@ class Character {
         return this.barbarian;
     }
 
-    /* private */
-    moveCharacter(action, gameBoard) {
-        if (action === DEATH_LABEL) {
-            return;
-        }
-        if (action === FALL_LABEL || action === SINK_LABEL) {
-            let pps = this.getProperties().getPixelsPerSecond(action);
-            this.getAnimator().moveElementToPosition(undefined, 0, pps);
-        } else {
-            this.moveFromPositionToBoundary(gameBoard);
-        }
-    }
-
-    /* private */
-    prepareSprite() {
-        return this.isDead() ? this.prepareDeathSprite() : this.getProperties().getSprite();
-    }
-
-    /* private */
-    prepareDeathSprite() {
-        let deathSprite = this.getProperties().getDeathSprite();
-        deathSprite.show();
-        deathSprite.css(CSS_LEFT_LABEL, this.getX() + CSS_PX_LABEL);
-        if (!this.isBarbarian()) {
-            this.getProperties().getSprite().hide();
-        }
-        return deathSprite;
-    }
-
-    /* private */
+    /**
+     * Determine if the character is in the process of dying (falling, sinking etc.) but not yet dead
+     * @returns {boolean} true if the character is dying but not dead, false otherwise
+     */
     isDeadButNotDying() {
         return this.isDead() && !this.isAction(FALL_LABEL) && !this.isAction(DEATH_LABEL) && !this.isAction(SINK_LABEL);
     }
 
-    /* private */
-    stopMovement() {
-        this.getProperties().getSprite().stop();
-    }
-
-    /* private */
-    moveFromPositionToBoundary(gameBoard) {
-        this.getAnimator().moveElementToPosition(this.getMoveToX(),
-            this.getMoveToY(gameBoard),
-            this.getProperties().getPixelsPerSecond(this.getAction()));
-    }
-
-    /* private */
-    getMoveToX() {
-        return this.isFacingLeft() ? 0 : SCREEN_WIDTH - this.getWidth();
-    }
-
-    /* private */
-    getMoveToY(gameBoard) {
-        return gameBoard.isWater(this.getScreenNumber())
-            ? this.shouldCpuGoToBarbarianY() ? this.getBarbarian().getY() : this.getVerticalBoundary()
-            : undefined;
-    }
-
-    /* private */
-    shouldCpuGoToBarbarianY() {
-        return !this.isBarbarian() && !this.getBarbarian().isMovingVertically();
-    }
-
-    /* private */
-    getVerticalBoundary() {
-        return this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
-    }
-
-    /* private */
+    /**
+     * Determine if the character is on the current screen.
+     * @param gameBoard the game board
+     * @returns {boolean} true if the character is on the current screen, false otherwise.
+     */
     isOnScreen(gameBoard) {
         return gameBoard.getOpponents(this.barbarian.getScreenNumber()).includes(this);
     }
@@ -429,71 +326,6 @@ class Character {
     /* private */
     getStatus() {
         return this.status;
-    }
-
-    /* private */
-    isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
-        return (this.getAction() !== requestedAction ||
-            this.getDirection() !== requestedDirection ||
-            this.getVerticalDirection() !== requestedVerticalDirection ||
-            this.isAction(STOP_LABEL) ||
-            Fighting.shouldCpuChase(this, gameBoard) ||
-            Obstacle.isStoppedByBoundary(this, gameBoard) ||
-            this.getObstacles().didCharacterHitObstacle(this) ||
-            this.isDeadButNotDying() ||
-            !this.isOnScreen(gameBoard) ||
-            Fighting.shouldCpuLaunchAttack(this, gameBoard) ||
-            Fighting.shouldCpuFight(this, gameBoard) ||
-            gameBoard.getIsPaused());
-    }
-
-    /* private */
-    debugAnimationTermination(characterType, action, direction, vertDirection, gameBoard, frameIdx, frames) {
-        console.log(this.getProperties().getType() + ' is done ' + action + 'ing');
-
-        if (!(this.getAction() === action)) {
-            console.log('character: ' + characterType + ' action: "' + this.getAction()
-                + '" is not equal to requested action "' + action + '"');
-        }
-        if (!(this.getDirection() === direction)) {
-            console.log('character: ' + characterType + ' action: "' + this.getDirection()
-                + '" is not equal to requested direction "' + direction + '"');
-        }
-        if (!(this.getVerticalDirection() === vertDirection)) {
-            console.log('character: ' + characterType + ' vertical direction: "' + this.getVerticalDirection()
-                + '" is not equal to requested vertical direction "' + vertDirection + '"');
-        }
-        if (!(!this.isAction(STOP_LABEL))) {
-            console.log('character: ' + characterType + ' is stopped');
-        }
-        if (!(!Fighting.shouldCpuChase(this, gameBoard))) {
-            console.log('character: ' + characterType + ' should chase the Barbarian');
-        }
-        if (!(!Obstacle.isStoppedByBoundary(gameBoard))) {
-            console.log('character: ' + characterType + ' is stopped by boundary');
-        }
-        if (!(!this.getObstacles().didCharacterHitObstacle(this))) {
-            console.log('character: ' + characterType + ' hit obstacle');
-        }
-        if (!(!(this.isDeadButNotDying()))) {
-            console.log('character: ' + characterType + ' is dead but not dying');
-        }
-        if (!(this.isOnScreen(gameBoard))) {
-            console.log('character: ' + characterType + ' is not on screen');
-        }
-        if (!(!Fighting.shouldCpuLaunchAttack(this, gameBoard))) {
-            console.log('character: ' + characterType + ' should launch a CPU attack');
-        }
-        if (!(!Fighting.shouldCpuFight(this, gameBoard))) {
-            console.log('character: ' + characterType + ' is CPU and should fight');
-        }
-        if (!(!gameBoard.isPaused)) {
-            console.log('game is paused');
-        }
-        if (!(frameIdx < frames.length)) {
-            console.log('frame ' + frameIdx + ' of ' + this.getProperties().getType() + ' ' +
-                this.getAction() +  ' is not less than ' + frames.length);
-        }
     }
 }
 

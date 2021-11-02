@@ -407,24 +407,18 @@ class Character {
     /* private */
     getMoveToY(gameBoard) {
         return gameBoard.isWater(this.getScreenNumber())
-            ? this.shouldCPUGoToBarbarianY() ? this.getBarbarian().getY() : this.getVerticalBoundary()
+            ? this.shouldCpuGoToBarbarianY() ? this.getBarbarian().getY() : this.getVerticalBoundary()
             : undefined;
     }
 
     /* private */
-    shouldCPUGoToBarbarianY() {
+    shouldCpuGoToBarbarianY() {
         return !this.isBarbarian() && !this.getBarbarian().isMovingVertically();
     }
 
     /* private */
     getVerticalBoundary() {
         return this.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.getHeight() / 2;
-    }
-
-    /* private */
-    getProximity(opponent) {
-        return Math.sqrt(Math.pow(Math.abs(this.getX() - opponent.getX()), 2)
-            + Math.pow(Math.abs(this.getY() - opponent.getY()), 2));
     }
 
     /* private */

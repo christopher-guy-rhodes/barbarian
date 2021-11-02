@@ -1,16 +1,20 @@
 class Fighting {
     constructor() {
-
     }
 
     static getOpponentsWithinX(character, gameBoard, x) {
         validateRequiredParams(this.getOpponentsWithinX, arguments, 'character', 'gameBoard', 'x');
-        //let self = this;
+        let self = this;
         return gameBoard.getOpponents(character.getBarbarian().getScreenNumber())
             .filter(function (opponent) {
-                let proximity = character.getProximity(opponent);
+                let proximity = self.getProximity(character, opponent);
                 return proximity > 0 && proximity < x;
             });
+    }
+
+    static getProximity(character, opponent) {
+        return Math.sqrt(Math.pow(Math.abs(character.getX() - opponent.getX()), 2)
+            + Math.pow(Math.abs(character.getY() - opponent.getY()), 2));
     }
 
     static shouldCpuChase(character, gameBoard) {

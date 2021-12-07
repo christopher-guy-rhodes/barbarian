@@ -50,7 +50,7 @@ class Character {
 
     /**
      * Get the character animator.
-     * @returns {Animator} the animator object for the sprite for the character
+     * @returns {Animator} the animator object for the character
      */
     getAnimator() {
         return this.animator;
@@ -58,7 +58,7 @@ class Character {
 
     /**
      * Get the character's obstacles object.
-     * @returns {Obstacles}
+     * @returns {Obstacles} the obstacles object for the character
      */
     getObstacles() {
         return this.obstacles;
@@ -122,7 +122,7 @@ class Character {
 
     /**
      * Determine if this character is the Barbarian.
-     * @returns {boolean} true if this character object is the Barbarian, false otherwise
+     * @returns {boolean} true if this character is the Barbarian, false otherwise
      */
     isBarbarian() {
         return this === this.getBarbarian();
@@ -167,8 +167,8 @@ class Character {
     }
 
     /**
-     * Determine if the character is performing the aciton
-     * @param action
+     * Determine if the character is performing the action.
+     * @param action the action to check
      */
     isAction(action) {
         validateRequiredParams(this.isAction, arguments, 'action');
@@ -212,7 +212,7 @@ class Character {
 
     /**
      * Gets the screen number that the character is on.
-     * @returns {Number} the screen number
+     * @returns {number} the screen number
      */
     getScreenNumber() {
         return this.screenNumber;
@@ -220,8 +220,8 @@ class Character {
 
     /**
      * Get the current frame for a particular action for the character.
-     * @param action
-     * @returns {Number}
+     * @param action the action to to get the frame for
+     * @returns {number} the current frame for the action
      */
     getCurrentFrame(action) {
         return action === undefined ? 0 : this.currentFrame[action];
@@ -237,7 +237,7 @@ class Character {
 
     /**
      * Set the direction of the character.
-     * @param direction the direction of the character. Can be undefined.
+     * @param direction the direction of the character.
      */
     setDirection(direction) {
         validateRequiredParams(this.setDirection, arguments, 'direction');
@@ -307,7 +307,7 @@ class Character {
     }
 
     /**
-     * Determine if the character is in the process of dying (falling, sinking etc.) but not yet dead
+     * Determine if the character is dead but not in the process of dying (falling, sinking etc.).
      * @returns {boolean} true if the character is dying but not dead, false otherwise
      */
     isDeadButNotDying() {

@@ -4,7 +4,7 @@ class Animator {
     }
 
     /**
-     * Move this character across the game board while also animating the sprite.
+     * Move the character across the game board while also animating the character's sprite.
      *
      * @param gameBoard the game board to perform the animation on
      * @param action the requested action (run, walk, attack etc.)
@@ -49,11 +49,6 @@ class Animator {
         //this.debugAnimationTermination(this.getProperties().getType(), action, direction, vertDirection, gameBoard, frameIdx, frames);
 
         return frameIdx;
-    }
-
-    prepareSprite() {
-        return this.character.isDead() ? Fighting.prepareDeathSprite(this.character)
-                                       : this.character.getProperties().getSprite();
     }
 
     isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
@@ -143,6 +138,12 @@ class Animator {
         let duration = distance / pixelsPerSecond * MILLISECONDS_PER_SECOND;
 
         this.moveToPosition(duration, x, y);
+    }
+
+    /* private */
+    prepareSprite() {
+        return this.character.isDead() ? Fighting.prepareDeathSprite(this.character)
+            : this.character.getProperties().getSprite();
     }
 
     /* private */

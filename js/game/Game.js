@@ -53,10 +53,8 @@ class Game {
         character.setAction(action);
 
         let self = this;
-
         character.getAnimator().animate(this.gameBoard, action,
             character.getDirection(),
-            character.getVerticalDirection(),
             character.getProperties().getActionNumberOfTimes(action),
             frame).then(function(frame) {
                 self.handleActionInterruption(character, action, frame);
@@ -117,10 +115,10 @@ class Game {
         }
         let action = this.isWater() ? SWIM_LABEL : STOP_LABEL;
 
-        let heightOffset = character.getProperties().getFrameHeightOffset(action, character.getDirection()) *
+        let heightOffset = character.getProperties().getFrameHeightOffset(action, character.getHorizontalDirection()) *
             character.getProperties().getSprite().height();
 
-        let offset = character.getProperties().getFrames(action, character.getDirection())[0];
+        let offset = character.getProperties().getFrames(action, character.getHorizontalDirection())[0];
         character.getProperties().getSprite().css(CSS_BACKGROUND_POSITION,
             -1*offset*character.getWidth() + CSS_PX_LABEL + ' ' + -1*heightOffset + CSS_PX_LABEL);
     }
@@ -541,7 +539,7 @@ class Game {
 
             let oppositeDirection = character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL;
             character.setDirection(Obstacle.isPastCharacter(character, character.getBarbarian())
-                ? oppositeDirection : character.getDirection());
+                ? oppositeDirection : character.getHorizontalDirection());
             if (character.getProperties().getCanHighlight()) {
                 character.getProperties().getSprite().css('filter', "brightness(100%)");
             }

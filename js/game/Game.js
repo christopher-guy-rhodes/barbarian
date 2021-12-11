@@ -154,7 +154,8 @@ class Game {
 
         for (let monster of monsters) {
             monster.getProperties().getSprite().css('left', monster.getProperties().getDefaultX() + 'px');
-            monster.getProperties().getSprite().css('bottom', monster.getProperties().getDefaultY(this.getScreenNumber()) + 'px');
+            monster.getProperties().getSprite().css('bottom',
+                monster.getProperties().getDefaultY(this.getScreenNumber()) + 'px');
             monster.getProperties().getSprite().css('filter', "brightness(100%)");
             monster.setStatus(DEAD_LABEL);
         }

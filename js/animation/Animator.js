@@ -17,7 +17,9 @@ class Animator {
     async animate(gameBoard, action, direction, numberOfTimes, idx) {
         validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes', 'idx');
 
-        this.moveCharacter(action, gameBoard);
+        if (action !== DEATH_LABEL) {
+            this.moveCharacter(action, gameBoard);
+        }
 
         let frames = this.character.getProperties().getFrames(action, direction[HORIZONTAL_LABEL]);
         let frameIdx = idx;
@@ -28,8 +30,9 @@ class Animator {
         while (!this.isAnimationInterrupted(action, direction, gameBoard) && frameIdx < frames.length) {
             let sprite = this.prepareSprite();
             let heightOffset = -1 *
-                this.character.getProperties().getFrameHeightOffset(action, this.character.getHorizontalDirection()) * sprite.height();
-            let offset = -1*frames[frameIdx++]*sprite.width();
+                this.character.getProperties().getFrameHeightOffset(action,
+                    this.character.getHorizontalDirection()) * sprite.height();
+            let offset = -1 * frames[frameIdx++]*sprite.width();
             sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
 
             this.character.setCurrentFrame(action, frameIdx);
@@ -68,36 +71,27 @@ class Animator {
 
 
     moveCharacter(action, gameBoard) {
-        if (action === DEATH_LABEL) {
-            return;
-        }
-        if (action === FALL_LABEL || action === SINK_LABEL) {
-            let pps = this.character.getProperties().getPixelsPerSecond(action);
-            this.moveElementToPosition(undefined, 0, pps);
-        } else {
-            this.moveFromPositionToBoundary(gameBoard);
-        }
+        let fallingOrSinking = action === FALL_LABEL || action === SINK_LABEL;
+        let x = fallingOrSinking ? undefined : this.getHorizontalBoundary();
+        let y = fallingOrSinking ? 0 : this.getMoveToY(gameBoard);
+        let pps = this.character.getProperties().getPixelsPerSecond(action);
+
+        this.moveElementToPosition(x, y, pps);
     }
 
-    moveFromPositionToBoundary(gameBoard) {
-        this.moveElementToPosition(this.getMoveToX(),
-            this.getMoveToY(gameBoard),
-            this.character.getProperties().getPixelsPerSecond(this.character.getAction()));
-    }
-
-    getMoveToX() {
+    getHorizontalBoundary() {
         return this.character.isFacingLeft() ? 0 : SCREEN_WIDTH - this.character.getWidth();
     }
 
     getMoveToY(gameBoard) {
         return gameBoard.isWater(this.character.getScreenNumber())
-            ? this.shouldCpuGoToBarbarianY() ? this.character.getBarbarian().getY()
-                                                       : this.getVerticalBoundary()
-            : undefined;
+            ? this.getVerticalCoordinate() : undefined;
     }
 
-    shouldCpuGoToBarbarianY() {
-        return !this.character.isBarbarian() && !this.character.getBarbarian().isMovingVertically();
+    getVerticalCoordinate() {
+        let shouldCpuGoToBarbarianY =  !this.character.isBarbarian() &&
+            !this.character.getBarbarian().isMovingVertically();
+        return shouldCpuGoToBarbarianY ? this.character.getBarbarian().getY() : this.getVerticalBoundary();
     }
 
     getVerticalBoundary() {

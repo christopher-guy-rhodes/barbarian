@@ -48,7 +48,8 @@ class Animator {
         }
 
         // uncomment to see why animation stopped for debugging
-        //this.debugAnimationTermination(this.getProperties().getType(), action, direction, vertDirection, gameBoard, frameIdx, frames);
+        //this.debugAnimationTermination(this.character.getProperties().getType(), action, direction, vertDirection, gameBoard, frameIdx, frames);
+        //this.debugAnimationTermination(this.character.getProperties().getType(), action, direction, vertDirection, gameBoard, frameIdx, frames);
 
         return frameIdx;
     }
@@ -156,13 +157,13 @@ class Animator {
         if (!(!this.character.isAction(STOP_LABEL))) {
             console.log('character: ' + characterType + ' is stopped');
         }
-        if (!(!Fighting.shouldCpuChase(this, gameBoard))) {
+        if (!(!Fighting.shouldCpuChase(this.character, gameBoard))) {
             console.log('character: ' + characterType + ' should chase the Barbarian');
         }
-        if (!(!Obstacle.isStoppedByBoundary(gameBoard))) {
+        if (!(!Obstacle.isStoppedByBoundary(this.character, gameBoard))) {
             console.log('character: ' + characterType + ' is stopped by boundary');
         }
-        if (!(!this.character.getObstacles().didCharacterHitObstacle(this))) {
+        if (!(!this.character.getObstacles().didCharacterHitObstacle(this.character))) {
             console.log('character: ' + characterType + ' hit obstacle');
         }
         if (!(!(this.character.isDeadButNotDying()))) {
@@ -171,10 +172,10 @@ class Animator {
         if (!(this.character.isOnScreen(gameBoard))) {
             console.log('character: ' + characterType + ' is not on screen');
         }
-        if (!(!Fighting.shouldCpuLaunchAttack(this, gameBoard))) {
+        if (!(!Fighting.shouldCpuLaunchAttack(this.character, gameBoard))) {
             console.log('character: ' + characterType + ' should launch a CPU attack');
         }
-        if (!(!Fighting.shouldCpuFight(this, gameBoard))) {
+        if (!(!Fighting.shouldCpuFight(this.character, gameBoard))) {
             console.log('character: ' + characterType + ' is CPU and should fight');
         }
         if (!(!gameBoard.isPaused)) {

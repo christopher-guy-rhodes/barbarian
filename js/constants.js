@@ -10,7 +10,7 @@ const ADVANCE_SCREEN_PIXELS_PER_SECOND = SCREEN_WIDTH / ADVANCE_SCREEN_DURATION_
 const ADVANCE_SCREEN_VERTICAL_PIXELS_PER_SECOND = SCREEN_HEIGHT / ADVANCE_SCREEN_DURATION_SECONDS;
 // How many pixels are moved in a single frame. Higher values make for a smoother scroll but if the value is too high
 // the overhead of the animation and sleep in the loop will cause the screen scroll to be out of sync with the sprite
-// that is scrolling simultaneously via jquery animation
+// that is scrolling simultaneously via jquery animation which is more efficient
 const ADVANCE_SCREEN_PIXELS_PER_FRAME = 25;
 
 // labels

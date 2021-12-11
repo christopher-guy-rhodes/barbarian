@@ -40,7 +40,7 @@ class Obstacle {
     }
 
     static isAtWaterBoundary(character, gameBoard) {
-        return !gameBoard.isScrollAllowed(character.getScreenNumber(), character.getHorizontalDirection()) &&
+        return !gameBoard.isScrollAllowed(character.getScreenNumber(), character.getDirection()) &&
             gameBoard.isWater(character.getScreenNumber());
     }
 
@@ -118,7 +118,7 @@ s
     }
 
     isCharacterPastObstacle(character) {
-        return !character.isDead() && this.isPast(character.getX(), character.getHorizontalDirection());
+        return !character.isDead() && this.isPast(character.getX(), character.getDirection());
     }
 
     filterIfCharacterAvoided(character) {

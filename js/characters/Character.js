@@ -77,7 +77,7 @@ class Character {
      * @returns {boolean} true if the character is facing left, false otherwise
      */
     isFacingLeft() {
-        return this.getHorizontalDirection() === LEFT_LABEL;
+        return this.getDirection() === LEFT_LABEL;
     }
 
     /**
@@ -85,7 +85,7 @@ class Character {
      * @returns {boolean} true if the character is facing left, false otherwise
      */
     isFacingRight() {
-        return this.getHorizontalDirection() === RIGHT_LABEL;
+        return this.getDirection() === RIGHT_LABEL;
     }
 
     /**
@@ -206,16 +206,8 @@ class Character {
      * Get the current direction of the character.
      * @returns {String} the direction of the character
      */
-    getHorizontalDirection() {
-        return this.direction[HORIZONTAL_LABEL];
-    }
-
-    /**
-     * Get the direction object for the character that includes the x and y directions.
-     * @returns {Object} the direction object
-     */
     getDirection() {
-        return this.direction;
+        return this.direction[HORIZONTAL_LABEL];
     }
 
     /**

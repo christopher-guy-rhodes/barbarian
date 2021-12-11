@@ -1,4 +1,3 @@
-
 class Animator {
     constructor(character) {
         this.character = character;
@@ -9,30 +8,28 @@ class Animator {
      *
      * @param gameBoard the game board to perform the animation on
      * @param action the requested action (run, walk, attack etc.)
-     * @param direction the requested direction to move the character
+     * @param direction the requested direction to move the character (left or right)
+     * @param vertDirection the requested vertical direction to move the character (up or down)
      * @param numberOfTimes the number of times to perform the animation loop (zero for infinite)
      * @param idx the frame index offset
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
      */
-    async animate(gameBoard, action, direction, numberOfTimes, idx) {
+    async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
         validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes', 'idx');
 
-        if (action !== DEATH_LABEL) {
-            this.moveCharacter(action, gameBoard);
-        }
+        this.moveCharacter(action, gameBoard);
 
-        let frames = this.character.getProperties().getFrames(action, direction[HORIZONTAL_LABEL]);
+        let frames = this.character.getProperties().getFrames(action, direction);
         let frameIdx = idx;
         let counter = numberOfTimes;
 
         this.character.setCurrentFrame(action, frameIdx);
 
-        while (!this.isAnimationInterrupted(action, direction, gameBoard) && frameIdx < frames.length) {
+        while (!this.isAnimationInterrupted(action, direction, vertDirection, gameBoard) && frameIdx < frames.length) {
             let sprite = this.prepareSprite();
             let heightOffset = -1 *
-                this.character.getProperties().getFrameHeightOffset(action,
-                    this.character.getHorizontalDirection()) * sprite.height();
-            let offset = -1 * frames[frameIdx++]*sprite.width();
+                this.character.getProperties().getFrameHeightOffset(action, this.character.getDirection()) * sprite.height();
+            let offset = -1*frames[frameIdx++]*sprite.width();
             sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
 
             this.character.setCurrentFrame(action, frameIdx);
@@ -54,10 +51,10 @@ class Animator {
         return frameIdx;
     }
 
-    isAnimationInterrupted(requestedAction, requestedDirection, gameBoard, frame) {
+    isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
         return (this.character.getAction() !== requestedAction ||
-            this.character.getHorizontalDirection() !== requestedDirection[HORIZONTAL_LABEL] ||
-            this.character.getVerticalDirection() !== requestedDirection[VERTICAL_LABEL] ||
+            this.character.getDirection() !== requestedDirection ||
+            this.character.getVerticalDirection() !== requestedVerticalDirection ||
             this.character.isAction(STOP_LABEL) ||
             Fighting.shouldCpuChase(this.character, gameBoard) ||
             Obstacle.isStoppedByBoundary(this.character, gameBoard) ||
@@ -71,27 +68,36 @@ class Animator {
 
 
     moveCharacter(action, gameBoard) {
-        let fallingOrSinking = action === FALL_LABEL || action === SINK_LABEL;
-        let x = fallingOrSinking ? undefined : this.getHorizontalBoundary();
-        let y = fallingOrSinking ? 0 : this.getMoveToY(gameBoard);
-        let pps = this.character.getProperties().getPixelsPerSecond(action);
-
-        this.moveElementToPosition(x, y, pps);
+        if (action === DEATH_LABEL) {
+            return;
+        }
+        if (action === FALL_LABEL || action === SINK_LABEL) {
+            let pps = this.character.getProperties().getPixelsPerSecond(action);
+            this.moveElementToPosition(undefined, 0, pps);
+        } else {
+            this.moveFromPositionToBoundary(gameBoard);
+        }
     }
 
-    getHorizontalBoundary() {
+    moveFromPositionToBoundary(gameBoard) {
+        this.moveElementToPosition(this.getMoveToX(),
+            this.getMoveToY(gameBoard),
+            this.character.getProperties().getPixelsPerSecond(this.character.getAction()));
+    }
+
+    getMoveToX() {
         return this.character.isFacingLeft() ? 0 : SCREEN_WIDTH - this.character.getWidth();
     }
 
     getMoveToY(gameBoard) {
         return gameBoard.isWater(this.character.getScreenNumber())
-            ? this.getVerticalCoordinate() : undefined;
+            ? this.shouldCpuGoToBarbarianY() ? this.character.getBarbarian().getY()
+                                                       : this.getVerticalBoundary()
+            : undefined;
     }
 
-    getVerticalCoordinate() {
-        let shouldCpuGoToBarbarianY =  !this.character.isBarbarian() &&
-            !this.character.getBarbarian().isMovingVertically();
-        return shouldCpuGoToBarbarianY ? this.character.getBarbarian().getY() : this.getVerticalBoundary();
+    shouldCpuGoToBarbarianY() {
+        return !this.character.isBarbarian() && !this.character.getBarbarian().isMovingVertically();
     }
 
     getVerticalBoundary() {
@@ -148,8 +154,8 @@ class Animator {
             console.log('character: ' + characterType + ' action: "' + this.character.getAction()
                 + '" is not equal to requested action "' + action + '"');
         }
-        if (!(this.character.getHorizontalDirection() === direction)) {
-            console.log('character: ' + characterType + ' action: "' + this.character.getHorizontalDirection()
+        if (!(this.character.getDirection() === direction)) {
+            console.log('character: ' + characterType + ' action: "' + this.character.getDirection()
                 + '" is not equal to requested direction "' + direction + '"');
         }
         if (!(this.character.getVerticalDirection() === vertDirection)) {

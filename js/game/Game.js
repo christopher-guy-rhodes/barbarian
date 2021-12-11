@@ -53,8 +53,10 @@ class Game {
         character.setAction(action);
 
         let self = this;
+
         character.getAnimator().animate(this.gameBoard, action,
             character.getDirection(),
+            character.getVerticalDirection(),
             character.getProperties().getActionNumberOfTimes(action),
             frame).then(function(frame) {
                 self.handleActionInterruption(character, action, frame);
@@ -115,10 +117,10 @@ class Game {
         }
         let action = this.isWater() ? SWIM_LABEL : STOP_LABEL;
 
-        let heightOffset = character.getProperties().getFrameHeightOffset(action, character.getHorizontalDirection()) *
+        let heightOffset = character.getProperties().getFrameHeightOffset(action, character.getDirection()) *
             character.getProperties().getSprite().height();
 
-        let offset = character.getProperties().getFrames(action, character.getHorizontalDirection())[0];
+        let offset = character.getProperties().getFrames(action, character.getDirection())[0];
         character.getProperties().getSprite().css(CSS_BACKGROUND_POSITION,
             -1*offset*character.getWidth() + CSS_PX_LABEL + ' ' + -1*heightOffset + CSS_PX_LABEL);
     }
@@ -154,8 +156,7 @@ class Game {
 
         for (let monster of monsters) {
             monster.getProperties().getSprite().css('left', monster.getProperties().getDefaultX() + 'px');
-            monster.getProperties().getSprite().css('bottom',
-                monster.getProperties().getDefaultY(this.getScreenNumber()) + 'px');
+            monster.getProperties().getSprite().css('bottom', monster.getProperties().getDefaultY(this.getScreenNumber()) + 'px');
             monster.getProperties().getSprite().css('filter', "brightness(100%)");
             monster.setStatus(DEAD_LABEL);
         }
@@ -540,7 +541,7 @@ class Game {
 
             let oppositeDirection = character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL;
             character.setDirection(Obstacle.isPastCharacter(character, character.getBarbarian())
-                ? oppositeDirection : character.getHorizontalDirection());
+                ? oppositeDirection : character.getDirection());
             if (character.getProperties().getCanHighlight()) {
                 character.getProperties().getSprite().css('filter', "brightness(100%)");
             }

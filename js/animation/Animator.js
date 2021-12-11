@@ -50,10 +50,8 @@ class Animator {
         }
 
         // uncomment to see why animation stopped for debugging
-        /*
-        this.debugAnimationTermination(this.character.getProperties().getType(), action, direction, vertDirection,
-            gameBoard, frameIdx, frames);
-        */
+        //this.debugAnimationTermination(this.character.getProperties().getType(), action, direction, vertDirection,
+        //    gameBoard, frameIdx, frames);
 
         return frameIdx;
     }

@@ -28,11 +28,12 @@ class Fighting {
     }
 
     static shouldCpuChase(character, gameBoard) {
-        return this.shouldCpuChaseVertically(character, gameBoard) || this.shouldCpuChaseHorizontally(character);
+        return !character.isBarbarian() &&
+            (this.shouldCpuChaseVertically(character, gameBoard) || this.shouldCpuChaseHorizontally(character));
     }
 
     static shouldCpuChaseVertically(character, gameBoard) {
-        return gameBoard.isWater(character.getScreenNumber()) &&
+        return !character.isBarbarian() && gameBoard.isWater(character.getScreenNumber()) &&
             this.getCpuVerticalChaseDirection(character) !== character.getVerticalDirection() &&
                 !character.isBarbarian() && Math.abs(character.getY() - character.getBarbarian().getY())
                     > CHASE_PROXIMITY;

@@ -17,6 +17,8 @@ class Animator {
     async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
         validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes', 'idx');
 
+        console.log('character is moving direction:' + direction + ' vert:' + vertDirection);
+
         if (action !== DEATH_LABEL) {
             this.moveCharacter(action, gameBoard);
         }
@@ -48,8 +50,10 @@ class Animator {
         }
 
         // uncomment to see why animation stopped for debugging
-        //this.debugAnimationTermination(this.character.getProperties().getType(), action, direction, vertDirection, gameBoard, frameIdx, frames);
-        //this.debugAnimationTermination(this.character.getProperties().getType(), action, direction, vertDirection, gameBoard, frameIdx, frames);
+        /*
+        this.debugAnimationTermination(this.character.getProperties().getType(), action, direction, vertDirection,
+            gameBoard, frameIdx, frames);
+        */
 
         return frameIdx;
     }
@@ -100,7 +104,7 @@ class Animator {
     /* private */
     moveCharacter(action, gameBoard) {
         let isFalling = action === FALL_LABEL || action === SINK_LABEL;
-        let x = isFalling ? undefined : this.getHorizontalBoundary();
+        let x = isFalling    ? undefined : this.getHorizontalBoundary();
         let y = isFalling ? 0 : this.getMoveToY(gameBoard);
         this.moveElementToPosition(x, y, this.character.getProperties().getPixelsPerSecond(action));
     }
@@ -119,7 +123,11 @@ class Animator {
 
     /* private */
     getVerticalBoundary() {
-        return this.character.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.character.getHeight() / 2;
+        if (!this.character.isMovingVertically()) {
+            return this.character.getY();
+        } else {
+            return this.character.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.character.getHeight() / 2;
+        }
     }
 
     /* private */
@@ -146,6 +154,7 @@ class Animator {
             console.log('character: ' + characterType + ' action: "' + this.character.getAction()
                 + '" is not equal to requested action "' + action + '"');
         }
+
         if (!(this.character.getHorizontalDirection() === direction)) {
             console.log('character: ' + characterType + ' action: "' + this.character.getHorizontalDirection()
                 + '" is not equal to requested direction "' + direction + '"');
@@ -154,6 +163,7 @@ class Animator {
             console.log('character: ' + characterType + ' vertical direction: "' + this.character.getVerticalDirection()
                 + '" is not equal to requested vertical direction "' + vertDirection + '"');
         }
+
         if (!(!this.character.isAction(STOP_LABEL))) {
             console.log('character: ' + characterType + ' is stopped');
         }

@@ -15,8 +15,7 @@ class Animator {
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
      */
     async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
-        validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'vertDirection',
-            'numberOfTimes', 'idx');
+        validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes', 'idx');
 
         if (action !== DEATH_LABEL) {
             this.moveCharacter(action, gameBoard);

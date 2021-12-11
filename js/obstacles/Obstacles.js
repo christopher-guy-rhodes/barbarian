@@ -11,7 +11,7 @@ class Obstacles {
     }
 
     getCharacterObstacle(character) {
-        return this.getNextObstacle(character.getX(), character.getDirection(), character.getScreenNumber())
+        return this.getNextObstacle(character.getX(), character.getHorizontalDirection(), character.getScreenNumber())
             .filterIfCharacterAvoided(character);
     }
 

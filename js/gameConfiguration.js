@@ -70,11 +70,10 @@ let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
         .withActionNumberOfTimes(ATTACK_LABEL, 1)
         .withDeathSprite($('.barbarian'))
         .withPixelsPerSecond(ATTACK_LABEL, 0)
-        .withPixelsPerSecond(DEATH_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
     //.withScreenNumber(3)
-    .withDirection(RIGHT_LABEL)
+    .withHorizontalDirection(RIGHT_LABEL)
     .build();
 
 let sharkFrames = new FramesBuilder()

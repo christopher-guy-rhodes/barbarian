@@ -175,7 +175,6 @@ class Character {
         return this.getAction() === action;
     }
 
-
     /**
      * Determines if the action is infinite for the character.
      * @param action the action to check

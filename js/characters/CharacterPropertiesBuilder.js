@@ -46,7 +46,7 @@ class CharacterPropertiesBuilder {
             fall: DEFAULT_PIXELS_PER_SECOND,
             sink: DEFAULT_PIXELS_PER_SECOND,
             sit: 0,
-            death: DEFAULT_PIXELS_PER_SECOND,
+            death: 0,
         };
 
         this.framesPerSecond = {

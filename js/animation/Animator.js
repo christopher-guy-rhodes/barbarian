@@ -1,5 +1,10 @@
 class Animator {
+    /**
+     * Construct a character animator.
+     * @param character the character to animate
+     */
     constructor(character) {
+        validateRequiredParams(this.constructor, arguments, 'character');
         this.character = character;
     }
 

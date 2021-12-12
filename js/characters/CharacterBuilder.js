@@ -2,7 +2,13 @@ const RUN_SPEED_INCREASE_FACTOR = 1.5;
 
 class CharacterBuilder {
 
+    /**
+     * Construct a character builder.
+     * @param barbarian the Barbarian character. Undefined for the Barbarian
+     * @param obstacles the obstacles that the character will face
+     */
     constructor(barbarian, obstacles) {
+        validateRequiredParams(this.constructor, arguments, 'obstacles');
         this.barbarian = barbarian;
         this.obstacles = obstacles;
 
@@ -36,31 +42,54 @@ class CharacterBuilder {
 
     }
 
+    /**
+     * Set the character properties.
+     * @param properties the character properties
+     * @returns {CharacterBuilder}
+     */
     withProperties(properties) {
+        validateRequiredParams(this.withProperties, arguments, 'properties');
         this.properties = properties;
         return this;
     }
 
-    withVerticalDirection(direction) {
-        this.direction[VERTICAL_LABEL] = direction;
-        return this;
-    }
-
+    /**
+     * Set the character action.
+     * @param action the action
+     * @returns {CharacterBuilder}
+     */
     withAction(action) {
+        validateRequiredParams(this.withAction, arguments, 'action');
         this.action = action;
         return this;
     }
 
-    withDirection(direction) {
+    /**
+     * Set the character horizontal direction.
+     * @param direction the direction
+     * @returns {CharacterBuilder}
+     */
+    withHorizontalDirection(direction) {
+        validateRequiredParams(this.withHorizontalDirection, arguments, 'direction');
         this.direction[HORIZONTAL_LABEL] = direction;
         return this;
     }
 
+    /**
+     * Set the character screen number
+     * @param screenNumber the screen number
+     * @returns {CharacterBuilder}
+     */
     withScreenNumber(screenNumber) {
+        validateRequiredParams(this.withScreenNumber, arguments, 'screenNumber');
         this.screenNumber = screenNumber;
         return this;
     }
 
+    /**
+     * Build the character object.
+     * @returns {Character}
+     */
     build() {
         if (this.properties.getType() === undefined) {
             throw new Error('CharacterBuilder build error: character type property is missing');

@@ -53,7 +53,7 @@ class Events {
     handleKeypress(keypress) {
         this.keypressTime = new Date().getTime();
 
-        if (!this.shouldThrottle() && !this.game.getActionsLocked()) {
+        if (!this.shouldThrottle() && !this.game.getGameBoard().getActionsLocked()) {
             this.lastKeypressTime = this.keypressTime;
             this.keypressTime = new Date().getTime();
 

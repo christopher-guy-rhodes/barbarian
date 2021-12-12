@@ -18,7 +18,6 @@ class Game {
         this.barbarian = barbarian;
         this.gameBoard = gameBoard;
         this.pauseFrame = 0;
-        this.actionsLocked = false;
         this.numLives = 3;
 
         this.sounds = new Sounds();
@@ -116,20 +115,6 @@ class Game {
         }
     }
 
-    /**
-     * Gets the backdrop element.
-     * @returns {jQuery|HTMLElement}
-     */
-    getBackdrop() {
-        return $('.backdrop');
-    }
-
-    /**
-     * Sets the backdrop offset to the current screen.
-     */
-    setBackdrop() {
-        this.getBackdrop().css('background-position', -1* SCREEN_WIDTH * this.getScreenNumber() + 'px 0px');
-    }
 
     /**
      * Resets the game and readies it for play.
@@ -253,9 +238,9 @@ class Game {
     /* private */
     handleDeath(character) {
         if (character.isBarbarian()) {
-            game.setActionsLocked(true);
+            game.getGameBoard().setActionsLocked(true);
             setTimeout(function () {
-                game.setActionsLocked(false);
+                game.getGameBoard().setActionsLocked(false);
                 //character.setAction(undefined);
             }, DEATH_DELAY);
         } else {
@@ -319,10 +304,10 @@ class Game {
                 character.getY() / character.getProperties().getPixelsPerSecond(FALL_LABEL) * MILLISECONDS_PER_SECOND);
 
             let self = this;
-            this.setActionsLocked(true);
+            this.getGameBoard().setActionsLocked(true);
             setTimeout(function () {
                 character.hide();
-                self.setActionsLocked(false);
+                self.getGameBoard().setActionsLocked(false);
             },  lockActionsTime);
         }
     }
@@ -413,11 +398,16 @@ class Game {
      * private. Returns true if it is the last screen
      */
     loadScreen(character) {
+        let self = this;
         this.hideOpponents();
         this.setScreenNumber(this.getScreenNumber() + (character.isFacingLeft() ? -1 : 1));
         if (this.isScreenDefined(this.getScreenNumber())) {
-            this.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL)
-                .then(function() {}, error => handlePromiseError(error));
+            this.gameBoard.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL,
+                this.getScreenNumber())
+                .then(function() {
+                    self.initializeScreen();
+                    self.startMonsterAttacks();
+                }, error => handlePromiseError(error));
             return false;
         } else {
             return true;
@@ -431,32 +421,16 @@ class Game {
         this.messages.showGameWonMessage();
         this.setScreenNumber(0);
         this.setNumLives(0);
-        this.setActionsLocked(true);
+        this.getGameBoard().setActionsLocked(true);
         let self = this;
         // Wait for the ending sequence to finish to all all the monsters to stop before starting over
         setTimeout(function () {
-            self.setActionsLocked(false);
+            self.getGameBoard().setActionsLocked(false);
         }, DEATH_DELAY)
     }
 
 
-    /* private */
-    async advanceBackdrop(character, direction) {
-        if (character.isDead()) {
-            return;
-        }
-        this.setActionsLocked(true);
 
-        await this.moveBackdrop(character, direction, false);
-        if (this.gameBoard.isWater(this.getScreenNumber())) {
-            // Scroll the water up
-            await this.moveBackdrop(character, direction, true);
-        }
-
-        this.initializeScreen();
-        this.startMonsterAttacks();
-        this.setActionsLocked(false);
-    }
 
     /* private */
     hideOpponents() {
@@ -465,45 +439,6 @@ class Game {
             opponent.getProperties().getSprite().css('display', 'none');
             opponent.getProperties().getDeathSprite().css('display', 'none');
         }
-    }
-
-    /* private */
-    async moveBackdrop(character, direction , isVertical) {
-        let pixelsPerSecond = isVertical ? ADVANCE_SCREEN_VERTICAL_PIXELS_PER_SECOND : ADVANCE_SCREEN_PIXELS_PER_SECOND;
-        let screenDimension = isVertical ? SCREEN_HEIGHT : SCREEN_WIDTH;
-
-        let pixelsPerIteration = pixelsPerSecond / ADVANCE_SCREEN_PIXELS_PER_FRAME;
-        let numberOfIterations = screenDimension / pixelsPerIteration;
-        let sleepPerIteration = (ADVANCE_SCREEN_DURATION_SECONDS / numberOfIterations) * MILLISECONDS_PER_SECOND;
-
-        let x, y, distance, screenOffset = undefined;
-        if (isVertical) {
-            y = SCREEN_HEIGHT - character.getProperties().getSprite().height() / 2;
-            distance = Math.abs(y - stripPxSuffix(character.getProperties().getSprite().css('bottom')));
-        } else {
-            x = character.isFacingRight() ? 0 : SCREEN_WIDTH -
-                character.getProperties().getSprite().width();
-            distance = SCREEN_WIDTH - character.getProperties().getSprite().width();
-        }
-        let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
-        character.getAnimator().moveElementToPosition(x, y, adjustedPixelsPerSecond);
-
-        let backgroundPosition = isVertical ? 'background-position-y' : 'background-position-x';
-        let currentPosition = parseInt(stripPxSuffix(this.getBackdrop().css(backgroundPosition)));
-
-        for (let i = 0; i < numberOfIterations; i++) {
-            let offset = (i + 1) * pixelsPerIteration;
-            let directionCompare = isVertical ? UP_LABEL : RIGHT_LABEL;
-            let position = direction === directionCompare ? (currentPosition + offset) : (currentPosition - offset);
-
-            this.getBackdrop().css(backgroundPosition,position + 'px');
-            await sleep(sleepPerIteration);
-        }
-    }
-
-    /* private */
-    resetBackdrop() {
-        this.getBackdrop().css('background-position', '0px 0px');
     }
 
     /* private */
@@ -540,7 +475,7 @@ class Game {
         this.getBarbarian().setAction(undefined);
         this.getBarbarian().setVerticalDirection(undefined);
         this.getBarbarian().renderAtRestFrame(this.gameBoard);
-        this.resetBackdrop();
+        this.gameBoard.resetBackdrop();
 
         for (let opponent of this.getAllMonsters()) {
             opponent.hide();
@@ -584,10 +519,6 @@ class Game {
     }
 
     /* Getters */
-    getActionsLocked() {
-        return this.actionsLocked;
-    }
-
     getNumLives() {
         return this.numLives;
     }
@@ -614,13 +545,6 @@ class Game {
 
     setIsPaused(flag) {
         this.gameBoard.setIsPaused(flag);
-    }
-
-    setActionsLocked(flag) {
-        if (flag === undefined) {
-            throw new Error("setActionsLocked: flag argument is required");
-        }
-        this.actionsLocked = flag;
     }
 
     setNumLives(number) {

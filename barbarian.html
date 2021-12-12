@@ -36,15 +36,15 @@
     $.getScript('/js/gameConfiguration.js', function() {
 
     game.setViewPort();
-    game.setBackdrop();
+    game.getGameBoard().setBackdrop(game.getScreenNumber());
     game.getSounds().playThemeSong();
 
 
     // Bind click events
-    game.getBackdrop().on('swiperight', events.swipeRightHandler);
-    game.getBackdrop().on('swipeleft', events.swipeLeftHandler);
-    game.getBackdrop().on('taphold', events.tapHoldHandler);
-    game.getBackdrop().on('click', events.clickHandler);
+    game.getGameBoard().getBackdrop().on('swiperight', events.swipeRightHandler);
+    game.getGameBoard().getBackdrop().on('swipeleft', events.swipeLeftHandler);
+    game.getGameBoard().getBackdrop().on('taphold', events.tapHoldHandler);
+    game.getGameBoard().getBackdrop().on('click', events.clickHandler);
 
     // Don't allow screen resizing
     $(window).resize(function(){

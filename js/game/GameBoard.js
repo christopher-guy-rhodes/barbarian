@@ -3,6 +3,7 @@ class GameBoard {
     constructor(gameBoard) {
         this.gameBoard = gameBoard;
         this.isPaused = false;
+        this.actionsLocked = false;
     }
 
     getOpponents(screenNumber) {
@@ -80,5 +81,86 @@ class GameBoard {
     getOpponentsOnScreen(screenNumber) {
         return this.getOpponents(screenNumber);
     }
+
+    setActionsLocked(flag) {
+        if (flag === undefined) {
+            throw new Error("setActionsLocked: flag argument is required");
+        }
+        this.actionsLocked = flag;
+    }
+
+    getActionsLocked() {
+        return this.actionsLocked;
+    }
+
+    /* private */
+    async advanceBackdrop(character, direction, screenNumber) {
+        if (character.isDead()) {
+            return;
+        }
+        this.setActionsLocked(true);
+
+        await this.moveBackdrop(character, direction, false);
+        if (this.isWater(screenNumber)) {
+            // Scroll the water up
+            await this.moveBackdrop(character, direction, true);
+        }
+
+        this.setActionsLocked(false);
+    }
+
+    /* private */
+    async moveBackdrop(character, direction , isVertical) {
+        let pixelsPerSecond = isVertical ? ADVANCE_SCREEN_VERTICAL_PIXELS_PER_SECOND : ADVANCE_SCREEN_PIXELS_PER_SECOND;
+        let screenDimension = isVertical ? SCREEN_HEIGHT : SCREEN_WIDTH;
+
+        let pixelsPerIteration = pixelsPerSecond / ADVANCE_SCREEN_PIXELS_PER_FRAME;
+        let numberOfIterations = screenDimension / pixelsPerIteration;
+        let sleepPerIteration = (ADVANCE_SCREEN_DURATION_SECONDS / numberOfIterations) * MILLISECONDS_PER_SECOND;
+
+        let x, y, distance, screenOffset = undefined;
+        if (isVertical) {
+            y = SCREEN_HEIGHT - character.getProperties().getSprite().height() / 2;
+            distance = Math.abs(y - stripPxSuffix(character.getProperties().getSprite().css('bottom')));
+        } else {
+            x = character.isFacingRight() ? 0 : SCREEN_WIDTH -
+                character.getProperties().getSprite().width();
+            distance = SCREEN_WIDTH - character.getProperties().getSprite().width();
+        }
+        let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
+        character.getAnimator().moveElementToPosition(x, y, adjustedPixelsPerSecond);
+
+        let backgroundPosition = isVertical ? 'background-position-y' : 'background-position-x';
+        let currentPosition = parseInt(stripPxSuffix(this.getBackdrop().css(backgroundPosition)));
+
+        for (let i = 0; i < numberOfIterations; i++) {
+            let offset = (i + 1) * pixelsPerIteration;
+            let directionCompare = isVertical ? UP_LABEL : RIGHT_LABEL;
+            let position = direction === directionCompare ? (currentPosition + offset) : (currentPosition - offset);
+
+            this.getBackdrop().css(backgroundPosition,position + 'px');
+            await sleep(sleepPerIteration);
+        }
+    }
+
+    /**
+     * Gets the backdrop element.
+     * @returns {jQuery|HTMLElement}
+     */
+    getBackdrop() {
+        return $('.backdrop');
+    }
+
+    /**
+     * Sets the backdrop offset to the current screen.
+     */
+    setBackdrop(screenNumber) {
+        this.getBackdrop().css('background-position', -1* SCREEN_WIDTH * screenNumber + 'px 0px');
+    }
+
+    resetBackdrop() {
+        this.gameBoard.getBackdrop().css('background-position', '0px 0px');
+    }
+
 
 }

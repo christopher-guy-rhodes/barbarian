@@ -162,7 +162,7 @@ class Animator {
         if (!(!this.character.isAction(STOP_LABEL))) {
             console.log('character: ' + characterType + ' is stopped');
         }
-        if (!(!Fighting.shouldCpuChase(this.character, gameBoard))) {
+        if (!(!Fighting.shouldCpuChaseHorizontally(this.character, gameBoard))) {
             console.log('character: ' + characterType + ' should chase the Barbarian');
         }
         if (!(!Obstacle.isStoppedByBoundary(this.character, gameBoard))) {

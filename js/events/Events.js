@@ -32,7 +32,12 @@ const KEYPRESS = {
 };
 
 class Events {
+    /**
+     * Construct an events object.
+     * @param game the game object
+     */
     constructor(game) {
+        validateRequiredParams(this.constructor, arguments, 'game');
         this.game = game;
         this.messages = new Messages();
         this.sounds = new Sounds();
@@ -41,6 +46,10 @@ class Events {
         this.lastKeypressTime = undefined;
     }
 
+    /**
+     * Handle keydown event.
+     * @param keypress the ascii value of the key that was pressed
+     */
     handleKeypress(keypress) {
         this.keypressTime = new Date().getTime();
 
@@ -102,7 +111,10 @@ class Events {
 
     }
 
-    handleSpaceKeypress(event) {
+    /**
+     * Handle a space keypress.
+     */
+    handleSpaceKeypress() {
         // Don't allow space keypress if the barbarian just died to avoid race conditions
         if (this.game.isBarbarianDead()) {
             this.game.resetGame();
@@ -113,6 +125,9 @@ class Events {
         }
     }
 
+    /**
+     * Handle a pause keypress.
+     */
     handlePauseKeypress() {
         if (!this.game.isBarbarianDead()) {
             if (this.game.getIsPaused()) {
@@ -135,6 +150,9 @@ class Events {
         }
     }
 
+    /**
+     * Handle a sound toggle keypress.
+     */
     handleSoundKeypress() {
         this.game.setIsSoundOn(!this.game.getIsSoundOn());
 
@@ -147,6 +165,9 @@ class Events {
         }
     }
 
+    /**
+     * Handle an attack keypress.
+     */
     handleAttackKeypress() {
         if (!this.game.isBarbarianSwimming() && !game.isBarbarianDead()) {
             this.game.stopBarbarianMovement();
@@ -155,7 +176,9 @@ class Events {
         }
     }
 
-
+    /**
+     * Handle a run keypress.
+     */
     handleRunKeypress() {
         if (!this.game.isBarbarianSwimming() &&
             !this.game.isBarbarianRunning() &&
@@ -164,12 +187,18 @@ class Events {
         }
     }
 
+    /**
+     * Handle a jump keypress.
+     */
     handleJumpKeypress() {
         if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianJumping() && !this.game.isBarbarianDead()) {
             this.game.performAction(this.game.getBarbarian(), JUMP_LABEL);
         }
     }
 
+    /**
+     * Handle a stop keypress.
+     */
     handleStopKeypress() {
         if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianDead()) {
             this.game.performAction(this.game.getBarbarian(), STOP_LABEL);
@@ -179,6 +208,9 @@ class Events {
         }
     }
 
+    /**
+     * Handle a right arrow keypress.
+     */
     handleRightKeypress() {
         let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action ||
@@ -190,6 +222,9 @@ class Events {
         }
     }
 
+    /**
+     * Handle a left arrow keypress.
+     */
     handleLeftKeypress() {
         let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action ||
@@ -201,6 +236,9 @@ class Events {
         }
     }
 
+    /**
+     * Handle an up arrow keypress.
+     */
     handleUpKeypress() {
         if (!this.game.isBarbarianDead()) {
             if (!this.game.isBarbarianSwimming() || !this.game.isBarbarianMovingUp()) {
@@ -212,6 +250,9 @@ class Events {
         }
     }
 
+    /**
+     * Handle a down arrow keypress.
+     */
     handleDownKeypress() {
         if (!this.game.isBarbarianDead()) {
             if (!this.game.isBarbarianSwimming() || !this.game.isBarbarianMovingDown()) {
@@ -223,10 +264,18 @@ class Events {
         }
     }
 
+    /**
+     * Handle a tap hold event.
+     * @param event the tap hold event
+     */
     tapHoldHandler(event) {
         events.handleKeypress(KEYPRESS[KP_PAUSE]);
     }
 
+    /**
+     * Handle a swipe right event.
+     * @param event the swipe right event
+     */
     swipeRightHandler(event){
         if (game.messages.isControlMessageDisplayed()) {
             events.handleKeypress(KEYPRESS[KP_MAIN])
@@ -239,6 +288,10 @@ class Events {
         }
     }
 
+    /**
+     * Handle a left swipe event.
+     * @param event the swipe left event
+     */
     swipeLeftHandler(event){
         if (this.messages.isControlMessageDisplayed()) {
             events.handleKeypress(KEYPRESS[KP_MAIN])
@@ -251,7 +304,10 @@ class Events {
         }
     }
 
-
+    /**
+     * Handle a mouse click event.
+     * @param event the mouse click event
+     */
     clickHandler(event) {
         if (game.isBarbarianDead()) {
             events.handleKeypress(KEYPRESS[KP_SPACE]);
@@ -286,6 +342,10 @@ class Events {
         }
     }
 
+    /**
+     * Determine if throttling should take place on keypresses.
+     * @returns {boolean} true if throttling should happen, false otherwise
+     */
     shouldThrottle() {
         let elapsed = KEYPRESS_THROTTLE_DELAY;
         if (typeof this.lastKeypressTime !== undefined) {

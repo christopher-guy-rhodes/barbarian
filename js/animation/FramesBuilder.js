@@ -3,9 +3,16 @@ class FramesBuilder {
         this.frames = {};
     }
 
+    /**
+     * Builds the frames and frame height offset for a particular action and direction
+     * @param action the action associated with the frames
+     * @param direction the direction associated with the frames
+     * @param frames the frame indexes for the action and direction
+     * @param heightOffset the height offset of the sprite
+     * @returns {FramesBuilder}
+     */
     withFrames(action, direction, frames, heightOffset) {
         validateRequiredParams(this.withFrames, arguments, 'action', 'direction', 'frames', 'heightOffset');
-        //console.log("setting action:%s direction:%s, frames:%s to %o", action, direction, 'frames', frames);
 
         if (this.frames[action] === undefined) {
             this.frames[action] = {};
@@ -19,6 +26,10 @@ class FramesBuilder {
         return this;
     }
 
+    /**
+     * Build the Frames object.
+     * @returns {Frames}
+     */
     build() {
         return new Frames(this.frames);
     }

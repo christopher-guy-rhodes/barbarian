@@ -29,7 +29,7 @@ class Animator {
             let sprite = this.prepareSprite();
             let heightOffset = -1 * this.character.getProperties().getFrameHeightOffset(
                 action, this.character.getHorizontalDirection()) * sprite.height();
-            let offset = -1 * frames[frameIdx++]*sprite.width();
+            let offset = -1 * frames[frameIdx++] * sprite.width();
             sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
 
             this.character.setCurrentFrame(action, frameIdx);

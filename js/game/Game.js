@@ -337,21 +337,12 @@ class Game {
         for (let i = 0; i < opponentsInProximity.length; i++) {
             let opponent = opponentsInProximity[i];
 
-            let monsterAction = character.getAction();
             let opponentAction = opponent.getAction();
             let opponentCurrentFrame = opponent.getCurrentFrame(opponentAction);
 
-            let looser = undefined;
-            let winner = undefined;
-            if (opponentAction === ATTACK_LABEL && (opponentCurrentFrame >= MIN_ATTACK_THRESHOLD
-                && opponentCurrentFrame <= MAX_ATTACK_THRESHOLD) && !(opponent.isBarbarian()
-                && character.getProperties().getIsInvincible())) {
-                looser = character;
-                winner = opponent;
-            } else {
-                looser = opponent;
-                winner = character;
-            }
+            let didOpponentWin = Fighting.didOpponentWinFight(opponent, character);
+            let winner = didOpponentWin ? opponent : character;
+            let looser = didOpponentWin ? character : opponent;
 
             if (!looser.isDead() && !looser.getProperties().getIsInvincible()) {
                 this.death(looser);

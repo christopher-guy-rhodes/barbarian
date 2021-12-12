@@ -3,6 +3,20 @@ class Fighting {
     }
 
     /**
+     * Determine if the opponent won a fight against the character
+     * @param opponent the opponent
+     * @param character the character
+     * @returns {boolean} true if the opponent won, false otherwise
+     */
+    static didOpponentWinFight(opponent, character) {
+        let opponentAction = opponent.getAction();
+        let opponentCurrentFrame = opponent.getCurrentFrame(opponentAction);
+        return opponentAction === ATTACK_LABEL && (opponentCurrentFrame >= MIN_ATTACK_THRESHOLD
+            && opponentCurrentFrame <= MAX_ATTACK_THRESHOLD) && !(opponent.isBarbarian()
+            && character.getProperties().getIsInvincible());
+    }
+
+    /**
      * Prepare the death sprite by making it visible and positioning it. For monsters hide the main sprite.
      * @param character the character to prepare the death sprite for
      * @returns {jQuery|HTMLElement}

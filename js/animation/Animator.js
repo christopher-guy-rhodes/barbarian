@@ -17,8 +17,6 @@ class Animator {
     async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
         validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes', 'idx');
 
-        console.log('character is moving direction:' + direction + ' vert:' + vertDirection);
-
         if (action !== DEATH_LABEL) {
             this.moveCharacter(action, gameBoard);
         }
@@ -76,7 +74,7 @@ class Animator {
         }
         let element = this.character.getProperties().getSprite();
         let distanceX = x === undefined ? 0 : Math.abs(x - element.offset().left);
-        let distanceY = y === undefined ? 0 : Math.abs(y - stripPxSuffix(element.css('bottom')));
+        let distanceY = y === undefined ? 0 : Math.abs(y - stripPxSuffix(element.css(CSS_BOTTOM_LABEL)));
         let distance = Math.sqrt(Math.pow(distanceX, 2) + Math.pow(distanceY, 2));
         let duration = distance / pixelsPerSecond * MILLISECONDS_PER_SECOND;
 
@@ -114,18 +112,14 @@ class Animator {
 
     /* private */
     getVerticalCoordinate() {
-        let shouldCpuGoToBarbarianY = !this.character.isBarbarian() &&
-            !this.character.getBarbarian().isMovingVertically();
-        return shouldCpuGoToBarbarianY ? this.character.getBarbarian().getY() : this.getVerticalBoundary();
+        // If the Barbarian is not moving vertically keep him and send monsters to his Y. Otherwise send to boundary
+        return this.character.getBarbarian().isMovingVertically() ? this.getVerticalBoundary()
+                                                                  : this.character.getBarbarian().getY();
     }
 
     /* private */
     getVerticalBoundary() {
-        if (!this.character.isMovingVertically()) {
-            return this.character.getY();
-        } else {
-            return this.character.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.character.getHeight() / 2;
-        }
+        return this.character.isDirectionDown() ? SCREEN_BOTTOM : SCREEN_HEIGHT - this.character.getHeight() / 2;
     }
 
     /* private */

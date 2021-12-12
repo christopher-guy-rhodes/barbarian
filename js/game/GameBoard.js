@@ -52,4 +52,18 @@ class GameBoard {
         }
         this.isPaused = flag;
     }
+
+    canScroll(character, areAllMonstersDefeated) {
+        return this.canScrollLeft(character) || this.canScrollRight(character, areAllMonstersDefeated);
+    }
+
+    canScrollRight(character, areAllMonstersDefeated) {
+        return areAllMonstersDefeated &&
+            character.isFacingRight() && this.isScrollAllowed(character.getScreenNumber(), RIGHT_LABEL) &&
+            character.getScreenNumber() < this.getScreenNumbers().length;
+    }
+
+    canScrollLeft(character) {
+        return character.isFacingLeft() && this.isScrollAllowed(character.getScreenNumber(), LEFT_LABEL)
+    }
 }

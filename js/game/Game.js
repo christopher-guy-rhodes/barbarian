@@ -388,52 +388,54 @@ class Game {
         }
     }
 
-
-
     /* private */
     handleBoundary(character) {
         if(!character.isBarbarian()) {
             return;
         }
 
-        if (!this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL) && character.isFacingLeft()) {
-            character.renderAtRestFrame(this.gameBoard);
-            return;
-        }
-
-        if (character.isFacingLeft() && this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL)) {
-            this.hideOpponents();
-            this.advanceBackdrop(character, RIGHT_LABEL)
-                .then(function() {}, error => handlePromiseError(error));
-            this.setScreenNumber(this.getScreenNumber() - 1);
-        } else if (character.isFacingRight() && this.gameBoard.isScrollAllowed(this.getScreenNumber(), RIGHT_LABEL)
-            && character.getScreenNumber() < this.gameBoard.getScreenNumbers().length && this.areAllMonstersDefeated()) {
-            this.hideOpponents();
-            this.setScreenNumber(this.getScreenNumber() + 1);
-            if (this.isScreenDefined(this.getScreenNumber())) {
-                this.advanceBackdrop(character, LEFT_LABEL)
-                    .then(function() {}, error => handlePromiseError(error));
-            } else {
-                // At the end of the game
-                character.setStatus(DEAD_LABEL);
-                //character.hide();
-                this.messages.showGameWonMessage();
-                this.setScreenNumber(0);
-                this.setNumLives(0);
-                this.setActionsLocked(true);
-                let self = this;
-                // Wait for the ending sequence to finish to all all the monsters to stop before starting over
-                setTimeout(function () {
-                    self.setActionsLocked(false);
-                }, DEATH_DELAY)
+        if (this.gameBoard.canScroll(character, this.areAllMonstersDefeated())) {
+            if (this.loadScreen(character)) {
+                this.handleGameOver(character);
             }
         }
 
         if (this.getNumLives() > 0) {
+            // Don't render at rest frame if the game is over. Barbarian might be in the water and an at rest frame
+            // would look awkward.
             character.renderAtRestFrame(this.gameBoard);
         }
 
         character.setAction(STOP_LABEL);
+    }
+
+    /**
+     * private. Returns true if it is the last screen
+     */
+    loadScreen(character) {
+        this.hideOpponents();
+        this.setScreenNumber(this.getScreenNumber() + (character.isFacingLeft() ? -1 : 1));
+        if (this.isScreenDefined(this.getScreenNumber())) {
+            this.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL)
+                .then(function() {}, error => handlePromiseError(error));
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    handleGameOver(character) {
+        character.setStatus(DEAD_LABEL);
+        //character.hide();
+        this.messages.showGameWonMessage();
+        this.setScreenNumber(0);
+        this.setNumLives(0);
+        this.setActionsLocked(true);
+        let self = this;
+        // Wait for the ending sequence to finish to all all the monsters to stop before starting over
+        setTimeout(function () {
+            self.setActionsLocked(false);
+        }, DEATH_DELAY)
     }
 
     /* private */

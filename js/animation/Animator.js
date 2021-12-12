@@ -11,16 +11,16 @@ class Animator {
      * @param direction the requested direction to move the character (left or right)
      * @param vertDirection the requested vertical direction to move the character (up or down)
      * @param numberOfTimes the number of times to perform the animation loop (zero for infinite)
-     * @param idx the frame index offset
+     * @param frameIdx the frame index offset
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
      */
-    async animate(gameBoard, action, direction, vertDirection, numberOfTimes, idx) {
-        validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes', 'idx');
+    async animate(gameBoard, action, direction, vertDirection, numberOfTimes, frameIdx) {
+        validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes',
+            'frameIdx');
 
         this.moveCharacter(action, gameBoard);
 
         let frames = this.character.getProperties().getFrames(action, direction);
-        let frameIdx = idx;
         let counter = numberOfTimes;
 
         this.character.setCurrentFrame(action, frameIdx);

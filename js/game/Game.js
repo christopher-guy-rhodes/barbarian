@@ -84,7 +84,7 @@ class Game {
      * @param unpausing true if the action is trigged from an un pause event
      */
     startMonsterAttacks(unpausing = false) {
-        let monsters = this.getMonstersOnScreen()
+        let monsters = this.gameBoard.getMonstersOnScreen(this.getScreenNumber())
             // Don't restart the monster if unpausing and the monster is already dead
             .filter(monster => !(monster.isDead() && unpausing));
 
@@ -106,7 +106,7 @@ class Game {
             this.performAction(this.getBarbarian(), SWIM_LABEL);
         }
 
-        let monsters = this.getMonstersOnScreen();
+        let monsters = this.gameBoard.getMonstersOnScreen(this.getScreenNumber());
 
         for (let monster of monsters) {
             monster.getProperties().getSprite().css('left', monster.getProperties().getDefaultX() + 'px');
@@ -224,7 +224,7 @@ class Game {
             }
             let self = this;
             setTimeout(function () {
-                let monstersOnScreen = self.getMonstersOnScreen();
+                let monstersOnScreen = self.gameBoard.getMonstersOnScreen(self.getScreenNumber());
                 for (let monster of monstersOnScreen) {
                     monster.setStatus(DEAD_LABEL);
                     monster.getAnimator().stopMovement();
@@ -394,7 +394,7 @@ class Game {
             return;
         }
 
-        if (this.gameBoard.canScroll(character, this.areAllMonstersDefeated())) {
+        if (this.gameBoard.canScroll(character, this.gameBoard.areAllMonstersDefeated(this.getScreenNumber()))) {
             if (this.loadScreen(character)) {
                 this.handleGameOver(character);
             }
@@ -424,6 +424,7 @@ class Game {
         }
     }
 
+    /* private */
     handleGameOver(character) {
         character.setStatus(DEAD_LABEL);
         //character.hide();
@@ -438,10 +439,6 @@ class Game {
         }, DEATH_DELAY)
     }
 
-    /* private */
-    areAllMonstersDefeated() {
-        return this.getMonstersOnScreen().filter(m => !m.getProperties().getCanLeaveBehind() && !m.isDead()).length < 1;
-    }
 
     /* private */
     async advanceBackdrop(character, direction) {
@@ -463,7 +460,7 @@ class Game {
 
     /* private */
     hideOpponents() {
-        let opponents = this.getMonstersOnScreen();
+        let opponents = this.gameBoard.getMonstersOnScreen(this.getScreenNumber());
         for (let opponent of opponents) {
             opponent.getProperties().getSprite().css('display', 'none');
             opponent.getProperties().getDeathSprite().css('display', 'none');
@@ -514,14 +511,14 @@ class Game {
         let characters = new Array(this.getBarbarian());
         for (let scrNum of this.gameBoard.getScreenNumbers()) {
             //let screen = SCREENS[scrNum];
-            for (let opponent of this.getMonstersOnScreen()) {
+            for (let opponent of this.gameBoard.getMonstersOnScreen(this.getScreenNumber())) {
                 characters.push(opponent);
             }
         }
 
         this.barbarian.show();
 
-        let spritesOnScreen = this.getOpponentsOnScreen();
+        let spritesOnScreen = this.gameBoard.getOpponentsOnScreen(this.getScreenNumber());
         for (const character of characters) {
             let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
             character.getProperties().getDeathSprite().hide();
@@ -556,18 +553,8 @@ class Game {
     }
 
     /* private */
-    getMonstersOnScreen() {
-        return this.getOpponentsOnScreen().filter(character => !character.isBarbarian());
-    }
-
-    /* private */
     getAllMonsters() {
         return this.gameBoard.getAllMonsters();
-    }
-
-    /* private */
-    getOpponentsOnScreen() {
-        return this.gameBoard.getOpponents(this.getScreenNumber());
     }
 
     /* private */

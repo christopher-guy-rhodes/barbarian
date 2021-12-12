@@ -66,4 +66,19 @@ class GameBoard {
     canScrollLeft(character) {
         return character.isFacingLeft() && this.isScrollAllowed(character.getScreenNumber(), LEFT_LABEL)
     }
+
+    areAllMonstersDefeated(screenNumber) {
+        return this.getMonstersOnScreen(screenNumber).filter(m => !m.getProperties().getCanLeaveBehind() && !m.isDead()).length < 1;
+    }
+
+    /* private */
+    getMonstersOnScreen(screenNumber) {
+        return this.getOpponentsOnScreen(screenNumber).filter(character => !character.isBarbarian());
+    }
+
+    /* private */
+    getOpponentsOnScreen(screenNumber) {
+        return this.getOpponents(screenNumber);
+    }
+
 }

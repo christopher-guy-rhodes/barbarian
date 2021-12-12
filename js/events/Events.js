@@ -61,12 +61,12 @@ class Events {
 
                 switch (keypress) {
                     case KEYPRESS[KP_CONTROLS]:
-                        if(this.game.isBarbarianDead()) {
+                        if(this.game.getBarbarian().isDead()) {
                             this.messages.showControlMessage();
                         }
                         break;
                     case KEYPRESS[KP_MAIN]:
-                        if(this.game.isBarbarianDead()) {
+                        if(this.game.getBarbarian().isDead()) {
                             this.messages.showStartMessage();
                         }
                         break;
@@ -116,12 +116,12 @@ class Events {
      */
     handleSpaceKeypress() {
         // Don't allow space keypress if the barbarian just died to avoid race conditions
-        if (this.game.isBarbarianDead()) {
+        if (this.game.getBarbarian().isDead()) {
             this.game.resetGame();
             this.messages.hideAllMessages();
             this.game.startMonsterAttacks();
             this.game.performAction(this.game.getBarbarian(), STOP_LABEL);
-            this.game.renderAtRestFrame(this.game.getBarbarian());
+            this.game.getBarbarian().renderAtRestFrame(this.game.gameBoard);
         }
     }
 
@@ -129,22 +129,22 @@ class Events {
      * Handle a pause keypress.
      */
     handlePauseKeypress() {
-        if (!this.game.isBarbarianDead()) {
+        if (!this.game.getBarbarian().isDead()) {
             if (this.game.getIsPaused()) {
-                this.game.hideAllMessages();
+                this.game.getMessages().hideAllMessages()
                 this.game.setIsPaused(false);
-                if (this.game.isBarbarianActionDefined()) {
+                if (this.game.getBarbarian().isActionDefined()) {
                     let action = this.game.getBarbarian().getAction();
                     this.game.performAction(this.game.getBarbarian(), action, this.game.getPausedFrame());
                     this.game.setPauseFrame(0);
                 }
                 this.game.startMonsterAttacks(true);
-                if (this.game.getIsSoundOn()) {
-                    this.game.playThemeSong();
+                if (this.game.getSounds().getIsSoundOn()) {
+                    this.game.getSounds().playThemeSong();
                 }
             } else {
-                this.game.showPauseMessage();
-                this.game.stopAllSounds();
+                this.game.getMessages().showPauseMessage()
+                this.game.getSounds().stopAllSounds();
                 this.game.setIsPaused(true);
             }
         }
@@ -154,14 +154,14 @@ class Events {
      * Handle a sound toggle keypress.
      */
     handleSoundKeypress() {
-        this.game.setIsSoundOn(!this.game.getIsSoundOn());
+        this.game.setIsSoundOn(!this.game.getSounds().getIsSoundOn());
 
-        this.game.showSoundToggleMessage();
+        this.game.getMessages().showSoundToggleMessage(game.getSounds().getIsSoundOn());
 
-        if (this.game.getIsSoundOn()) {
-            this.game.playThemeSong();
+        if (this.game.getSounds().getIsSoundOn()) {
+            this.game.getSounds().playThemeSong();
         } else {
-            this.game.stopAllSounds();
+            this.game.getSounds().stopAllSounds();
         }
     }
 
@@ -169,9 +169,9 @@ class Events {
      * Handle an attack keypress.
      */
     handleAttackKeypress() {
-        if (!this.game.isBarbarianSwimming() && !game.isBarbarianDead()) {
-            this.game.stopBarbarianMovement();
-            this.game.playGruntSound();
+        if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !game.getBarbarian().isDead()) {
+            this.game.getBarbarian().getAnimator().stopMovement();
+            this.game.getSounds().playGruntSound();
             this.game.performAction(this.game.getBarbarian(), ATTACK_LABEL);
         }
     }
@@ -180,18 +180,19 @@ class Events {
      * Handle a run keypress.
      */
     handleRunKeypress() {
-        if (!this.game.isBarbarianSwimming() &&
-            !this.game.isBarbarianRunning() &&
-            !this.game.isBarbarianDead()) {
+        if (!this.game.getBarbarian().isAction(SWIM_LABEL) &&
+            !this.game.getBarbarian().isAction(RUN_LABEL) &&
+            !this.game.getBarbarian().isDead()) {
             this.game.performAction(this.game.getBarbarian(), RUN_LABEL);
         }
     }
 
-    /**
+    /**s
      * Handle a jump keypress.
      */
     handleJumpKeypress() {
-        if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianJumping() && !this.game.isBarbarianDead()) {
+        if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !this.game.getBarbarian().isAction(JUMP_LABEL)
+            && !this.game.getBarbarian().isDead()) {
             this.game.performAction(this.game.getBarbarian(), JUMP_LABEL);
         }
     }
@@ -200,10 +201,10 @@ class Events {
      * Handle a stop keypress.
      */
     handleStopKeypress() {
-        if (!this.game.isBarbarianSwimming() && !this.game.isBarbarianDead()) {
+        if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !this.game.getBarbarian().isDead()) {
             this.game.performAction(this.game.getBarbarian(), STOP_LABEL);
-            this.game.stopBarbarianMovement();
-            this.game.renderAtRestFrame(this.game.getBarbarian());
+            this.game.getBarbarian().getAnimator().stopMovement();
+            this.game.getBarbarian().renderAtRestFrame(this.game.gameBoard);
             this.game.getBarbarian().setVerticalDirection(undefined);
         }
     }
@@ -212,10 +213,10 @@ class Events {
      * Handle a right arrow keypress.
      */
     handleRightKeypress() {
-        let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
+        let action = this.game.getGameBoard().isWater(game.getScreenNumber()) ? SWIM_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action ||
-            (!this.game.isBarbarianMovingRight() || this.game.getBarbarian().isMovingVertically())) &&
-                !this.game.isBarbarianDead()) {
+            (!this.game.getBarbarian().isFacingRight() || this.game.getBarbarian().isMovingVertically())) &&
+                !this.game.getBarbarian().isDead()) {
             this.game.getBarbarian().setVerticalDirection(undefined);
             this.game.getBarbarian().setDirection(RIGHT_LABEL);
             this.game.performAction(this.game.getBarbarian(), action);
@@ -226,10 +227,10 @@ class Events {
      * Handle a left arrow keypress.
      */
     handleLeftKeypress() {
-        let action = this.game.isWater() ? SWIM_LABEL : WALK_LABEL;
+        let action = this.game.getGameBoard().isWater(game.getScreenNumber()) ? SWIM_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action ||
-            (!this.game.isBarbarianMovingLeft() || this.game.getBarbarian().isMovingVertically())) &&
-                !this.game.isBarbarianDead()) {
+            (!this.game.getBarbarian().isFacingLeft() || this.game.getBarbarian().isMovingVertically())) &&
+                !this.game.getBarbarian().isDead()) {
             this.game.getBarbarian().setVerticalDirection(undefined);
             this.game.getBarbarian().setDirection(LEFT_LABEL);
             this.game.performAction(this.game.getBarbarian(), action);
@@ -240,9 +241,9 @@ class Events {
      * Handle an up arrow keypress.
      */
     handleUpKeypress() {
-        if (!this.game.isBarbarianDead()) {
-            if (!this.game.isBarbarianSwimming() || !this.game.isBarbarianMovingUp()) {
-                if (this.game.isWater()) {
+        if (!this.game.getBarbarian().isDead()) {
+            if (!this.game.getBarbarian().isAction(SWIM_LABEL) || !this.game.getBarbarian().isDirectionUp()) {
+                if (this.game.getGameBoard().isWater(game.getScreenNumber())) {
                     this.game.getBarbarian().setVerticalDirection(UP_LABEL);
                     this.game.performAction(this.game.getBarbarian(), SWIM_LABEL);
                 }
@@ -254,9 +255,9 @@ class Events {
      * Handle a down arrow keypress.
      */
     handleDownKeypress() {
-        if (!this.game.isBarbarianDead()) {
-            if (!this.game.isBarbarianSwimming() || !this.game.isBarbarianMovingDown()) {
-                if (this.game.isWater()) {
+        if (!this.game.getBarbarian().isDead()) {
+            if (!this.game.getBarbarian().isAction(SWIM_LABEL) || !this.game.getBarbarian().isDirectionDown()) {
+                if (this.game.getGameBoard().isWater(game.getScreenNumber())) {
                     this.game.getBarbarian().setVerticalDirection(DOWN_LABEL);
                     this.game.performAction(this.game.getBarbarian(), SWIM_LABEL);
                 }
@@ -279,9 +280,9 @@ class Events {
     swipeRightHandler(event){
         if (game.messages.isControlMessageDisplayed()) {
             events.handleKeypress(KEYPRESS[KP_MAIN])
-        } else if (game.isBarbarianDead()) {
+        } else if (game.getBarbarian().isDead()) {
             events.handleKeypress(KEYPRESS[KP_CONTROLS])
-        } else if (game.isBarbarianMovingLeft()) {
+        } else if (game.getBarbarian().isFacingLeft()) {
             events.handleKeypress(KEYPRESS[KP_STOP]);
         } else {
             events.handleKeypress(KEYPRESS[KP_ATTACK]);
@@ -295,9 +296,9 @@ class Events {
     swipeLeftHandler(event){
         if (this.messages.isControlMessageDisplayed()) {
             events.handleKeypress(KEYPRESS[KP_MAIN])
-        } else if (game.isBarbarianDead()) {
+        } else if (game.getBarbarian().isDead()) {
             events.handleKeypress(KEYPRESS[KP_CONTROLS])
-        } else if (game.isBarbarianMovingRight()) {
+        } else if (game.getBarbarian().isFacingRight()) {
             events.handleKeypress(KEYPRESS[KP_STOP]);
         } else {
             events.handleKeypress(KEYPRESS[KP_ATTACK]);
@@ -309,7 +310,7 @@ class Events {
      * @param event the mouse click event
      */
     clickHandler(event) {
-        if (game.isBarbarianDead()) {
+        if (game.getBarbarian().isDead()) {
             events.handleKeypress(KEYPRESS[KP_SPACE]);
         }
         let bottomOfBarbarian = game.getBarbarian().getY();
@@ -319,7 +320,7 @@ class Events {
         let clickY = SCREEN_HEIGHT - event.originalEvent.pageY;
 
 
-        if (game.isWater()) {
+        if (game.getGameBoard().isWater(game.getScreenNumber())) {
             if (clickY > topOfBarbarian + 100) {
                 events.handleKeypress(KEYPRESS[KP_UP]);
                 return;
@@ -329,7 +330,7 @@ class Events {
             }
         }
 
-        if (!game.isWater() &&  clickY > 600) {
+        if (!game.getGameBoard().isWater(game.getScreenNumber()) &&  clickY > 600) {
             events.handleKeypress(KEYPRESS[KP_JUMP]);
         } else {
             let changingDirection = game.getBarbarian().isFacingRight() && pageX < barbarianLeft ||

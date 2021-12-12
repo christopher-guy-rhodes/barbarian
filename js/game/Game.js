@@ -13,12 +13,7 @@ class Game {
      * @param gameBoard the game board
      */
     constructor(barbarian, gameBoard) {
-        if (barbarian === undefined) {
-            throw new Error("barbarian argument is required");
-        }
-        if (gameBoard === undefined) {
-            throw new Error("gameBoard argument is required")
-        }
+        validateRequiredParams(this.constructor, arguments, 'barbarian', 'gameBoard');
 
         this.barbarian = barbarian;
         this.gameBoard = gameBoard;
@@ -37,12 +32,7 @@ class Game {
      * @param frame optional starting frame for the action used to resume an action that was stopped
      */
     performAction(character, action, frame = 0) {
-        if (character === undefined) {
-            throw new Error("performAction: character is a required parameter");
-        }
-        if (action === undefined) {
-            throw new Error("performAction: action is a required parameter");
-        }
+        validateRequiredParams(this.performAction, arguments, 'character', 'action');
 
         character.getAnimator().stopMovement();
 
@@ -66,63 +56,27 @@ class Game {
     }
 
     /**
-     * Display a sound toggle message.
+     * Get the messages object.
+     * @returns {Messages} the messages object
      */
-    showSoundToggleMessage() {
-        this.messages.showSoundToggleMessage(game.getIsSoundOn());
+    getMessages() {
+        return this.messages;
     }
 
     /**
-     * Display a pause message.
+     * Get the sounds object.
+     * @returns {Sounds} the sounds object
      */
-    showPauseMessage() {
-        return this.messages.showPauseMessage();
+    getSounds() {
+        return this.sounds;
     }
 
     /**
-     * Hide all screen messages.
+     * Get the game board.
+     * @returns {GameBoard} the game board.
      */
-    hideAllMessages() {
-        return this.messages.hideAllMessages();
-    }
-
-    /**
-     * Play the theme song.
-     */
-    playThemeSong() {
-        this.sounds.playThemeSong();
-    }
-
-    /**
-     * Play the grunt sound.
-     */
-    playGruntSound() {
-        this.sounds.playGruntSound();
-    }
-
-    /**
-     * Stop any sounds.
-     */
-    stopAllSounds() {
-        this.sounds.stopAllSounds();
-    }
-
-    /**
-     * Render rest frame for a character. Used to make the character look natural when stopped.
-     * @param character the character to render the at rest frame for
-     */
-    renderAtRestFrame(character) {
-        if (character === undefined) {
-            throw new Error("renderAtRestFrame: the character parameter is required");
-        }
-        let action = this.isWater() ? SWIM_LABEL : STOP_LABEL;
-
-        let heightOffset = character.getProperties().getFrameHeightOffset(action, character.getHorizontalDirection()) *
-            character.getProperties().getSprite().height();
-
-        let offset = character.getProperties().getFrames(action, character.getHorizontalDirection())[0];
-        character.getProperties().getSprite().css(CSS_BACKGROUND_POSITION,
-            -1*offset*character.getWidth() + CSS_PX_LABEL + ' ' + -1*heightOffset + CSS_PX_LABEL);
+    getGameBoard() {
+        return this.gameBoard;
     }
 
     /**
@@ -148,7 +102,7 @@ class Game {
      */
     initializeScreen() {
 
-        if (this.isWater()) {
+        if (this.gameBoard.isWater(this.getScreenNumber())) {
             this.performAction(this.getBarbarian(), SWIM_LABEL);
         }
 
@@ -163,7 +117,7 @@ class Game {
     }
 
     /**
-     * Gets the backdrop element
+     * Gets the backdrop element.
      * @returns {jQuery|HTMLElement}
      */
     getBackdrop() {
@@ -181,7 +135,7 @@ class Game {
      * Resets the game and readies it for play.
      */
     resetGame() {
-        this.renderAtRestFrame(this.getBarbarian());
+        this.getBarbarian().renderAtRestFrame(this.gameBoard);
 
         if (this.getNumLives() < 1) {
             this.resetGameOver();
@@ -223,106 +177,16 @@ class Game {
         });
     }
 
-    /**
-     * Returns true if the current screen is water, false otherwise.
-     * @returns {*}
-     */
-    isWater() {
-        return this.gameBoard.isWater(this.getScreenNumber());
-    }
-
-    /**
-     * Stops the Barbarian's motion (not sprite movement)
-     */
-    stopBarbarianMovement() {
-        this.barbarian.getProperties().getSprite().stop();
-    }
-
-    /**
-     * Returns true if the Barbarian is dead, false otherwise.
-     * @returns {boolean}
-     */
-    isBarbarianDead() {
-        return this.barbarian.isDead();
-    }
-
-    /**
-     * Returns true if the sound is on, false othewise
-     * @returns {boolean}
-     */
-    getIsSoundOn() {
-        return this.sounds.getIsSoundOn();
-    }
-
-    /**
-     * Returns true if the Barbarian's action is defined, false othewise
-     * @returns {boolean}
-     */
-    isBarbarianActionDefined() {
-        return this.barbarian.getAction() !== undefined;
-    }
-
-    /**
-     * Returns true if the Barbarian is moving down, false othewise.
-     * @returns {boolean}
-     */
-    isBarbarianMovingDown() {
-        return this.barbarian.isDirectionDown();
-    }
-
-    /**
-     * Returns true if the Barbarian is moving up, false otherwise.
-     * @returns {boolean}
-     */
-    isBarbarianMovingUp() {
-        return this.barbarian.isDirectionUp();
-    }
-
-    /**
-     * Returns true if the Barbarian is moving right, false otherwise.
-     * @returns {boolean}
-     */
-    isBarbarianMovingRight() {
-        return this.barbarian.isFacingRight();
-    }
-
-    /**
-     * Returns true if the Barbarian is moving left, false otherwise.
-     * @returns {boolean}
-     */
-    isBarbarianMovingLeft() {
-        return this.barbarian.isFacingLeft();
-    }
-
-    /**
-     * Returns true if the Barbarian is swimming, false otherwise.
-     * @returns {boolean}
-     */
-    isBarbarianSwimming() {
-        return this.barbarian.isAction(SWIM_LABEL);
-    }
-
-    /**
-     * Returns true if the Barbarian is jumping, false otherwise.
-     * @returns {boolean}
-     */
-    isBarbarianJumping() {
-        return this.barbarian.isAction(JUMP_LABEL);
-    }
-
-    /**
-     * Returns true if the Barbarian is running, false otherwise.
-     * @returns {boolean}
-     */
-    isBarbarianRunning() {
-        return this.barbarian.isAction(RUN_LABEL);
-    }
-
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
 
-        this.handlePause(character, frame);
-        this.handleFiniteAnimations(character, requestedAction);
+        if (this.getIsPaused() && character.isBarbarian()) {
+            this.handlePause(character, frame);
+        }
+        if ((!character.isActionInfinite(requestedAction) && character.getAction() === requestedAction)
+            || this.getIsPaused()) {
+            this.handleFiniteAnimations(character, requestedAction);
+        }
         if (character.isAction(DEATH_LABEL)) {
             this.handleDeath(character);
         }
@@ -341,11 +205,9 @@ class Game {
         if (character.getObstacles().didCharacterHitObstacle(character)) {
             this.handleObstacle(character, requestedAction);
         }
-        if (this.isBarbarianDead()) {
+        if (this.barbarian.isDead()) {
             this.handleEndingSequence(character);
         }
-
-
     }
 
     /* private */
@@ -353,7 +215,7 @@ class Game {
         // If the Barbarian has been defeated make the monster continue to move for a bit. Make sure the monster stops
         // moving before the death delay has expired so that it is not moving when when the game is reset to prevent
         // doubling up on the monster's movement
-        if (!character.isBarbarian() && this.isBarbarianDead() && !(character.isAction(WALK_LABEL)
+        if (!character.isBarbarian() && this.barbarian.isDead() && !(character.isAction(WALK_LABEL)
             || character.isAction(SIT_LABEL))) {
             if (character.getProperties().getDefaultAction() === WALK_LABEL) {
                 this.performAction(character, WALK_LABEL);
@@ -379,18 +241,13 @@ class Game {
 
     /* private */
     handlePause(character, frame) {
-        if (this.getIsPaused() && character.isBarbarian()) {
-            // Save the frame if the game was paused so the animation can be resumed at the right place
-            game.setPauseFrame(frame);
-        }
+        // Save the frame if the game was paused so the animation can be resumed at the right place
+        game.setPauseFrame(frame);
     }
 
     /* private */
     handleFiniteAnimations(character, requestedAction) {
-        if ((!character.isActionInfinite(requestedAction) && character.getAction() === requestedAction)
-            || this.getIsPaused()) {
-            character.getProperties().getSprite().stop();
-        }
+        character.getProperties().getSprite().stop();
     }
 
     /* private */
@@ -427,7 +284,7 @@ class Game {
                     // reset action so character can jump again
                     character.setAction(undefined);
                     // Hit elevation and did not avoid, let the character remain stopped and render at rest frame
-                    this.renderAtRestFrame(character);
+                    character.renderAtRestFrame(this.gameBoard);
                 }
             } else if (obstacle.getIsPit() && character.isBarbarian()) {
                 if (requestedAction !== FALL_LABEL) {
@@ -444,29 +301,20 @@ class Game {
 
         if (character.isBarbarian()) {
             game.setNumLives(game.getNumLives() - 1);
-            if (game.getNumLives() < 1) {
-                this.messages.showGameOverMessage();
-            } else {
-                this.messages.showStartMessage();
-            }
-
-            if (character.getAction() === FALL_LABEL) {
-                this.sounds.playFallSound();
-            } else {
-                this.sounds.playGruntSound();
-            }
+            game.getNumLives() < 1 ? this.messages.showGameOverMessage() : this.messages.showStartMessage();
+            character.getAction() === FALL_LABEL ? this.sounds.playFallSound() : this.sounds.playGruntSound();
         } else {
             this.sounds.playFireSound();
         }
 
-        let action = this.isWater() ? SINK_LABEL
+        let action = this.gameBoard.isWater(this.getScreenNumber()) ? SINK_LABEL
                                     : character.isAction(FALL_LABEL) ? FALL_LABEL : DEATH_LABEL;
         this.performAction(character, action);
 
         if (action === FALL_LABEL || action === SINK_LABEL && character.isBarbarian()) {
-            // lock the Barbarians actions while it is falling or sinking. We need to wait until the Barbarian finishes
-            // falling or sinking. We also need the monsters to have an opportunity to stop before the game is restarted
-            // so the minimum lock time will be a little more than the death delay
+            // lock the Barbarians actions while it is falling or sinking. We also need the monsters to have an
+            // opportunity to stop before the game is restarted so the minimum lock time will be a little more than the
+            // death delay
             let lockActionsTime = Math.max(DEATH_DELAY + 500,
                 character.getY() / character.getProperties().getPixelsPerSecond(FALL_LABEL) * MILLISECONDS_PER_SECOND);
 
@@ -492,7 +340,6 @@ class Game {
             let monsterAction = character.getAction();
             let opponentAction = opponent.getAction();
             let opponentCurrentFrame = opponent.getCurrentFrame(opponentAction);
-
 
             let looser = undefined;
             let winner = undefined;
@@ -545,7 +392,8 @@ class Game {
             if (character.getProperties().getCanHighlight()) {
                 character.getProperties().getSprite().css('filter', "brightness(100%)");
             }
-            this.performAction(character, game.isWater() ? SWIM_LABEL : WALK_LABEL);
+            this.performAction(character, game.gameBoard.isWater(this.getScreenNumber()) ? SWIM_LABEL
+                                                                                                : WALK_LABEL);
         }
     }
 
@@ -558,7 +406,7 @@ class Game {
         }
 
         if (!this.gameBoard.isScrollAllowed(this.getScreenNumber(), LEFT_LABEL) && character.isFacingLeft()) {
-            this.renderAtRestFrame(character);
+            character.renderAtRestFrame(this.gameBoard);
             return;
         }
 
@@ -591,7 +439,7 @@ class Game {
         }
 
         if (this.getNumLives() > 0) {
-            this.renderAtRestFrame(character);
+            character.renderAtRestFrame(this.gameBoard);
         }
 
         character.setAction(STOP_LABEL);
@@ -610,7 +458,7 @@ class Game {
         this.setActionsLocked(true);
 
         await this.moveBackdrop(character, direction, false);
-        if (this.isWater(this.getScreenNumber())) {
+        if (this.gameBoard.isWater(this.getScreenNumber())) {
             // Scroll the water up
             await this.moveBackdrop(character, direction, true);
         }
@@ -701,7 +549,7 @@ class Game {
         this.getBarbarian().setDirection(RIGHT_LABEL);
         this.getBarbarian().setAction(undefined);
         this.getBarbarian().setVerticalDirection(undefined);
-        this.renderAtRestFrame(this.getBarbarian());
+        this.getBarbarian().renderAtRestFrame(this.gameBoard);
         this.resetBackdrop();
 
         for (let opponent of this.getAllMonsters()) {

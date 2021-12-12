@@ -324,6 +324,25 @@ class Character {
         return gameBoard.getOpponents(this.barbarian.getScreenNumber()).includes(this);
     }
 
+    /**
+     * Render rest frame for a character. Used to make the character look natural when stopped.
+     * @param character the character to render the at rest frame for
+     */
+    renderAtRestFrame(gameBoard) {
+        let action = gameBoard.isWater(this.getScreenNumber()) ? SWIM_LABEL : STOP_LABEL;
+
+        let heightOffset = this.getProperties().getFrameHeightOffset(action, this.getHorizontalDirection()) *
+            this.getProperties().getSprite().height();
+
+        let offset = this.getProperties().getFrames(action, this.getHorizontalDirection())[0];
+        this.getProperties().getSprite().css(CSS_BACKGROUND_POSITION,
+            -1 * offset * this.getWidth() + CSS_PX_LABEL + ' ' + -1 * heightOffset + CSS_PX_LABEL);
+    }
+
+    isActionDefined() {
+        return this.getAction() !== undefined;
+    }
+
     /* private */
     getStatus() {
         return this.status;

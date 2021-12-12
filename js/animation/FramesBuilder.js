@@ -28,7 +28,7 @@ class FramesBuilder {
 
     /**
      * Build the Frames object.
-     * @returns {Frames}
+     * @returns {Frames} the frames object
      */
     build() {
         return new Frames(this.frames);

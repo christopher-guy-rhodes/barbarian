@@ -45,7 +45,7 @@ class CharacterBuilder {
     /**
      * Set the character properties.
      * @param properties the character properties
-     * @returns {CharacterBuilder}
+     * @returns {CharacterBuilder} this character builder
      */
     withProperties(properties) {
         validateRequiredParams(this.withProperties, arguments, 'properties');
@@ -56,7 +56,7 @@ class CharacterBuilder {
     /**
      * Set the character action.
      * @param action the action
-     * @returns {CharacterBuilder}
+     * @returns {CharacterBuilder} this character builder
      */
     withAction(action) {
         validateRequiredParams(this.withAction, arguments, 'action');
@@ -67,7 +67,7 @@ class CharacterBuilder {
     /**
      * Set the character horizontal direction.
      * @param direction the direction
-     * @returns {CharacterBuilder}
+     * @returns {CharacterBuilder} this character builder
      */
     withHorizontalDirection(direction) {
         validateRequiredParams(this.withHorizontalDirection, arguments, 'direction');
@@ -78,7 +78,7 @@ class CharacterBuilder {
     /**
      * Set the character screen number
      * @param screenNumber the screen number
-     * @returns {CharacterBuilder}
+     * @returns {CharacterBuilder} this character builder
      */
     withScreenNumber(screenNumber) {
         validateRequiredParams(this.withScreenNumber, arguments, 'screenNumber');
@@ -88,7 +88,7 @@ class CharacterBuilder {
 
     /**
      * Build the character object.
-     * @returns {Character}
+     * @returns {Character} this character builder
      */
     build() {
         if (this.properties.getType() === undefined) {

@@ -7,7 +7,7 @@ class Frames {
      * Get the frame indicies for a particular action and direction.
      * @param action the action being take
      * @param direction the direction
-     * @returns {[number]|undefined}
+     * @returns {number[]|undefined}
      */
     getFrames(action, direction) {
         validateRequiredParams(this.getFrames, arguments, 'action', 'direction');

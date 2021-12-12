@@ -1,4 +1,11 @@
 class CharacterPropertiesBuilder {
+
+    /**
+     * Construct a character properties builder object.
+     * @param sprite the character sprite
+     * @param characterType the type of character
+     * @param defaultX the default x coordinate for the character
+     */
     constructor(sprite, characterType, defaultX) {
         validateRequiredParams(this.constructor, arguments, 'sprite', 'characterType', 'defaultX');
         this.sprite = sprite;
@@ -62,77 +69,145 @@ class CharacterPropertiesBuilder {
         };
     }
 
+    /**
+     * Set the can elevate property.
+     * @param flag true of the character can automatically traverse elevations, false otherwise.
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withCanElevate(flag) {
         validateRequiredParams(this.withCanElevate, arguments, 'flag');
         this.canElevate = flag;
         return this;
     }
 
+    /**
+     * Set the can highlight property.
+     * @param flag true if the character can highlight when in attack proximity, false otherwise.
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withCanHighlight(flag) {
         validateRequiredParams(this.withCanHighlight, arguments, 'flag');
         this.canHighlight = flag;
         return this;
     }
 
+    /**
+     * Set the can leave behind property.
+     * @param flag true if the character can be left behind without being defeated, false otherwise
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withCanLeaveBehind(flag) {
         validateRequiredParams(this.withCanLeaveBehind, arguments, 'flag');
         this.canLeaveBehind = flag;
         return this;
     }
 
+    /**
+     * Set the can turn around property.
+     * @param flag true if the character can turn around (to chase the Barbarian) false otherwise
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withCanTurnAround(flag) {
         validateRequiredParams(this.withCanTurnAround, arguments, 'flag');
         this.canTurnAround = flag;
         return this;
     }
 
+    /**
+     * Set the sound object for the character.
+     * @param sound the audio object for the character
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withSound(sound) {
         this.sound = sound;
         return this;
     }
 
+    /**
+     * Set the death sprite element.
+     * @param sprite the sprite
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withDeathSprite(sprite) {
         validateRequiredParams(this.withDeathSprite, arguments, 'sprite');
         this.deathSprite = sprite;
         return this;
     }
 
+    /**
+     * Set whether the character is invincible.
+     * @param flag true if the character is invincible, false otherwise
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withIsInvincible(flag) {
         validateRequiredParams(this.withIsInvincible, arguments, 'flag');
         this.isInvincible = flag;
         return this;
     }
 
-    withDefaultStatus(flag) {
-        validateRequiredParams(this.withDefaultStatus, arguments, 'flag');
-        this.defaultStatus = flag;
+    /**
+     * Set the default status for the character.
+     * @param status the status
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
+    withDefaultStatus(status) {
+        validateRequiredParams(this.withDefaultStatus, arguments, 'status');
+        this.defaultStatus = status;
         return this;
     }
 
+    /**
+     * Set the default action for the character.
+     * @param action the action
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withDefaultAction(action) {
         validateRequiredParams(this.withDefaultAction, arguments, 'action');
         this.defaultAction = action;
         return this;
     }
 
+    /**
+     * Set the default direction for the character.
+     * @param direction the direction
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withDefaultDirection(direction) {
         validateRequiredParams(this.withDefaultDirection, arguments, 'direction');
         this.defaultDirection[HORIZONTAL_LABEL] = direction;
         return this;
     }
 
+    /**
+     * Set the default bottom position for the character.
+     * @param screenNumber the screen number to set the bottom on
+     * @param bottom the bottom in pixels
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withDefaultBottom(screenNumber, bottom) {
         validateRequiredParams(this.withDefaultBottom, arguments, 'screenNumber', 'bottom');
         this.defaultBottom[screenNumber] = bottom;
         return this;
     }
 
+    /**
+     * Set the number of times for a particular action for the character.
+     * @param action the action to set the number of times for
+     * @param numberOfTimes the number of times the action will be performed
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withActionNumberOfTimes(action, numberOfTimes) {
         validateRequiredParams(this.withActionNumberOfTimes, arguments, 'action', 'numberOfTimes');
         this.actionNumberOfTimes[action] = numberOfTimes;
         return this;
     }
 
+    /**
+     * Set the pixels per second for a particular action.
+     * @param action the action
+     * @param pixelsPerSecond the pixels per second
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withPixelsPerSecond(action, pixelsPerSecond) {
         if (action === undefined || pixelsPerSecond === undefined) {
             throw new Error("withPixelsPerSecond: Both action and pixelsPerSecond arguments must be set");
@@ -141,6 +216,12 @@ class CharacterPropertiesBuilder {
         return this;
     }
 
+    /**
+     * Set the frames per second for the particular action.
+     * @param action the action
+     * @param fps the frames per second
+     * @returns {CharacterPropertiesBuilder} this character properties builder
+     */
     withFramesPerSecond(action, fps) {
         if (action === undefined || fps === undefined) {
             throw new Error("withFps: Both action and fps arguments must be set");
@@ -149,11 +230,20 @@ class CharacterPropertiesBuilder {
         return this;
     }
 
+    /**
+     * Set the frames object.
+     * @param frames the frames object for the character
+     * @returns {CharacterPropertiesBuilder}  this character properties builder
+     */
     withFrames(frames) {
         this.frames = frames;
         return this;
     }
 
+    /**
+     * Build the character properties object.
+     * @returns {CharacterProperties} the character properties
+     */
     build() {
         if (this.frames === undefined) {
             throw new Error("CharacterPropertiesBuilder: frames is required although not a part of the constructor " +

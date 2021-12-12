@@ -685,7 +685,7 @@ class Game {
             let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
             character.getProperties().getDeathSprite().hide();
             character.setAction(character.getProperties().getDefaultAction());
-            character.setDirection(character.getProperties().getDefaultDirection());
+            character.setDirection(character.getProperties().getDefaultHorizontalDirection());
             character.setStatus(character.getProperties().getDefaultStatus());
             character.getProperties().getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
             character.getProperties().getSprite().css('left',  character.getProperties().getDefaultX() + 'px');

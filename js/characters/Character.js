@@ -27,6 +27,8 @@ class Character {
                 status,
                 screenNumber,
                 currentFrame) {
+        validateRequiredParams(this.constructor, arguments, 'obstacles', 'properties', 'direction', 'status',
+            'screenNumber');
         this.barbarian = barbarian === undefined ? this : barbarian;
         this.obstacles = obstacles;
         this.properties = properties;
@@ -187,7 +189,7 @@ class Character {
 
     /**
      * Get the current character action.
-     * @returns {String|undefined} the current action of the character
+     * @returns {string|undefined} the current action of the character
      */
     getAction() {
         return this.action;
@@ -195,7 +197,7 @@ class Character {
 
     /**
      * Get the current vertical direction of the character.
-     * @returns {String|undefined} the current vertical direction of the character
+     * @returns {string|undefined} the current vertical direction of the character
      */
     getVerticalDirection() {
         return this.direction[VERTICAL_LABEL];
@@ -203,7 +205,7 @@ class Character {
 
     /**
      * Get the current direction of the character.
-     * @returns {String} the direction of the character
+     * @returns {string} the direction of the character
      */
     getHorizontalDirection() {
         return this.direction[HORIZONTAL_LABEL];
@@ -299,7 +301,7 @@ class Character {
 
     /**
      * Gets the Barbarian character.
-     * @returns {Character} the Barbarian character
+     * @returns {Character|undefined} the Barbarian character
      */
     getBarbarian() {
         return this.barbarian;

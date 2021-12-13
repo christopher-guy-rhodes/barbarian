@@ -96,8 +96,6 @@ class Game {
         }
     }
 
-
-
     /**
      * Resets the game and readies it for play.
      */
@@ -295,7 +293,8 @@ class Game {
 
     /* private */
     handleFightSequence(character) {
-        if (character.isBarbarian() || character.isDead() || !this.doesScreenIncludeCharacter(character)) {
+        if (character.isBarbarian() || character.isDead() ||
+            !this.gameBoard.doesScreenIncludeCharacter(character, this.getScreenNumber())) {
             return;
         }
         let opponentsInProximity = Fighting.getOpponentsWithinX(character, this.gameBoard, FIGHTING_RANGE_PIXELS);
@@ -319,7 +318,8 @@ class Game {
 
     /* private */
     handleCpuAttack(character) {
-        if (character.isBarbarian() || character.isDead() || !this.doesScreenIncludeCharacter(character)) {
+        if (character.isBarbarian() || character.isDead() || !this.gameBoard.doesScreenIncludeCharacter(character,
+            this.getScreenNumber())) {
             return;
         }
         let opponentsInProximity = Fighting.getOpponentsWithinX(character, this.gameBoard, CPU_ATTACK_RANGE_PIXELS);
@@ -382,7 +382,7 @@ class Game {
         let self = this;
         this.gameBoard.hideOpponents(this.getScreenNumber());
         this.setScreenNumber(this.getScreenNumber() + (character.isFacingLeft() ? -1 : 1));
-        if (this.isScreenDefined(this.getScreenNumber())) {
+        if (this.gameBoard.isScreenDefined(this.getScreenNumber())) {
             this.gameBoard.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL,
                 this.getScreenNumber())
                 .then(function() {
@@ -428,7 +428,7 @@ class Game {
         this.getBarbarian().renderAtRestFrame(this.gameBoard);
         this.gameBoard.resetBackdrop();
 
-        for (let opponent of this.getAllMonsters()) {
+        for (let opponent of this.gameBoard.getAllMonsters()) {
             opponent.hide();
         }
 
@@ -438,23 +438,7 @@ class Game {
         this.messages.hideAllMessages();
     }
 
-    /* private */
-    getAllMonsters() {
-        return this.gameBoard.getAllMonsters();
-    }
 
-    /* private */
-    isScreenDefined(screenNumber) {
-        if (screenNumber === undefined) {
-            throw new Error("setScreenNumber: screenNumber argument is required");
-        }
-        return this.gameBoard.isScreenDefined(screenNumber);
-    }
-
-    /* private */
-    doesScreenIncludeCharacter(character) {
-        return this.gameBoard.getOpponents(this.barbarian.getScreenNumber()).includes(character);
-    }
 
     /* private */
     getScreenNumber() {

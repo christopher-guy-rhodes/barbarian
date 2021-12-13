@@ -36,6 +36,7 @@ class GameBoard {
     }
 
     isScreenDefined(screenNumber) {
+        validateRequiredParams(this.isScreenDefined, arguments, 'screenNumber');
         return this.gameBoard[screenNumber] !== undefined;
     }
 
@@ -208,5 +209,10 @@ class GameBoard {
             character.getProperties().getSprite().css('bottom',
                 character.getProperties().getDefaultY(barbarian.getScreenNumber()) + 'px');
         }
+    }
+
+    doesScreenIncludeCharacter(character, screenNumber) {
+        validateRequiredParams(this.doesScreenIncludeCharacter, arguments, 'character', 'screenNumber');
+        return this.getOpponents(screenNumber).includes(character);
     }
 }

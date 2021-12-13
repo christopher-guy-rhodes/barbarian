@@ -96,24 +96,6 @@ class Game {
         }
     }
 
-    /**
-     * Initializes the current screen to ready it for playing.
-     */
-    initializeScreen() {
-
-        if (this.gameBoard.isWater(this.getScreenNumber())) {
-            this.performAction(this.getBarbarian(), SWIM_LABEL);
-        }
-
-        let monsters = this.gameBoard.getMonstersOnScreen(this.getScreenNumber());
-
-        for (let monster of monsters) {
-            monster.getProperties().getSprite().css('left', monster.getProperties().getDefaultX() + 'px');
-            monster.getProperties().getSprite().css('bottom', monster.getProperties().getDefaultY(this.getScreenNumber()) + 'px');
-            monster.getProperties().getSprite().css('filter', "brightness(100%)");
-            monster.setStatus(DEAD_LABEL);
-        }
-    }
 
 
     /**
@@ -129,7 +111,7 @@ class Game {
             this.messages.hideAllMessages();
         }
         this.resetSpritePositions();
-        this.initializeScreen();
+        this.gameBoard.initializeScreen(this.getScreenNumber());
     }
 
     /**
@@ -263,7 +245,6 @@ class Game {
                 } else if (obstacle.didCharacterJumpEvade(character)) {
                     character.setY(obstacle.getHeight());
                     // Transition to walking motion since the jump was successful
-                    console.log('continuing walk after jump evading');
                     this.performAction(character, WALK_LABEL);
                 } else if (character)  {
                     // reset action so character can jump again
@@ -399,13 +380,16 @@ class Game {
      */
     loadScreen(character) {
         let self = this;
-        this.hideOpponents();
+        this.gameBoard.hideOpponents(this.getScreenNumber());
         this.setScreenNumber(this.getScreenNumber() + (character.isFacingLeft() ? -1 : 1));
         if (this.isScreenDefined(this.getScreenNumber())) {
             this.gameBoard.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL,
                 this.getScreenNumber())
                 .then(function() {
-                    self.initializeScreen();
+                    if (self.gameBoard.isWater(self.getScreenNumber())) {
+                        self.performAction(self.getBarbarian(), SWIM_LABEL);
+                    }
+                    self.gameBoard.initializeScreen(self.getScreenNumber());
                     self.startMonsterAttacks();
                 }, error => handlePromiseError(error));
             return false;
@@ -430,16 +414,6 @@ class Game {
     }
 
 
-
-
-    /* private */
-    hideOpponents() {
-        let opponents = this.gameBoard.getMonstersOnScreen(this.getScreenNumber());
-        for (let opponent of opponents) {
-            opponent.getProperties().getSprite().css('display', 'none');
-            opponent.getProperties().getDeathSprite().css('display', 'none');
-        }
-    }
 
     /* private */
     resetSpritePositions() {

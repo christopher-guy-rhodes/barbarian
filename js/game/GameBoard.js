@@ -162,5 +162,27 @@ class GameBoard {
         this.gameBoard.getBackdrop().css('background-position', '0px 0px');
     }
 
+    hideOpponents(screenNumber) {
+        let opponents = this.getMonstersOnScreen(screenNumber);
+        for (let opponent of opponents) {
+            opponent.getProperties().getSprite().css('display', 'none');
+            opponent.getProperties().getDeathSprite().css('display', 'none');
+        }
+    }
+
+    /**
+     * Initializes the current screen to ready it for playing.
+     */
+    initializeScreen(screenNumber) {
+
+        let monsters = this.getMonstersOnScreen(screenNumber);
+
+        for (let monster of monsters) {
+            monster.getProperties().getSprite().css('left', monster.getProperties().getDefaultX() + 'px');
+            monster.getProperties().getSprite().css('bottom', monster.getProperties().getDefaultY(screenNumber) + 'px');
+            monster.getProperties().getSprite().css('filter', "brightness(100%)");
+            monster.setStatus(DEAD_LABEL);
+        }
+    }
 
 }

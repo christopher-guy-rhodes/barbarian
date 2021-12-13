@@ -185,4 +185,28 @@ class GameBoard {
         }
     }
 
+    /* private */
+    resetSpritePositions(barbarian) {
+        let characters = new Array(barbarian);
+        for (let scrNum of this.getScreenNumbers()) {
+            for (let opponent of this.getMonstersOnScreen(barbarian.getScreenNumber())) {
+                characters.push(opponent);
+            }
+        }
+
+        barbarian.show();
+
+        let spritesOnScreen = this.getOpponentsOnScreen(barbarian.getScreenNumber());
+        for (const character of characters) {
+            let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
+            character.getProperties().getDeathSprite().hide();
+            character.setAction(character.getProperties().getDefaultAction());
+            character.setDirection(character.getProperties().getDefaultHorizontalDirection());
+            character.setStatus(character.getProperties().getDefaultStatus());
+            character.getProperties().getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
+            character.getProperties().getSprite().css('left',  character.getProperties().getDefaultX() + 'px');
+            character.getProperties().getSprite().css('bottom',
+                character.getProperties().getDefaultY(barbarian.getScreenNumber()) + 'px');
+        }
+    }
 }

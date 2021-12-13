@@ -110,7 +110,7 @@ class Game {
             $('.life' + this.getNumLives()).css('display', 'none');
             this.messages.hideAllMessages();
         }
-        this.resetSpritePositions();
+        this.gameBoard.resetSpritePositions(this.getBarbarian());
         this.gameBoard.initializeScreen(this.getScreenNumber());
     }
 
@@ -386,11 +386,7 @@ class Game {
             this.gameBoard.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL,
                 this.getScreenNumber())
                 .then(function() {
-                    if (self.gameBoard.isWater(self.getScreenNumber())) {
-                        self.performAction(self.getBarbarian(), SWIM_LABEL);
-                    }
-                    self.gameBoard.initializeScreen(self.getScreenNumber());
-                    self.startMonsterAttacks();
+                    self.startScreenActions();
                 }, error => handlePromiseError(error));
             return false;
         } else {
@@ -398,10 +394,17 @@ class Game {
         }
     }
 
+    startScreenActions() {
+        if (this.gameBoard.isWater(this.getScreenNumber())) {
+            this.performAction(this.getBarbarian(), SWIM_LABEL);
+        }
+        this.gameBoard.initializeScreen(this.getScreenNumber());
+        this.startMonsterAttacks();
+    }
+
     /* private */
     handleGameOver(character) {
         character.setStatus(DEAD_LABEL);
-        //character.hide();
         this.messages.showGameWonMessage();
         this.setScreenNumber(0);
         this.setNumLives(0);
@@ -414,32 +417,6 @@ class Game {
     }
 
 
-
-    /* private */
-    resetSpritePositions() {
-        let characters = new Array(this.getBarbarian());
-        for (let scrNum of this.gameBoard.getScreenNumbers()) {
-            //let screen = SCREENS[scrNum];
-            for (let opponent of this.gameBoard.getMonstersOnScreen(this.getScreenNumber())) {
-                characters.push(opponent);
-            }
-        }
-
-        this.barbarian.show();
-
-        let spritesOnScreen = this.gameBoard.getOpponentsOnScreen(this.getScreenNumber());
-        for (const character of characters) {
-            let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
-            character.getProperties().getDeathSprite().hide();
-            character.setAction(character.getProperties().getDefaultAction());
-            character.setDirection(character.getProperties().getDefaultHorizontalDirection());
-            character.setStatus(character.getProperties().getDefaultStatus());
-            character.getProperties().getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
-            character.getProperties().getSprite().css('left',  character.getProperties().getDefaultX() + 'px');
-            character.getProperties().getSprite().css('bottom',
-                character.getProperties().getDefaultY(this.getBarbarian().getScreenNumber()) + 'px');
-        }
-    }
 
     /* private */
     resetGameOver() {

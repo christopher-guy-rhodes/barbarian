@@ -57,7 +57,7 @@ class Events {
             this.lastKeypressTime = this.keypressTime;
             this.keypressTime = new Date().getTime();
 
-            if (!this.game.getIsPaused() || KEYPRESS[KP_PAUSE] === keypress) {
+            if (!this.game.getGameBoard().getIsPaused() || KEYPRESS[KP_PAUSE] === keypress) {
 
                 switch (keypress) {
                     case KEYPRESS[KP_CONTROLS]:
@@ -130,13 +130,13 @@ class Events {
      */
     handlePauseKeypress() {
         if (!this.game.getBarbarian().isDead()) {
-            if (this.game.getIsPaused()) {
+            if (this.game.getGameBoard().getIsPaused()) {
                 this.game.getMessages().hideAllMessages()
-                this.game.setIsPaused(false);
+                this.game.getGameBoard().setIsPaused(false);
                 if (this.game.getBarbarian().isActionDefined()) {
                     let action = this.game.getBarbarian().getAction();
-                    this.game.performAction(this.game.getBarbarian(), action, this.game.getPausedFrame());
-                    this.game.setPauseFrame(0);
+                    this.game.performAction(this.game.getBarbarian(), action, this.game.getGameBoard().getPauseFrame());
+                    this.game.getGameBoard().setPauseFrame(0);
                 }
                 this.game.startMonsterAttacks(true);
                 if (this.game.getSounds().getIsSoundOn()) {
@@ -145,7 +145,7 @@ class Events {
             } else {
                 this.game.getMessages().showPauseMessage()
                 this.game.getSounds().stopAllSounds();
-                this.game.setIsPaused(true);
+                this.game.getGameBoard().setIsPaused(true);
             }
         }
     }

@@ -17,7 +17,7 @@ class Game {
 
         this.barbarian = barbarian;
         this.gameBoard = gameBoard;
-        this.pauseFrame = 0;
+
         this.numLives = 3;
 
         this.sounds = new Sounds();
@@ -145,11 +145,11 @@ class Game {
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
 
-        if (this.getIsPaused() && character.isBarbarian()) {
+        if (this.gameBoard.getIsPaused() && character.isBarbarian()) {
             this.handlePause(character, frame);
         }
         if ((!character.isActionInfinite(requestedAction) && character.getAction() === requestedAction)
-            || this.getIsPaused()) {
+            || this.gameBoard.getIsPaused()) {
             this.handleFiniteAnimations(character, requestedAction);
         }
         if (character.isAction(DEATH_LABEL)) {
@@ -207,7 +207,7 @@ class Game {
     /* private */
     handlePause(character, frame) {
         // Save the frame if the game was paused so the animation can be resumed at the right place
-        game.setPauseFrame(frame);
+        this.gameBoard.setPauseFrame(frame);
     }
 
     /* private */
@@ -217,10 +217,11 @@ class Game {
 
     /* private */
     handleDeath(character) {
+        let self = this;
         if (character.isBarbarian()) {
-            game.getGameBoard().setActionsLocked(true);
+            this.getGameBoard().setActionsLocked(true);
             setTimeout(function () {
-                game.getGameBoard().setActionsLocked(false);
+                self.getGameBoard().setActionsLocked(false);
                 //character.setAction(undefined);
             }, DEATH_DELAY);
         } else {
@@ -318,8 +319,8 @@ class Game {
 
     /* private */
     handleCpuAttack(character) {
-        if (character.isBarbarian() || character.isDead() || !this.gameBoard.doesScreenIncludeCharacter(character,
-            this.getScreenNumber())) {
+        if (character.isBarbarian() || character.isDead() ||
+            !this.gameBoard.doesScreenIncludeCharacter(character, this.getScreenNumber())) {
             return;
         }
         let opponentsInProximity = Fighting.getOpponentsWithinX(character, this.gameBoard, CPU_ATTACK_RANGE_PIXELS);
@@ -416,8 +417,6 @@ class Game {
         }, DEATH_DELAY)
     }
 
-
-
     /* private */
     resetGameOver() {
         this.setNumLives(3);
@@ -438,8 +437,6 @@ class Game {
         this.messages.hideAllMessages();
     }
 
-
-
     /* private */
     getScreenNumber() {
         return this.barbarian.getScreenNumber();
@@ -447,9 +444,7 @@ class Game {
 
     /* private */
     setScreenNumber(screenNumber) {
-        if (screenNumber === undefined) {
-            throw new Error("setScreenNumber: screenNumber argument is required");
-        }
+        validateRequiredParams(this.setScreenNumber, arguments, 'screenNumber');
         return this.barbarian.setScreenNumber(screenNumber);
     }
 
@@ -462,37 +457,8 @@ class Game {
         return this.barbarian;
     }
 
-    getIsPaused() {
-        return this.gameBoard.getIsPaused();
-    }
-
-    getPausedFrame() {
-        return this.pauseFrame;
-    }
-
-    /* Setters */
-    setPauseFrame(flag) {
-        if (flag === undefined) {
-            throw new Error("setPausedFrame: flag argument is required");
-        }
-        this.pauseFrame = flag;
-    }
-
-    setIsPaused(flag) {
-        this.gameBoard.setIsPaused(flag);
-    }
-
     setNumLives(number) {
-        if (number === undefined) {
-            throw new Error("SetNumLives: the number argument is required")
-        }
+        validateRequiredParams(this.setNumLives, arguments, 'number');
         this.numLives = number;
-    }
-
-    setIsSoundOn(flag) {
-        if (flag === undefined) {
-            throw new Error("setIsSoundOn: the flag argument is required");
-        }
-        this.sounds.setIsSoundOn(flag);
     }
 }

@@ -4,6 +4,7 @@ class GameBoard {
         this.gameBoard = gameBoard;
         this.isPaused = false;
         this.actionsLocked = false;
+        this.pauseFrame = 0;
     }
 
     getOpponents(screenNumber) {
@@ -214,5 +215,14 @@ class GameBoard {
     doesScreenIncludeCharacter(character, screenNumber) {
         validateRequiredParams(this.doesScreenIncludeCharacter, arguments, 'character', 'screenNumber');
         return this.getOpponents(screenNumber).includes(character);
+    }
+
+    setPauseFrame(frame) {
+        validateRequiredParams(this.setPauseFrame, arguments, 'frame');
+        this.pauseFrame = frame;
+    }
+
+    getPauseFrame() {
+        return this.pauseFrame;
     }
 }

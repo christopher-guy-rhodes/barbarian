@@ -7,10 +7,20 @@ class GameBoard {
         this.pauseFrame = 0;
     }
 
+    /**
+     * Get all the opponents for the screen number.
+     * @param screenNumber the screen number
+     * @returns {Character[]|undefined} all the characters on the screen
+     */
     getOpponents(screenNumber) {
+        validateRequiredParams(this.getOpponents, arguments, 'screenNumber');
         return this.gameBoard[screenNumber][OPPONENTS_LABEL];
     }
 
+    /**
+     * Get all opponents across all screens.
+     * @returns {Character[]} all the characters on all the screens
+     */
     getAllOpponents() {
         let opponents = [];
 
@@ -21,69 +31,84 @@ class GameBoard {
         return opponents;
     }
 
+    /**
+     * Get all the monsters across all the screens.
+     * @returns {Character[]} all the monsters across all of the screens.
+     */
     getAllMonsters() {
         return this.getAllOpponents().filter(character => !character.isBarbarian());
     }
 
+    /**
+     * Get all the available screen numbers.
+     * @returns {string[]}
+     */
     getScreenNumbers() {
         return Object.keys(this.gameBoard);
     }
 
+    /**
+     * Determine if a particular screen is a water screen.
+     * @param screenNumber the screen number
+     * @returns {boolean} true if the screen is a water screen, false otherwise
+     */
     isWater(screenNumber) {
-        if (screenNumber === undefined) {
-            throw new Error("isWater: screenNumber is a required parameter")
-        }
+        validateRequiredParams(this.isWater, arguments, 'screenNumber');
         return this.gameBoard[screenNumber][WATER_LABEL];
     }
 
+    /**
+     * Determine a a screen number is defined.
+     * @param screenNumber the screen number
+     * @returns {boolean} true if the screen is defined, false otherwise
+     */
     isScreenDefined(screenNumber) {
         validateRequiredParams(this.isScreenDefined, arguments, 'screenNumber');
         return this.gameBoard[screenNumber] !== undefined;
     }
 
+    /**
+     * Determine if scrolling in the specified direction is allowed on the screen number.
+     * @param screenNumber the screen number
+     * @param direction the direction
+     * @returns {boolean} true if scrolling is allowed, false otherwise
+     */
     isScrollAllowed(screenNumber, direction) {
+        validateRequiredParams(this.isScrollAllowed, arguments, 'screenNumber', 'direction');
         return this.gameBoard[screenNumber][ALLOWED_SCROLL_LABEL][direction]
     }
 
+    /**
+     * Determine if the game is paused.
+     * @returns {boolean} true if the game is paused, false otherwise
+     */
     getIsPaused() {
         return this.isPaused;
     }
 
+    /**
+     * Sets the paused state of the game.
+     * @param flag true to pause the game, false to unpause the game
+     */
     setIsPaused(flag) {
-        if (flag === undefined) {
-            throw new Error("setIsPaused: flag is a required parameter");
-        }
+        validateRequiredParams(this.setIsPaused, arguments, 'flag');
         this.isPaused = flag;
     }
 
-    canScroll(character, areAllMonstersDefeated) {
-        return this.canScrollLeft(character) || this.canScrollRight(character, areAllMonstersDefeated);
-    }
-
-    canScrollRight(character, areAllMonstersDefeated) {
-        return areAllMonstersDefeated &&
-            character.isFacingRight() && this.isScrollAllowed(character.getScreenNumber(), RIGHT_LABEL) &&
-            character.getScreenNumber() < this.getScreenNumbers().length;
-    }
-
-    canScrollLeft(character) {
-        return character.isFacingLeft() && this.isScrollAllowed(character.getScreenNumber(), LEFT_LABEL)
-    }
-
-    areAllMonstersDefeated(screenNumber) {
-        return this.getMonstersOnScreen(screenNumber).filter(m => !m.getProperties().getCanLeaveBehind() && !m.isDead()).length < 1;
-    }
-
-    /* private */
+    /**
+     * Get the monsters (non Barbarians) on the screen
+     * @param screenNumber
+     * @returns {Character[]}
+     */
     getMonstersOnScreen(screenNumber) {
+        validateRequiredParams(this.getMonstersOnScreen, arguments, 'screenNumber');
         return this.getOpponentsOnScreen(screenNumber).filter(character => !character.isBarbarian());
     }
 
-    /* private */
-    getOpponentsOnScreen(screenNumber) {
-        return this.getOpponents(screenNumber);
-    }
-
+    /**
+     * Set the Barbarian actions as being locked or not.
+     * @param flag true if the action are to be locked, false otherwise
+     */
     setActionsLocked(flag) {
         if (flag === undefined) {
             throw new Error("setActionsLocked: flag argument is required");
@@ -91,11 +116,21 @@ class GameBoard {
         this.actionsLocked = flag;
     }
 
+    /**
+     * Determine if the Barbarian's actions are locked.
+     * @returns {boolean} true if the Barbarian's actions are locked, false otherwise
+     */
     getActionsLocked() {
         return this.actionsLocked;
     }
 
-    /* private */
+    /**
+     * Advance the game board backdrop.
+     * @param character the character
+     * @param direction the direction to move the backdrop
+     * @param screenNumber the current screen number
+     * @returns {Promise<void>} void promise
+     */
     async advanceBackdrop(character, direction, screenNumber) {
         if (character.isDead()) {
             return;
@@ -109,6 +144,141 @@ class GameBoard {
         }
 
         this.setActionsLocked(false);
+    }
+
+    /**
+     * Gets the backdrop element.
+     * @returns {jQuery|HTMLElement}
+     */
+    getBackdrop() {
+        return $('.backdrop');
+    }
+
+    /**
+     * Sets the backdrop offset to the current screen.
+     */
+    setBackdrop(screenNumber) {
+        this.getBackdrop().css('background-position', -1* SCREEN_WIDTH * screenNumber + 'px 0px');
+    }
+
+    /**
+     * Hide the monsters on a particular screen.
+     * @param screenNumber the screen number
+     */
+    hideMonsters(screenNumber) {
+        validateRequiredParams(this.hideMonsters, arguments, 'screenNumber');
+        let opponents = this.getMonstersOnScreen(screenNumber);
+        for (let opponent of opponents) {
+            opponent.getProperties().getSprite().css('display', 'none');
+            opponent.getProperties().getDeathSprite().css('display', 'none');
+        }
+    }
+
+    /**
+     * Initializes the current screen to ready it for playing.
+     * @param screenNumber the screen number
+     */
+    initializeScreen(screenNumber) {
+        validateRequiredParams(this.initializeScreen, arguments, 'screenNumber');
+        let monsters = this.getMonstersOnScreen(screenNumber);
+
+        for (let monster of monsters) {
+            monster.getProperties().getSprite().css(CSS_LEFT_LABEL, monster.getProperties().getDefaultX() + 'px');
+            monster.getProperties().getSprite().css(CSS_BOTTOM_LABEL,
+                monster.getProperties().getDefaultY(screenNumber) + 'px');
+            monster.getProperties().getSprite().css(CSS_FILTER_LABEL, "brightness(100%)");
+            monster.setStatus(DEAD_LABEL);
+        }
+    }
+
+    /**
+     * Reset sprite positions to the default.
+     * @param barbarian the Barbarian character
+     */
+    resetSpritePositions(barbarian) {
+        validateRequiredParams(this.resetSpritePositions, arguments, 'barbarian');
+        let characters = new Array(barbarian);
+        for (let scrNum of this.getScreenNumbers()) {
+            for (let opponent of this.getMonstersOnScreen(barbarian.getScreenNumber())) {
+                characters.push(opponent);
+            }
+        }
+
+        barbarian.show();
+
+        let spritesOnScreen = this.getOpponentsOnScreen(barbarian.getScreenNumber());
+        for (const character of characters) {
+            let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
+            character.getProperties().getDeathSprite().hide();
+            character.setAction(character.getProperties().getDefaultAction());
+            character.setDirection(character.getProperties().getDefaultHorizontalDirection());
+            character.setStatus(character.getProperties().getDefaultStatus());
+            character.getProperties().getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
+            character.getProperties().getSprite().css('left',  character.getProperties().getDefaultX() + 'px');
+            character.getProperties().getSprite().css('bottom',
+                character.getProperties().getDefaultY(barbarian.getScreenNumber()) + 'px');
+        }
+    }
+
+    /**
+     * Determine if the character is on the given screen.
+     * @param character the character
+     * @param screenNumber the screen number
+     * @returns {boolean} true if the character is on the screen, false otherwise
+     */
+    doesScreenIncludeCharacter(character, screenNumber) {
+        validateRequiredParams(this.doesScreenIncludeCharacter, arguments, 'character', 'screenNumber');
+        return this.getOpponents(screenNumber).includes(character);
+    }
+
+    /**
+     * Set the frame the the Barbarian was on when the pause took place.
+     * @param frame the frame
+     */
+    setPauseFrame(frame) {
+        validateRequiredParams(this.setPauseFrame, arguments, 'frame');
+        this.pauseFrame = frame;
+    }
+
+    /**
+     * Get the frame the Barbarian was on when a pause took place.
+     * @returns {number} the frame number
+     */
+    getPauseFrame() {
+        return this.pauseFrame;
+    }
+
+    /**
+     * Determine if the character and game board are in a state to let the screen scroll to the next or previous screen.
+     * Intended for use when the Barbarian character hits the boundary.
+     * @param character the character
+     * @returns {boolean} true if the character is in a state to allow scrolling, false otherwise
+     */
+    canScroll(character) {
+        validateRequiredParams(this.canScroll, arguments, 'character');
+        return this.canScrollLeft(character) || this.canScrollRight(character);
+    }
+
+    /* private */
+    canScrollRight(character) {
+        return this.areAllMonstersDefeated(character.getScreenNumber()) &&
+            character.isFacingRight() && this.isScrollAllowed(character.getScreenNumber(), RIGHT_LABEL) &&
+            character.getScreenNumber() < this.getScreenNumbers().length;
+    }
+
+    /* private */
+    canScrollLeft(character) {
+        return character.isFacingLeft() && this.isScrollAllowed(character.getScreenNumber(), LEFT_LABEL)
+    }
+
+    /* private */
+    areAllMonstersDefeated(screenNumber) {
+        return this.getMonstersOnScreen(screenNumber).filter(m => !m.getProperties().getCanLeaveBehind() && !m.isDead()).length < 1;
+    }
+
+    /* private */
+    getOpponentsOnScreen(screenNumber) {
+        return this.getOpponents(screenNumber);
     }
 
     /* private */
@@ -143,86 +313,5 @@ class GameBoard {
             this.getBackdrop().css(backgroundPosition,position + 'px');
             await sleep(sleepPerIteration);
         }
-    }
-
-    /**
-     * Gets the backdrop element.
-     * @returns {jQuery|HTMLElement}
-     */
-    getBackdrop() {
-        return $('.backdrop');
-    }
-
-    /**
-     * Sets the backdrop offset to the current screen.
-     */
-    setBackdrop(screenNumber) {
-        this.getBackdrop().css('background-position', -1* SCREEN_WIDTH * screenNumber + 'px 0px');
-    }
-
-    resetBackdrop() {
-        this.gameBoard.getBackdrop().css('background-position', '0px 0px');
-    }
-
-    hideOpponents(screenNumber) {
-        let opponents = this.getMonstersOnScreen(screenNumber);
-        for (let opponent of opponents) {
-            opponent.getProperties().getSprite().css('display', 'none');
-            opponent.getProperties().getDeathSprite().css('display', 'none');
-        }
-    }
-
-    /**
-     * Initializes the current screen to ready it for playing.
-     */
-    initializeScreen(screenNumber) {
-
-        let monsters = this.getMonstersOnScreen(screenNumber);
-
-        for (let monster of monsters) {
-            monster.getProperties().getSprite().css('left', monster.getProperties().getDefaultX() + 'px');
-            monster.getProperties().getSprite().css('bottom', monster.getProperties().getDefaultY(screenNumber) + 'px');
-            monster.getProperties().getSprite().css('filter', "brightness(100%)");
-            monster.setStatus(DEAD_LABEL);
-        }
-    }
-
-    /* private */
-    resetSpritePositions(barbarian) {
-        let characters = new Array(barbarian);
-        for (let scrNum of this.getScreenNumbers()) {
-            for (let opponent of this.getMonstersOnScreen(barbarian.getScreenNumber())) {
-                characters.push(opponent);
-            }
-        }
-
-        barbarian.show();
-
-        let spritesOnScreen = this.getOpponentsOnScreen(barbarian.getScreenNumber());
-        for (const character of characters) {
-            let isSpriteOnScreen = $.inArray(character, spritesOnScreen) !== -1;
-            character.getProperties().getDeathSprite().hide();
-            character.setAction(character.getProperties().getDefaultAction());
-            character.setDirection(character.getProperties().getDefaultHorizontalDirection());
-            character.setStatus(character.getProperties().getDefaultStatus());
-            character.getProperties().getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
-            character.getProperties().getSprite().css('left',  character.getProperties().getDefaultX() + 'px');
-            character.getProperties().getSprite().css('bottom',
-                character.getProperties().getDefaultY(barbarian.getScreenNumber()) + 'px');
-        }
-    }
-
-    doesScreenIncludeCharacter(character, screenNumber) {
-        validateRequiredParams(this.doesScreenIncludeCharacter, arguments, 'character', 'screenNumber');
-        return this.getOpponents(screenNumber).includes(character);
-    }
-
-    setPauseFrame(frame) {
-        validateRequiredParams(this.setPauseFrame, arguments, 'frame');
-        this.pauseFrame = frame;
-    }
-
-    getPauseFrame() {
-        return this.pauseFrame;
     }
 }

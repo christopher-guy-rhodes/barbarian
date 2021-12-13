@@ -79,6 +79,22 @@ class Game {
     }
 
     /**
+     * Get the Barbarian character.
+     * @returns {Character} the Barbarian character
+     */
+    getBarbarian() {
+        return this.barbarian;
+    }
+
+    /**
+     * Get the screen the Barbarian is currently on.
+     * @returns {number} the screen the Barbarian is on.
+     */
+    getScreenNumber() {
+        return this.barbarian.getScreenNumber();
+    }
+
+    /**
      * Starts the monster attacks for the current screen.
      * @param unpausing true if the action is trigged from an un pause event
      */
@@ -144,7 +160,6 @@ class Game {
 
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
-
         if (this.gameBoard.getIsPaused() && character.isBarbarian()) {
             this.handlePause(character, frame);
         }
@@ -361,7 +376,7 @@ class Game {
             return;
         }
 
-        if (this.gameBoard.canScroll(character, this.gameBoard.areAllMonstersDefeated(this.getScreenNumber()))) {
+        if (this.gameBoard.canScroll(character)) {
             if (this.loadScreen(character)) {
                 this.handleGameOver(character);
             }
@@ -381,7 +396,7 @@ class Game {
      */
     loadScreen(character) {
         let self = this;
-        this.gameBoard.hideOpponents(this.getScreenNumber());
+        this.gameBoard.hideMonsters(this.getScreenNumber());
         this.setScreenNumber(this.getScreenNumber() + (character.isFacingLeft() ? -1 : 1));
         if (this.gameBoard.isScreenDefined(this.getScreenNumber())) {
             this.gameBoard.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL,
@@ -425,7 +440,7 @@ class Game {
         this.getBarbarian().setAction(undefined);
         this.getBarbarian().setVerticalDirection(undefined);
         this.getBarbarian().renderAtRestFrame(this.gameBoard);
-        this.gameBoard.resetBackdrop();
+        this.gameBoard.setBackdrop(0);
 
         for (let opponent of this.gameBoard.getAllMonsters()) {
             opponent.hide();
@@ -438,25 +453,17 @@ class Game {
     }
 
     /* private */
-    getScreenNumber() {
-        return this.barbarian.getScreenNumber();
-    }
-
-    /* private */
     setScreenNumber(screenNumber) {
         validateRequiredParams(this.setScreenNumber, arguments, 'screenNumber');
         return this.barbarian.setScreenNumber(screenNumber);
     }
 
-    /* Getters */
+    /* private */
     getNumLives() {
         return this.numLives;
     }
 
-    getBarbarian() {
-        return this.barbarian;
-    }
-
+    /* private */
     setNumLives(number) {
         validateRequiredParams(this.setNumLives, arguments, 'number');
         this.numLives = number;

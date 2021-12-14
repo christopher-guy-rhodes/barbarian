@@ -105,6 +105,38 @@ class Obstacle {
         return this.y;
     }
 
+    /**
+     * Returns this obstacle if the character has not avoided it, undefined otherwise.
+     * @param character the character
+     * @returns {Character|undefined}
+     */
+    filterIfCharacterAvoided(character) {
+        return this.didCharacterHitObstacle(character) ? this : undefined;
+    }
+
+    /**
+     * Returns true if the x coordinate is close to the obstacle but not past it if x is moving in the given direction.
+     * @param x the x coordinate
+     * @param direction the direction the x coordinate is moving
+     * @returns {boolean} true if the x coordinate is close to the obstacle but not past it, false otherwise
+     */
+    isCloseButNotPast(x, direction) {
+        if (direction === RIGHT_LABEL) {
+            return x - 50 < this.x;
+        } else {
+            return x + 50 > this.x;
+        }
+    }
+
+    /**
+     * Determine if the character evaded the obstacle with a jump.
+     * @param character the character
+     * @returns {boolean} true if the character evaded the obstacle with a jump, false otherwise
+     */
+    didCharacterJumpEvade(character) {
+        return character.getAction() === JUMP_LABEL && character.getCurrentFrame(JUMP_LABEL) < JUMP_EVADE_THRESHOLD;
+    }
+
     /* private */
     static isAtWaterBoundary(character, gameBoard) {
         return !gameBoard.isScrollAllowed(character.getScreenNumber(), character.getHorizontalDirection()) &&
@@ -137,15 +169,6 @@ class Obstacle {
     }
 
     /* private */
-    isCloseButNotPast(x, direction) {
-        if (direction === RIGHT_LABEL) {
-            return x - 50 < this.x;
-        } else {
-            return x + 50 > this.x;
-        }
-    }
-
-    /* private */
     isPast(x, direction) {
         if (direction === RIGHT_LABEL) {
             return x > this.x;
@@ -170,11 +193,6 @@ class Obstacle {
     }
 
     /* private */
-    filterIfCharacterAvoided(character) {
-        return this.didCharacterHitObstacle(character) ? this : undefined;
-    }
-
-    /* private */
     didCharacterHitObstacle(character) {
         return this.isCharacterPastObstacle(character) &&
             (this.didCharacterHitElevation(character) || this.didBarbarianFallInPit(character));
@@ -196,14 +214,5 @@ class Obstacle {
     didBarbarianFallInPit(character) {
         return this.getIsPit() && character.isBarbarian() && !this.didJumpEvadePit(character)
             && !character.isAction(FALL_LABEL);
-    }
-
-    /**
-     * Determine if the character evaded the obstacle with a jump.
-     * @param character the character
-     * @returns {boolean} true if the character evaded the obstacle with a jump, false otherwise
-     */
-    didCharacterJumpEvade(character) {
-        return character.getAction() === JUMP_LABEL && character.getCurrentFrame(JUMP_LABEL) < JUMP_EVADE_THRESHOLD;
     }
 }

@@ -28,6 +28,12 @@ function sleep(ms) {
 
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 const ARGUMENT_NAMES = /([^\s,]+)/g;
+
+/**
+ * Get the parameters for a given function.
+ * @param func the function
+ * @returns {RegExpMatchArray} the regex match array
+ */
 function getParamNames(func) {
     var fnStr = func.toString().replace(STRIP_COMMENTS, '');
     var result = fnStr.slice(fnStr.indexOf('(')+1, fnStr.indexOf(')')).match(ARGUMENT_NAMES);
@@ -36,6 +42,11 @@ function getParamNames(func) {
     return result;
 }
 
+/**
+ * Validate the required parameters by making sure they are not undefined.
+ * @param func the function to validate the parameters for
+ * @param values the values that are expected to not be undefined.
+ */
 function validateRequiredParams(func, values) {
     if (func === undefined) {
         throw new Error("Cannot validate parameters if function is not passed in");
@@ -58,5 +69,4 @@ function validateRequiredParams(func, values) {
             throw new Error("function " + func.name + " is missing required parameter \"" + requiredArgName + "\"");
         }
     }
-
 }

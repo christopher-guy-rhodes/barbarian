@@ -5,7 +5,7 @@
  */
 function handlePromiseError(error) {
     alert('An error has occurred, please check the console log');
-    throw new Error(error);
+    console.log('error %o', error);
 }
 
 /**

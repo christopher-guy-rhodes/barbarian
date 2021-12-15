@@ -4,8 +4,7 @@
  * @param error the error.
  */
 function handlePromiseError(error) {
-    alert('An error has occurred, please check the console log');
-    console.log('error %o', error);
+    throw new Error(error);
 }
 
 /**

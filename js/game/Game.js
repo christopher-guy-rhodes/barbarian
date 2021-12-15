@@ -323,13 +323,11 @@ class Game {
             let opponentCurrentFrame = opponent.getCurrentFrame(opponentAction);
 
             let didOpponentWin = Fighting.didOpponentWinFight(opponent, character);
-            console.log(character.getProperties().getType() + ' is fighting ' + opponent.getProperties().getType());
             let winner = didOpponentWin ? opponent : character;
             let looser = didOpponentWin ? character : opponent;
 
             if (!looser.isDead() && !looser.getProperties().getIsInvincible()) {
                 this.death(looser);
-                console.log('stopping winner ' + winner.getProperties().getType());
                 winner.getProperties().getSprite().stop();
             }
         }
@@ -410,8 +408,6 @@ class Game {
                 })
                 .then(function() {
                     self.startScreenActions();
-
-                    console.log('set default positions');
                 }, error => handlePromiseError(error));
             return false;
         } else {

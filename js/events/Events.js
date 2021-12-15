@@ -154,7 +154,7 @@ class Events {
      * Handle a sound toggle keypress.
      */
     handleSoundKeypress() {
-        this.game.setIsSoundOn(!this.game.getSounds().getIsSoundOn());
+        this.game.getSounds().setIsSoundOn(!this.game.getSounds().getIsSoundOn());
 
         this.game.getMessages().showSoundToggleMessage(game.getSounds().getIsSoundOn());
 

@@ -43,6 +43,9 @@ class Fighting {
         let self = this;
         return gameBoard.getOpponents(character.getBarbarian().getScreenNumber())
             .filter(function (opponent) {
+                if (!character.isBarbarian() && !opponent.isBarbarian()) {
+                    return false;
+                }
                 let proximity = self.getProximity(character, opponent);
                 return proximity > 0 && proximity < x;
             });
@@ -105,10 +108,9 @@ class Fighting {
     static shouldCpuFight(character, gameBoard) {
         validateRequiredParams(this.shouldCpuFight, arguments, 'character', 'gameBoard');
 
-        return !character.isBarbarian() && !character.isDead() &&
-            !character.getBarbarian().isDead() && this.getOpponentsWithinX(character, gameBoard, FIGHTING_RANGE_PIXELS)
-                .filter(opponent => opponent.getProperties().getType() != character.getProperties().getType()
-                    && !this.didBarbarianEvadeAttack(character.getBarbarian(), character)).length > 0;
+        return !character.isBarbarian() && !character.isDead() && !character.getBarbarian().isDead() &&
+            this.getOpponentsWithinX(character, gameBoard, FIGHTING_RANGE_PIXELS).length > 0 &&
+                !this.didBarbarianEvadeAttack(character.getBarbarian(), character);
     }
 
     /**

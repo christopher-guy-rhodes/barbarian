@@ -32,6 +32,14 @@ class GameBoardBuilder {
                     left: false,
                     right: true
                 }
+            },
+            4: {
+                opponents: [],
+                water: false,
+                allowedScroll : {
+                    left: false,
+                    right: true
+                }
             }
         };
     }

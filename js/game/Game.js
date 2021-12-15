@@ -29,8 +29,9 @@ class Game {
      * @param character the character to perform the aciton for
      * @param action the action to perform
      * @param frame optional starting frame for the action used to resume an action that was stopped
+     * @param uninterruptable set to run thru the animation sequence without interruption
      */
-    performAction(character, action, frame = 0) {
+    performAction(character, action, frame = 0, uninterruptable = false) {
         validateRequiredParams(this.performAction, arguments, 'character', 'action');
 
         character.getAnimator().stopMovement();
@@ -47,7 +48,7 @@ class Game {
             character.getHorizontalDirection(),
             character.getVerticalDirection(),
             character.getProperties().getActionNumberOfTimes(action),
-            frame).then(function(frame) {
+            frame, uninterruptable).then(function(frame) {
                 self.handleActionInterruption(character, action, frame);
         }).catch(function(error) {
             handlePromiseError(error);
@@ -397,12 +398,18 @@ class Game {
     loadScreen(character) {
         let self = this;
         this.gameBoard.hideMonsters(this.getScreenNumber());
+
         this.setScreenNumber(this.getScreenNumber() + (character.isFacingLeft() ? -1 : 1));
+
         if (this.gameBoard.isScreenDefined(this.getScreenNumber())) {
             this.gameBoard.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL,
-                this.getScreenNumber())
+                this.getScreenNumber(), async function() {
+                    self.performAction(character, JUMP_LABEL, character.getProperties().getActionNumberOfTimes(JUMP_LABEL), true);
+                })
                 .then(function() {
                     self.startScreenActions();
+
+                    console.log('set default positions');
                 }, error => handlePromiseError(error));
             return false;
         } else {

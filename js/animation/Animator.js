@@ -17,9 +17,10 @@ class Animator {
      * @param vertDirection the requested vertical direction to move the character (up or down)
      * @param numberOfTimes the number of times to perform the animation loop (zero for infinite)
      * @param frameIdx the frame index offset
+     * @param uninterruptable set to run thru the animation without interrupting it
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
      */
-    async animate(gameBoard, action, direction, vertDirection, numberOfTimes, frameIdx) {
+    async animate(gameBoard, action, direction, vertDirection, numberOfTimes, frameIdx, uninterruptable) {
         validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes',
             'frameIdx');
 
@@ -30,7 +31,7 @@ class Animator {
 
         this.character.setCurrentFrame(action, frameIdx);
 
-        while (!this.isAnimationInterrupted(action, direction, vertDirection, gameBoard) && frameIdx < frames.length) {
+        while (uninterruptable || !this.isAnimationInterrupted(action, direction, vertDirection, gameBoard) && frameIdx < frames.length) {
             let sprite = this.prepareSprite();
             let heightOffset = -1 * this.character.getProperties().getFrameHeightOffset(
                 action, this.character.getHorizontalDirection()) * sprite.height();

@@ -129,19 +129,25 @@ class GameBoard {
      * @param character the character
      * @param direction the direction to move the backdrop
      * @param screenNumber the current screen number
+     * @param outOfWaterCallback callback for when the Barbarian exists the water
      * @returns {Promise<void>} void promise
      */
-    async advanceBackdrop(character, direction, screenNumber) {
+    async advanceBackdrop(character, direction, screenNumber, outOfWaterCallback) {
         if (character.isDead()) {
             return;
         }
         this.setActionsLocked(true);
 
-        await this.moveBackdrop(character, direction, false);
+        if (screenNumber > 0 && this.isWater(screenNumber - 1)) {
+            await outOfWaterCallback();
+            await this.moveBackdrop(character, direction, UP_LABEL);
+        }
+        await this.moveBackdrop(character, direction, undefined);
         if (this.isWater(screenNumber)) {
             // Scroll the water up
-            await this.moveBackdrop(character, direction, true);
+            await this.moveBackdrop(character, direction, DOWN_LABEL);
         }
+
 
         this.setActionsLocked(false);
     }
@@ -282,35 +288,43 @@ class GameBoard {
     }
 
     /* private */
-    async moveBackdrop(character, direction , isVertical) {
-        let pixelsPerSecond = isVertical ? ADVANCE_SCREEN_VERTICAL_PIXELS_PER_SECOND : ADVANCE_SCREEN_PIXELS_PER_SECOND;
-        let screenDimension = isVertical ? SCREEN_HEIGHT : SCREEN_WIDTH;
+    async moveBackdrop(character, direction , verticalDirection) {
+        let pixelsPerSecond = verticalDirection !== undefined ? ADVANCE_SCREEN_VERTICAL_PIXELS_PER_SECOND
+                                                              : ADVANCE_SCREEN_PIXELS_PER_SECOND;
+        let screenDimension = verticalDirection !== undefined ? SCREEN_HEIGHT : SCREEN_WIDTH;
 
         let pixelsPerIteration = pixelsPerSecond / ADVANCE_SCREEN_PIXELS_PER_FRAME;
         let numberOfIterations = screenDimension / pixelsPerIteration;
         let sleepPerIteration = (ADVANCE_SCREEN_DURATION_SECONDS / numberOfIterations) * MILLISECONDS_PER_SECOND;
 
         let x, y, distance, screenOffset = undefined;
-        if (isVertical) {
+        let positionMultiplier = 1;
+        if (verticalDirection === DOWN_LABEL) {
             y = SCREEN_HEIGHT - character.getProperties().getSprite().height() / 2;
-            distance = Math.abs(y - stripPxSuffix(character.getProperties().getSprite().css('bottom')));
+            distance = Math.abs(y - stripPxSuffix(character.getProperties().getSprite().css(CSS_BOTTOM_LABEL)));
+        } else if (verticalDirection === UP_LABEL) {
+            positionMultiplier = -1;
+            y = character.getProperties().getDefaultY(character.getScreenNumber());
+            distance = Math.abs(y - stripPxSuffix(character.getProperties().getSprite().css(CSS_BOTTOM_LABEL)));
         } else {
             x = character.isFacingRight() ? 0 : SCREEN_WIDTH -
                 character.getProperties().getSprite().width();
             distance = SCREEN_WIDTH - character.getProperties().getSprite().width();
         }
         let adjustedPixelsPerSecond = distance / ADVANCE_SCREEN_DURATION_SECONDS;
+
         character.getAnimator().moveElementToPosition(x, y, adjustedPixelsPerSecond);
 
-        let backgroundPosition = isVertical ? 'background-position-y' : 'background-position-x';
+
+        let backgroundPosition = verticalDirection !== undefined ? 'background-position-y' : 'background-position-x';
         let currentPosition = parseInt(stripPxSuffix(this.getBackdrop().css(backgroundPosition)));
 
         for (let i = 0; i < numberOfIterations; i++) {
             let offset = (i + 1) * pixelsPerIteration;
-            let directionCompare = isVertical ? UP_LABEL : RIGHT_LABEL;
+            let directionCompare = verticalDirection !== undefined ? UP_LABEL : RIGHT_LABEL;
             let position = direction === directionCompare ? (currentPosition + offset) : (currentPosition - offset);
 
-            this.getBackdrop().css(backgroundPosition,position + 'px');
+            this.getBackdrop().css(backgroundPosition, (positionMultiplier * position) + 'px');
             await sleep(sleepPerIteration);
         }
     }

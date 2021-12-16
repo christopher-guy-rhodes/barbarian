@@ -373,7 +373,7 @@ class Game {
 
     /* private */
     handleBoundary(character) {
-        if(!character.isBarbarian()) {
+        if(!character.isBarbarian() || character.getBarbarian().isDead()) {
             return;
         }
 

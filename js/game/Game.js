@@ -34,6 +34,12 @@ class Game {
     performAction(character, action, frame = 0, uninterruptable = false) {
         validateRequiredParams(this.performAction, arguments, 'character', 'action');
 
+        // Lock the Barbarian action immediately if he is dying to address the race condition of the game being
+        // restarted while he is going thru the dying sequence. The death handling will unlock the actions
+        if (character.isBarbarian() && action === DEATH_LABEL) {
+            this.gameBoard.setActionsLocked(true);
+        }
+
         character.getAnimator().stopMovement();
 
         if (this.isTransitionFromTerminalAction(character, action)) {

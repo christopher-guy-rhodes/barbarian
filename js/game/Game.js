@@ -177,7 +177,7 @@ class Game {
         if (character.isAction(DEATH_LABEL)) {
             this.handleDeath(character);
         }
-        if (Obstacle.isAtBoundary(character, this.gameBoard)) {
+        if (Obstacle.isStoppedByBoundary(character, this.gameBoard)) {
             this.handleBoundary(character);
         }
         if (Fighting.shouldCpuChase(character, this.gameBoard)) {

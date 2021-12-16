@@ -92,7 +92,7 @@ class Fighting {
      * @returns {boolean}
      */
     static shouldCpuChaseHorizontally(character) {
-        return Obstacle.isPastCharacter(character, character.getBarbarian())
+        return !character.isBarbarian() && Obstacle.isPastCharacter(character, character.getBarbarian())
             && character.getProperties().getCanTurnAround();
     }
 

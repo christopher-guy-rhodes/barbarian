@@ -73,7 +73,7 @@ let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(4)
+    //.withScreenNumber(3)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
 

@@ -196,13 +196,7 @@ class Game {
         // If the Barbarian has been defeated make the monster continue to move for a bit. Make sure the monster stops
         // moving before the death delay has expired so that it is not moving when when the game is reset to prevent
         // doubling up on the monster's movement
-        if (!character.isBarbarian() && this.barbarian.isDead() && !(character.isAction(WALK_LABEL)
-            || character.isAction(SIT_LABEL))) {
-            if (character.getProperties().getDefaultAction() === WALK_LABEL) {
-                this.performAction(character, WALK_LABEL);
-            } else if (character.getProperties().getDefaultAction() === SIT_LABEL) {
-                this.performAction(character, SIT_LABEL);
-            }
+        if (!character.isBarbarian() && this.barbarian.isDead()) {
             let self = this;
             setTimeout(function () {
                 let monstersOnScreen = self.gameBoard.getMonstersOnScreen(self.getScreenNumber());

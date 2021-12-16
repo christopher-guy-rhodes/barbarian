@@ -23,7 +23,6 @@ class Fighting {
      */
     static prepareDeathSprite(character) {
         let deathSprite = character.getProperties().getDeathSprite();
-        console.log('death sprite for %s is %o', character.getProperties().getType(), deathSprite);
         deathSprite.show();
         deathSprite.css(CSS_LEFT_LABEL, character.getX() + CSS_PX_LABEL);
         if (!character.isBarbarian()) {

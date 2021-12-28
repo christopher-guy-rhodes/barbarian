@@ -213,7 +213,9 @@ class Events {
      * Handle a right arrow keypress.
      */
     handleRightKeypress() {
-        let action = this.game.getGameBoard().isWater(game.getScreenNumber()) ? SWIM_LABEL : WALK_LABEL;
+        let action = this.game.getGameBoard().isWater(game.getScreenNumber())
+            ? SWIM_LABEL
+            : this.game.getBarbarian().isAction(RUN_LABEL) ? RUN_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action ||
             (!this.game.getBarbarian().isFacingRight() || this.game.getBarbarian().isMovingVertically())) &&
                 !this.game.getBarbarian().isDead()) {
@@ -227,7 +229,9 @@ class Events {
      * Handle a left arrow keypress.
      */
     handleLeftKeypress() {
-        let action = this.game.getGameBoard().isWater(game.getScreenNumber()) ? SWIM_LABEL : WALK_LABEL;
+        let action = this.game.getGameBoard().isWater(game.getScreenNumber())
+            ? SWIM_LABEL
+            : this.game.getBarbarian().isAction(RUN_LABEL) ? RUN_LABEL : WALK_LABEL;
         if ((this.game.getBarbarian().getAction() !== action ||
             (!this.game.getBarbarian().isFacingLeft() || this.game.getBarbarian().isMovingVertically())) &&
                 !this.game.getBarbarian().isDead()) {

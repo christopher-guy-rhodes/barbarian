@@ -68,12 +68,13 @@ let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
         .withDefaultBottom(2, 160)
         .withDefaultBottom(3, 600)
         .withDefaultBottom(4, 62)
+        .withDefaultBottom(5, 62)
         .withActionNumberOfTimes(ATTACK_LABEL, 1)
         .withDeathSprite($('.barbarian'))
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(3)
+    .withScreenNumber(5)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
 
@@ -207,7 +208,7 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withPixelsPerSecond(ATTACK_LABEL, 1.2 * DEFAULT_PIXELS_PER_SECOND)
                 .build())
             .withScreenNumber(3).build()])
-    .withWater(3)
+    .withSurface(3, WATER_SURFACE)
     .withOpponents(4, [barbarianCharacter,
             new CharacterBuilder(barbarianCharacter, obstacles)
                 .withProperties(new CharacterPropertiesBuilder($('.monster'), MONSTER_CHARACTER_TYPE, 1000)
@@ -238,6 +239,18 @@ const GAME_BOARD = new GameBoardBuilder()
                     .build())
                 .withAction(SIT_LABEL)
                 .withScreenNumber(4).build()])
+
+    .withOpponents(5, [barbarianCharacter,
+            new CharacterBuilder(barbarianCharacter, obstacles)
+                .withProperties(new CharacterPropertiesBuilder($('.monster'), MONSTER_CHARACTER_TYPE, 1000)
+                    .withFrames(monsterFrames)
+                    .withSound(sounds.getMonsterSound())
+                    .withFramesPerSecond(ATTACK_LABEL, 7.5)
+                    .withDefaultBottom(5, 62)
+                    .withDeathSprite($('.death_monster'))
+                    .build())
+                .build()])
+    .withSurface(5, ICE_SURFACE)
     .build();
 
 let game = new Game(barbarianCharacter, GAME_BOARD);

@@ -40,7 +40,8 @@ class Game {
             this.gameBoard.setActionsLocked(true);
         }
 
-        character.getAnimator().stopMovement();
+        // Stop the movement, delayed if the character is on ice
+        this.stopMovement(character, action);
 
         if (this.isTransitionFromTerminalAction(character, action)) {
             action = character.getAction();
@@ -166,6 +167,28 @@ class Game {
     }
 
     /* private */
+    stopMovement(character, action) {
+        if (this.gameBoard.isIce(character.getScreenNumber())) {
+            if (character.isAction(WALK_LABEL) && action === WALK_LABEL ||
+                character.isAction(RUN_LABEL) && action === RUN_LABEL) {
+                // The Barbarian changed directions, don't add ice effect if he is too close the the boundary
+                let self = this;
+                setTimeout(function () {
+                    if (character.getAnimator().getIsMovementComplete()) {
+                        character.getAnimator().clearIsMovementComplete();
+                    } else {
+                        character.getAnimator().stopMovement();
+                    }
+                }, 750);
+            } else {
+                character.getAnimator().stopMovement();
+            }
+        } else {
+            character.getAnimator().stopMovement();
+        }
+    }
+
+    /* private */
     handleActionInterruption(character, requestedAction, frame) {
         if (this.gameBoard.getIsPaused() && character.isBarbarian()) {
             this.handlePause(character, frame);
@@ -228,7 +251,7 @@ class Game {
 
     /* private */
     handleFiniteAnimations(character, requestedAction) {
-        character.getProperties().getSprite().stop();
+        character.getAnimator().stopMovement();
     }
 
     /* private */
@@ -250,7 +273,7 @@ class Game {
     handleObstacle(character, requestedAction) {
         let obstacle = character.getObstacles().getCharacterObstacle(character);
         if (obstacle !== undefined ) {
-            character.getProperties().getSprite().stop();
+            character.getAnimator().stopMovement();
 
             if (obstacle.getIsElevation()) {
                 if (obstacle.isTraversableDownhillElevation(character)) {
@@ -328,7 +351,7 @@ class Game {
 
             if (!looser.isDead() && !looser.getProperties().getIsInvincible()) {
                 this.death(looser);
-                winner.getProperties().getSprite().stop();
+                winner.getAnimator().stopMovement();
             }
         }
     }
@@ -388,8 +411,6 @@ class Game {
             // would look awkward.
             character.renderAtRestFrame(this.gameBoard);
         }
-
-        character.setAction(STOP_LABEL);
     }
 
     /**
@@ -419,6 +440,8 @@ class Game {
         if (this.gameBoard.isWater(this.getScreenNumber())) {
             this.performAction(this.getBarbarian(), SWIM_LABEL);
         }
+        this.getBarbarian().getAnimator().clearIsMovementComplete();
+        this.getBarbarian().setAction(STOP_LABEL);
         this.gameBoard.initializeScreen(this.getScreenNumber());
         this.startMonsterAttacks();
     }

@@ -54,7 +54,17 @@ class GameBoard {
      */
     isWater(screenNumber) {
         validateRequiredParams(this.isWater, arguments, 'screenNumber');
-        return this.gameBoard[screenNumber][WATER_LABEL];
+        return this.gameBoard[screenNumber][SURFACE_LABEL] === WATER_SURFACE;
+    }
+
+    /**
+     * Determine if a particular screen is an ice screen.
+     * @param screenNumber the screen number
+     * @returns {boolean} true if the screen is an ice screen, false otherwise
+     */
+    isIce(screenNumber) {
+        validateRequiredParams(this.isWater, arguments, 'screenNumber');
+        return this.gameBoard[screenNumber][SURFACE_LABEL] === ICE_SURFACE;
     }
 
     /**
@@ -138,7 +148,10 @@ class GameBoard {
         }
         this.setActionsLocked(true);
 
-        if (screenNumber > 0 && this.isWater(screenNumber - 1)) {
+        // Currently we only jump out of water moving right. Don't want to jump if the screen is scrolled in when
+        // the Barbarian is going back to the screen. May need to generalize this in the future.
+        if (screenNumber > 0 && this.isWater(screenNumber - 1)
+            && character.getHorizontalDirection() === RIGHT_LABEL ) {
             await outOfWaterCallback();
             await this.moveBackdrop(character, direction, UP_LABEL);
         }

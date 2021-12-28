@@ -6,6 +6,7 @@ class Animator {
     constructor(character) {
         validateRequiredParams(this.constructor, arguments, 'character');
         this.character = character;
+        this.movementComplete = false;
     }
 
     /**
@@ -85,6 +86,26 @@ class Animator {
         this.moveToPosition(duration, x, y);
     }
 
+    /**
+     * Typically sprite movements do not complete since they get interrupted by another movement. An exception to this
+     * is when a character hits a boundary and in that scenario the movementComplete flag is set. This method allows
+     * that flag to be cleared manually.
+     */
+    clearIsMovementComplete() {
+        this.movementComplete = false;
+    }
+
+    /**
+     * Typically sprite movements do not complete since they get interrupted by another movement. An exception to this
+     * is when a character hits a boundary and in that scenario the movementComplete flag is set. This flag can be
+     * important when wanting to know if the animation has been terminated before taking action on it.
+     */
+    getIsMovementComplete() {
+        return this.movementComplete;
+    }
+
+
+
     /* private */
     isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
         return (this.character.getAction() !== requestedAction ||
@@ -133,7 +154,13 @@ class Animator {
 
     /* private */
     moveToPosition(duration, x, y) {
-        this.character.getProperties().getSprite().animate({left: x + 'px', bottom: y + 'px'}, duration, 'linear')
+        let self = this;
+        this.character.getProperties().getSprite().animate({left: x + 'px', bottom: y + 'px'},
+            {
+                'duration' : duration,
+                'easing' : 'linear',
+                'complete' : function() {self.movementComplete = true; },
+            });
     }
 
     /* private */

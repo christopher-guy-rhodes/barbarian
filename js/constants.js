@@ -34,6 +34,12 @@ const TURNAROUND_LABEL = 'turnaround';
 const VERTICAL_LABEL = 'y';
 const HORIZONTAL_LABEL = 'x';
 
+// Surfaces
+const WATER_SURFACE = 'water';
+const ICE_SURFACE = 'ice';
+const EARTH_SURFACE = 'earth';
+const SURFACE_LABEL = 'surface';
+
 // Actions
 const STOP_LABEL = 'stop';
 const RUN_LABEL = 'run';

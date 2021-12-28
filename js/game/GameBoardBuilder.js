@@ -3,7 +3,7 @@ class GameBoardBuilder {
         this.gameBoard = {
             0: {
                 opponents: [],
-                water: false,
+                surface: EARTH_SURFACE,
                 allowedScroll: {
                     left: false,
                     right: true
@@ -11,7 +11,7 @@ class GameBoardBuilder {
             },
             1: {
                 opponents: [],
-                water: false,
+                surface: EARTH_SURFACE,
                 allowedScroll: {
                     left: true,
                     right: true
@@ -19,7 +19,7 @@ class GameBoardBuilder {
             },
             2: {
                 opponents: [],
-                water: false,
+                surface: EARTH_SURFACE,
                 allowedScroll : {
                     left: true,
                     right: true
@@ -27,7 +27,7 @@ class GameBoardBuilder {
             },
             3: {
                 opponents: [],
-                water: false,
+                surface: EARTH_SURFACE,
                 allowedScroll : {
                     left: false,
                     right: true
@@ -35,9 +35,17 @@ class GameBoardBuilder {
             },
             4: {
                 opponents: [],
-                water: false,
+                surface: EARTH_SURFACE,
                 allowedScroll : {
                     left: false,
+                    right: true
+                }
+            },
+            5: {
+                opponents: [],
+                surface: EARTH_SURFACE,
+                allowedScroll : {
+                    left: true,
                     right: true
                 }
             }
@@ -57,12 +65,13 @@ class GameBoardBuilder {
     }
 
     /**
-     * Set whether the screen number is a water screen.
+     * Set the surface for the given screen number.
      * @param screenNumber the screen number
+     * @param surface the surface (WATER, ICE, EARTH)
      * @returns {GameBoardBuilder} this game board builder
      */
-    withWater(screenNumber) {
-        this.gameBoard[screenNumber][WATER_LABEL] = true;
+    withSurface(screenNumber, surface) {
+        this.gameBoard[screenNumber][SURFACE_LABEL] = surface;
         return this;
     }
 

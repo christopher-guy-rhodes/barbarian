@@ -192,8 +192,14 @@ class Events {
         if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !this.game.getBarbarian().isAction(JUMP_LABEL)
             && !this.game.getBarbarian().isDead()) {
             let self = this;
-            this.game.performAction(this.game.getBarbarian(), JUMP_LABEL, 0, false,
-                function() {self.game.performAction(self.game.getBarbarian(), STOP_LABEL)});
+
+            let isIce = this.game.getGameBoard().isIce(this.game.getScreenNumber());
+            // Perform a stop after a jump if on ice to prevent a slide effect after the jump
+            let stopSlide = isIce
+                ? function () { self.game.performAction(self.game.getBarbarian(), STOP_LABEL) }
+                : undefined;
+
+            this.game.performAction(this.game.getBarbarian(), JUMP_LABEL, 0, false, stopSlide);
         }
     }
 

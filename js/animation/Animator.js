@@ -89,10 +89,10 @@ class Animator {
     /**
      * Typically sprite movements do not complete since they get interrupted by another movement. An exception to this
      * is when a character hits a boundary and in that scenario the movementComplete flag is set. This method allows
-     * that flag to be cleared manually.
+     * that flag to be set manually.
      */
-    clearIsMovementComplete() {
-        this.movementComplete = false;
+    setIsMovementComplete(flag) {
+        this.movementComplete = flag;
     }
 
     /**

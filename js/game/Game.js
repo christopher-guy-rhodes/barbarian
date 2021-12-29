@@ -181,7 +181,7 @@ class Game {
                 setTimeout(function () {
                     if (character.getAnimator().getIsMovementComplete()) {
                         // The character movement completed, there is nothing to stop after the slide
-                        character.getAnimator().clearIsMovementComplete();
+                        character.getAnimator().setIsMovementComplete(false);
                     } else {
                         // Stop movement post slide unless the character is not stopping and have not requested a stop.
                         // This allows a character to "break out of a stop slide" to perform another.
@@ -450,7 +450,7 @@ class Game {
         if (this.gameBoard.isWater(this.getScreenNumber())) {
             this.performAction(this.getBarbarian(), SWIM_LABEL);
         }
-        this.getBarbarian().getAnimator().clearIsMovementComplete();
+        this.getBarbarian().getAnimator().setIsMovementComplete(false);
         this.getBarbarian().setAction(STOP_LABEL);
         this.gameBoard.initializeScreen(this.getScreenNumber());
         this.startMonsterAttacks();

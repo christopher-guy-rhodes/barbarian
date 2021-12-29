@@ -30,8 +30,9 @@ class Game {
      * @param action the action to perform
      * @param frame optional starting frame for the action used to resume an action that was stopped
      * @param uninterruptable set to run thru the animation sequence without interruption
+     * @param callback callback function to run upon completion
      */
-    performAction(character, action, frame = 0, uninterruptable = false) {
+    performAction(character, action, frame = 0, uninterruptable = false, callback = undefined) {
         validateRequiredParams(this.performAction, arguments, 'character', 'action');
 
         // Lock the Barbarian action immediately if he is dying to address the race condition of the game being
@@ -57,6 +58,9 @@ class Game {
             character.getProperties().getActionNumberOfTimes(action),
             frame, uninterruptable).then(function(frame) {
                 self.handleActionInterruption(character, action, frame);
+                if (callback !== undefined) {
+                    callback();
+                }
         }).catch(function(error) {
             handlePromiseError(error);
         });

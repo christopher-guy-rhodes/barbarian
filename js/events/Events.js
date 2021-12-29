@@ -191,7 +191,9 @@ class Events {
     handleJumpKeypress() {
         if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !this.game.getBarbarian().isAction(JUMP_LABEL)
             && !this.game.getBarbarian().isDead()) {
-            this.game.performAction(this.game.getBarbarian(), JUMP_LABEL);
+            let self = this;
+            this.game.performAction(this.game.getBarbarian(), JUMP_LABEL, 0, false,
+                function() {self.game.performAction(self.game.getBarbarian(), STOP_LABEL)});
         }
     }
 

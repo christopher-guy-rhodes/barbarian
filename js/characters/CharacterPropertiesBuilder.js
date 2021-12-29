@@ -38,7 +38,7 @@ class CharacterPropertiesBuilder {
             sink: 0,
             sit: 0,
             jump: 1,
-            stop: 1,
+            stop: 0,
             fall: 1,
             death: 1
         };
@@ -49,7 +49,7 @@ class CharacterPropertiesBuilder {
             run : DEFAULT_PIXELS_PER_SECOND * RUN_SPEED_INCREASE_FACTOR,
             jump: DEFAULT_PIXELS_PER_SECOND,
             attack: DEFAULT_PIXELS_PER_SECOND,
-            stop: 0,
+            stop: DEFAULT_PIXELS_PER_SECOND,
             fall: DEFAULT_PIXELS_PER_SECOND,
             sink: DEFAULT_PIXELS_PER_SECOND,
             sit: 0,

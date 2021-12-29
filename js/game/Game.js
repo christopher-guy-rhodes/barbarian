@@ -170,14 +170,20 @@ class Game {
     stopMovement(character, action) {
         if (this.gameBoard.isIce(character.getScreenNumber())) {
             if (character.isAction(WALK_LABEL) && action === WALK_LABEL ||
-                character.isAction(RUN_LABEL) && action === RUN_LABEL) {
-                // The Barbarian changed directions, don't add ice effect if he is too close the the boundary
+                character.isAction(RUN_LABEL) && action === RUN_LABEL ||
+                !character.isAction(STOP_LABEL) && action === STOP_LABEL) {
                 let self = this;
+                // Delay the motion stop since we are on ice to produce a sliding effect
                 setTimeout(function () {
                     if (character.getAnimator().getIsMovementComplete()) {
+                        // The character movement completed, there is nothing to stop after the slide
                         character.getAnimator().clearIsMovementComplete();
                     } else {
-                        character.getAnimator().stopMovement();
+                        // Stop movement post slide unless the character is not stopping and have not requested a stop.
+                        // This allows a character to "break out of a stop slide" to perform another.
+                        if(character.isAction(STOP_LABEL) || action !== STOP_LABEL) {
+                            character.getAnimator().stopMovement();
+                        }
                     }
                 }, 750);
             } else {

@@ -111,7 +111,6 @@ class Animator {
         return (this.character.getAction() !== requestedAction ||
             this.character.getHorizontalDirection() !== requestedDirection ||
             this.character.getVerticalDirection() !== requestedVerticalDirection ||
-            this.character.isAction(STOP_LABEL) ||
             Fighting.shouldCpuChase(this.character, gameBoard) ||
             Obstacle.isStoppedByBoundary(this.character, gameBoard) ||
             this.character.getObstacles().didCharacterHitObstacle(this.character) ||
@@ -185,10 +184,6 @@ class Animator {
         if (!(this.character.getVerticalDirection() === vertDirection)) {
             console.log('character: ' + characterType + ' vertical direction: "' + this.character.getVerticalDirection()
                 + '" is not equal to requested vertical direction "' + vertDirection + '"');
-        }
-
-        if (!(!this.character.isAction(STOP_LABEL))) {
-            console.log('character: ' + characterType + ' is stopped');
         }
         if (!(!Fighting.shouldCpuChaseHorizontally(this.character, gameBoard))) {
             console.log('character: ' + characterType + ' should chase the Barbarian');

@@ -120,8 +120,6 @@ class Events {
             this.game.resetGame();
             this.messages.hideAllMessages();
             this.game.startMonsterAttacks();
-            this.game.performAction(this.game.getBarbarian(), STOP_LABEL);
-            this.game.getBarbarian().renderAtRestFrame(this.game.gameBoard);
         }
     }
 

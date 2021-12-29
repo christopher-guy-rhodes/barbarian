@@ -158,7 +158,7 @@ class Animator {
             {
                 'duration' : duration,
                 'easing' : 'linear',
-                'complete' : function() { self.movementComplete = true; },
+                'complete' : function() {self.movementComplete = true; },
             });
     }
 

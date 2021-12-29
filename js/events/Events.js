@@ -133,7 +133,9 @@ class Events {
                 this.game.getGameBoard().setIsPaused(false);
                 if (this.game.getBarbarian().isActionDefined()) {
                     let action = this.game.getBarbarian().getAction();
-                    this.game.performAction(this.game.getBarbarian(), action, this.game.getGameBoard().getPauseFrame());
+                    if (action !== STOP_LABEL) {
+                        this.game.performAction(this.game.getBarbarian(), action, this.game.getGameBoard().getPauseFrame());
+                    }
                     this.game.getGameBoard().setPauseFrame(0);
                 }
                 this.game.startMonsterAttacks(true);

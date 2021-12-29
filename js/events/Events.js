@@ -144,6 +144,7 @@ class Events {
                 this.game.getMessages().showPauseMessage()
                 this.game.getSounds().stopAllSounds();
                 this.game.getGameBoard().setIsPaused(true);
+                this.game.getBarbarian().getAnimator().stopMovement();
                 // This needs to be set for ice sliding to work properly since the stopping is delayed on ice
                 this.game.getBarbarian().getAnimator().setIsMovementComplete(true);
             }

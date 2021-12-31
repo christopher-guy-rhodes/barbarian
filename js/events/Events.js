@@ -172,6 +172,9 @@ class Events {
      * Handle an attack keypress.
      */
     handleAttackKeypress() {
+        if (this.game.getBarbarian().getIsSliding()) {
+            return;
+        }
         if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !game.getBarbarian().isDead()) {
             this.game.getBarbarian().getAnimator().stopMovement();
             this.game.getSounds().playGruntSound();

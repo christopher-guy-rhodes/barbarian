@@ -173,6 +173,7 @@ class Game {
                 character.isAction(RUN_LABEL) && action === RUN_LABEL ||
                 !character.isAction(STOP_LABEL) && action === STOP_LABEL) {
                 let self = this;
+                character.setIsSliding(true);
                 // Delay the motion stop since we are on ice to produce a sliding effect
                 setTimeout(function () {
                     if (character.getAnimator().getIsMovementComplete()) {
@@ -185,6 +186,7 @@ class Game {
                             character.getAnimator().stopMovement();
                         }
                     }
+                    character.setIsSliding(false);
                 }, 750);
             } else {
                 character.getAnimator().stopMovement();

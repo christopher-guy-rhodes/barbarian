@@ -124,7 +124,7 @@ class Animator {
     /* private */
     moveCharacter(action, gameBoard) {
         let isFalling = action === FALL_LABEL || action === SINK_LABEL;
-        let x = isFalling    ? undefined : this.getHorizontalBoundary();
+        let x = isFalling ? undefined : this.getHorizontalBoundary();
         let y = isFalling ? 0 : this.getMoveToY(gameBoard);
         this.moveElementToPosition(x, y, this.character.getProperties().getPixelsPerSecond(action));
     }

@@ -204,6 +204,9 @@ class Events {
      * Handle a stop keypress.
      */
     handleStopKeypress() {
+        if (this.game.getBarbarian().getIsSliding()) {
+            return;
+        }
         if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !this.game.getBarbarian().isDead()) {
             this.game.performAction(this.game.getBarbarian(), STOP_LABEL);
             this.game.getBarbarian().getAnimator().stopMovement();
@@ -216,6 +219,9 @@ class Events {
      * Handle a right arrow keypress.
      */
     handleRightKeypress() {
+        if (this.game.getBarbarian().getIsSliding()) {
+            return;
+        }
         let action = this.game.getGameBoard().isWater(game.getScreenNumber())
             ? SWIM_LABEL
             : this.game.getBarbarian().isAction(RUN_LABEL) ? RUN_LABEL : WALK_LABEL;
@@ -232,6 +238,9 @@ class Events {
      * Handle a left arrow keypress.
      */
     handleLeftKeypress() {
+        if (this.game.getBarbarian().getIsSliding()) {
+            return;
+        }
         let action = this.game.getGameBoard().isWater(game.getScreenNumber())
             ? SWIM_LABEL
             : this.game.getBarbarian().isAction(RUN_LABEL) ? RUN_LABEL : WALK_LABEL;

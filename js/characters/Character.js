@@ -37,9 +37,26 @@ class Character {
         this.status = status;
         this.screenNumber = screenNumber;
         this.currentFrame = currentFrame;
+        this.isSliding = false;
 
         this.animator = new Animator(this);
         this.sounds = new Sounds();
+    }
+
+    /**
+     * Determine if the character is sliding on ice.
+     * @returns {boolean} true if the character is sliding, false otherwise
+     */
+    getIsSliding() {
+        return this.isSliding;
+    }
+
+    /**
+     * Set whether or not the character is sliding on ice.
+     * @param flag true if the character is sliding, false otherwise
+     */
+    setIsSliding(flag) {
+        this.isSliding = flag;
     }
 
     /**

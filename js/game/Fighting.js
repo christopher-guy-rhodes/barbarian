@@ -1,3 +1,6 @@
+const MIN_ATTACK_THRESHOLD = 3;
+const MAX_ATTACK_THRESHOLD = 4;
+
 class Fighting {
     constructor() {
     }
@@ -108,7 +111,8 @@ class Fighting {
     static shouldCpuFight(character, gameBoard) {
         validateRequiredParams(this.shouldCpuFight, arguments, 'character', 'gameBoard');
 
-        return !character.isBarbarian() && !character.isDead() && !character.getBarbarian().isDead() &&
+        return character.getProperties().getType() !== AXE_CHARACTER_TYPE &&
+            !character.isBarbarian() && !character.isDead() && !character.getBarbarian().isDead() &&
             this.getOpponentsWithinX(character, gameBoard, FIGHTING_RANGE_PIXELS).length > 0 &&
                 !this.didBarbarianEvadeAttack(character.getBarbarian(), character);
     }

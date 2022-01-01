@@ -76,6 +76,33 @@
     display: none;
 }
 
+.axe1 {
+    height: 460px;
+    width: 460px;
+    background-image: url(../sprites/axe.png);
+    position: absolute;
+    bottom: 12px;
+    display: none;
+}
+
+.axe2 {
+    height: 460px;
+    width: 460px;
+    background-image: url(../sprites/axe.png);
+    position: absolute;
+    bottom: 12px;
+    display: none;
+}
+
+.axe3 {
+    height: 460px;
+    width: 460px;
+    background-image: url(../sprites/axe.png);
+    position: absolute;
+    bottom: 12px;
+    display: none;
+}
+
 .death {
     border: 0px solid white;
     height: 800px;

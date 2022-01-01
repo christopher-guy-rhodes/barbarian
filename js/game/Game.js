@@ -1,5 +1,3 @@
-const MIN_ATTACK_THRESHOLD = 3;
-const MAX_ATTACK_THRESHOLD = 4;
 const JUST_DIED_THRESHOLD = 500;
 const DEATH_DELAY = 2000;
 
@@ -359,7 +357,7 @@ class Game {
 
             if (!looser.isDead() && !looser.getProperties().getIsInvincible()) {
                 this.death(looser);
-                winner.getAnimator().stopMovement();
+                //winner.getAnimator().stopMovement();
             }
         }
     }

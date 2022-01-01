@@ -108,6 +108,9 @@ class Animator {
 
     /* private */
     isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
+        if (this.character.getProperties().getType() === AXE_CHARACTER_TYPE && this.character.isDead()) {
+            console.log('axe is dead');
+        }
         return (this.character.getAction() !== requestedAction ||
             this.character.getHorizontalDirection() !== requestedDirection ||
             this.character.getVerticalDirection() !== requestedVerticalDirection ||

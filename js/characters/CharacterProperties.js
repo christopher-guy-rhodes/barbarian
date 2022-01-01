@@ -23,10 +23,10 @@ class CharacterProperties {
      */
     constructor(sprite, frames, deathSprite, characterType, defaultX, canElevate, canHighlight, canLeaveBehind,
                 canTurnAround, isInvincible, sound, actionNumberOfTimes, pixelsPerSecond, framesPerSecond,
-                defaultStatus, defaultHorizontalAction, defaultDirection, defaultBottom) {
+                defaultStatus, defaultHorizontalAction, defaultDirection, defaultBottom, attackThresholds) {
         validateRequiredParams(this.constructor, arguments, 'sprite', 'deathSprite', 'characterType', 'canElevate',
             'canHighlight', 'canLeaveBehind', 'canTurnAround', 'isInvincible', 'actionNumberOfTimes', 'defaultStatus',
-            'defaultHorizontalAction', 'defaultX', 'defaultDirection', 'defaultBottom');
+            'defaultHorizontalAction', 'defaultX', 'defaultDirection', 'defaultBottom', 'attackThresholds');
         this.sprite = sprite;
         this.frames = frames;
         this.deathSprite = deathSprite;
@@ -46,7 +46,25 @@ class CharacterProperties {
         this.defaultX = defaultX;
         this.defaultDirection = defaultDirection;
         this.defaultBottom = defaultBottom;
+        this.attackThresholds = attackThresholds;
     }
+
+    /**
+     * Get the minimum attack threshold to defeat this character.
+     * @returns {number} the minimum attack threshold
+     */
+    getMinAttackThreshold() {
+        return this.attackThresholds[MIN_LABEL];
+    }
+
+    /**
+     * Get the minimum attack threshold to defeat this character.
+     * @returns {number} the maximum attack threshold
+     */
+    getMaxAttackThreshold() {
+        return this.attackThresholds[MAX_LABEL];
+    }
+
 
     /**
      * Get the frame indexes for a particular action and direction

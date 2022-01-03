@@ -62,6 +62,9 @@ class CharacterProperties {
      */
     getFrameTarget(action, frame) {
         validateRequiredParams(this.getFrameTarget, arguments, 'action', 'frame');
+        if (this.frameTargets[action] === undefined) {
+            return undefined;
+        }
         return this.frameTargets[action][frame];
     }
 

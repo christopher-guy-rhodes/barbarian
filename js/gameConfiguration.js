@@ -15,60 +15,66 @@ const AXE_WIDTH_HORIZ = 68;
 
 const AXE_HEIGHT_VERT_OFFSET = 13;
 const AXE_HEIGHT_HORIZ_OFFSET = 185;
-const AXE_HEIGHT_CORNER_OFFSET = 55;
+const AXE_HEIGHT_CORNER_OFFSET = 55 + 25;
 
-const AXE_WIDTH_CORNER_OFFSET = 55;
+const AXE_WIDTH_CORNER_OFFSET = 55 + 25;
 const AXE_WIDTH_HORIZ_OFFSET = 13;
 
 function getAxeFrameTargets(selector) {
     return {
-        0: {
-            height: AXE_HEIGHT_VERT,
-            width: AXE_WIDTH_VERT,
-            bottomOffset: selector.height() - AXE_HEIGHT_VERT - AXE_HEIGHT_VERT_OFFSET,
-            leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
-        },
-        1: {
-            height: AXE_HEIGHT_TOP_CORNER,
-            width: AXE_WIDTH_CORNER,
-            bottomOffset: selector.height() - AXE_HEIGHT_TOP_CORNER - AXE_HEIGHT_CORNER_OFFSET,
-            leftOffset: AXE_WIDTH_CORNER_OFFSET
-        },
-        2: {
-            height: AXE_HEIGHT_LEFT,
-            width: AXE_WIDTH_HORIZ,
-            bottomOffset: selector.height() - AXE_HEIGHT_LEFT - AXE_HEIGHT_HORIZ_OFFSET,
-            leftOffset: AXE_WIDTH_HORIZ_OFFSET
-        },
-        3: {
-            height: AXE_HEIGHT_TOP_CORNER,
-            width: AXE_WIDTH_CORNER,
-            bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
-            leftOffset: AXE_WIDTH_CORNER_OFFSET
-        },
-        4: {
-            height: AXE_HEIGHT_VERT,
-            width: AXE_WIDTH_VERT,
-            bottomOffset: AXE_HEIGHT_VERT_OFFSET,
-            leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
-        },
-        5: {
-            height: AXE_HEIGHT_TOP_CORNER,
-            width: AXE_WIDTH_CORNER,
-            bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
-            leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
-        },
-        6: {
-            height: AXE_HEIGHT_LEFT,
-            width: AXE_WIDTH_HORIZ,
-            bottomOffset: selector.height() - AXE_HEIGHT_LEFT - AXE_HEIGHT_HORIZ_OFFSET,
-            leftOffset: selector.width() - AXE_WIDTH_HORIZ - AXE_WIDTH_HORIZ_OFFSET
-        },
-        7: {
-            height: AXE_HEIGHT_TOP_CORNER,
-            width: AXE_WIDTH_CORNER,
-            bottomOffset: selector.height() - AXE_HEIGHT_TOP_CORNER - AXE_HEIGHT_CORNER_OFFSET,
-            leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+        attack : {
+            /*
+            0: {
+                height: AXE_HEIGHT_VERT,
+                width: AXE_WIDTH_VERT,
+                bottomOffset: selector.height() - AXE_HEIGHT_VERT - AXE_HEIGHT_VERT_OFFSET,
+                leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
+            },
+            1: {
+                height: AXE_HEIGHT_TOP_CORNER,
+                width: AXE_WIDTH_CORNER,
+                bottomOffset: selector.height() - AXE_HEIGHT_TOP_CORNER - AXE_HEIGHT_CORNER_OFFSET,
+                leftOffset: AXE_WIDTH_CORNER_OFFSET
+            },
+            2: {
+                height: AXE_HEIGHT_LEFT,
+                width: AXE_WIDTH_HORIZ,
+                bottomOffset: selector.height() - AXE_HEIGHT_LEFT - AXE_HEIGHT_HORIZ_OFFSET,
+                leftOffset: AXE_WIDTH_HORIZ_OFFSET
+            },
+            */
+            3: {
+                height: AXE_HEIGHT_TOP_CORNER,
+                width: AXE_WIDTH_CORNER,
+                bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
+                leftOffset: AXE_WIDTH_CORNER_OFFSET
+            },
+            4: {
+                height: AXE_HEIGHT_VERT,
+                width: AXE_WIDTH_VERT,
+                bottomOffset: AXE_HEIGHT_VERT_OFFSET,
+                leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
+            },
+            5: {
+                height: AXE_HEIGHT_TOP_CORNER,
+                width: AXE_WIDTH_CORNER,
+                bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
+                leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+            },
+            /*
+            6: {
+                height: AXE_HEIGHT_LEFT,
+                width: AXE_WIDTH_HORIZ,
+                bottomOffset: selector.height() - AXE_HEIGHT_LEFT - AXE_HEIGHT_HORIZ_OFFSET,
+                leftOffset: selector.width() - AXE_WIDTH_HORIZ - AXE_WIDTH_HORIZ_OFFSET
+            },
+            7: {
+                height: AXE_HEIGHT_TOP_CORNER,
+                width: AXE_WIDTH_CORNER,
+                bottomOffset: selector.height() - AXE_HEIGHT_TOP_CORNER - AXE_HEIGHT_CORNER_OFFSET,
+                leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+            }
+            */
         }
     }
 }

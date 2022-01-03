@@ -38,7 +38,7 @@ class Animator {
                 action, this.character.getHorizontalDirection()) * sprite.height();
             let offset = -1 * frames[frameIdx] * sprite.width();
 
-            this.renderFrameTarget(sprite, frames[frameIdx]);
+            this.renderFrameTarget(action, sprite, frames[frameIdx]);
 
             frameIdx++;
 
@@ -64,9 +64,9 @@ class Animator {
         return frameIdx;
     }
 
-    renderFrameTarget(sprite, frame) {
+    renderFrameTarget(action, sprite, frame) {
         let targetSelector = $('.' + sprite.attr('class') + 'Target');
-        let frameTarget = this.character.getProperties().getFrameTarget(frame);
+        let frameTarget = this.character.getProperties().getFrameTarget(action, frame);
         if (frameTarget) {
             targetSelector.css('position', 'fixed');
             targetSelector.css('border', '1px solid red');

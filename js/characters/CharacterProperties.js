@@ -56,12 +56,13 @@ class CharacterProperties {
      * Get the specific rectangular target for a frame. Used to specify specific attack regions for sprites used to
      * determine attack results for characters.
      *
+     * @param the action the frames are associated with
      * @param frame the frame to get the targeting for.
      * @returns {undefined|Object}
      */
-    getFrameTarget(frame) {
-        validateRequiredParams(this.getFrameTarget, arguments, 'frame');
-        return this.frameTargets[frame];
+    getFrameTarget(action, frame) {
+        validateRequiredParams(this.getFrameTarget, arguments, 'action', 'frame');
+        return this.frameTargets[action][frame];
     }
 
     /**

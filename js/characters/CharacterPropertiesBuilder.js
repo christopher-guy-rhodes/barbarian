@@ -72,6 +72,44 @@ class CharacterPropertiesBuilder {
             min : 3,
             max : 4
         }
+
+        this.frameTargets = {};
+
+    }
+
+    /**
+     * Set specific rectangular target for a frame. Used to specify specific attack regions for sprites used to
+     * determine attack results for characters.
+     * @param frame the frame to target
+     * @param height the height of the target
+     * @param width the width of the target
+     * @param bottomOffset the offset amount that will be added to the current X coordinate
+     * @param leftOffset the offset amount that will be added to the current Y coordinate
+     * @returns {CharacterPropertiesBuilder} this builder
+     */
+    withFrameTarget(frame, height, width, bottomOffset, leftOffset) {
+        console.log('frame target height ' + this.sprite.height());
+        if (this.frameTargets[frame] === undefined) {
+            this.frameTargets[frame] = {};
+        }
+
+        this.frameTargets[frame]['height'] = height;
+        this.frameTargets[frame]['width'] = width;
+        this.frameTargets[frame]['bottomOffset'] = bottomOffset;
+        this.frameTargets[frame]['leftOffset'] = leftOffset;
+
+        return this;
+    }
+
+    /**
+     * Set specific rectangular targets for a frame. Used to specify specific attack regions for sprites used to
+     * determine attack results for characters. Will override any targets set using withFrameTarget.
+     *
+     * @param frameTargets hash with keys height, width, bottomOffset, leftOffset
+     */
+    withFrameTargets(frameTargets) {
+        this.frameTargets = frameTargets;
+        return this;
     }
 
     /**
@@ -275,6 +313,6 @@ class CharacterPropertiesBuilder {
         return new CharacterProperties(this.sprite, this.frames, this.deathSprite, this.characterType, this.defaultX,
             this.canElevate, this.canHighlight, this.canLeaveBehind, this.canTurnAround, this.isInvincible, this.sound,
             this.actionNumberOfTimes, this.pixelsPerSecond, this.framesPerSecond, this.defaultStatus,
-            this.defaultAction, this.defaultDirection, this.defaultBottom,  this.attackThresholds);
+            this.defaultAction, this.defaultDirection, this.defaultBottom,  this.attackThresholds, this.frameTargets);
     }
 }

@@ -36,7 +36,12 @@ class Animator {
             let sprite = this.prepareSprite();
             let heightOffset = -1 * this.character.getProperties().getFrameHeightOffset(
                 action, this.character.getHorizontalDirection()) * sprite.height();
-            let offset = -1 * frames[frameIdx++] * sprite.width();
+            let offset = -1 * frames[frameIdx] * sprite.width();
+
+            this.renderFrameTarget(sprite, frames[frameIdx]);
+
+            frameIdx++;
+
             sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
 
             this.character.setCurrentFrame(action, frameIdx);
@@ -57,6 +62,22 @@ class Animator {
         //    gameBoard, frameIdx, frames);
 
         return frameIdx;
+    }
+
+    renderFrameTarget(sprite, frame) {
+        let targetSelector = $('.' + sprite.attr('class') + 'Target');
+        let frameTarget = this.character.getProperties().getFrameTarget(frame);
+        if (frameTarget) {
+            targetSelector.css('position', 'fixed');
+            targetSelector.css('border', '1px solid red');
+            targetSelector.css(CSS_HEIGHT_LABEL, frameTarget[CSS_HEIGHT_LABEL]);
+            targetSelector.css(CSS_WIDTH_LABEL, frameTarget[CSS_WIDTH_LABEL]);
+            targetSelector.css(CSS_BOTTOM_LABEL, this.character.getY() + frameTarget['bottomOffset']);
+            targetSelector.css(CSS_LEFT_LABEL, this.character.getX() + frameTarget['leftOffset']);
+        } else {
+            targetSelector.css('border', '0px');
+        }
+
     }
 
     /**

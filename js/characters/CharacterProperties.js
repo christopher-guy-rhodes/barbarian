@@ -23,10 +23,12 @@ class CharacterProperties {
      */
     constructor(sprite, frames, deathSprite, characterType, defaultX, canElevate, canHighlight, canLeaveBehind,
                 canTurnAround, isInvincible, sound, actionNumberOfTimes, pixelsPerSecond, framesPerSecond,
-                defaultStatus, defaultHorizontalAction, defaultDirection, defaultBottom, attackThresholds) {
+                defaultStatus, defaultHorizontalAction, defaultDirection, defaultBottom, attackThresholds,
+                frameTargets) {
         validateRequiredParams(this.constructor, arguments, 'sprite', 'deathSprite', 'characterType', 'canElevate',
             'canHighlight', 'canLeaveBehind', 'canTurnAround', 'isInvincible', 'actionNumberOfTimes', 'defaultStatus',
-            'defaultHorizontalAction', 'defaultX', 'defaultDirection', 'defaultBottom', 'attackThresholds');
+            'defaultHorizontalAction', 'defaultX', 'defaultDirection', 'defaultBottom', 'attackThresholds',
+            'frameTargets');
         this.sprite = sprite;
         this.frames = frames;
         this.deathSprite = deathSprite;
@@ -47,6 +49,19 @@ class CharacterProperties {
         this.defaultDirection = defaultDirection;
         this.defaultBottom = defaultBottom;
         this.attackThresholds = attackThresholds;
+        this.frameTargets = frameTargets;
+    }
+
+    /**
+     * Get the specific rectangular target for a frame. Used to specify specific attack regions for sprites used to
+     * determine attack results for characters.
+     *
+     * @param frame the frame to get the targeting for.
+     * @returns {undefined|Object}
+     */
+    getFrameTarget(frame) {
+        validateRequiredParams(this.getFrameTarget, arguments, 'frame');
+        return this.frameTargets[frame];
     }
 
     /**

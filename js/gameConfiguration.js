@@ -5,6 +5,73 @@ const AXE_CHARACTER_TYPE = 'AXE';
 const DOG_CHARACTER_TYPE = 'DOG';
 const BARBARIAN_CHARACTER_TYPE = 'BARBARIAN';
 
+const AXE_HEIGHT_VERT = 68;
+const AXE_HEIGHT_LEFT = 90;
+const AXE_HEIGHT_TOP_CORNER = 90;
+
+const AXE_WIDTH_VERT = 86;
+const AXE_WIDTH_CORNER = 90;
+const AXE_WIDTH_HORIZ = 68;
+
+const AXE_HEIGHT_VERT_OFFSET = 13;
+const AXE_HEIGHT_HORIZ_OFFSET = 185;
+const AXE_HEIGHT_CORNER_OFFSET = 55;
+
+const AXE_WIDTH_CORNER_OFFSET = 55;
+const AXE_WIDTH_HORIZ_OFFSET = 13;
+
+function getAxeFrameTargets(selector) {
+    return {
+        0: {
+            height: AXE_HEIGHT_VERT,
+            width: AXE_WIDTH_VERT,
+            bottomOffset: selector.height() - AXE_HEIGHT_VERT - AXE_HEIGHT_VERT_OFFSET,
+            leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
+        },
+        1: {
+            height: AXE_HEIGHT_TOP_CORNER,
+            width: AXE_WIDTH_CORNER,
+            bottomOffset: selector.height() - AXE_HEIGHT_TOP_CORNER - AXE_HEIGHT_CORNER_OFFSET,
+            leftOffset: AXE_WIDTH_CORNER_OFFSET
+        },
+        2: {
+            height: AXE_HEIGHT_LEFT,
+            width: AXE_WIDTH_HORIZ,
+            bottomOffset: selector.height() - AXE_HEIGHT_LEFT - AXE_HEIGHT_HORIZ_OFFSET,
+            leftOffset: AXE_WIDTH_HORIZ_OFFSET
+        },
+        3: {
+            height: AXE_HEIGHT_TOP_CORNER,
+            width: AXE_WIDTH_CORNER,
+            bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
+            leftOffset: AXE_WIDTH_CORNER_OFFSET
+        },
+        4: {
+            height: AXE_HEIGHT_VERT,
+            width: AXE_WIDTH_VERT,
+            bottomOffset: AXE_HEIGHT_VERT_OFFSET,
+            leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
+        },
+        5: {
+            height: AXE_HEIGHT_TOP_CORNER,
+            width: AXE_WIDTH_CORNER,
+            bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
+            leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+        },
+        6: {
+            height: AXE_HEIGHT_LEFT,
+            width: AXE_WIDTH_HORIZ,
+            bottomOffset: selector.height() - AXE_HEIGHT_LEFT - AXE_HEIGHT_HORIZ_OFFSET,
+            leftOffset: selector.width() - AXE_WIDTH_HORIZ - AXE_WIDTH_HORIZ_OFFSET
+        },
+        7: {
+            height: AXE_HEIGHT_TOP_CORNER,
+            width: AXE_WIDTH_CORNER,
+            bottomOffset: selector.height() - AXE_HEIGHT_TOP_CORNER - AXE_HEIGHT_CORNER_OFFSET,
+            leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+        }
+    }
+}
 
 // TODO: the right x positions must be sorted in asc order and the left in desc, don't rely on the client to do the sorting
 let obstacles = new ObstaclesBuilder()
@@ -240,13 +307,13 @@ const GAME_BOARD = new GameBoardBuilder()
                     .build())
                 .withAction(SIT_LABEL)
                 .withScreenNumber(4).build()])
-
     .withOpponents(5, [barbarianCharacter,
         new CharacterBuilder(barbarianCharacter, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.axe1'), AXE_CHARACTER_TYPE, 160)
                 .withFrames(new FramesBuilder()
                     .withFrames('attack', 'left', [0, 1, 2, 3, 4, 5, 6, 7], 0)
                     .build())
+                .withFrameTargets(getAxeFrameTargets($('.axe1')))
                 .withIsInvincible(true)
                 .withDeathSprite($('.axe1'))
                 .withCanHighlight(false)
@@ -257,7 +324,7 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withPixelsPerSecond(ATTACK_LABEL, 0)
                 .withMaxAttackThreshold(5)
                 .withCanElevate(false)
-                .withDefaultBottom(5, 150)
+                .withDefaultBottom(5, 170)
                 .build())
             .withAction(ATTACK_LABEL)
             .withScreenNumber(5).build(),
@@ -266,6 +333,7 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withFrames(new FramesBuilder()
                         .withFrames('attack', 'left', [2, 3, 4, 5, 6, 7, 0, 1], 0)
                         .build())
+                    .withFrameTargets(getAxeFrameTargets($('.axe2')))
                     .withIsInvincible(true)
                     .withDeathSprite($('.axe1'))
                     .withCanHighlight(false)
@@ -276,7 +344,7 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withPixelsPerSecond(ATTACK_LABEL, 0)
                     .withMaxAttackThreshold(5)
                     .withCanElevate(false)
-                    .withDefaultBottom(5, 150)
+                    .withDefaultBottom(5, 170)
                     .build())
                 .withAction(ATTACK_LABEL)
                 .withScreenNumber(5).build(),
@@ -285,6 +353,7 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withFrames(new FramesBuilder()
                         .withFrames('attack', 'left', [4, 5, 6, 7, 0, 1, 2, 3], 0)
                         .build())
+                    .withFrameTargets(getAxeFrameTargets($('.axe3')))
                     .withIsInvincible(true)
                     .withDeathSprite($('.axe1'))
                     .withCanHighlight(false)
@@ -295,7 +364,7 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withPixelsPerSecond(ATTACK_LABEL, 0)
                     .withMaxAttackThreshold(5)
                     .withCanElevate(false)
-                    .withDefaultBottom(5, 150)
+                    .withDefaultBottom(5, 170)
                     .build())
                 .withAction(ATTACK_LABEL)
                 .withScreenNumber(5).build()])

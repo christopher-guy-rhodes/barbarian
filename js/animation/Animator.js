@@ -69,7 +69,7 @@ class Animator {
         let frameTarget = this.character.getProperties().getFrameTarget(action, frame);
         if (frameTarget) {
             targetSelector.css('position', 'fixed');
-            targetSelector.css('border', '1px solid red');
+            //targetSelector.css('border', '1px solid red');
             targetSelector.css(CSS_HEIGHT_LABEL, frameTarget[CSS_HEIGHT_LABEL]);
             targetSelector.css(CSS_WIDTH_LABEL, frameTarget[CSS_WIDTH_LABEL]);
             targetSelector.css(CSS_BOTTOM_LABEL, this.character.getY() + frameTarget['bottomOffset']);

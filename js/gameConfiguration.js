@@ -6,43 +6,26 @@ const DOG_CHARACTER_TYPE = 'DOG';
 const BARBARIAN_CHARACTER_TYPE = 'BARBARIAN';
 
 const AXE_HEIGHT_VERT = 68;
-const AXE_HEIGHT_LEFT = 90;
 const AXE_HEIGHT_TOP_CORNER = 90;
 
 const AXE_WIDTH_VERT = 86;
 const AXE_WIDTH_CORNER = 90;
-const AXE_WIDTH_HORIZ = 68;
 
 const AXE_HEIGHT_VERT_OFFSET = 13;
-const AXE_HEIGHT_HORIZ_OFFSET = 185;
-const AXE_HEIGHT_CORNER_OFFSET = 55 + 25;
+const AXE_HEIGHT_CORNER_OFFSET = 55;
 
-const AXE_WIDTH_CORNER_OFFSET = 55 + 25;
-const AXE_WIDTH_HORIZ_OFFSET = 13;
+const AXE_WIDTH_CORNER_OFFSET = 55 + 30;
+
+const BARBARIAN_HEAD_TARGET = {
+    height: 35,
+    width: 45,
+    bottomOffset: 123,
+    leftOffset: $('.barbarian').width() / 2
+};
 
 function getAxeFrameTargets(selector) {
     return {
         attack : {
-            /*
-            0: {
-                height: AXE_HEIGHT_VERT,
-                width: AXE_WIDTH_VERT,
-                bottomOffset: selector.height() - AXE_HEIGHT_VERT - AXE_HEIGHT_VERT_OFFSET,
-                leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
-            },
-            1: {
-                height: AXE_HEIGHT_TOP_CORNER,
-                width: AXE_WIDTH_CORNER,
-                bottomOffset: selector.height() - AXE_HEIGHT_TOP_CORNER - AXE_HEIGHT_CORNER_OFFSET,
-                leftOffset: AXE_WIDTH_CORNER_OFFSET
-            },
-            2: {
-                height: AXE_HEIGHT_LEFT,
-                width: AXE_WIDTH_HORIZ,
-                bottomOffset: selector.height() - AXE_HEIGHT_LEFT - AXE_HEIGHT_HORIZ_OFFSET,
-                leftOffset: AXE_WIDTH_HORIZ_OFFSET
-            },
-            */
             3: {
                 height: AXE_HEIGHT_TOP_CORNER,
                 width: AXE_WIDTH_CORNER,
@@ -60,21 +43,7 @@ function getAxeFrameTargets(selector) {
                 width: AXE_WIDTH_CORNER,
                 bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
                 leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
-            },
-            /*
-            6: {
-                height: AXE_HEIGHT_LEFT,
-                width: AXE_WIDTH_HORIZ,
-                bottomOffset: selector.height() - AXE_HEIGHT_LEFT - AXE_HEIGHT_HORIZ_OFFSET,
-                leftOffset: selector.width() - AXE_WIDTH_HORIZ - AXE_WIDTH_HORIZ_OFFSET
-            },
-            7: {
-                height: AXE_HEIGHT_TOP_CORNER,
-                width: AXE_WIDTH_CORNER,
-                bottomOffset: selector.height() - AXE_HEIGHT_TOP_CORNER - AXE_HEIGHT_CORNER_OFFSET,
-                leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
             }
-            */
         }
     }
 }
@@ -135,6 +104,15 @@ let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
             .withFrames('death', 'left', [108, 107, 106, 105, 104], 13)
             .withFrames('death', 'right',[96, 97, 98, 99, 100], 12)
             .build())
+        .withFrameTargets({
+            walk : {
+                1 : BARBARIAN_HEAD_TARGET, 2 : BARBARIAN_HEAD_TARGET, 3 : BARBARIAN_HEAD_TARGET,
+                4 : BARBARIAN_HEAD_TARGET, 5: BARBARIAN_HEAD_TARGET, 6 : BARBARIAN_HEAD_TARGET,
+                8 : BARBARIAN_HEAD_TARGET, 9 : BARBARIAN_HEAD_TARGET, 10 : BARBARIAN_HEAD_TARGET,
+                11 : BARBARIAN_HEAD_TARGET, 12: BARBARIAN_HEAD_TARGET, 13 : BARBARIAN_HEAD_TARGET,
+
+            },
+            })
         .withCanHighlight(false)
         .withDefaultStatus(ALIVE_LABEL)
         .withDefaultAction(STOP_LABEL)
@@ -326,7 +304,7 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withCanLeaveBehind(true)
                 .withCanTurnAround(false)
                 .withDefaultAction(ATTACK_LABEL)
-                .withFramesPerSecond(ATTACK_LABEL, 6)
+                .withFramesPerSecond(ATTACK_LABEL, 5)
                 .withPixelsPerSecond(ATTACK_LABEL, 0)
                 .withMaxAttackThreshold(5)
                 .withCanElevate(false)
@@ -346,7 +324,7 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withCanLeaveBehind(true)
                     .withCanTurnAround(false)
                     .withDefaultAction(ATTACK_LABEL)
-                    .withFramesPerSecond(ATTACK_LABEL, 6)
+                    .withFramesPerSecond(ATTACK_LABEL, 5)
                     .withPixelsPerSecond(ATTACK_LABEL, 0)
                     .withMaxAttackThreshold(5)
                     .withCanElevate(false)
@@ -366,7 +344,7 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withCanLeaveBehind(true)
                     .withCanTurnAround(false)
                     .withDefaultAction(ATTACK_LABEL)
-                    .withFramesPerSecond(ATTACK_LABEL, 6)
+                    .withFramesPerSecond(ATTACK_LABEL, 5)
                     .withPixelsPerSecond(ATTACK_LABEL, 0)
                     .withMaxAttackThreshold(5)
                     .withCanElevate(false)

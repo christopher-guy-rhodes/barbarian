@@ -25,24 +25,26 @@ const BARBARIAN_HEAD_TARGET = {
 
 function getAxeFrameTargets(selector) {
     return {
-        attack : {
-            3: {
-                height: AXE_HEIGHT_TOP_CORNER,
-                width: AXE_WIDTH_CORNER,
-                bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
-                leftOffset: AXE_WIDTH_CORNER_OFFSET
-            },
-            4: {
-                height: AXE_HEIGHT_VERT,
-                width: AXE_WIDTH_VERT,
-                bottomOffset: AXE_HEIGHT_VERT_OFFSET,
-                leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
-            },
-            5: {
-                height: AXE_HEIGHT_TOP_CORNER,
-                width: AXE_WIDTH_CORNER,
-                bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
-                leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+        5 : {
+            attack: {
+                3: {
+                    height: AXE_HEIGHT_TOP_CORNER,
+                    width: AXE_WIDTH_CORNER,
+                    bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
+                    leftOffset: AXE_WIDTH_CORNER_OFFSET
+                },
+                4: {
+                    height: AXE_HEIGHT_VERT,
+                    width: AXE_WIDTH_VERT,
+                    bottomOffset: AXE_HEIGHT_VERT_OFFSET,
+                    leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
+                },
+                5: {
+                    height: AXE_HEIGHT_TOP_CORNER,
+                    width: AXE_WIDTH_CORNER,
+                    bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
+                    leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+                }
             }
         }
     }
@@ -105,14 +107,16 @@ let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
             .withFrames('death', 'right',[96, 97, 98, 99, 100], 12)
             .build())
         .withFrameTargets({
-            walk : {
-                1 : BARBARIAN_HEAD_TARGET, 2 : BARBARIAN_HEAD_TARGET, 3 : BARBARIAN_HEAD_TARGET,
-                4 : BARBARIAN_HEAD_TARGET, 5: BARBARIAN_HEAD_TARGET, 6 : BARBARIAN_HEAD_TARGET,
-                8 : BARBARIAN_HEAD_TARGET, 9 : BARBARIAN_HEAD_TARGET, 10 : BARBARIAN_HEAD_TARGET,
-                11 : BARBARIAN_HEAD_TARGET, 12: BARBARIAN_HEAD_TARGET, 13 : BARBARIAN_HEAD_TARGET,
+            5: {
+                walk: {
+                    1: BARBARIAN_HEAD_TARGET, 2: BARBARIAN_HEAD_TARGET, 3: BARBARIAN_HEAD_TARGET,
+                    4: BARBARIAN_HEAD_TARGET, 5: BARBARIAN_HEAD_TARGET, 6: BARBARIAN_HEAD_TARGET,
+                    8: BARBARIAN_HEAD_TARGET, 9: BARBARIAN_HEAD_TARGET, 10: BARBARIAN_HEAD_TARGET,
+                    11: BARBARIAN_HEAD_TARGET, 12: BARBARIAN_HEAD_TARGET, 13: BARBARIAN_HEAD_TARGET,
 
-            },
-            })
+                },
+            }
+        })
         .withCanHighlight(false)
         .withDefaultStatus(ALIVE_LABEL)
         .withDefaultAction(STOP_LABEL)

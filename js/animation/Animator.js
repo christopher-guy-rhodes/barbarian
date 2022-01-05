@@ -32,13 +32,17 @@ class Animator {
 
         this.character.setCurrentFrame(action, frameIdx);
 
-        while (uninterruptable || !this.isAnimationInterrupted(action, direction, vertDirection, gameBoard) && frameIdx < frames.length) {
+        while (uninterruptable || !this.isAnimationInterrupted(action,
+            direction,
+            vertDirection,
+            gameBoard,
+            frames[frameIdx]) && frameIdx < frames.length) {
             let sprite = this.prepareSprite();
             let heightOffset = -1 * this.character.getProperties().getFrameHeightOffset(
                 action, this.character.getHorizontalDirection()) * sprite.height();
             let offset = -1 * frames[frameIdx] * sprite.width();
 
-            this.renderFrameTarget(action, sprite, frames[frameIdx]);
+            //this.renderFrameTarget(action, sprite, frames[frameIdx]);
 
             frameIdx++;
 
@@ -66,10 +70,12 @@ class Animator {
 
     renderFrameTarget(action, sprite, frame) {
         let targetSelector = $('.' + sprite.attr('class') + 'Target');
-        let frameTarget = this.character.getProperties().getFrameTarget(action, frame);
+        let frameTarget = this.character.getProperties().getFrameTarget(action,
+            this.character.getScreenNumber(),
+            frame);
         if (frameTarget) {
             targetSelector.css('position', 'fixed');
-            //targetSelector.css('border', '1px solid red');
+            targetSelector.css('border', '1px solid red');
             targetSelector.css(CSS_HEIGHT_LABEL, frameTarget[CSS_HEIGHT_LABEL]);
             targetSelector.css(CSS_WIDTH_LABEL, frameTarget[CSS_WIDTH_LABEL]);
             targetSelector.css(CSS_BOTTOM_LABEL, this.character.getY() + frameTarget['bottomOffset']);
@@ -135,6 +141,7 @@ class Animator {
         return (this.character.getAction() !== requestedAction ||
             this.character.getHorizontalDirection() !== requestedDirection ||
             this.character.getVerticalDirection() !== requestedVerticalDirection ||
+            Fighting.wasBarbarianTargetedByCharacter(this.character, this.character.getBarbarian(), requestedAction, frame) ||
             Fighting.shouldCpuChase(this.character, gameBoard) ||
             Obstacle.isStoppedByBoundary(this.character, gameBoard) ||
             this.character.getObstacles().didCharacterHitObstacle(this.character) ||

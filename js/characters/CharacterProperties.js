@@ -57,15 +57,19 @@ class CharacterProperties {
      * determine attack results for characters.
      *
      * @param the action the frames are associated with
+     * @param the screenNumber to get the frame target for
      * @param frame the frame to get the targeting for.
      * @returns {undefined|Object}
      */
-    getFrameTarget(action, frame) {
-        validateRequiredParams(this.getFrameTarget, arguments, 'action', 'frame');
-        if (this.frameTargets[action] === undefined) {
+    getFrameTarget(action, screenNumber, frame) {
+        validateRequiredParams(this.getFrameTarget, arguments, 'action', 'screenNumber', 'frame');
+        if (this.frameTargets[screenNumber] === undefined) {
             return undefined;
         }
-        return this.frameTargets[action][frame];
+        if (this.frameTargets[screenNumber][action] === undefined) {
+            return undefined;
+        }
+        return this.frameTargets[screenNumber][action][frame];
     }
 
     /**

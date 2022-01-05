@@ -6,6 +6,66 @@ class Fighting {
     }
 
     /**
+     * Determine if the barbarian has been targetet by the character due to overlapping frame targets.
+     * @param character the character
+     * @param barbarian the barbarian
+     * @param action the action the character is taking
+     * @param frame the frame to check for targeting
+     * @returns {boolean} true if the character is hit by an axe, false otherwise
+     */
+    static wasBarbarianTargetedByCharacter(character, barbarian, action, frame) {
+        if (character.isBarbarian()) {
+            return false;
+        }
+        let frameTarget = character.getProperties().getFrameTarget(action,
+            character.getScreenNumber(),
+            frame);
+        let frameTargetBarbarian = barbarian.getProperties().getFrameTarget(barbarian.getAction(),
+            barbarian.getScreenNumber(),
+            frame);
+        if (frameTarget !== undefined && frameTargetBarbarian !== undefined) {
+            console.log('frame target for %s frame %s is %o. frame target for %s is %o', character.getProperties().getSprite().attr('class'), frame, frameTarget, barbarian.getProperties().getSprite().attr('class'), frameTargetBarbarian);
+
+            let x1 = frameTarget['leftOffset'] + character.getX();
+            let x1Offset = frameTarget['width'];
+            let x2 = frameTargetBarbarian['leftOffset'] + barbarian.getX();
+            let x2Offset = frameTargetBarbarian['width'];
+            let y1 = frameTarget['bottomOffset'] + character.getY();
+            let y1Offset = frameTarget['height'];
+            let y2 = frameTargetBarbarian['bottomOffset'] + barbarian.getY();
+            let y2Offset = frameTargetBarbarian['height'];
+
+            let xSmaller = Math.min(x1, x2);
+            let xSmallerOffset = x1 === xSmaller ? x1Offset : x2Offset;
+            let xLarger = x1 === xSmaller ? x2 : x1;
+            let xLargetOffset = x1 === xSmaller ? x2Offset : x1Offset;
+
+            let ySmaller = Math.min(y1, y2);
+            let ySmallerOffset = y1 === ySmaller ? y1Offset : y2Offset;
+            let yLarger = y1 === ySmaller ? y2 : y1;
+            let yLargerOffset = y1 === ySmaller ? y2Offset : y1Offset;
+
+            let horizontalOverlap = false;
+            if (xLarger <= xSmaller + xSmallerOffset) {
+                console.log('xBarbarian:' + x2 + ' <= ' + 'xCharacter:' + (x1 + frameTarget['width']));
+                horizontalOverlap = true;
+            }
+
+            let verticalOverlap = false;
+            if (yLarger <= ySmaller + ySmallerOffset) {
+                console.log('yBarbarian:' + y2 + ' <= ' + 'yCharacter:' + (y1 + frameTarget['height']));
+                verticalOverlap = true;
+            }
+
+            if (horizontalOverlap && verticalOverlap) {
+                console.log(character.getProperties().getType() + ' hit the barbarian at frame ' + frame);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Determine if the opponent won a fight against the character
      * @param opponent the opponent
      * @param character the character

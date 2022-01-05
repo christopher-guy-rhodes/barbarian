@@ -196,6 +196,14 @@ class Game {
 
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
+        if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {
+
+            console.log('===> handle targeting for character ' + character.getProperties().getType());
+            if (character.getProperties().getType() === AXE_CHARACTER_TYPE) {
+                this.death(character.getBarbarian());
+                this.performAction(character, character.getProperties().getDefaultAction(), frame);
+            }
+        }
         if (this.gameBoard.getIsPaused() && character.isBarbarian()) {
             this.handlePause(character, frame);
         }

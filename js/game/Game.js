@@ -114,7 +114,9 @@ class Game {
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getProperties().getSound());
             monster.setVerticalDirection(Fighting.getCpuVerticalChaseDirection(monster));
-            this.performAction(monster, monster.getAction(), monster.getCurrentFrameIndex(monster.getAction()));
+            let action = monster.getAction() === undefined ? monster.getProperties().getDefaultAction()
+                                                           : monster.getAction();
+            this.performAction(monster, action, monster.getCurrentFrameIndex(action));
         }
     }
 

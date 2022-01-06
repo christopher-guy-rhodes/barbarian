@@ -21,7 +21,8 @@ class Fighting {
             character.getScreenNumber(),
             frame);
 
-        let barbarianAction = barbarian.getAction();
+        let barbarianAction = barbarian.getAction() === undefined ? barbarian.getProperties().getDefaultAction()
+                                                                  : barbarian.getAction();
         let barbarianFrame = barbarian.getCurrentFrame(barbarianAction);
 
         let frameTargetBarbarian = barbarian.getProperties().getFrameTarget(barbarianAction,

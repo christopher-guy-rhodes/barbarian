@@ -39,9 +39,26 @@ class Character {
         this.currentFrameIndex = currentFrameIndex;
         this.currentFrame = {};
         this.isSliding = false;
+        this.pauseFrameIndex = undefined;
 
         this.animator = new Animator(this);
         this.sounds = new Sounds();
+    }
+
+    /**
+     * Get the frame index the character was paused at.
+     * @returns {undefined|number}
+     */
+    getPauseFrameIndex() {
+        return this.pauseFrame;
+    }
+
+    /**
+     * Set the frame index that the character was paused at.
+     * @param frameIndex the frame index
+     */
+    setPauseFrameIndex(frameIndex) {
+        this.pauseFrame = frameIndex;
     }
 
     /**

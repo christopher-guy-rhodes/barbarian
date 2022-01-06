@@ -114,7 +114,7 @@ class Game {
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getProperties().getSound());
             monster.setVerticalDirection(Fighting.getCpuVerticalChaseDirection(monster));
-            this.performAction(monster, monster.getProperties().getDefaultAction());
+            this.performAction(monster, monster.getAction(), monster.getCurrentFrameIndex(monster.getAction()));
         }
     }
 
@@ -199,9 +199,6 @@ class Game {
         if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {
             this.handleAxes(character, frame);
         }
-        if (this.gameBoard.getIsPaused() && character.isBarbarian()) {
-            this.handlePause(character, frame);
-        }
         if ((!character.isActionInfinite(requestedAction) && character.getAction() === requestedAction)
             || this.gameBoard.getIsPaused()) {
             this.handleFiniteAnimations(character, requestedAction);
@@ -261,9 +258,10 @@ class Game {
     }
 
     /* private */
-    handlePause(character, frame) {
+    handlePause(character, frameIndex) {
         // Save the frame if the game was paused so the animation can be resumed at the right place
-        this.gameBoard.setPauseFrame(frame);
+        console.log('==> handing pause for character ' + character.getProperties().getSprite().attr('class') + ' at frame ' + frame);
+        character.setPauseFrameIndex(frameIndex)
     }
 
     /* private */

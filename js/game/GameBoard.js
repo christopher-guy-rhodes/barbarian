@@ -251,23 +251,6 @@ class GameBoard {
     }
 
     /**
-     * Set the frame the the Barbarian was on when the pause took place.
-     * @param frame the frame
-     */
-    setPauseFrame(frame) {
-        validateRequiredParams(this.setPauseFrame, arguments, 'frame');
-        this.pauseFrame = frame;
-    }
-
-    /**
-     * Get the frame the Barbarian was on when a pause took place.
-     * @returns {number} the frame number
-     */
-    getPauseFrame() {
-        return this.pauseFrame;
-    }
-
-    /**
      * Determine if the character and game board are in a state to let the screen scroll to the next or previous screen.
      * Intended for use when the Barbarian character hits the boundary.
      * @param character the character

@@ -176,17 +176,20 @@ class Game {
                 setTimeout(function () {
                     if (character.getAnimator().getIsMovementComplete()) {
                         // The character movement completed, there is nothing to stop after the slide
+                        console.log('a');
                         character.getAnimator().setIsMovementComplete(false);
                     } else {
                         // Stop movement post slide unless the character is not stopping and have not requested a stop.
                         // This allows a character to "break out of a stop slide" to perform another.
-                        if(character.isAction(STOP_LABEL) || action !== STOP_LABEL) {
+                        if(character.isAction(STOP_LABEL) || action !== STOP_LABEL && !character.getAnimator().getIsMovementComplete()) {
+                            console.log('b');
                             character.getAnimator().stopMovement();
                         }
                     }
                     character.setIsSliding(false);
                 }, 750);
             } else {
+                console.log('c')
                 character.getAnimator().stopMovement();
             }
         } else {

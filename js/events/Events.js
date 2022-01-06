@@ -127,8 +127,10 @@ class Events {
      * Handle a pause keypress.
      */
     handlePauseKeypress() {
-        if (!this.game.getBarbarian().isDead()) {
+        if (!this.game.getBarbarian().isDead() && !this.game.getBarbarian().getIsSliding()) {
             if (this.game.getGameBoard().getIsPaused()) {
+                // If the Barbarian was sliding when paused we don't want the delayed stop to kick in
+                this.game.getBarbarian().getAnimator().setIsMovementComplete(true);
                 this.game.getMessages().hideAllMessages()
                 this.game.getGameBoard().setIsPaused(false);
                 if (this.game.getBarbarian().isActionDefined()) {
@@ -146,8 +148,6 @@ class Events {
                 this.game.getSounds().stopAllSounds();
                 this.game.getGameBoard().setIsPaused(true);
                 this.game.getBarbarian().getAnimator().stopMovement();
-                // This needs to be set for ice sliding to work properly since the stopping is delayed on ice
-                this.game.getBarbarian().getAnimator().setIsMovementComplete(true);
             }
         }
     }

@@ -26,7 +26,7 @@ class Character {
                 direction,
                 status,
                 screenNumber,
-                currentFrame) {
+                currentFrameIndex) {
         validateRequiredParams(this.constructor, arguments, 'obstacles', 'properties', 'direction', 'status',
             'screenNumber');
         this.barbarian = barbarian === undefined ? this : barbarian;
@@ -36,7 +36,8 @@ class Character {
         this.direction = direction;
         this.status = status;
         this.screenNumber = screenNumber;
-        this.currentFrame = currentFrame;
+        this.currentFrameIndex = currentFrameIndex;
+        this.currentFrame = {};
         this.isSliding = false;
 
         this.animator = new Animator(this);
@@ -237,12 +238,23 @@ class Character {
     }
 
     /**
+     * Get the current frame index for a particular action for the character.
+     * @param action the action to to get the frame for
+     * @returns {number} the current frame for the action
+     */
+    getCurrentFrameIndex(action) {
+        return action === undefined ? 0 : this.currentFrameIndex[action];
+    }
+
+    /**
      * Get the current frame for a particular action for the character.
      * @param action the action to to get the frame for
      * @returns {number} the current frame for the action
      */
+
     getCurrentFrame(action) {
-        return action === undefined ? 0 : this.currentFrame[action];
+        return action === undefined ? undefined
+                                    : this.currentFrame[action] === undefined ? 0 : this.currentFrame[action];
     }
 
     /**
@@ -289,12 +301,21 @@ class Character {
     }
 
     /**
+     * Set the current frame index for the given action and frame.
+     * @param action the action
+     * @param frame the frame
+     */
+    setCurrentFrameIndex(action, frameIdx) {
+        validateRequiredParams(this.setCurrentFrameIndex, arguments, 'action', 'frameIdx');
+        this.currentFrameIndex[action] = frameIdx;
+    }
+
+    /**
      * Set the current frame for the given action and frame.
      * @param action the action
      * @param frame the frame
      */
     setCurrentFrame(action, frame) {
-        validateRequiredParams(this.setCurrentFrame, arguments, 'action', 'frame');
         this.currentFrame[action] = frame;
     }
 

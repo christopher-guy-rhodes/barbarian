@@ -197,12 +197,7 @@ class Game {
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
         if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {
-
-            console.log('===> handle targeting for character ' + character.getProperties().getType());
-            if (character.getProperties().getType() === AXE_CHARACTER_TYPE) {
-                this.death(character.getBarbarian());
-                this.performAction(character, character.getProperties().getDefaultAction(), frame);
-            }
+            this.handleAxes(character, frame);
         }
         if (this.gameBoard.getIsPaused() && character.isBarbarian()) {
             this.handlePause(character, frame);
@@ -231,6 +226,14 @@ class Game {
         }
         if (this.barbarian.isDead()) {
             this.handleEndingSequence(character);
+        }
+    }
+
+    /* private */
+    handleAxes(character, frame) {
+        if (character.getProperties().getType() === AXE_CHARACTER_TYPE) {
+            this.death(character.getBarbarian());
+            this.performAction(character, character.getProperties().getDefaultAction(), frame);
         }
     }
 
@@ -293,7 +296,7 @@ class Game {
                 if (obstacle.isTraversableDownhillElevation(character)) {
                     character.setY(obstacle.getHeight());
                     // Continue whatever action the character was performing since they traversed the elevation
-                    this.performAction(character, requestedAction, character.getCurrentFrame(requestedAction));
+                    this.performAction(character, requestedAction, character.getCurrentFrameIndex(requestedAction));
                 } else if (obstacle.didCharacterJumpEvade(character)) {
                     character.setY(obstacle.getHeight());
                     // Transition to walking motion since the jump was successful
@@ -357,7 +360,7 @@ class Game {
             let opponent = opponentsInProximity[i];
 
             let opponentAction = opponent.getAction();
-            let opponentCurrentFrame = opponent.getCurrentFrame(opponentAction);
+            let opponentCurrentFrame = opponent.getCurrentFrameIndex(opponentAction);
 
             let didOpponentWin = Fighting.didOpponentWinFight(opponent, character);
             let winner = didOpponentWin ? opponent : character;

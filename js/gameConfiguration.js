@@ -113,8 +113,16 @@ let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
                     4: BARBARIAN_HEAD_TARGET, 5: BARBARIAN_HEAD_TARGET, 6: BARBARIAN_HEAD_TARGET,
                     8: BARBARIAN_HEAD_TARGET, 9: BARBARIAN_HEAD_TARGET, 10: BARBARIAN_HEAD_TARGET,
                     11: BARBARIAN_HEAD_TARGET, 12: BARBARIAN_HEAD_TARGET, 13: BARBARIAN_HEAD_TARGET,
-
                 },
+                run : {
+                    16: BARBARIAN_HEAD_TARGET, 17: BARBARIAN_HEAD_TARGET, 18: BARBARIAN_HEAD_TARGET,
+                    19: BARBARIAN_HEAD_TARGET, 20: BARBARIAN_HEAD_TARGET, 21: BARBARIAN_HEAD_TARGET,
+                    24: BARBARIAN_HEAD_TARGET, 25: BARBARIAN_HEAD_TARGET, 26: BARBARIAN_HEAD_TARGET,
+                    27: BARBARIAN_HEAD_TARGET, 28: BARBARIAN_HEAD_TARGET, 29: BARBARIAN_HEAD_TARGET
+                },
+                stop : {
+                    0: BARBARIAN_HEAD_TARGET, 14: BARBARIAN_HEAD_TARGET
+                }
             }
         })
         .withCanHighlight(false)
@@ -323,7 +331,7 @@ const GAME_BOARD = new GameBoardBuilder()
                         .build())
                     .withFrameTargets(getAxeFrameTargets($('.axe2')))
                     .withIsInvincible(true)
-                    .withDeathSprite($('.axe1'))
+                    .withDeathSprite($('.axe2'))
                     .withCanHighlight(false)
                     .withCanLeaveBehind(true)
                     .withCanTurnAround(false)
@@ -343,7 +351,7 @@ const GAME_BOARD = new GameBoardBuilder()
                         .build())
                     .withFrameTargets(getAxeFrameTargets($('.axe3')))
                     .withIsInvincible(true)
-                    .withDeathSprite($('.axe1'))
+                    .withDeathSprite($('.axe3'))
                     .withCanHighlight(false)
                     .withCanLeaveBehind(true)
                     .withCanTurnAround(false)

@@ -30,7 +30,8 @@ class Animator {
         let frames = this.character.getProperties().getFrames(action, direction);
         let counter = numberOfTimes;
 
-        this.character.setCurrentFrame(action, frameIdx);
+        this.character.setCurrentFrameIndex(action, frameIdx);
+        this.character.setCurrentFrame(action, frames[frameIdx]);
 
         while (uninterruptable || !this.isAnimationInterrupted(action,
             direction,
@@ -48,7 +49,8 @@ class Animator {
 
             sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
 
-            this.character.setCurrentFrame(action, frameIdx);
+            this.character.setCurrentFrameIndex(action, frameIdx);
+            this.character.setCurrentFrame(action, frames[frameIdx]);
 
             await sleep(MILLISECONDS_PER_SECOND / this.character.getProperties().getFramesPerSecond(action));
 
@@ -56,7 +58,8 @@ class Animator {
                 // If counter is 0 loop infinitely otherwise loop again if counter has not expired
                 if (counter === 0 || --counter > 0) {
                     frameIdx = 0;
-                    this.character.setCurrentFrame(action, frameIdx);
+                    this.character.setCurrentFrameIndex(action, frameIdx);
+                    this.character.setCurrentFrame(action, frames[frameIdx]);
                 }
             }
         }
@@ -65,25 +68,7 @@ class Animator {
         //this.debugAnimationTermination(this.character.getProperties().getType(), action, direction, vertDirection,
         //    gameBoard, frameIdx, frames);
 
-        return frameIdx;
-    }
-
-    renderFrameTarget(action, sprite, frame) {
-        let targetSelector = $('.' + sprite.attr('class') + 'Target');
-        let frameTarget = this.character.getProperties().getFrameTarget(action,
-            this.character.getScreenNumber(),
-            frame);
-        if (frameTarget) {
-            targetSelector.css('position', 'fixed');
-            targetSelector.css('border', '1px solid red');
-            targetSelector.css(CSS_HEIGHT_LABEL, frameTarget[CSS_HEIGHT_LABEL]);
-            targetSelector.css(CSS_WIDTH_LABEL, frameTarget[CSS_WIDTH_LABEL]);
-            targetSelector.css(CSS_BOTTOM_LABEL, this.character.getY() + frameTarget['bottomOffset']);
-            targetSelector.css(CSS_LEFT_LABEL, this.character.getX() + frameTarget['leftOffset']);
-        } else {
-            targetSelector.css('border', '0px');
-        }
-
+        return frames[frameIdx];
     }
 
     /**
@@ -131,13 +116,27 @@ class Animator {
         return this.movementComplete;
     }
 
+    /* private */
+    renderFrameTarget(action, sprite, frame) {
+        let targetSelector = $('.' + sprite.attr('class') + 'Target');
+        let frameTarget = this.character.getProperties().getFrameTarget(action,
+            this.character.getScreenNumber(),
+            frame);
+        if (frameTarget) {
+            targetSelector.css('position', 'fixed');
+            targetSelector.css('border', '1px solid red');
+            targetSelector.css(CSS_HEIGHT_LABEL, frameTarget[CSS_HEIGHT_LABEL]);
+            targetSelector.css(CSS_WIDTH_LABEL, frameTarget[CSS_WIDTH_LABEL]);
+            targetSelector.css(CSS_BOTTOM_LABEL, this.character.getY() + frameTarget['bottomOffset']);
+            targetSelector.css(CSS_LEFT_LABEL, this.character.getX() + frameTarget['leftOffset']);
+        } else {
+            targetSelector.css('border', '0px');
+        }
 
+    }
 
     /* private */
     isAnimationInterrupted(requestedAction, requestedDirection, requestedVerticalDirection, gameBoard, frame) {
-        if (this.character.getProperties().getType() === AXE_CHARACTER_TYPE && this.character.isDead()) {
-            console.log('axe is dead');
-        }
         return (this.character.getAction() !== requestedAction ||
             this.character.getHorizontalDirection() !== requestedDirection ||
             this.character.getVerticalDirection() !== requestedVerticalDirection ||

@@ -62,11 +62,9 @@ class CharacterProperties {
      * @returns {undefined|Object}
      */
     getFrameTarget(action, screenNumber, frame) {
-        validateRequiredParams(this.getFrameTarget, arguments, 'action', 'screenNumber', 'frame');
-        if (this.frameTargets[screenNumber] === undefined) {
-            return undefined;
-        }
-        if (this.frameTargets[screenNumber][action] === undefined) {
+        validateRequiredParams(this.getFrameTarget, arguments, 'action', 'screenNumber');
+        if (frame === undefined || this.frameTargets[screenNumber] === undefined
+            || this.frameTargets[screenNumber][action] === undefined) {
             return undefined;
         }
         return this.frameTargets[screenNumber][action][frame];

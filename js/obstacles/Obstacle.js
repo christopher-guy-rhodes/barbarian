@@ -134,7 +134,7 @@ class Obstacle {
      * @returns {boolean} true if the character evaded the obstacle with a jump, false otherwise
      */
     didCharacterJumpEvade(character) {
-        return character.getAction() === JUMP_LABEL && character.getCurrentFrame(JUMP_LABEL) < JUMP_EVADE_THRESHOLD;
+        return character.getAction() === JUMP_LABEL && character.getCurrentFrameIndex(JUMP_LABEL) < JUMP_EVADE_THRESHOLD;
     }
 
     /* private */
@@ -205,9 +205,9 @@ class Obstacle {
 
     /* private */
     didJumpEvadePit(character) {
-        let frame = character.getCurrentFrame(JUMP_LABEL);
+        let frameIndex = character.getCurrentFrameIndex(JUMP_LABEL);
         // The Barbarian must jump from the edge of the pit which puts him at jump frame PIT_JUMP_EVADE_FRAME
-        return character.getAction() === JUMP_LABEL && frame === PIT_JUMP_EVADE_FRAME;
+        return character.getAction() === JUMP_LABEL && frameIndex === PIT_JUMP_EVADE_FRAME;
     }
 
     /* private */

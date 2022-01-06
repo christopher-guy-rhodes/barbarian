@@ -20,11 +20,17 @@ class Fighting {
         let frameTarget = character.getProperties().getFrameTarget(action,
             character.getScreenNumber(),
             frame);
-        let frameTargetBarbarian = barbarian.getProperties().getFrameTarget(barbarian.getAction(),
+
+        let barbarianAction = barbarian.getAction();
+        let barbarianFrame = barbarian.getCurrentFrame(barbarianAction);
+
+        let frameTargetBarbarian = barbarian.getProperties().getFrameTarget(barbarianAction,
             barbarian.getScreenNumber(),
-            frame);
+            barbarianFrame);
+        //console.log('frame (x:%d) target for frame %d character %s for action %s is %o',character.getX(), frame, character.getProperties().getSprite().attr('class'), action, frameTarget);
+        //console.log('frame (x:%d) target for frame %d %o character %s for action %s is %o',barbarian.getX(), barbarianFrame, barbarian.currentFrame, barbarian.getProperties().getSprite().attr('class'), barbarianAction, frameTargetBarbarian);
         if (frameTarget !== undefined && frameTargetBarbarian !== undefined) {
-            console.log('frame target for %s frame %s is %o. frame target for %s is %o', character.getProperties().getSprite().attr('class'), frame, frameTarget, barbarian.getProperties().getSprite().attr('class'), frameTargetBarbarian);
+            //console.log('frame target for %s frame %s is %o. frame target for %s is %o', character.getProperties().getSprite().attr('class'), frame, frameTarget, barbarian.getProperties().getSprite().attr('class'), frameTargetBarbarian);
 
             let x1 = frameTarget['leftOffset'] + character.getX();
             let x1Offset = frameTarget['width'];
@@ -47,18 +53,22 @@ class Fighting {
 
             let horizontalOverlap = false;
             if (xLarger <= xSmaller + xSmallerOffset) {
-                console.log('xBarbarian:' + x2 + ' <= ' + 'xCharacter:' + (x1 + frameTarget['width']));
+                //console.log('xBarbarian:' + xLarger + ' <= ' + 'xCharacter:' + (xSmallerOffset + xSmallerOffset));
                 horizontalOverlap = true;
+            } else {
+                //console.log('xBarbarian:' + xLarger + ' !<= ' + 'xCharacter:' + (xSmallerOffset + xSmallerOffset));
             }
 
             let verticalOverlap = false;
             if (yLarger <= ySmaller + ySmallerOffset) {
-                console.log('yBarbarian:' + y2 + ' <= ' + 'yCharacter:' + (y1 + frameTarget['height']));
+                //console.log('yBarbarian:' + y2 + ' <= ' + 'yCharacter:' + (y1 + frameTarget['height']));
                 verticalOverlap = true;
+            } else {
+                //console.log('yBarbarian:' + y2 + ' !<= ' + 'yCharacter:' + (y1 + frameTarget['height']));
             }
 
             if (horizontalOverlap && verticalOverlap) {
-                console.log(character.getProperties().getType() + ' hit the barbarian at frame ' + frame);
+                //console.log(character.getProperties().getType() + ' hit the barbarian at frame ' + frame);
                 return true;
             }
         }
@@ -73,7 +83,7 @@ class Fighting {
      */
     static didOpponentWinFight(opponent, character) {
         let opponentAction = opponent.getAction();
-        let opponentCurrentFrame = opponent.getCurrentFrame(opponentAction);
+        let opponentCurrentFrame = opponent.getCurrentFrameIndex(opponentAction);
         return opponentAction === ATTACK_LABEL && (opponentCurrentFrame >= MIN_ATTACK_THRESHOLD
             && opponentCurrentFrame <= MAX_ATTACK_THRESHOLD) && !(opponent.isBarbarian()
             && character.getProperties().getIsInvincible());
@@ -184,7 +194,7 @@ class Fighting {
      * @returns {boolean} true if the Barbarian evaded the attack, false otherwise
      */
     static didBarbarianEvadeAttack(barbarian, monster) {
-        let frame = barbarian.getCurrentFrame(JUMP_LABEL);
+        let frame = barbarian.getCurrentFrameIndex(JUMP_LABEL);
         // While in the attack proximity the Barbarian has not evaded if he
         // 1. Reaches the MAX_AVOID_JUMP_FRAME jump frame (jumped too early)
         // 1. Experiences a jump frame < MIN_AVOID_JUMP_FRAME (jumped too late)

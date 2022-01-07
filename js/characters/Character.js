@@ -271,7 +271,7 @@ class Character {
 
     getCurrentFrame(action) {
         return action === undefined ? undefined
-                                    : this.currentFrame[action] === undefined ? 0 : this.currentFrame[action];
+                                    : this.currentFrame[action];
     }
 
     /**

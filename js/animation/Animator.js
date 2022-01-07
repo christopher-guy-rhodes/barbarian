@@ -43,14 +43,17 @@ class Animator {
                 action, this.character.getHorizontalDirection()) * sprite.height();
             let offset = -1 * frames[frameIdx] * sprite.width();
 
+            // Useful for debugging, will visually render targets
             //this.renderFrameTarget(action, sprite, frames[frameIdx]);
 
             frameIdx++;
 
             sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
 
-            this.character.setCurrentFrameIndex(action, frameIdx);
-            this.character.setCurrentFrame(action, frames[frameIdx]);
+            if (frames[frameIdx] !== undefined) {
+                this.character.setCurrentFrameIndex(action, frameIdx);
+                this.character.setCurrentFrame(action, frames[frameIdx]);
+            }
 
             await sleep(MILLISECONDS_PER_SECOND / this.character.getProperties().getFramesPerSecond(action));
 

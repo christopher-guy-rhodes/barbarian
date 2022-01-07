@@ -23,6 +23,111 @@ const BARBARIAN_HEAD_TARGET = {
     leftOffset: $('.barbarian').width() / 2
 };
 
+const BARBARIAN_WALK_TARGETS = {
+    1: BARBARIAN_HEAD_TARGET, 2: BARBARIAN_HEAD_TARGET, 3: BARBARIAN_HEAD_TARGET,
+    4: BARBARIAN_HEAD_TARGET, 5: BARBARIAN_HEAD_TARGET, 6: BARBARIAN_HEAD_TARGET,
+    8: BARBARIAN_HEAD_TARGET, 9: BARBARIAN_HEAD_TARGET, 10: BARBARIAN_HEAD_TARGET,
+    11: BARBARIAN_HEAD_TARGET, 12: BARBARIAN_HEAD_TARGET, 13: BARBARIAN_HEAD_TARGET,
+};
+
+const BARBARIAN_RUN_TARGETS = {
+    16: BARBARIAN_HEAD_TARGET, 17: BARBARIAN_HEAD_TARGET, 18: BARBARIAN_HEAD_TARGET,
+    19: BARBARIAN_HEAD_TARGET, 20: BARBARIAN_HEAD_TARGET, 21: BARBARIAN_HEAD_TARGET,
+    24: BARBARIAN_HEAD_TARGET, 25: BARBARIAN_HEAD_TARGET, 26: BARBARIAN_HEAD_TARGET,
+    27: BARBARIAN_HEAD_TARGET, 28: BARBARIAN_HEAD_TARGET, 29: BARBARIAN_HEAD_TARGET
+};
+
+const BARBARIAN_STOP_TARGETS = {
+    0: BARBARIAN_HEAD_TARGET, 14: BARBARIAN_HEAD_TARGET
+};
+
+const BARBARIAN_JUMP_TARGETS = {
+    48 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 123,
+        leftOffset: 220
+    },
+    49 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 123,
+        leftOffset: 220
+    },
+    50 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 140,
+        leftOffset: 160
+    },
+    51 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 235,
+        leftOffset: 200
+    },
+    52 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 155,
+        leftOffset: 170
+    },
+    53 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 140,
+        leftOffset: 165
+    },
+    54 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 123,
+        leftOffset: 220
+    },
+    62 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 123,
+        leftOffset: 160
+    },
+    61 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 123,
+        leftOffset: 160
+    },
+    60 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 140,
+        leftOffset: 200
+    },
+    59 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 235,
+        leftOffset: 175
+    },
+    58 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 155,
+        leftOffset: 205
+    },
+    57 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 140,
+        leftOffset: 200
+    },
+    56 : {
+        height: 35,
+        width: 45,
+        bottomOffset: 123,
+        leftOffset: 160
+    },
+};
+
 function getAxeFrameTargets(selector) {
     return {
         5 : {
@@ -108,21 +213,10 @@ let barbarianCharacter = new CharacterBuilder(undefined, obstacles)
             .build())
         .withFrameTargets({
             5: {
-                walk: {
-                    1: BARBARIAN_HEAD_TARGET, 2: BARBARIAN_HEAD_TARGET, 3: BARBARIAN_HEAD_TARGET,
-                    4: BARBARIAN_HEAD_TARGET, 5: BARBARIAN_HEAD_TARGET, 6: BARBARIAN_HEAD_TARGET,
-                    8: BARBARIAN_HEAD_TARGET, 9: BARBARIAN_HEAD_TARGET, 10: BARBARIAN_HEAD_TARGET,
-                    11: BARBARIAN_HEAD_TARGET, 12: BARBARIAN_HEAD_TARGET, 13: BARBARIAN_HEAD_TARGET,
-                },
-                run : {
-                    16: BARBARIAN_HEAD_TARGET, 17: BARBARIAN_HEAD_TARGET, 18: BARBARIAN_HEAD_TARGET,
-                    19: BARBARIAN_HEAD_TARGET, 20: BARBARIAN_HEAD_TARGET, 21: BARBARIAN_HEAD_TARGET,
-                    24: BARBARIAN_HEAD_TARGET, 25: BARBARIAN_HEAD_TARGET, 26: BARBARIAN_HEAD_TARGET,
-                    27: BARBARIAN_HEAD_TARGET, 28: BARBARIAN_HEAD_TARGET, 29: BARBARIAN_HEAD_TARGET
-                },
-                stop : {
-                    0: BARBARIAN_HEAD_TARGET, 14: BARBARIAN_HEAD_TARGET
-                }
+                walk: BARBARIAN_WALK_TARGETS,
+                run : BARBARIAN_RUN_TARGETS,
+                stop : BARBARIAN_STOP_TARGETS,
+                jump : BARBARIAN_JUMP_TARGETS
             }
         })
         .withCanHighlight(false)

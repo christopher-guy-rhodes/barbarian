@@ -371,7 +371,7 @@ class Game {
 
             if (!looser.isDead() && !looser.getProperties().getIsInvincible()) {
                 this.death(looser);
-                //winner.getAnimator().stopMovement();
+                this.performAction(winner, winner.getAction());
             }
         }
     }

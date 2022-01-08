@@ -371,7 +371,9 @@ class Game {
 
             if (!looser.isDead() && !looser.getProperties().getIsInvincible()) {
                 this.death(looser);
-                this.performAction(winner, winner.getAction());
+                if (!winner.isBarbarian()) {
+                    this.performAction(winner, winner.getAction());
+                }
             }
         }
     }

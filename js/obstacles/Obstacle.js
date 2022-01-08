@@ -133,8 +133,8 @@ class Obstacle {
      * @param character the character
      * @returns {boolean} true if the character evaded the obstacle with a jump, false otherwise
      */
-    didCharacterJumpEvade(character) {
-        return character.getAction() === JUMP_LABEL && character.getCurrentFrameIndex(JUMP_LABEL) < JUMP_EVADE_THRESHOLD;
+    didCharacterJumpEvade(character, action) {
+        return action === JUMP_LABEL && character.getCurrentFrameIndex(JUMP_LABEL) < JUMP_EVADE_THRESHOLD;
     }
 
     /* private */

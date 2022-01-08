@@ -198,6 +198,10 @@ class Game {
 
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
+        if (requestedAction === JUMP_LABEL) {
+            character.setAction(undefined);
+            character.getAnimator().stopMovement();
+        }
         if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {
             this.handleAxes(character, frame);
         }
@@ -296,7 +300,7 @@ class Game {
                     character.setY(obstacle.getHeight());
                     // Continue whatever action the character was performing since they traversed the elevation
                     this.performAction(character, requestedAction, character.getCurrentFrameIndex(requestedAction));
-                } else if (obstacle.didCharacterJumpEvade(character)) {
+                } else if (obstacle.didCharacterJumpEvade(character, requestedAction)) {
                     character.setY(obstacle.getHeight());
                     // Transition to walking motion since the jump was successful
                     this.performAction(character, WALK_LABEL);

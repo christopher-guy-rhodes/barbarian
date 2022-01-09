@@ -76,6 +76,24 @@
     display: none;
 }
 
+.guard1 {
+    height: 400px;
+    width: 400px;
+    background-image: url(../sprites/guard.png);
+    position: absolute;
+    bottom: 12px;
+    display: none;
+}
+
+.guard2 {
+    height: 400px;
+    width: 400px;
+    background-image: url(../sprites/guard.png);
+    position: absolute;
+    bottom: 12px;
+    display: none;
+}
+
 .axe1 {
     height: 460px;
     width: 460px;
@@ -114,6 +132,26 @@
 }
 
 .death_monster {
+    border: 0px solid white;
+    height: 800px;
+    width: 400px;
+    background-image: url(../sprites/death.png);
+    position: absolute;
+    bottom: 0;
+    display: none;
+}
+
+.death_guard1 {
+    border: 0px solid white;
+    height: 800px;
+    width: 400px;
+    background-image: url(../sprites/death.png);
+    position: absolute;
+    bottom: 0;
+    display: none;
+}
+
+.death_guard2 {
     border: 0px solid white;
     height: 800px;
     width: 400px;

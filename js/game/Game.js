@@ -32,10 +32,19 @@ class Game {
     performAction(character, action, frame = 0, uninterruptable = false) {
         validateRequiredParams(this.performAction, arguments, 'character', 'action');
 
+        console.log(character.getProperties().getType() + ' is performing ' + action);
         // Lock the Barbarian action immediately if he is dying to address the race condition of the game being
         // restarted while he is going thru the dying sequence. The death handling will unlock the actions
         if (character.isBarbarian() && action === DEATH_LABEL) {
+            console.log('setting action to locked');
+            let self = this;
             this.gameBoard.setActionsLocked(true);
+            setTimeout(function () {
+                if (self.gameBoard.getActionsLocked()) {
+                    // Unlock action if they are still locked in case this ran before the death sequence
+                    self.gameBoard.setActionsLocked(false);
+                }
+            }, DEATH_DELAY)
         }
 
         // Stop the movement, delayed if the character is on ice
@@ -199,8 +208,11 @@ class Game {
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
         if (requestedAction === JUMP_LABEL) {
-            character.setAction(undefined);
-            character.getAnimator().stopMovement();
+            // If the Barbarian is dying don't set the action to stop in order to let the animation continue
+            if (character.getAction() !== DEATH_LABEL) {
+                character.setAction(STOP_LABEL);
+                character.getAnimator().stopMovement();
+            }
         }
         if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {
             this.handleAxes(character, frame);
@@ -306,7 +318,7 @@ class Game {
                     this.performAction(character, WALK_LABEL);
                 } else if (character)  {
                     // reset action so character can jump again
-                    character.setAction(undefined);
+                    character.setAction(STOP_LABEL);
                     // Hit elevation and did not avoid, let the character remain stopped and render at rest frame
                     character.renderAtRestFrame(this.gameBoard);
                 }

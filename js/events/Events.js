@@ -114,9 +114,11 @@ class Events {
     /**
      * Handle a space keypress.
      */
-    handleSpaceKeypress() {
+    async handleSpaceKeypress() {
         // Don't allow space keypress if the barbarian just died to avoid race conditions
         if (this.game.getBarbarian().isDead()) {
+            // Wait for any running animations to complete
+            await sleep(500);
             this.game.resetGame();
             this.messages.hideAllMessages();
             this.game.startMonsterAttacks();

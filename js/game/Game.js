@@ -34,7 +34,7 @@ class Game {
 
         console.log(character.getProperties().getType() + ' is performing ' + action);
         // Lock the Barbarian action immediately if he is dying to address the race condition of the game being
-        // restarted while he is going thru the dying sequence. The death handling will unlock the actions
+        // restarted while he is going thru the dying sequence.
         if (character.isBarbarian() && action === DEATH_LABEL) {
             console.log('setting action to locked');
             let self = this;

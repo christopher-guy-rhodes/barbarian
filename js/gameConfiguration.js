@@ -262,7 +262,7 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(6)
+    //.withScreenNumber(5)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
 

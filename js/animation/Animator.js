@@ -44,7 +44,7 @@ class Animator {
             let offset = -1 * frames[frameIdx] * sprite.width();
 
             // Useful for debugging, will visually render targets
-            //this.renderFrameTarget(action, sprite, frames[frameIdx]);
+            this.renderFrameTarget(action, sprite, frames[frameIdx]);
 
             frameIdx++;
 

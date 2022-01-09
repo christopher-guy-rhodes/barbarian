@@ -262,7 +262,7 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(5)
+    //.withScreenNumber(6)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
 
@@ -522,7 +522,7 @@ const GAME_BOARD = new GameBoardBuilder()
                 .build())
             .build(),
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
-            .withProperties(new CharacterPropertiesBuilder($('.axe1'), AXE_CHARACTER_TYPE, 160)
+            .withProperties(new CharacterPropertiesBuilder($('.axe1'), AXE_CHARACTER_TYPE, 180)
                 .withFrames(new FramesBuilder()
                     .withFrames('attack', 'left', [0, 1, 2, 3, 4, 5, 6, 7], 0)
                     .build())

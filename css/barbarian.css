@@ -94,6 +94,15 @@
     display: none;
 }
 
+.beast {
+    height: 400px;
+    width: 400px;
+    background-image: url(../sprites/beast.png);
+    position: absolute;
+    bottom: 12px;
+    display: none;
+}
+
 .axe1 {
     height: 460px;
     width: 460px;
@@ -152,6 +161,16 @@
 }
 
 .death_guard2 {
+    border: 0px solid white;
+    height: 800px;
+    width: 400px;
+    background-image: url(../sprites/death.png);
+    position: absolute;
+    bottom: 0;
+    display: none;
+}
+
+.death_beast {
     border: 0px solid white;
     height: 800px;
     width: 400px;

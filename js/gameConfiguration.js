@@ -5,6 +5,7 @@ const AXE_CHARACTER_TYPE = 'AXE';
 const DOG_CHARACTER_TYPE = 'DOG';
 const BARBARIAN_CHARACTER_TYPE = 'BARBARIAN';
 const GUARD_CHARACTER_TYPE = 'GUARD';
+BEAST_CHARACTER_TYPE = 'BEAST';
 
 const AXE_HEIGHT_VERT = 68;
 const AXE_HEIGHT_CORNER = 90;
@@ -131,7 +132,7 @@ const BARBARIAN_JUMP_TARGETS = {
 
 function getAxeFrameTargets(selector) {
     return {
-        5 : {
+        6 : {
             attack: {
                 3: {
                     height: AXE_HEIGHT_CORNER,
@@ -153,7 +154,7 @@ function getAxeFrameTargets(selector) {
                 }
             }
         },
-        6 : {
+        7 : {
             attack: {
                 0: {
                     height: AXE_HEIGHT_VERT,
@@ -257,16 +258,17 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
         .withDefaultBottom(4, 62)
         .withDefaultBottom(5, 62)
         .withDefaultBottom(6, 62)
+        .withDefaultBottom(7, 62)
         .withActionNumberOfTimes(ATTACK_LABEL, 1)
         .withDeathSprite($('.barbarian'))
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(6)
+    //.withScreenNumber(5)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
 
-let sharkFrames = new FramesBuilder()
+const SHARK_FRAMES = new FramesBuilder()
     .withFrames('attack', 'left', [2, 1, 0], 3)
     .withFrames('attack', 'right', [0, 1, 2], 2)
     .withFrames('swim', 'left', [17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
@@ -281,13 +283,16 @@ let sharkFrames = new FramesBuilder()
         6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17], 0)
     .build();
 
+const DEFAULT_DEATH_RIGHT = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+const DEFAULT_DEATH_LEFT =  [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
 const MONSTER_FRAMES = new FramesBuilder()
     .withFrames('walk', 'left', [13, 12, 11, 10, 9, 8], 1)
     .withFrames('walk', 'right', [0, 1, 2, 3, 4, 5], 0)
     .withFrames('attack', 'left', [31, 30, 29, 28, 27, 26, 25, 24], 3)
     .withFrames('attack', 'right', [16, 17 , 18, 19, 20, 21, 23, 23], 2)
-    .withFrames('death', 'left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
-    .withFrames('death', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
+    .withFrames('death', 'left', DEFAULT_DEATH_LEFT, 0)
+    .withFrames('death', 'right', DEFAULT_DEATH_RIGHT, 0)
     .build();
 
 const DOG_FRAMES = new FramesBuilder()
@@ -297,8 +302,8 @@ const DOG_FRAMES = new FramesBuilder()
     .withFrames('attack', 'right', [0, 1, 2, 3, 4], 2)
     .withFrames('walk', 'left', [4, 3, 2, 1, 0], 3)
     .withFrames('walk', 'right', [0, 1, 2, 3, 4], 2)
-    .withFrames('death', 'left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
-    .withFrames('death', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
+    .withFrames('death', 'left', DEFAULT_DEATH_LEFT, 0)
+    .withFrames('death', 'right', DEFAULT_DEATH_RIGHT, 0)
     .build();
 
 const GUARD_FRAMES = new FramesBuilder()
@@ -306,9 +311,18 @@ const GUARD_FRAMES = new FramesBuilder()
     .withFrames('walk', 'left', [17, 16, 15, 14, 13, 12], 2)
     .withFrames('attack', 'right', [6, 7, 8], 1)
     .withFrames('attack', 'left', [20, 19, 18], 3)
-    .withFrames('death', 'left', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
-    .withFrames('death', 'right', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 0)
-    .build()
+    .withFrames('death', 'left', DEFAULT_DEATH_LEFT, 0)
+    .withFrames('death', 'right', DEFAULT_DEATH_RIGHT, 0)
+    .build();
+
+const BEAST_FRAMES = new FramesBuilder()
+    .withFrames('walk', 'right', [0, 1, 2, 3, 4], 0)
+    .withFrames('walk', 'left', [14, 13, 12, 11, 10], 2)
+    .withFrames('attack', 'right', [5, 6, 7], 1)
+    .withFrames('attack', 'left', [17, 16, 15], 3)
+    .withFrames('death', 'left', DEFAULT_DEATH_LEFT, 0)
+    .withFrames('death', 'right', DEFAULT_DEATH_RIGHT, 0)
+    .build();
 
 const GAME_BOARD = new GameBoardBuilder()
     .withOpponents(0, [BARBARIAN_CHARACTER,
@@ -370,7 +384,7 @@ const GAME_BOARD = new GameBoardBuilder()
     .withOpponents(3, [BARBARIAN_CHARACTER,
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.shark1'), SHARK_CHARACTER_TYPE, 0)
-                .withFrames(sharkFrames)
+                .withFrames(SHARK_FRAMES)
                 .withSound(sounds.getSplashSound())
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
@@ -383,7 +397,7 @@ const GAME_BOARD = new GameBoardBuilder()
             .withScreenNumber(3).build(),
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.shark2'), SHARK_CHARACTER_TYPE, 1400)
-                .withFrames(sharkFrames)
+                .withFrames(SHARK_FRAMES)
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
                 .withDefaultAction(SWIM_LABEL)
@@ -395,7 +409,7 @@ const GAME_BOARD = new GameBoardBuilder()
             .withScreenNumber(3).build(),
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.shark3'), SHARK_CHARACTER_TYPE, 1400)
-                .withFrames(sharkFrames)
+                .withFrames(SHARK_FRAMES)
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
                 .withDefaultAction(SWIM_LABEL)
@@ -438,6 +452,19 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withScreenNumber(4).build()])
     .withOpponents(5, [BARBARIAN_CHARACTER,
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
+            .withProperties(new CharacterPropertiesBuilder($('.beast'), BEAST_CHARACTER_TYPE, 700)
+                .withFrames(BEAST_FRAMES)
+                .withFramesPerSecond(WALK_LABEL, 3)
+                .withPixelsPerSecond(WALK_LABEL, 0)
+                .withFramesPerSecond(ATTACK_LABEL, 5)
+                .withPixelsPerSecond(ATTACK_LABEL, 500)
+                .withDeathSprite($('.death_beast'))
+                .withDefaultBottom(5, 60)
+                .build())
+            .withScreenNumber(5)
+            .build()])
+    .withOpponents(6, [BARBARIAN_CHARACTER,
+        new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.axe1'), AXE_CHARACTER_TYPE, 175)
                 .withFrames(new FramesBuilder()
                     .withFrames('attack', 'left', [0, 1, 2, 3, 4, 5, 6, 7], 0)
@@ -453,10 +480,10 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withPixelsPerSecond(ATTACK_LABEL, 0)
                 .withMaxAttackThreshold(5)
                 .withCanElevate(false)
-                .withDefaultBottom(5, 150)
+                .withDefaultBottom(6, 150)
                 .build())
             .withAction(ATTACK_LABEL)
-            .withScreenNumber(5).build(),
+            .withScreenNumber(6).build(),
             new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
                 .withProperties(new CharacterPropertiesBuilder($('.axe2'), AXE_CHARACTER_TYPE, 565)
                     .withFrames(new FramesBuilder()
@@ -473,10 +500,10 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withPixelsPerSecond(ATTACK_LABEL, 0)
                     .withMaxAttackThreshold(5)
                     .withCanElevate(false)
-                    .withDefaultBottom(5, 150)
+                    .withDefaultBottom(6, 150)
                     .build())
                 .withAction(ATTACK_LABEL)
-                .withScreenNumber(5).build(),
+                .withScreenNumber(6).build(),
             new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
                 .withProperties(new CharacterPropertiesBuilder($('.axe3'), AXE_CHARACTER_TYPE, 955)
                     .withFrames(new FramesBuilder()
@@ -493,12 +520,12 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withPixelsPerSecond(ATTACK_LABEL, 0)
                     .withMaxAttackThreshold(5)
                     .withCanElevate(false)
-                    .withDefaultBottom(5, 150)
+                    .withDefaultBottom(6, 150)
                     .build())
                 .withAction(ATTACK_LABEL)
-                .withScreenNumber(5).build()])
-    .withSurface(5, ICE_SURFACE)
-    .withOpponents(6, [BARBARIAN_CHARACTER,
+                .withScreenNumber(6).build()])
+    .withSurface(6, ICE_SURFACE)
+    .withOpponents(7, [BARBARIAN_CHARACTER,
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.guard1'), GUARD_CHARACTER_TYPE, 850)
                 .withFrames(GUARD_FRAMES)
@@ -507,8 +534,9 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withFramesPerSecond(ATTACK_LABEL, 5)
                 .withPixelsPerSecond(ATTACK_LABEL, 300)
                 .withDeathSprite($('.death_guard1'))
-                .withDefaultBottom(6, 60)
+                .withDefaultBottom(7, 60)
                 .build())
+            .withScreenNumber(7)
             .build(),
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.guard2'), GUARD_CHARACTER_TYPE, 1150)
@@ -518,8 +546,9 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withFramesPerSecond(ATTACK_LABEL, 10)
                 .withPixelsPerSecond(ATTACK_LABEL, 500)
                 .withDeathSprite($('.death_guard2'))
-                .withDefaultBottom(6, 60)
+                .withDefaultBottom(7, 60)
                 .build())
+            .withScreenNumber(7)
             .build(),
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.axe1'), AXE_CHARACTER_TYPE, 180)
@@ -537,11 +566,11 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withPixelsPerSecond(ATTACK_LABEL, 0)
                 .withMaxAttackThreshold(5)
                 .withCanElevate(false)
-                .withDefaultBottom(6, -175)
+                .withDefaultBottom(7, -175)
                 .build())
             .withAction(ATTACK_LABEL)
-            .withScreenNumber(6).build()])
-    .withSurface(6, ICE_SURFACE)
+            .withScreenNumber(7).build()])
+    .withSurface(7, ICE_SURFACE)
     .build();
 
 let game = new Game(BARBARIAN_CHARACTER, GAME_BOARD);

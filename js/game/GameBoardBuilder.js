@@ -56,6 +56,14 @@ class GameBoardBuilder {
                     left: true,
                     right: true
                 }
+            },
+            7: {
+                opponents: [],
+                surface: EARTH_SURFACE,
+                allowedScroll : {
+                    left: true,
+                    right: true
+                }
             }
         };
     }

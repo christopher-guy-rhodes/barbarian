@@ -198,8 +198,7 @@ class Events {
      * Handle a jump keypress.
      */
     handleJumpKeypress() {
-        if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !this.game.getBarbarian().isAction(JUMP_LABEL)
-            && !this.game.getBarbarian().isDead()) {
+        if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !this.game.getBarbarian().isDead()) {
             this.game.performAction(this.game.getBarbarian(), JUMP_LABEL);
         }
     }

@@ -207,14 +207,6 @@ class Game {
 
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
-        if (requestedAction === JUMP_LABEL) {
-            // If the Barbarian is dying don't set the action to stop in order to let the animation continue
-            if (character.getAction() !== DEATH_LABEL) {
-                character.setAction(STOP_LABEL);
-                character.getAnimator().stopMovement();
-                character.renderAtRestFrame(this.gameBoard);
-            }
-        }
         if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {
             this.handleAxes(character, frame);
         }

@@ -32,7 +32,6 @@ class Game {
     performAction(character, action, frame = 0, uninterruptable = false) {
         validateRequiredParams(this.performAction, arguments, 'character', 'action');
 
-        console.log(character.getProperties().getType() + ' is performing ' + action);
         // Lock the Barbarian action immediately if he is dying to address the race condition of the game being
         // restarted while he is going thru the dying sequence.
         if (character.isBarbarian() && action === DEATH_LABEL) {

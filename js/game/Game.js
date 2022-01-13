@@ -212,6 +212,7 @@ class Game {
             if (character.getAction() !== DEATH_LABEL) {
                 character.setAction(STOP_LABEL);
                 character.getAnimator().stopMovement();
+                character.renderAtRestFrame(this.gameBoard);
             }
         }
         if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {

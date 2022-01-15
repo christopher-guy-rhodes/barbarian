@@ -5,7 +5,8 @@ const AXE_CHARACTER_TYPE = 'AXE';
 const DOG_CHARACTER_TYPE = 'DOG';
 const BARBARIAN_CHARACTER_TYPE = 'BARBARIAN';
 const GUARD_CHARACTER_TYPE = 'GUARD';
-BEAST_CHARACTER_TYPE = 'BEAST';
+const BEAST_CHARACTER_TYPE = 'BEAST';
+const DRAGON_CHARACTER_TYPE = 'DRAGON';
 
 const AXE_HEIGHT_VERT = 68;
 const AXE_HEIGHT_CORNER = 90;
@@ -260,12 +261,13 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
         .withDefaultBottom(6, 62)
         .withDefaultBottom(7, 62)
         .withDefaultBottom(8, 62)
+        .withDefaultBottom(9, 62)
         .withActionNumberOfTimes(ATTACK_LABEL, 1)
         .withDeathSprite($('.barbarian'))
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(8)
+    //.withScreenNumber(9)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
 
@@ -461,6 +463,7 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withPixelsPerSecond(ATTACK_LABEL, 500)
                 .withDeathSprite($('.death_beast'))
                 .withDefaultBottom(5, 60)
+                .withSound(sounds.getMonsterSound())
                 .build())
             .withScreenNumber(5)
             .build()])
@@ -629,7 +632,28 @@ const GAME_BOARD = new GameBoardBuilder()
                 .build())
             .withScreenNumber(8)
             .build()])
-    .withOpponents(9, [BARBARIAN_CHARACTER])
+    .withOpponents(9, [BARBARIAN_CHARACTER,
+        new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
+            .withProperties(new CharacterPropertiesBuilder($('.dragon'), DRAGON_CHARACTER_TYPE, 1000)
+                .withFrames(new FramesBuilder()
+                    .withFrames('sit', 'left', [9, 8, 7, 6], 1)
+                    .withFrames('sit', 'right', [0, 1, 2, 3], 0)
+                    .withFrames('attack', 'left', [23, 22, 21, 20, 19, 18], 3)
+                    .withFrames('attack', 'right', [12, 13, 14, 15, 16, 17], 2)
+                    .withFrames('walk', 'left', [23, 22, 21, 20, 19, 18], 3)
+                    .withFrames('walk', 'right', [12, 13, 14, 15, 16, 17], 2)
+                    .withFrames('death', 'left', DEFAULT_DEATH_LEFT, 0)
+                    .withFrames('death', 'right', DEFAULT_DEATH_RIGHT, 0)
+                    .build())
+                .withCanHighlight(false)
+                //.withSound(sounds.getGrowlSound())
+                .withDefaultAction(SIT_LABEL)
+                .withDefaultBottom(9, 62)
+                .withFramesPerSecond(ATTACK_LABEL, 7.5)
+                .withDeathSprite($('.death_dog'))
+                .build())
+            .withAction(SIT_LABEL)
+            .withScreenNumber(9).build()])
     .build();
 
 let game = new Game(BARBARIAN_CHARACTER, GAME_BOARD);

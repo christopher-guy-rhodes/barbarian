@@ -35,7 +35,6 @@ class Game {
         // Lock the Barbarian action immediately if he is dying to address the race condition of the game being
         // restarted while he is going thru the dying sequence.
         if (character.isBarbarian() && action === DEATH_LABEL) {
-            console.log('setting action to locked');
             let self = this;
             this.gameBoard.setActionsLocked(true);
             setTimeout(function () {
@@ -129,8 +128,9 @@ class Game {
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getProperties().getSound());
             monster.setVerticalDirection(Fighting.getCpuVerticalChaseDirection(monster));
-            let action = monster.getAction() === undefined ? monster.getProperties().getDefaultAction()
-                                                           : monster.getAction();
+            let action = monster.getAction() === undefined || monster.getAction() === DEATH_LABEL
+                ? monster.getProperties().getDefaultAction()
+                : monster.getAction();
             this.performAction(monster, action, monster.getCurrentFrameIndex(action));
         }
     }
@@ -454,7 +454,6 @@ class Game {
 
     /* private */
     handleBoundary(character) {
-        console.log(character.getProperties().getType() + ' hit boundary');
         if (!character.isBarbarian()) {
             if (!character.getProperties().getCanTurnAround()) {
                 character.setStatus(DEAD_LABEL);

@@ -110,14 +110,21 @@ class Game {
 
     /**
      * Starts the monster attacks for the current screen.
-     * @param unpausing true if the action is trigged from an un pause event
+     * @param secondaryMonsters secondary monsters (monsters launched by monsters) to use instead of onscreen monsters
+     * @param unpausing true if the action is triggered from an un pause event
      */
-    startMonsterAttacks(unpausing = false) {
-        let monsters = this.gameBoard.getMonstersOnScreen(this.getScreenNumber())
-            // Don't restart the monster if unpausing and the monster is already dead
-            .filter(monster => !(monster.isDead() && unpausing));
+    startMonsterAttacks(secondaryMonsters, unpausing = false) {
+        let monsters = secondaryMonsters !== undefined
+            ? secondaryMonsters
+            : this.gameBoard.getMonstersOnScreen(this.getScreenNumber())
+                // Don't restart the monster if unpausing and the monster is already dead
+                .filter(monster => !(monster.isDead() && unpausing));
 
         for (let monster of monsters) {
+            if (secondaryMonsters === undefined && monster.getProperties().getIsSecondaryMonster()) {
+                // Don't launch a secondary monster attack unless secondary monsters were passed in
+                continue;
+            }
             monster.show();
             monster.setStatus(ALIVE_LABEL);
             this.sounds.playSound(monster.getProperties().getSound());
@@ -233,6 +240,31 @@ class Game {
         }
         if (this.barbarian.isDead()) {
             this.handleEndingSequence(character);
+        }
+        if (Fighting.shouldDragonBreatheFire(character, frame)) {
+
+            this.handleFireballAttack(character);
+        }
+    }
+
+    /* private */
+    handleFireballAttack(character) {
+        if (character.isAction(ATTACK_LABEL)) {
+            this.performAction(character, ATTACK_LABEL, 1);
+        } else if (character.isAction(SIT_LABEL)) {
+            this.performAction(character, SIT_LABEL, 22);
+        } else {
+            return;
+        }
+
+        if (FIREBALL_CHARACTER.isDead()) {
+            FIREBALL_CHARACTER.setDirection(character.getHorizontalDirection());
+            this.gameBoard.initializeMonster(FIREBALL_CHARACTER, this.getScreenNumber());
+            FIREBALL_CHARACTER.setX((FIREBALL_CHARACTER.getHorizontalDirection() === LEFT_LABEL
+                ? character.getX()
+                : character.getX() + character.getWidth()) + 'px');
+            this.startMonsterAttacks([FIREBALL_CHARACTER]);
+
         }
     }
 
@@ -422,6 +454,13 @@ class Game {
 
     /* private */
     handleBoundary(character) {
+        console.log(character.getProperties().getType() + ' hit boundary');
+        if (!character.isBarbarian()) {
+            if (!character.getProperties().getCanTurnAround()) {
+                character.setStatus(DEAD_LABEL);
+                character.hide();
+            }
+        }
         if(!character.isBarbarian() || character.getBarbarian().isDead()) {
             return;
         }

@@ -20,15 +20,18 @@ class CharacterProperties {
      * @param defaultAction the default action of the character
      * @param defaultDirection the default horizontal direction of the character
      * @param defaultBottom the default bottom position of the character
+     * @param attackThresholds the attach thresholds for the character
+     * @param frameTargets the frame targets for the character
+     * @param isSecondaryMonster true if it is a monster launched by another monster, false otherwise
      */
     constructor(sprite, frames, deathSprite, characterType, defaultX, canElevate, canHighlight, canLeaveBehind,
                 canTurnAround, isInvincible, sound, actionNumberOfTimes, pixelsPerSecond, framesPerSecond,
                 defaultStatus, defaultHorizontalAction, defaultDirection, defaultBottom, attackThresholds,
-                frameTargets) {
+                frameTargets, isSecondaryMonster) {
         validateRequiredParams(this.constructor, arguments, 'sprite', 'deathSprite', 'characterType', 'canElevate',
             'canHighlight', 'canLeaveBehind', 'canTurnAround', 'isInvincible', 'actionNumberOfTimes', 'defaultStatus',
             'defaultHorizontalAction', 'defaultX', 'defaultDirection', 'defaultBottom', 'attackThresholds',
-            'frameTargets');
+            'frameTargets', 'isSecondaryMonster');
         this.sprite = sprite;
         this.frames = frames;
         this.deathSprite = deathSprite;
@@ -50,6 +53,7 @@ class CharacterProperties {
         this.defaultBottom = defaultBottom;
         this.attackThresholds = attackThresholds;
         this.frameTargets = frameTargets;
+        this.isSedondaryMonster = isSecondaryMonster;
     }
 
     /**
@@ -86,6 +90,13 @@ class CharacterProperties {
         return this.attackThresholds[MAX_LABEL];
     }
 
+    /**
+     * Determine if the character is a secondary monster (a monster launched by another monster)
+     * @returns {boolean} true if the character is a secondary monster, false otherwise
+     */
+    getIsSecondaryMonster() {
+        return this.isSedondaryMonster;
+    }
 
     /**
      * Get the frame indexes for a particular action and direction

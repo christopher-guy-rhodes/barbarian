@@ -151,7 +151,8 @@ class Animator {
             !this.character.isOnScreen(gameBoard) ||
             Fighting.shouldCpuLaunchAttack(this.character, gameBoard) ||
             Fighting.shouldCpuFight(this.character, gameBoard) ||
-            gameBoard.getIsPaused());
+            gameBoard.getIsPaused() ||
+            Fighting.shouldDragonBreatheFire(this.character, frame));
     }
 
     /* private */
@@ -238,6 +239,9 @@ class Animator {
         }
         if (!(!Fighting.shouldCpuFight(this.character, gameBoard))) {
             console.log('character: ' + characterType + ' is CPU and should fight');
+        }
+        if (!(!Fighting.shouldDragonBreatheFire(this.character, frames[frameIdx]))) {
+            console.log('character: '  + characterType + ' should breathe fire');
         }
         if (!(!gameBoard.isPaused)) {
             console.log('game is paused');

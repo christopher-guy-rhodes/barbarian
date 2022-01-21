@@ -202,12 +202,21 @@ class GameBoard {
         let monsters = this.getMonstersOnScreen(screenNumber);
 
         for (let monster of monsters) {
-            monster.getProperties().getSprite().css(CSS_LEFT_LABEL, monster.getProperties().getDefaultX() + 'px');
-            monster.getProperties().getSprite().css(CSS_BOTTOM_LABEL,
-                monster.getProperties().getDefaultY(screenNumber) + 'px');
-            monster.getProperties().getSprite().css(CSS_FILTER_LABEL, "brightness(100%)");
-            monster.setStatus(DEAD_LABEL);
+            this.initializeMonster(monster, screenNumber);
         }
+    }
+
+    /**
+     * Initialize a monster for a particular screen
+     * @param monster the monster to initialize
+     * @param screenNumber the screen number
+     */
+    initializeMonster(monster, screenNumber) {
+        monster.getProperties().getSprite().css(CSS_LEFT_LABEL, monster.getProperties().getDefaultX() + 'px');
+        monster.getProperties().getSprite().css(CSS_BOTTOM_LABEL,
+            monster.getProperties().getDefaultY(screenNumber) + 'px');
+        monster.getProperties().getSprite().css(CSS_FILTER_LABEL, "brightness(100%)");
+        monster.setStatus(DEAD_LABEL);
     }
 
     /**
@@ -232,7 +241,7 @@ class GameBoard {
             character.setAction(character.getProperties().getDefaultAction());
             character.setDirection(character.getProperties().getDefaultHorizontalDirection());
             character.setStatus(character.getProperties().getDefaultStatus());
-            character.getProperties().getSprite().css('display', isSpriteOnScreen ? 'block' : 'none');
+            character.getProperties().getSprite().css('display', isSpriteOnScreen && !character.getProperties().getIsSecondaryMonster() ? 'block' : 'none');
             character.getProperties().getSprite().css('left',  character.getProperties().getDefaultX() + 'px');
             character.getProperties().getSprite().css('bottom',
                 character.getProperties().getDefaultY(barbarian.getScreenNumber()) + 'px');

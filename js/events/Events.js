@@ -141,7 +141,7 @@ class Events {
                         this.game.performAction(this.game.getBarbarian(), action, this.game.getBarbarian().getCurrentFrameIndex(action));
                     }
                 }
-                this.game.startMonsterAttacks(true);
+                this.game.startMonsterAttacks(undefined,true);
                 if (this.game.getSounds().getIsSoundOn()) {
                     this.game.getSounds().playThemeSong();
                 }

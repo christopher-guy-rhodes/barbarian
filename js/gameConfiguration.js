@@ -7,6 +7,7 @@ const BARBARIAN_CHARACTER_TYPE = 'BARBARIAN';
 const GUARD_CHARACTER_TYPE = 'GUARD';
 const BEAST_CHARACTER_TYPE = 'BEAST';
 const DRAGON_CHARACTER_TYPE = 'DRAGON';
+const FIREBALL_CHARACTER_TYPE = 'FIREBALL';
 
 const AXE_HEIGHT_VERT = 68;
 const AXE_HEIGHT_CORNER = 90;
@@ -270,6 +271,22 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
     //.withScreenNumber(9)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
+
+const FIREBALL_CHARACTER =
+    new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
+        .withProperties(new CharacterPropertiesBuilder($('.fireball'), FIREBALL_CHARACTER_TYPE, 700)
+            .withFrames(new FramesBuilder()
+                .withFrames('walk', 'left', [0, 1, 2], 0)
+                .withFrames('walk', 'right', [0, 1, 2], 0)
+                .withFrames('attack', 'left', [0, 1, 2], 0)
+                .withFrames('attack', 'right', [0, 1, 2], 0)
+                .build())
+            .withDefaultBottom(9, 125)
+            .withPixelsPerSecond(WALK_LABEL, 300)
+            .withPixelsPerSecond(ATTACK_LABEL, 300)
+            .withCanTurnAround(false)
+            .build())
+        .withScreenNumber(9).build();
 
 const SHARK_FRAMES = new FramesBuilder()
     .withFrames('attack', 'left', [2, 1, 0], 3)
@@ -632,25 +649,30 @@ const GAME_BOARD = new GameBoardBuilder()
                 .build())
             .withScreenNumber(8)
             .build()])
-    .withOpponents(9, [BARBARIAN_CHARACTER,
+    .withOpponents(9, [BARBARIAN_CHARACTER, FIREBALL_CHARACTER,
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
-            .withProperties(new CharacterPropertiesBuilder($('.dragon'), DRAGON_CHARACTER_TYPE, 1000)
+            .withProperties(new CharacterPropertiesBuilder($('.dragon'), DRAGON_CHARACTER_TYPE, 750)
                 .withFrames(new FramesBuilder()
-                    .withFrames('sit', 'left', [9, 8, 7, 6], 1)
-                    .withFrames('sit', 'right', [0, 1, 2, 3], 0)
-                    .withFrames('attack', 'left', [23, 22, 21, 20, 19, 18], 3)
-                    .withFrames('attack', 'right', [12, 13, 14, 15, 16, 17], 2)
+                    .withFrames('sit', 'left', [9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, -1, 8, 7, 6], 1)
+                    .withFrames('sit', 'right', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 2, 3], 0)
                     .withFrames('walk', 'left', [23, 22, 21, 20, 19, 18], 3)
                     .withFrames('walk', 'right', [12, 13, 14, 15, 16, 17], 2)
+                    //.withFrames('attack', 'left', [23, 22, 21, 20, 19, 18], 3)
+                    //.withFrames('attack', 'right', [12, 13, 14, 15, 16, 17], 2)
+                    .withFrames('attack', 'left', [-1, 23, 22, 21, 20, 19, 18], 3)
+                    .withFrames('attack', 'right', [-1, 12, 13, 14, 15, 16, 17], 2)
                     .withFrames('death', 'left', DEFAULT_DEATH_LEFT, 0)
                     .withFrames('death', 'right', DEFAULT_DEATH_RIGHT, 0)
                     .build())
+                //.withPixelsPerSecond(ATTACK_LABEL, 100)
+                //.withFramesPerSecond(ATTACK_LABEL, 15)
+                //.withPixelsPerSecond(ATTACK_LABEL, 0)
                 .withCanHighlight(false)
+                //.withIsInvincible(true)
                 //.withSound(sounds.getGrowlSound())
                 .withDefaultAction(SIT_LABEL)
                 .withDefaultBottom(9, 62)
-                .withFramesPerSecond(ATTACK_LABEL, 7.5)
-                .withDeathSprite($('.death_dog'))
+                .withDeathSprite($('.death_dragon'))
                 .build())
             .withAction(SIT_LABEL)
             .withScreenNumber(9).build()])

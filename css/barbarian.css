@@ -139,6 +139,24 @@
     display: none;
 }
 
+.fireball {
+    height: 100px;
+    width: 100px;
+    background-image: url(../sprites/fireball.png);
+    position: absolute;
+    bottom: 12px;
+    display: none;
+}
+
+.blue_fireball {
+    height: 100px;
+    width: 100px;
+    background-image: url(../sprites/blue_fireball.png);
+    position: absolute;
+    bottom: 12px;
+    display: none;
+}
+
 .death {
     border: 0px solid white;
     height: 800px;

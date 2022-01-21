@@ -77,7 +77,7 @@ class GameBoardBuilder {
                 opponents: [],
                 surface: EARTH_SURFACE,
                 allowedScroll : {
-                    left: true,
+                    left: false,
                     right: true
                 }
             }

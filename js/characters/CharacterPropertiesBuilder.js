@@ -22,6 +22,7 @@ class CharacterPropertiesBuilder {
         this.sound = undefined;
         this.defaultStatus = DEAD_LABEL;
         this.defaultAction = WALK_LABEL;
+        this.isSecondaryMonster = false;
 
         this.defaultDirection = {
             x : LEFT_LABEL,
@@ -277,6 +278,11 @@ class CharacterPropertiesBuilder {
         return this;
     }
 
+    withIsSecondaryMonster(flag) {
+        this.isSecondaryMonster = flag;
+        return this;
+    }
+
     /**
      * Build the character properties object.
      * @returns {CharacterProperties} the character properties
@@ -289,6 +295,7 @@ class CharacterPropertiesBuilder {
         return new CharacterProperties(this.sprite, this.frames, this.deathSprite, this.characterType, this.defaultX,
             this.canElevate, this.canHighlight, this.canLeaveBehind, this.canTurnAround, this.isInvincible, this.sound,
             this.actionNumberOfTimes, this.pixelsPerSecond, this.framesPerSecond, this.defaultStatus,
-            this.defaultAction, this.defaultDirection, this.defaultBottom,  this.attackThresholds, this.frameTargets);
+            this.defaultAction, this.defaultDirection, this.defaultBottom,  this.attackThresholds, this.frameTargets,
+            this.isSecondaryMonster);
     }
 }

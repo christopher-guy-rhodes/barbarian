@@ -188,6 +188,10 @@ class Fighting {
                 !this.didBarbarianEvadeAttack(character.getBarbarian(), character);
     }
 
+    static shouldDragonBreatheFire(character, frame) {
+        return character.getProperties().getType() === DRAGON_CHARACTER_TYPE && frame === -1;
+    }
+
     /**
      * Determine if the Barbarian evaded the attack from the monster
      * @param barbarian the Barbarian

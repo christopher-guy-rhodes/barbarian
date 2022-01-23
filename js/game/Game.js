@@ -16,7 +16,7 @@ class Game {
         this.barbarian = barbarian;
         this.gameBoard = gameBoard;
 
-        this.numLives = 3;
+        this.numLives = 10;
 
         this.sounds = new Sounds();
         this.messages = new Messages();
@@ -524,7 +524,7 @@ class Game {
 
     /* private */
     resetGameOver() {
-        this.setNumLives(3);
+        this.setNumLives(10);
         this.getBarbarian().setScreenNumber(0);
         this.getBarbarian().setDirection(RIGHT_LABEL);
         this.getBarbarian().setAction(undefined);

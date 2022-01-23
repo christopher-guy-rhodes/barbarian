@@ -353,6 +353,63 @@
     left: 42px;
 }
 
+.life3 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 690px;
+    left: 79px;
+}
+
+.life4 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 690px;
+    left: 116px;
+}
+
+.life5 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 690px;
+    left: 153px;
+}
+
+.life6 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 690px;
+    left: 190px;
+}
+
+.life7 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 690px;
+    left: 227px;
+}
+
+.life8 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 690px;
+    left: 264px;
+}
+
+.life9 {
+    height: 43px;
+    width: 35px;
+    position: absolute;
+    bottom: 690px;
+    left: 301px;
+}
+
+
 body {
     margin: 0px;
 }

@@ -243,6 +243,9 @@ class Animator {
         if (!(!Fighting.shouldDragonBreatheFire(this.character, frames[frameIdx]))) {
             console.log('character: '  + characterType + ' should breathe fire');
         }
+        if (!(!Fighting.wasBarbarianTargetedByCharacter(this.character, this.character.getBarbarian(), action, frames[frameIdx]))) {
+            console.log('character: ' + characterType + ' targeted the barbarian');
+        }
         if (!(!gameBoard.isPaused)) {
             console.log('game is paused');
         }

@@ -214,7 +214,7 @@ class Game {
     /* private */
     handleActionInterruption(character, requestedAction, frame) {
         if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {
-            this.handleAxes(character, frame);
+            this.handleTargetDefeat(character, frame);
         }
         if ((!character.isActionInfinite(requestedAction) && character.getAction() === requestedAction)
             || this.gameBoard.getIsPaused()) {
@@ -269,11 +269,9 @@ class Game {
     }
 
     /* private */
-    handleAxes(character, frame) {
-        if (character.getProperties().getType() === AXE_CHARACTER_TYPE) {
-            this.death(character.getBarbarian());
-            this.performAction(character, character.getProperties().getDefaultAction(), frame);
-        }
+    handleTargetDefeat(character, frame) {
+        this.death(character.getBarbarian());
+        this.performAction(character, character.getProperties().getDefaultAction(), frame);
     }
 
     /* private */

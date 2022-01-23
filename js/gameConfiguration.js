@@ -20,114 +20,114 @@ const AXE_HEIGHT_CORNER_OFFSET = 55;
 
 const AXE_WIDTH_CORNER_OFFSET = 55 + 30;
 
-const BARBARIAN_HEAD_TARGET = {
-    height: 35,
+const BARBARIAN_BODY_TARGET = {
+    height: 150,
     width: 45,
-    bottomOffset: 123,
+    bottomOffset: 10,
     leftOffset: $('.barbarian').width() / 2
 };
 
 const BARBARIAN_WALK_TARGETS = {
-    1: BARBARIAN_HEAD_TARGET, 2: BARBARIAN_HEAD_TARGET, 3: BARBARIAN_HEAD_TARGET,
-    4: BARBARIAN_HEAD_TARGET, 5: BARBARIAN_HEAD_TARGET, 6: BARBARIAN_HEAD_TARGET,
-    8: BARBARIAN_HEAD_TARGET, 9: BARBARIAN_HEAD_TARGET, 10: BARBARIAN_HEAD_TARGET,
-    11: BARBARIAN_HEAD_TARGET, 12: BARBARIAN_HEAD_TARGET, 13: BARBARIAN_HEAD_TARGET,
+    1: BARBARIAN_BODY_TARGET, 2: BARBARIAN_BODY_TARGET, 3: BARBARIAN_BODY_TARGET,
+    4: BARBARIAN_BODY_TARGET, 5: BARBARIAN_BODY_TARGET, 6: BARBARIAN_BODY_TARGET,
+    8: BARBARIAN_BODY_TARGET, 9: BARBARIAN_BODY_TARGET, 10: BARBARIAN_BODY_TARGET,
+    11: BARBARIAN_BODY_TARGET, 12: BARBARIAN_BODY_TARGET, 13: BARBARIAN_BODY_TARGET,
 };
 
 const BARBARIAN_RUN_TARGETS = {
-    16: BARBARIAN_HEAD_TARGET, 17: BARBARIAN_HEAD_TARGET, 18: BARBARIAN_HEAD_TARGET,
-    19: BARBARIAN_HEAD_TARGET, 20: BARBARIAN_HEAD_TARGET, 21: BARBARIAN_HEAD_TARGET,
-    24: BARBARIAN_HEAD_TARGET, 25: BARBARIAN_HEAD_TARGET, 26: BARBARIAN_HEAD_TARGET,
-    27: BARBARIAN_HEAD_TARGET, 28: BARBARIAN_HEAD_TARGET, 29: BARBARIAN_HEAD_TARGET
+    16: BARBARIAN_BODY_TARGET, 17: BARBARIAN_BODY_TARGET, 18: BARBARIAN_BODY_TARGET,
+    19: BARBARIAN_BODY_TARGET, 20: BARBARIAN_BODY_TARGET, 21: BARBARIAN_BODY_TARGET,
+    24: BARBARIAN_BODY_TARGET, 25: BARBARIAN_BODY_TARGET, 26: BARBARIAN_BODY_TARGET,
+    27: BARBARIAN_BODY_TARGET, 28: BARBARIAN_BODY_TARGET, 29: BARBARIAN_BODY_TARGET
 };
 
 const BARBARIAN_STOP_TARGETS = {
-    0: BARBARIAN_HEAD_TARGET, 14: BARBARIAN_HEAD_TARGET
+    0: BARBARIAN_BODY_TARGET, 14: BARBARIAN_BODY_TARGET
 };
 
 const BARBARIAN_JUMP_TARGETS = {
     48 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 123,
+        bottomOffset: 10,
         leftOffset: 220
     },
     49 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 123,
+        bottomOffset: 10,
         leftOffset: 220
     },
     50 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 140,
+        bottomOffset: 35,
         leftOffset: 160
     },
     51 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 235,
+        bottomOffset: 125,
         leftOffset: 200
     },
     52 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 155,
+        bottomOffset: 35,
         leftOffset: 170
     },
     53 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 140,
+        bottomOffset: 20,
         leftOffset: 165
     },
     54 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 123,
+        bottomOffset: 10,
         leftOffset: 220
     },
     62 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 123,
+        bottomOffset: 10,
         leftOffset: 160
     },
     61 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 123,
+        bottomOffset: 10,
         leftOffset: 160
     },
     60 : {
-        height: 35,
+        height: 150,
         width: 45,
         bottomOffset: 140,
-        leftOffset: 200
+        leftOffset: 20
     },
     59 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 235,
+        bottomOffset: 10,
         leftOffset: 175
     },
     58 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 155,
+        bottomOffset: 10,
         leftOffset: 205
     },
     57 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 140,
+        bottomOffset: 10,
         leftOffset: 200
     },
     56 : {
-        height: 35,
+        height: 150,
         width: 45,
-        bottomOffset: 123,
+        bottomOffset: 10,
         leftOffset: 160
     },
 };
@@ -249,6 +249,12 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
                 run : BARBARIAN_RUN_TARGETS,
                 stop : BARBARIAN_STOP_TARGETS,
                 jump : BARBARIAN_JUMP_TARGETS
+            },
+            9: {
+                walk: BARBARIAN_WALK_TARGETS,
+                run : BARBARIAN_RUN_TARGETS,
+                stop : BARBARIAN_STOP_TARGETS,
+                jump : BARBARIAN_JUMP_TARGETS
             }
         })
         .withCanHighlight(false)
@@ -268,23 +274,43 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(9)
+    .withScreenNumber(9)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
+
+
+const FIREBALL_FRAME_TARGET = {
+    height: 30,
+    width: 10,
+    bottomOffset: 0,
+    leftOffset: 0
+};
 
 const FIREBALL_CHARACTER =
     new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
         .withProperties(new CharacterPropertiesBuilder($('.fireball'), FIREBALL_CHARACTER_TYPE, 700)
             .withFrames(new FramesBuilder()
-                .withFrames('walk', 'left', [0, 1, 2], 0)
-                .withFrames('walk', 'right', [0, 1, 2], 0)
+                //.withFrames('walk', 'left', [0, 1, 2], 0)
+                //.withFrames('walk', 'right', [0, 1, 2], 0)
                 .withFrames('attack', 'left', [0, 1, 2], 0)
                 .withFrames('attack', 'right', [0, 1, 2], 0)
                 .build())
             .withDefaultBottom(9, 125)
-            .withPixelsPerSecond(WALK_LABEL, 300)
+            .withDefaultAction(ATTACK_LABEL)
+            .withFrameTargets({
+                9 : {
+                    attack : {
+                        0: FIREBALL_FRAME_TARGET,
+                        1: FIREBALL_FRAME_TARGET,
+                        2: FIREBALL_FRAME_TARGET
+                    }
+
+                }
+            })
             .withPixelsPerSecond(ATTACK_LABEL, 300)
+            .withFramesPerSecond(ATTACK_LABEL, 10)
             .withCanTurnAround(false)
+            .withIsInvincible(true)
             .build())
         .withScreenNumber(9).build();
 
@@ -666,7 +692,7 @@ const GAME_BOARD = new GameBoardBuilder()
                     .build())
                 //.withPixelsPerSecond(ATTACK_LABEL, 100)
                 //.withFramesPerSecond(ATTACK_LABEL, 15)
-                //.withPixelsPerSecond(ATTACK_LABEL, 0)
+                .withPixelsPerSecond(ATTACK_LABEL, 300)
                 .withCanHighlight(false)
                 //.withIsInvincible(true)
                 //.withSound(sounds.getGrowlSound())

@@ -496,7 +496,11 @@ class Game {
 
         this.setScreenNumber(this.getScreenNumber() + (character.isFacingLeft() ? -1 : 1));
 
+
         if (this.gameBoard.isScreenDefined(this.getScreenNumber())) {
+            if (this.gameBoard.isWater(this.getScreenNumber())) {
+                this.sounds.playSound(SPLASH_SOUND);
+            }
             this.gameBoard.advanceBackdrop(character, character.isFacingLeft() ? RIGHT_LABEL : LEFT_LABEL,
                 this.getScreenNumber(), async function() {
                     self.performAction(character, JUMP_LABEL, character.getProperties().getActionNumberOfTimes(JUMP_LABEL), true);

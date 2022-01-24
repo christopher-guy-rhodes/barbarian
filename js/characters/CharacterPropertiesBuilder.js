@@ -76,6 +76,19 @@ class CharacterPropertiesBuilder {
 
         this.frameTargets = {};
 
+        this.frameIdxSounds = {};
+
+    }
+
+    /**
+     * Set a sound to play at a particular frame index
+     * @param frameIdx the frame index to play the sound at
+     * @param sound
+     * @returns {CharacterPropertiesBuilder}
+     */
+    withFrameIndexSound(frameIdx, sound) {
+        this.frameIdxSounds[frameIdx] = sound;
+        return this;
     }
 
     /**
@@ -296,6 +309,6 @@ class CharacterPropertiesBuilder {
             this.canElevate, this.canHighlight, this.canLeaveBehind, this.canTurnAround, this.isInvincible, this.sound,
             this.actionNumberOfTimes, this.pixelsPerSecond, this.framesPerSecond, this.defaultStatus,
             this.defaultAction, this.defaultDirection, this.defaultBottom,  this.attackThresholds, this.frameTargets,
-            this.isSecondaryMonster);
+            this.isSecondaryMonster, this.frameIdxSounds);
     }
 }

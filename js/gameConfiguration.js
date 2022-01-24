@@ -140,7 +140,7 @@ function getAxeFrameTargets(selector) {
                     height: AXE_HEIGHT_CORNER,
                     width: AXE_WIDTH_CORNER,
                     bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
-                    leftOffset: AXE_WIDTH_CORNER_OFFSET
+                    leftOffset: AXE_WIDTH_CORNER_OFFSET,
                 },
                 4: {
                     height: AXE_HEIGHT_VERT,
@@ -517,6 +517,7 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withFrames(new FramesBuilder()
                     .withFrames('attack', 'left', [0, 1, 2, 3, 4, 5, 6, 7], 0)
                     .build())
+                .withFrameIndexSound(3, '/sounds/swing.mp3')
                 .withFrameTargets(getAxeFrameTargets($('.axe1')))
                 .withIsInvincible(true)
                 .withDeathSprite($('.axe1'))
@@ -537,6 +538,7 @@ const GAME_BOARD = new GameBoardBuilder()
                     .withFrames(new FramesBuilder()
                         .withFrames('attack', 'left', [2, 3, 4, 5, 6, 7, 0, 1], 0)
                         .build())
+                    .withFrameIndexSound(1, '/sounds/swing.mp3')
                     .withFrameTargets(getAxeFrameTargets($('.axe2')))
                     .withIsInvincible(true)
                     .withDeathSprite($('.axe2'))
@@ -554,6 +556,7 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withScreenNumber(6).build(),
             new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
                 .withProperties(new CharacterPropertiesBuilder($('.axe3'), AXE_CHARACTER_TYPE, 955)
+                    .withFrameIndexSound(7, '/sounds/swing.mp3')
                     .withFrames(new FramesBuilder()
                         .withFrames('attack', 'left', [4, 5, 6, 7, 0, 1, 2, 3], 0)
                         .build())
@@ -600,6 +603,7 @@ const GAME_BOARD = new GameBoardBuilder()
             .build(),
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.axe1'), AXE_CHARACTER_TYPE, 180)
+                .withFrameIndexSound(0, '/sounds/swing.mp3')
                 .withFrames(new FramesBuilder()
                     .withFrames('attack', 'left', [0, 1, 2, 3, 4, 5, 6, 7], 0)
                     .build())

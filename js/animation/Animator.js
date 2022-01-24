@@ -46,6 +46,8 @@ class Animator {
             // Useful for debugging, will visually render targets
             //this.renderFrameTarget(action, sprite, frames[frameIdx]);
 
+            this.handleSound(frameIdx);
+
             frameIdx++;
 
             sprite.css(CSS_BACKGROUND_POSITION, offset + CSS_PX_LABEL + ' ' + heightOffset + CSS_PX_LABEL);
@@ -117,6 +119,16 @@ class Animator {
      */
     getIsMovementComplete() {
         return this.movementComplete;
+    }
+
+    /* private */
+    handleSound(frameIdx) {
+        let sound = this.character.getProperties().getFrameIndexSound(frameIdx);
+        if (sound !== undefined) {
+            // We want a new audio for each frame sound since we want them to be able to stack on top of each
+            // other.
+            new Audio(sound).play().then(e => handlePromiseError(e));
+        }
     }
 
     /* private */

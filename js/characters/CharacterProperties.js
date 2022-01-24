@@ -27,11 +27,11 @@ class CharacterProperties {
     constructor(sprite, frames, deathSprite, characterType, defaultX, canElevate, canHighlight, canLeaveBehind,
                 canTurnAround, isInvincible, sound, actionNumberOfTimes, pixelsPerSecond, framesPerSecond,
                 defaultStatus, defaultHorizontalAction, defaultDirection, defaultBottom, attackThresholds,
-                frameTargets, isSecondaryMonster) {
+                frameTargets, isSecondaryMonster, frameIdxSounds) {
         validateRequiredParams(this.constructor, arguments, 'sprite', 'deathSprite', 'characterType', 'canElevate',
             'canHighlight', 'canLeaveBehind', 'canTurnAround', 'isInvincible', 'actionNumberOfTimes', 'defaultStatus',
             'defaultHorizontalAction', 'defaultX', 'defaultDirection', 'defaultBottom', 'attackThresholds',
-            'frameTargets', 'isSecondaryMonster');
+            'frameTargets', 'isSecondaryMonster', 'frameIdxSounds');
         this.sprite = sprite;
         this.frames = frames;
         this.deathSprite = deathSprite;
@@ -54,6 +54,16 @@ class CharacterProperties {
         this.attackThresholds = attackThresholds;
         this.frameTargets = frameTargets;
         this.isSedondaryMonster = isSecondaryMonster;
+        this.frameIdxSounds = frameIdxSounds;
+    }
+
+    /**
+     * Get the sound to play at a particular frame index
+     * @param frameIdx the frame index to play the sound at
+     * @returns {String} the path to the sound file mp3 to play
+     */
+    getFrameIndexSound(frameIdx) {
+        return this.frameIdxSounds[frameIdx];
     }
 
     /**

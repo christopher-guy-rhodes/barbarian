@@ -49,7 +49,9 @@
     });
 
     $(document).keydown(function(e) {
-        game.getSounds().playThemeSong();
+        if (!game.gameBoard.getIsPaused()) {
+            game.getSounds().playThemeSong();
+        }
         events.handleKeypress(e.which);
         e.preventDefault(); // prevent the default action (scroll / move caret)
     });

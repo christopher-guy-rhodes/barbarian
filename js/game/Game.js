@@ -32,6 +32,10 @@ class Game {
     performAction(character, action, frame = 0, uninterruptable = false) {
         validateRequiredParams(this.performAction, arguments, 'character', 'action');
 
+        if (action === ATTACK_LABEL && character.getProperties().getSound() !== uninterruptable) {
+            this.sounds.playSound(character.getProperties().getSound());
+        }
+
         // Lock the Barbarian action immediately if he is dying to address the race condition of the game being
         // restarted while he is going thru the dying sequence.
         if (character.isBarbarian() && action === DEATH_LABEL) {
@@ -126,7 +130,6 @@ class Game {
             }
             monster.show();
             monster.setStatus(ALIVE_LABEL);
-            this.sounds.playSound(monster.getProperties().getSound());
             monster.setVerticalDirection(Fighting.getCpuVerticalChaseDirection(monster));
             let action = monster.getAction() === undefined || monster.getAction() === DEATH_LABEL
                 ? monster.getProperties().getDefaultAction()
@@ -356,6 +359,10 @@ class Game {
     /* private */
     death(character) {
         character.setStatus(DEAD_LABEL);
+
+        if (character.getProperties().getSound() !== undefined) {
+            this.sounds.stopSound(character.getProperties().getSound());
+        }
 
         if (character.isBarbarian()) {
             game.setNumLives(game.getNumLives() - 1);

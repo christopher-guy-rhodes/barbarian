@@ -494,6 +494,11 @@ class Game {
         let self = this;
         this.gameBoard.hideMonsters(this.getScreenNumber());
 
+        let monsters = this.gameBoard.getMonstersOnScreen(this.getScreenNumber());
+        for (let monster of monsters) {
+            this.sounds.stopSound(monster.getProperties().getSound());
+        }
+
         this.setScreenNumber(this.getScreenNumber() + (character.isFacingLeft() ? -1 : 1));
 
 

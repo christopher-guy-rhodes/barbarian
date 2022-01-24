@@ -34,8 +34,7 @@
     $.getScript('/js/gameConfiguration.js', function() {
 
     game.setViewPort();
-    game.getGameBoard().setBackdrop(game.getScreenNumber());
-    game.getSounds().playThemeSong();
+    game.getGameBoard().setBackdrop(game.getScreenNumber());7
 
 
     // Bind click events
@@ -50,6 +49,7 @@
     });
 
     $(document).keydown(function(e) {
+        game.getSounds().playThemeSong();
         events.handleKeypress(e.which);
         e.preventDefault(); // prevent the default action (scroll / move caret)
     });

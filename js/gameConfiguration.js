@@ -181,8 +181,8 @@ function getAxeFrameTargets(selector) {
     }
 }
 
-// TODO: the right x positions must be sorted in asc order and the left in desc, don't rely on the client to do the sorting
 let obstacles = new ObstaclesBuilder()
+    // asc
     .withObstacle(1, RIGHT_LABEL,
         new Obstacle(50, 82, ELEVATION_LABEL, STOP_LABEL, -100, 200))
     .withObstacle(1, RIGHT_LABEL,

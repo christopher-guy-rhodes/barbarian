@@ -31,6 +31,16 @@ class ObstaclesBuilder {
      * @returns {Obstacles} the Obstacles object.
      */
     build() {
+        for (let screenNumber of Object.keys(this.obstacles)) {
+            // The left obstacles must be sorted descending by x
+            if (this.obstacles[screenNumber][LEFT_LABEL] !== undefined) {
+                this.obstacles[screenNumber][LEFT_LABEL].sort((a,b) => (a.x <= b.x) ? 1 : -1);
+            }
+            // The right obstacles must be sorted ascending by x
+            if (this.obstacles[screenNumber][RIGHT_LABEL] !== undefined) {
+                this.obstacles[screenNumber][RIGHT_LABEL].sort((a,b) => (a.x > b.x) ? 1 : -1);
+            }
+        }
         return new Obstacles(this.obstacles);
     }
 }

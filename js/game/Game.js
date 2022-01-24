@@ -32,9 +32,7 @@ class Game {
     performAction(character, action, frame = 0, uninterruptable = false) {
         validateRequiredParams(this.performAction, arguments, 'character', 'action');
 
-        if (action === ATTACK_LABEL && character.getProperties().getSound() !== uninterruptable) {
-            this.sounds.playSound(character.getProperties().getSound());
-        }
+        this.handleSound(character, action);
 
         // Lock the Barbarian action immediately if he is dying to address the race condition of the game being
         // restarted while he is going thru the dying sequence.
@@ -182,6 +180,14 @@ class Game {
             viewportMeta.content = viewportMeta.content.replace(/height=[^,]+/,
                 'height=' + height);
         });
+    }
+
+    /* private */
+    handleSound(character, action) {
+        if (action === ATTACK_LABEL && character.getProperties().getSound() !== undefined &&
+            !character.getBarbarian().isDead()) {
+            this.sounds.playSound(character.getProperties().getSound());
+        }
     }
 
     /* private */
@@ -360,10 +366,6 @@ class Game {
     death(character) {
         character.setStatus(DEAD_LABEL);
 
-        if (character.getProperties().getSound() !== undefined) {
-            this.sounds.stopSound(character.getProperties().getSound());
-        }
-
         if (character.isBarbarian()) {
             game.setNumLives(game.getNumLives() - 1);
             game.getNumLives() < 1 ? this.messages.showGameOverMessage() : this.messages.showStartMessage();
@@ -411,6 +413,8 @@ class Game {
             let looser = didOpponentWin ? character : opponent;
 
             if (!looser.isDead() && !looser.getProperties().getIsInvincible()) {
+                this.sounds.stopSound(winner.getProperties().getSound());
+                this.sounds.stopSound(looser.getProperties().getSound());
                 this.death(looser);
                 if (!winner.isBarbarian()) {
                     this.performAction(winner, winner.getAction());

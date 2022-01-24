@@ -145,6 +145,9 @@ class Sounds {
     }
 
     stopSound(sound) {
-        this.sounds[sound].pause();
+        let soundFile = this.sounds[sound];
+        if (soundFile !== undefined) {
+            this.sounds[sound].pause();
+        }
     }
 }

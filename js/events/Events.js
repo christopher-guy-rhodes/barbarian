@@ -149,7 +149,7 @@ class Events {
                 }
                 this.game.startMonsterAttacks(undefined,true);
                 if (this.game.getSounds().getIsSoundOn()) {
-                    this.game.getSound().playSound(THEME_SONG);
+                    this.game.getSounds().playSound(THEME_SONG);
                 }
             } else {
                 this.game.getMessages().showPauseMessage()

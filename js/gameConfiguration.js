@@ -1,3 +1,5 @@
+const START_SCREEN_NUMBER = 0;
+
 const SHARK_CHARACTER_TYPE = 'SHARK';
 const MONSTER_CHARACTER_TYPE = 'MONSTER';
 const ROCK_CHARACTER_TYPE = 'ROCK';
@@ -186,9 +188,9 @@ let obstacles = new ObstaclesBuilder()
     .withObstacle(1, RIGHT_LABEL,
         new Obstacle(50, 82, ELEVATION_LABEL, STOP_LABEL, -100, 200))
     .withObstacle(1, RIGHT_LABEL,
-        new Obstacle(400, 160, ELEVATION_LABEL, STOP_LABEL, 350, 430))
+        new Obstacle(390, 160, ELEVATION_LABEL, STOP_LABEL, 350, 430))
     .withObstacle(1, RIGHT_LABEL,
-        new Obstacle(800, 160, OBSTACLE_PIT_LABEL, FALL_LABEL, 710, 830))
+        new Obstacle(800, 160, OBSTACLE_PIT_LABEL, FALL_LABEL, 680, 830))
 
     .withObstacle(1, LEFT_LABEL,
         new Obstacle(950, 160, OBSTACLE_PIT_LABEL, FALL_LABEL, 880, 1000))
@@ -199,18 +201,18 @@ let obstacles = new ObstaclesBuilder()
 
 
     .withObstacle(2, RIGHT_LABEL,
-        new Obstacle(125, 122, ELEVATION_LABEL, STOP_LABEL))
+        new Obstacle(105, 122, ELEVATION_LABEL, STOP_LABEL))
     .withObstacle(2, RIGHT_LABEL,
         new Obstacle(250, 74, ELEVATION_LABEL, STOP_LABEL))
     .withObstacle(2, RIGHT_LABEL,
-        new Obstacle(365, 12, ELEVATION_LABEL, STOP_LABEL))
+        new Obstacle(330, 12, ELEVATION_LABEL, STOP_LABEL))
 
     .withObstacle(2, LEFT_LABEL,
-        new Obstacle(390, 74, ELEVATION_LABEL, STOP_LABEL, 350, 390))
+        new Obstacle(370, 74, ELEVATION_LABEL, STOP_LABEL, 350, 390))
     .withObstacle(2, LEFT_LABEL,
-        new Obstacle(290, 122, ELEVATION_LABEL, STOP_LABEL, 180, 330))
+        new Obstacle(250, 122, ELEVATION_LABEL, STOP_LABEL, 180, 330))
     .withObstacle(2, LEFT_LABEL,
-        new Obstacle(165, 165, ELEVATION_LABEL, STOP_LABEL, 65, 215))
+        new Obstacle(145, 165, ELEVATION_LABEL, STOP_LABEL, 65, 215))
     .build();
 
 let sounds = new Sounds();
@@ -274,7 +276,7 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
         .withPixelsPerSecond(ATTACK_LABEL, 0)
         .build())
     .withAction(STOP_LABEL)
-    //.withScreenNumber(6)
+    .withScreenNumber(START_SCREEN_NUMBER)
     .withHorizontalDirection(RIGHT_LABEL)
     .build();
 

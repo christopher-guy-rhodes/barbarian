@@ -1,4 +1,7 @@
 const JUMP_EVADE_THRESHOLD = 4;
+const PIT_JUMP_EVADE_FRAME_MIN = 3;
+const PIT_JUMP_EVADE_FRAME_MAX = 4;
+
 
 class Obstacle {
 
@@ -207,7 +210,8 @@ class Obstacle {
     didJumpEvadePit(character) {
         let frameIndex = character.getCurrentFrameIndex(JUMP_LABEL);
         // The Barbarian must jump from the edge of the pit which puts him at jump frame PIT_JUMP_EVADE_FRAME
-        return character.getAction() === JUMP_LABEL && frameIndex === PIT_JUMP_EVADE_FRAME;
+        return character.getAction() === JUMP_LABEL && frameIndex >= PIT_JUMP_EVADE_FRAME_MIN &&
+            frameIndex <= PIT_JUMP_EVADE_FRAME_MAX;
     }
 
     /* private */

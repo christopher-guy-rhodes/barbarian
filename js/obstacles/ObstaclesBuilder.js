@@ -1,3 +1,6 @@
+/**
+ * Class to build a collection of obstacles
+ */
 class ObstaclesBuilder {
 
     /**
@@ -17,17 +20,14 @@ class ObstaclesBuilder {
     withObstacle(screenNumber, direction, obstacle) {
         validateRequiredParams(this.withObstacle, arguments, 'screenNumber', 'direction', 'obstacle');
         if (this.obstacles[screenNumber] === undefined) {
-            this.obstacles[screenNumber] = {};
-        }
-        if (this.obstacles[screenNumber][direction] === undefined) {
-            this.obstacles[screenNumber][direction] = [];
+            this.obstacles[screenNumber] = {left : [], right: []};
         }
         this.obstacles[screenNumber][direction].push(obstacle);
         return this;
     }
 
     /**
-     * Build eh Obstacles
+     * Build the Obstacles
      * @returns {Obstacles} the Obstacles object.
      */
     build() {

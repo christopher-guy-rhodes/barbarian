@@ -115,6 +115,12 @@ class Events {
      * Handle a space keypress.
      */
     async handleSpaceKeypress() {
+        if (!game.gameBoard.getIsPaused()) {
+            // Browser won't play theme song unless the user initiated it. Let the space keypress count as that. If the
+            // theme song is already playing that is okay since it is a singleton.
+            game.getSounds().playThemeSong();
+        }
+
         // Don't allow space keypress if the barbarian just died to avoid race conditions
         if (this.game.getBarbarian().isDead()) {
             // Wait for any running animations to complete

@@ -6,6 +6,7 @@ const SPLASH_SOUND = 'SPLASH_SOUND';
 const FIRE_SOUND = 'FIRE_SOUND';
 const FALL_SOUND = 'FALL_SOUND';
 const ROCK_SOUND = 'ROCK_SOUND';
+const DRAGON_SOUND = 'DRAGON_SOUND';
 const FIRE_SOUND_DURATION = 2800;
 
 class Sounds {
@@ -20,7 +21,8 @@ class Sounds {
             FIRE_SOUND :  new Audio('/sounds/fire.mp3'),
             MONSTER_SOUND : new Audio('/sounds/monster.mp3'),
             SPLASH_SOUND : new Audio('/sounds/splash.mp3'),
-            ROCK_SOUND : new Audio('/sounds/rock.mp3')
+            ROCK_SOUND : new Audio('/sounds/rock.mp3'),
+            DRAGON_SOUND : new Audio('/sounds/dragon.mp3')
         };
 
     }

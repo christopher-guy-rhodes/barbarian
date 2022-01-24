@@ -238,13 +238,13 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
             .withFrames('death', 'right',[96, 97, 98, 99, 100], 12)
             .build())
         .withFrameTargets({
-            5: {
+            6: {
                 walk: BARBARIAN_WALK_TARGETS,
                 run : BARBARIAN_RUN_TARGETS,
                 stop : BARBARIAN_STOP_TARGETS,
                 jump : BARBARIAN_JUMP_TARGETS
             },
-            6: {
+            7: {
                 walk: BARBARIAN_WALK_TARGETS,
                 run : BARBARIAN_RUN_TARGETS,
                 stop : BARBARIAN_STOP_TARGETS,
@@ -610,7 +610,7 @@ const GAME_BOARD = new GameBoardBuilder()
                 .withCanLeaveBehind(true)
                 .withCanTurnAround(false)
                 .withDefaultAction(ATTACK_LABEL)
-                .withFramesPerSecond(ATTACK_LABEL, 4)
+                .withFramesPerSecond(ATTACK_LABEL, 3)
                 .withPixelsPerSecond(ATTACK_LABEL, 0)
                 .withMaxAttackThreshold(5)
                 .withCanElevate(false)

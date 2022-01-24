@@ -7,8 +7,13 @@ const FIRE_SOUND = 'FIRE_SOUND';
 const FALL_SOUND = 'FALL_SOUND';
 const ROCK_SOUND = 'ROCK_SOUND';
 const DRAGON_SOUND = 'DRAGON_SOUND';
+const SWING_SOUND = '/sounds/swing.mp3';
+
 const FIRE_SOUND_DURATION = 2800;
 
+/**
+ * Class to handle the playing of audio.
+ */
 class Sounds {
     constructor() {
         this.isSoundOn = true;
@@ -27,6 +32,19 @@ class Sounds {
 
     }
 
+    /**
+     * Plays a "stacked sound" meaning that the sounds are not singletons and can be played simultaneously with
+     * themselves or other stacked sounds.
+     *
+     * @param sound the sound to play
+     */
+    static playStackedSound(sound) {
+        new Audio(sound).play().then(e => handlePromiseError(e));
+    }
+
+    /**
+     * Plays the fire sound for FIRE_SOUND_DURATION milli seconds
+     */
     playFireSound() {
         this.playSound(FIRE_SOUND);
         let self = this;

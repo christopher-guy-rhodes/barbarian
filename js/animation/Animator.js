@@ -127,7 +127,7 @@ class Animator {
         if (sound !== undefined) {
             // We want a new audio for each frame sound since we want them to be able to stack on top of each
             // other.
-            new Audio(sound).play().then(e => handlePromiseError(e));
+            Sounds.playStackedSound(SWING_SOUND);
         }
     }
 

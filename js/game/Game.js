@@ -370,7 +370,7 @@ class Game {
         if (character.isBarbarian()) {
             game.setNumLives(game.getNumLives() - 1);
             game.getNumLives() < 1 ? this.messages.showGameOverMessage() : this.messages.showStartMessage();
-            character.getAction() === FALL_LABEL ? this.sounds.playFallSound() : this.sounds.playGruntSound();
+            character.getAction() === FALL_LABEL ? this.sounds.playSound(FALL_SOUND) : this.sounds.playSound(GRUNT_SOUND);
         } else {
             this.sounds.playFireSound();
         }

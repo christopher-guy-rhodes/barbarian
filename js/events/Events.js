@@ -118,7 +118,7 @@ class Events {
         if (!game.gameBoard.getIsPaused()) {
             // Browser won't play theme song unless the user initiated it. Let the space keypress count as that. If the
             // theme song is already playing that is okay since it is a singleton.
-            game.getSounds().playThemeSong();
+            game.getSounds().playSound(THEME_SONG);
         }
 
         // Don't allow space keypress if the barbarian just died to avoid race conditions
@@ -149,7 +149,7 @@ class Events {
                 }
                 this.game.startMonsterAttacks(undefined,true);
                 if (this.game.getSounds().getIsSoundOn()) {
-                    this.game.getSounds().playThemeSong();
+                    this.game.getSound().playSound(THEME_SONG);
                 }
             } else {
                 this.game.getMessages().showPauseMessage()
@@ -169,7 +169,7 @@ class Events {
         this.game.getMessages().showSoundToggleMessage(game.getSounds().getIsSoundOn());
 
         if (this.game.getSounds().getIsSoundOn()) {
-            this.game.getSounds().playThemeSong();
+            this.game.getSounds().playSound(THEME_SONG);
         } else {
             this.game.getSounds().stopAllSounds();
         }
@@ -184,7 +184,7 @@ class Events {
         }
         if (!this.game.getBarbarian().isAction(SWIM_LABEL) && !game.getBarbarian().isDead()) {
             this.game.getBarbarian().getAnimator().stopMovement();
-            this.game.getSounds().playGruntSound();
+            this.game.getSounds().playSound(GRUNT_SOUND);
             this.game.performAction(this.game.getBarbarian(), ATTACK_LABEL);
         }
     }

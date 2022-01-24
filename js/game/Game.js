@@ -193,9 +193,10 @@ class Game {
     /* private */
     stopMovement(character, action) {
         if (this.gameBoard.isIce(character.getScreenNumber())) {
-            if (character.isAction(WALK_LABEL) && action === WALK_LABEL ||
+            // Delay the stop/change of direction for the Barbarian on the ice
+            if (character.isBarbarian() && (character.isAction(WALK_LABEL) && action === WALK_LABEL ||
                 character.isAction(RUN_LABEL) && action === RUN_LABEL ||
-                !character.isAction(STOP_LABEL) && action === STOP_LABEL) {
+                !character.isAction(STOP_LABEL) && action === STOP_LABEL)) {
                 let self = this;
                 character.setIsSliding(true);
                 // Delay the motion stop since we are on ice to produce a sliding effect

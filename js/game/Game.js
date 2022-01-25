@@ -58,7 +58,7 @@ class Game {
 
         let self = this;
 
-        character.getAnimator().animate(this.gameBoard, action,
+        character.getAnimator().animate(this.gameBoard, this.sounds, action,
             character.getHorizontalDirection(),
             character.getVerticalDirection(),
             character.getProperties().getActionNumberOfTimes(action),

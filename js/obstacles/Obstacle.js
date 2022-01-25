@@ -2,7 +2,9 @@ const JUMP_EVADE_THRESHOLD = 4;
 const PIT_JUMP_EVADE_FRAME_MIN = 3;
 const PIT_JUMP_EVADE_FRAME_MAX = 4;
 
-
+/**
+ * Class to manage a single obstacle.
+ */
 class Obstacle {
 
     constructor(x, y, type, action, minJumpThreshold, maxJumpThreshold) {
@@ -27,24 +29,27 @@ class Obstacle {
     }
 
     /**
-     * Determine if the character is stopped by a boundary.
+     * Determine if the character is stopped by a boundary. Characters remain swimming when a boundary is hit.
      * @param character the character
      * @param gameBoard the game board
      * @returns {boolean} true if the character is stopped by a boundary, false otherwise
      */
     static isStoppedByBoundary(character, gameBoard) {
-        return !this.isAtWaterBoundary(character, gameBoard) && Obstacle.isAtBoundary(character, gameBoard);
+        return !Obstacle.isAtWaterBoundary(character, gameBoard) && Obstacle.isAtBoundary(character, gameBoard);
     }
 
     /**
-     * Determine if the character is past another character.
+     * Determine if the character is past another character. The character is considered past the other character
+     * if the character is moving away from the other character and is at least a PASSING_MULTIPLIER away from the
+     * other character. This method is convenient to decide when a CPU character should chase another character.
+     *
      * @param character the character
      * @param otherCharacter the character to check if the character has passed
      * @returns {boolean} true if character has passed otherCharacter, false otherwise
      */
     static isPastCharacter(character, otherCharacter) {
-        return this.isPastCharacterLeft(character, otherCharacter) ||
-            this.isPastCharacterRight(character, otherCharacter);
+        return Obstacle.isPastCharacterLeft(character, otherCharacter) ||
+            Obstacle.isPastCharacterRight(character, otherCharacter);
     }
 
     /**
@@ -74,14 +79,6 @@ class Obstacle {
     isTraversableDownhillElevation(character) {
         return this.isDownHillFrom(character.getY()) || (!character.isBarbarian()
             && character.getProperties().getCanElevate());
-    }
-
-    /**
-     * Get the type of obstacle.
-     * @returns {string} the obstacle type
-     */
-    getType() {
-        return this.type;
     }
 
     /**

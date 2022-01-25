@@ -1,5 +1,8 @@
 const EMPTY_OBSTACLE = new Obstacle(0, 0, OBSTACLE_NONE_LABEL, STOP_LABEL, 0, 0);
 
+/**
+ * Class to handle a set of obstacles.
+ */
 class Obstacles {
 
     /**

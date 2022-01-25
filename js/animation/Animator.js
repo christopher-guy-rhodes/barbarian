@@ -13,6 +13,7 @@ class Animator {
      * Move the character across the game board while also animating the character's sprite.
      *
      * @param gameBoard the game board to perform the animation on
+     * @param sounds the sounds object
      * @param action the requested action (run, walk, attack etc.)
      * @param direction the requested direction to move the character (left or right)
      * @param vertDirection the requested vertical direction to move the character (up or down)
@@ -21,7 +22,7 @@ class Animator {
      * @param uninterruptable set to run thru the animation without interrupting it
      * @returns {Promise<number>} the frame for the action and direction that the animation stopped on
      */
-    async animate(gameBoard, action, direction, vertDirection, numberOfTimes, frameIdx, uninterruptable) {
+    async animate(gameBoard, sounds, action, direction, vertDirection, numberOfTimes, frameIdx, uninterruptable) {
         validateRequiredParams(this.animate, arguments, 'gameBoard', 'action', 'direction', 'numberOfTimes',
             'frameIdx');
 
@@ -46,7 +47,7 @@ class Animator {
             // Useful for debugging, will visually render targets
             //this.renderFrameTarget(action, sprite, frames[frameIdx]);
 
-            this.handleSound(frameIdx);
+            this.handleSound(frameIdx, sounds);
 
             frameIdx++;
 
@@ -122,9 +123,9 @@ class Animator {
     }
 
     /* private */
-    handleSound(frameIdx) {
+    handleSound(frameIdx, sounds) {
         let sound = this.character.getProperties().getFrameIndexSound(frameIdx);
-        if (sound !== undefined) {
+        if (sounds.getIsSoundOn() && sound !== undefined) {
             // We want a new audio for each frame sound since we want them to be able to stack on top of each
             // other.
             Sounds.playStackedSound(SWING_SOUND);

@@ -1,5 +1,5 @@
 /**
- * Class to build a collection of obstacles
+ * Class to build a collection of obstacles.
  */
 class ObstaclesBuilder {
 

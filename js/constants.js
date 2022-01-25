@@ -20,17 +20,8 @@ const ELEVATION_LABEL = 'elevation';
 const MIN_LABEL = 'min';
 const MAX_LABEL = 'max';
 const OPPONENTS_LABEL = 'opponents';
-const WATER_LABEL = 'water';
-const BOTTOM_LABEL = 'bottom';
-const ACTION_LABEL = 'action';
-const DIRECTION_LABEL = 'direction';
-const SPRITE_LABEL = 'sprite';
 const FRAMES_LABEL = 'frames';
 const HEIGHT_OFFSET_LABEL = 'heightOffset';
-const FRAMES_PER_SECOND_LABEL = 'framesPerSecond';
-const STATUS_LABEL = 'status';
-const TIME_LABEL = 'time';
-const TURNAROUND_LABEL = 'turnaround';
 const VERTICAL_LABEL = 'y';
 const HORIZONTAL_LABEL = 'x';
 

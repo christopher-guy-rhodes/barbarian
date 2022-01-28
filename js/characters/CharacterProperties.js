@@ -20,18 +20,17 @@ class CharacterProperties {
      * @param defaultAction the default action of the character
      * @param defaultDirection the default horizontal direction of the character
      * @param defaultBottom the default bottom position of the character
-     * @param attackThresholds the attach thresholds for the character
      * @param frameTargets the frame targets for the character
      * @param isSecondaryMonster true if it is a monster launched by another monster, false otherwise
      */
     constructor(sprite, frames, deathSprite, characterType, defaultX, canElevate, canHighlight, canLeaveBehind,
                 canTurnAround, isInvincible, sound, actionNumberOfTimes, pixelsPerSecond, framesPerSecond,
-                defaultStatus, defaultHorizontalAction, defaultDirection, defaultBottom, attackThresholds,
-                frameTargets, isSecondaryMonster, frameIdxSounds) {
+                defaultStatus, defaultHorizontalAction, defaultDirection, defaultBottom, frameTargets,
+                isSecondaryMonster, frameIdxSounds) {
         validateRequiredParams(this.constructor, arguments, 'sprite', 'deathSprite', 'characterType', 'canElevate',
             'canHighlight', 'canLeaveBehind', 'canTurnAround', 'isInvincible', 'actionNumberOfTimes', 'defaultStatus',
-            'defaultHorizontalAction', 'defaultX', 'defaultDirection', 'defaultBottom', 'attackThresholds',
-            'frameTargets', 'isSecondaryMonster', 'frameIdxSounds');
+            'defaultHorizontalAction', 'defaultX', 'defaultDirection', 'defaultBottom', 'frameTargets',
+            'isSecondaryMonster', 'frameIdxSounds');
         this.sprite = sprite;
         this.frames = frames;
         this.deathSprite = deathSprite;
@@ -51,7 +50,6 @@ class CharacterProperties {
         this.defaultX = defaultX;
         this.defaultDirection = defaultDirection;
         this.defaultBottom = defaultBottom;
-        this.attackThresholds = attackThresholds;
         this.frameTargets = frameTargets;
         this.isSedondaryMonster = isSecondaryMonster;
         this.frameIdxSounds = frameIdxSounds;
@@ -82,22 +80,6 @@ class CharacterProperties {
             return undefined;
         }
         return this.frameTargets[screenNumber][action][frame];
-    }
-
-    /**
-     * Get the minimum attack threshold to defeat this character.
-     * @returns {number} the minimum attack threshold
-     */
-    getMinAttackThreshold() {
-        return this.attackThresholds[MIN_LABEL];
-    }
-
-    /**
-     * Get the minimum attack threshold to defeat this character.
-     * @returns {number} the maximum attack threshold
-     */
-    getMaxAttackThreshold() {
-        return this.attackThresholds[MAX_LABEL];
     }
 
     /**

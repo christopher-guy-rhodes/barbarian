@@ -69,11 +69,6 @@ class CharacterPropertiesBuilder {
             death: SPRITE_FPS
         };
 
-        this.attackThresholds = {
-            min : 3,
-            max : 4
-        }
-
         this.frameTargets = {};
 
         this.frameIdxSounds = {};
@@ -99,24 +94,6 @@ class CharacterPropertiesBuilder {
      */
     withFrameTargets(frameTargets) {
         this.frameTargets = frameTargets;
-        return this;
-    }
-
-    /**
-     * Set the minimum attack threshold.
-     * @param threshold the min attack threshold
-     */
-    withMinAttackThreshold(threshold) {
-        this.attackThresholds[MIN_LABEL] = threshold;
-        return this;
-    }
-
-    /**
-     * Set the maximum attack threshold.
-     * @param threshold the max attack threshold
-     */
-    withMaxAttackThreshold(threshold) {
-        this.attackThresholds[MAX_LABEL] = threshold;
         return this;
     }
 
@@ -308,7 +285,7 @@ class CharacterPropertiesBuilder {
         return new CharacterProperties(this.sprite, this.frames, this.deathSprite, this.characterType, this.defaultX,
             this.canElevate, this.canHighlight, this.canLeaveBehind, this.canTurnAround, this.isInvincible, this.sound,
             this.actionNumberOfTimes, this.pixelsPerSecond, this.framesPerSecond, this.defaultStatus,
-            this.defaultAction, this.defaultDirection, this.defaultBottom,  this.attackThresholds, this.frameTargets,
+            this.defaultAction, this.defaultDirection, this.defaultBottom, this.frameTargets,
             this.isSecondaryMonster, this.frameIdxSounds);
     }
 }

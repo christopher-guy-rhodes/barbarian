@@ -1,4 +1,4 @@
-const START_SCREEN_NUMBER = 0;
+const START_SCREEN_NUMBER = 3;
 
 const SHARK_CHARACTER_TYPE = 'SHARK';
 const MONSTER_CHARACTER_TYPE = 'MONSTER';
@@ -22,29 +22,68 @@ const AXE_HEIGHT_CORNER_OFFSET = 55;
 
 const AXE_WIDTH_CORNER_OFFSET = 55 + 30;
 
-const BARBARIAN_BODY_TARGET = {
+const BARBARIAN_HORIZONTAL_BODY_TARGET = {
     height: 150,
     width: 45,
     bottomOffset: 10,
     leftOffset: $('.barbarian').width() / 2
 };
 
+const BARBARIAN_RIGHT_VERTICAL_BODY_TARGET = {
+    height: 45,
+    width: 150,
+    bottomOffset: 45,
+    leftOffset: $('.barbarian').width() / 2 - 50
+};
+
+const BARBARIAN_LEFT_VERTICAL_BODY_TARGET = {
+    height: 45,
+    width: 150,
+    bottomOffset: 45,
+    leftOffset: $('.barbarian').width() / 2 - 120
+};
+
+
+const SHARK_LEFT_HEAD_TARGET = {
+    height: 45,
+    width: 45,
+    bottomOffset: 20,
+    leftOffset: 0
+};
+
+const SHARK_RIGHT_HEAD_TARGET = {
+    height: 45,
+    width: 45,
+    bottomOffset: 20,
+    leftOffset: $('.shark1').width() - 50
+};
+
 const BARBARIAN_WALK_TARGETS = {
-    1: BARBARIAN_BODY_TARGET, 2: BARBARIAN_BODY_TARGET, 3: BARBARIAN_BODY_TARGET,
-    4: BARBARIAN_BODY_TARGET, 5: BARBARIAN_BODY_TARGET, 6: BARBARIAN_BODY_TARGET,
-    8: BARBARIAN_BODY_TARGET, 9: BARBARIAN_BODY_TARGET, 10: BARBARIAN_BODY_TARGET,
-    11: BARBARIAN_BODY_TARGET, 12: BARBARIAN_BODY_TARGET, 13: BARBARIAN_BODY_TARGET,
+    1: BARBARIAN_HORIZONTAL_BODY_TARGET, 2: BARBARIAN_HORIZONTAL_BODY_TARGET, 3: BARBARIAN_HORIZONTAL_BODY_TARGET,
+    4: BARBARIAN_HORIZONTAL_BODY_TARGET, 5: BARBARIAN_HORIZONTAL_BODY_TARGET, 6: BARBARIAN_HORIZONTAL_BODY_TARGET,
+    8: BARBARIAN_HORIZONTAL_BODY_TARGET, 9: BARBARIAN_HORIZONTAL_BODY_TARGET, 10: BARBARIAN_HORIZONTAL_BODY_TARGET,
+    11: BARBARIAN_HORIZONTAL_BODY_TARGET, 12: BARBARIAN_HORIZONTAL_BODY_TARGET, 13: BARBARIAN_HORIZONTAL_BODY_TARGET,
 };
 
 const BARBARIAN_RUN_TARGETS = {
-    16: BARBARIAN_BODY_TARGET, 17: BARBARIAN_BODY_TARGET, 18: BARBARIAN_BODY_TARGET,
-    19: BARBARIAN_BODY_TARGET, 20: BARBARIAN_BODY_TARGET, 21: BARBARIAN_BODY_TARGET,
-    24: BARBARIAN_BODY_TARGET, 25: BARBARIAN_BODY_TARGET, 26: BARBARIAN_BODY_TARGET,
-    27: BARBARIAN_BODY_TARGET, 28: BARBARIAN_BODY_TARGET, 29: BARBARIAN_BODY_TARGET
+    16: BARBARIAN_HORIZONTAL_BODY_TARGET, 17: BARBARIAN_HORIZONTAL_BODY_TARGET, 18: BARBARIAN_HORIZONTAL_BODY_TARGET,
+    19: BARBARIAN_HORIZONTAL_BODY_TARGET, 20: BARBARIAN_HORIZONTAL_BODY_TARGET, 21: BARBARIAN_HORIZONTAL_BODY_TARGET,
+    24: BARBARIAN_HORIZONTAL_BODY_TARGET, 25: BARBARIAN_HORIZONTAL_BODY_TARGET, 26: BARBARIAN_HORIZONTAL_BODY_TARGET,
+    27: BARBARIAN_HORIZONTAL_BODY_TARGET, 28: BARBARIAN_HORIZONTAL_BODY_TARGET, 29: BARBARIAN_HORIZONTAL_BODY_TARGET
+};
+
+const BARBARIAN_RIGHT_SWIM_TARGETS = {
+    3 : BARBARIAN_RIGHT_VERTICAL_BODY_TARGET, 2 : BARBARIAN_RIGHT_VERTICAL_BODY_TARGET, 1 : BARBARIAN_RIGHT_VERTICAL_BODY_TARGET,
+    0 : BARBARIAN_RIGHT_VERTICAL_BODY_TARGET
+};
+
+const BARBARIAN_LEFT_SWIM_TARGETS = {
+    3 : BARBARIAN_LEFT_VERTICAL_BODY_TARGET, 2 : BARBARIAN_LEFT_VERTICAL_BODY_TARGET, 1 : BARBARIAN_LEFT_VERTICAL_BODY_TARGET,
+    0 : BARBARIAN_LEFT_VERTICAL_BODY_TARGET
 };
 
 const BARBARIAN_STOP_TARGETS = {
-    0: BARBARIAN_BODY_TARGET, 14: BARBARIAN_BODY_TARGET
+    0: BARBARIAN_HORIZONTAL_BODY_TARGET, 14: BARBARIAN_HORIZONTAL_BODY_TARGET
 };
 
 const BARBARIAN_JUMP_TARGETS = {
@@ -134,49 +173,96 @@ const BARBARIAN_JUMP_TARGETS = {
     },
 };
 
+const SHARK_FRAME_TARGETS = {
+    3 : {
+        attack : {
+            left : {
+                0: SHARK_LEFT_HEAD_TARGET,
+                1: SHARK_LEFT_HEAD_TARGET,
+                2: SHARK_LEFT_HEAD_TARGET
+            },
+            right : {
+                0: SHARK_RIGHT_HEAD_TARGET,
+                1: SHARK_RIGHT_HEAD_TARGET,
+                2: SHARK_RIGHT_HEAD_TARGET
+            }
+        },
+        swim : {
+            left : {
+                4: SHARK_LEFT_HEAD_TARGET,
+                5: SHARK_LEFT_HEAD_TARGET,
+                6: SHARK_LEFT_HEAD_TARGET,
+                7: SHARK_LEFT_HEAD_TARGET,
+                8: SHARK_LEFT_HEAD_TARGET,
+                9: SHARK_LEFT_HEAD_TARGET,
+                10: SHARK_LEFT_HEAD_TARGET,
+                11: SHARK_LEFT_HEAD_TARGET,
+                12: SHARK_LEFT_HEAD_TARGET,
+                13: SHARK_LEFT_HEAD_TARGET,
+            },
+            right : {
+                4: SHARK_RIGHT_HEAD_TARGET,
+                5: SHARK_RIGHT_HEAD_TARGET,
+                6: SHARK_RIGHT_HEAD_TARGET,
+                7: SHARK_RIGHT_HEAD_TARGET,
+                8: SHARK_RIGHT_HEAD_TARGET,
+                9: SHARK_RIGHT_HEAD_TARGET,
+                10: SHARK_RIGHT_HEAD_TARGET,
+                11: SHARK_RIGHT_HEAD_TARGET,
+                12: SHARK_RIGHT_HEAD_TARGET,
+                13: SHARK_RIGHT_HEAD_TARGET,
+            }
+        }
+    }
+};
+
 function getAxeFrameTargets(selector) {
     return {
         6 : {
             attack: {
-                3: {
-                    height: AXE_HEIGHT_CORNER,
-                    width: AXE_WIDTH_CORNER,
-                    bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
-                    leftOffset: AXE_WIDTH_CORNER_OFFSET,
-                },
-                4: {
-                    height: AXE_HEIGHT_VERT,
-                    width: AXE_WIDTH_VERT,
-                    bottomOffset: AXE_HEIGHT_VERT_OFFSET,
-                    leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
-                },
-                5: {
-                    height: AXE_HEIGHT_CORNER,
-                    width: AXE_WIDTH_CORNER,
-                    bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
-                    leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+                left : {
+                    3: {
+                        height: AXE_HEIGHT_CORNER,
+                        width: AXE_WIDTH_CORNER,
+                        bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
+                        leftOffset: AXE_WIDTH_CORNER_OFFSET,
+                    },
+                    4: {
+                        height: AXE_HEIGHT_VERT,
+                        width: AXE_WIDTH_VERT,
+                        bottomOffset: AXE_HEIGHT_VERT_OFFSET,
+                        leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
+                    },
+                    5: {
+                        height: AXE_HEIGHT_CORNER,
+                        width: AXE_WIDTH_CORNER,
+                        bottomOffset: AXE_HEIGHT_CORNER_OFFSET,
+                        leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+                    }
                 }
             }
         },
         7 : {
             attack: {
-                0: {
-                    height: AXE_HEIGHT_VERT,
-                    width: AXE_WIDTH_VERT,
-                    bottomOffset: selector.height() - AXE_HEIGHT_VERT_OFFSET - AXE_HEIGHT_VERT,
-                    leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
-                },
-                1: {
-                    height: AXE_HEIGHT_CORNER,
-                    width: AXE_WIDTH_CORNER,
-                    bottomOffset: selector.height() - AXE_HEIGHT_CORNER - AXE_HEIGHT_CORNER_OFFSET,
-                    leftOffset: AXE_WIDTH_CORNER_OFFSET
-                },
-                7: {
-                    height: AXE_HEIGHT_CORNER,
-                    width: AXE_WIDTH_CORNER,
-                    bottomOffset: selector.height() - AXE_HEIGHT_CORNER - AXE_HEIGHT_CORNER_OFFSET,
-                    leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+                left : {
+                    0: {
+                        height: AXE_HEIGHT_VERT,
+                        width: AXE_WIDTH_VERT,
+                        bottomOffset: selector.height() - AXE_HEIGHT_VERT_OFFSET - AXE_HEIGHT_VERT,
+                        leftOffset: selector.width() / 2 - AXE_WIDTH_VERT / 2
+                    },
+                    1: {
+                        height: AXE_HEIGHT_CORNER,
+                        width: AXE_WIDTH_CORNER,
+                        bottomOffset: selector.height() - AXE_HEIGHT_CORNER - AXE_HEIGHT_CORNER_OFFSET,
+                        leftOffset: AXE_WIDTH_CORNER_OFFSET
+                    },
+                    7: {
+                        height: AXE_HEIGHT_CORNER,
+                        width: AXE_WIDTH_CORNER,
+                        bottomOffset: selector.height() - AXE_HEIGHT_CORNER - AXE_HEIGHT_CORNER_OFFSET,
+                        leftOffset: selector.width() - AXE_WIDTH_CORNER - AXE_WIDTH_CORNER_OFFSET
+                    }
                 }
             },
         }
@@ -240,23 +326,26 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
             .withFrames('death', 'right',[96, 97, 98, 99, 100], 12)
             .build())
         .withFrameTargets({
-            6: {
-                walk: BARBARIAN_WALK_TARGETS,
-                run : BARBARIAN_RUN_TARGETS,
-                stop : BARBARIAN_STOP_TARGETS,
-                jump : BARBARIAN_JUMP_TARGETS
+            3 : {
+               swim : { right: BARBARIAN_RIGHT_SWIM_TARGETS, left : BARBARIAN_LEFT_SWIM_TARGETS}
+            } ,
+            6 : {
+                walk: { right : BARBARIAN_WALK_TARGETS, left : BARBARIAN_WALK_TARGETS },
+                run: { right : BARBARIAN_RUN_TARGETS, left : BARBARIAN_RUN_TARGETS },
+                stop: { right : BARBARIAN_STOP_TARGETS, left : BARBARIAN_STOP_TARGETS  },
+                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS }
             },
-            7: {
-                walk: BARBARIAN_WALK_TARGETS,
-                run : BARBARIAN_RUN_TARGETS,
-                stop : BARBARIAN_STOP_TARGETS,
-                jump : BARBARIAN_JUMP_TARGETS
+            7 : {
+                walk: { right : BARBARIAN_WALK_TARGETS, left : BARBARIAN_WALK_TARGETS },
+                run: { right : BARBARIAN_RUN_TARGETS, left : BARBARIAN_RUN_TARGETS},
+                stop: { right : BARBARIAN_STOP_TARGETS, left : BARBARIAN_STOP_TARGETS },
+                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS }
             },
-            9: {
-                walk: BARBARIAN_WALK_TARGETS,
-                run : BARBARIAN_RUN_TARGETS,
-                stop : BARBARIAN_STOP_TARGETS,
-                jump : BARBARIAN_JUMP_TARGETS
+            9 : {
+                walk: { right : BARBARIAN_WALK_TARGETS, left : BARBARIAN_WALK_TARGETS },
+                run: { right : BARBARIAN_RUN_TARGETS, left : BARBARIAN_RUN_TARGETS },
+                stop: { right : BARBARIAN_STOP_TARGETS, left : BARBARIAN_STOP_TARGETS },
+                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS }
             }
         })
         .withCanHighlight(false)
@@ -434,7 +523,7 @@ const GAME_BOARD = new GameBoardBuilder()
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.shark1'), SHARK_CHARACTER_TYPE, 0)
                 .withFrames(SHARK_FRAMES)
-                //.withSound(SPLASH_SOUND)
+                .withFrameTargets(SHARK_FRAME_TARGETS)
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
                 .withDefaultAction(SWIM_LABEL)
@@ -447,6 +536,7 @@ const GAME_BOARD = new GameBoardBuilder()
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.shark2'), SHARK_CHARACTER_TYPE, 1400)
                 .withFrames(SHARK_FRAMES)
+                .withFrameTargets(SHARK_FRAME_TARGETS)
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
                 .withDefaultAction(SWIM_LABEL)
@@ -459,6 +549,7 @@ const GAME_BOARD = new GameBoardBuilder()
         new CharacterBuilder(BARBARIAN_CHARACTER, obstacles)
             .withProperties(new CharacterPropertiesBuilder($('.shark3'), SHARK_CHARACTER_TYPE, 1400)
                 .withFrames(SHARK_FRAMES)
+                .withFrameTargets(SHARK_FRAME_TARGETS)
                 .withCanLeaveBehind(true)
                 .withIsInvincible(true)
                 .withDefaultAction(SWIM_LABEL)

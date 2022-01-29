@@ -63,7 +63,7 @@ class Game {
             character.getVerticalDirection(),
             character.getProperties().getActionNumberOfTimes(action),
             frame, uninterruptable).then(function(frame) {
-                self.handleActionInterruption(character, action, frame);
+                self.handleActionInterruption(character, action, character.getHorizontalDirection(), frame);
         }).catch(function(error) {
             handlePromiseError(error);
         });
@@ -243,8 +243,8 @@ class Game {
     }
 
     /* private */
-    handleActionInterruption(character, requestedAction, frame) {
-        if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, frame)) {
+    handleActionInterruption(character, requestedAction, requestedDirection, frame) {
+        if (Fighting.wasBarbarianTargetedByCharacter(character, character.getBarbarian(), requestedAction, requestedDirection, frame)) {
             this.handleTargetDefeat(character, frame);
         }
         if ((!character.isActionInfinite(requestedAction) && character.getAction() === requestedAction)

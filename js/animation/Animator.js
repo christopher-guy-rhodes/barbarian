@@ -40,12 +40,13 @@ class Animator {
             gameBoard,
             frames[frameIdx]) && frameIdx < frames.length) {
             let sprite = this.prepareSprite();
+            let direction = this.character.getHorizontalDirection();
             let heightOffset = -1 * this.character.getProperties().getFrameHeightOffset(
-                action, this.character.getHorizontalDirection()) * sprite.height();
+                action, direction) * sprite.height();
             let offset = -1 * frames[frameIdx] * sprite.width();
 
             // Useful for debugging, will visually render targets
-            //this.renderFrameTarget(action, sprite, frames[frameIdx]);
+            //this.renderFrameTarget(action, direction, sprite, frames[frameIdx]);
 
             this.handleSound(frameIdx, sounds);
 
@@ -133,11 +134,12 @@ class Animator {
     }
 
     /* private */
-    renderFrameTarget(action, sprite, frame) {
+    renderFrameTarget(action, direction, sprite, frame) {
         let targetSelector = $('.' + sprite.attr('class') + 'Target');
-        let frameTarget = this.character.getProperties().getFrameTarget(action,
+        let frameTarget = this.character.getProperties().getFrameTarget(action, direction,
             this.character.getScreenNumber(),
             frame);
+        console.log('frame target for %s going %s at frame %d is %o', sprite.attr('class'), direction, frame, frameTarget);
         if (frameTarget) {
             targetSelector.css('position', 'fixed');
             targetSelector.css('border', '1px solid red');
@@ -156,7 +158,7 @@ class Animator {
         return (this.character.getAction() !== requestedAction ||
             this.character.getHorizontalDirection() !== requestedDirection ||
             this.character.getVerticalDirection() !== requestedVerticalDirection ||
-            Fighting.wasBarbarianTargetedByCharacter(this.character, this.character.getBarbarian(), requestedAction, frame) ||
+            Fighting.wasBarbarianTargetedByCharacter(this.character, this.character.getBarbarian(), requestedAction, requestedDirection, frame) ||
             Fighting.shouldCpuChase(this.character, gameBoard) ||
             Obstacle.isStoppedByBoundary(this.character, gameBoard) ||
             this.character.getObstacles().didCharacterHitObstacle(this.character) ||
@@ -256,7 +258,7 @@ class Animator {
         if (!(!Fighting.shouldDragonBreatheFire(this.character, frames[frameIdx]))) {
             console.log('character: '  + characterType + ' should breathe fire');
         }
-        if (!(!Fighting.wasBarbarianTargetedByCharacter(this.character, this.character.getBarbarian(), action, frames[frameIdx]))) {
+        if (!(!Fighting.wasBarbarianTargetedByCharacter(this.character, this.character.getBarbarian(), action, this.character.getHorizontalDirection(), frames[frameIdx]))) {
             console.log('character: ' + characterType + ' targeted the barbarian');
         }
         if (!(!gameBoard.isPaused)) {

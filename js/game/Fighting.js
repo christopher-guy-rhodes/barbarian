@@ -13,23 +13,25 @@ class Fighting {
      * @param frame the frame to check for targeting
      * @returns {boolean} true if the character is hit by an axe, false otherwise
      */
-    static wasBarbarianTargetedByCharacter(character, barbarian, action, frame) {
+    static wasBarbarianTargetedByCharacter(character, barbarian, action, direction, frame) {
         if (character.isBarbarian()) {
             return false;
         }
-        let frameTarget = character.getProperties().getFrameTarget(action,
+        let frameTarget = character.getProperties().getFrameTarget(action, direction,
             character.getScreenNumber(),
             frame);
 
         let barbarianAction = barbarian.getAction() === undefined ? barbarian.getProperties().getDefaultAction()
                                                                   : barbarian.getAction();
+        let barbarianDirection = barbarian.getHorizontalDirection();
         let barbarianFrame = barbarian.getCurrentFrame(barbarianAction);
 
-        let frameTargetBarbarian = barbarian.getProperties().getFrameTarget(barbarianAction,
+        let frameTargetBarbarian = barbarian.getProperties().getFrameTarget(barbarianAction, barbarianDirection,
             barbarian.getScreenNumber(),
             barbarianFrame);
+        //console.log('frame target for %s direction %s %o',character.getProperties().getSprite().attr('class'), direction, frameTarget);
         //console.log('frame (x:%d) target for frame %d character %s for action %s is %o',character.getX(), frame, character.getProperties().getSprite().attr('class'), action, frameTarget);
-        //console.log('frame (x:%d) target for frame %d %o character %s for action %s is %o',barbarian.getX(), barbarianFrame, barbarian.currentFrame, barbarian.getProperties().getSprite().attr('class'), barbarianAction, frameTargetBarbarian);
+        //console.log('frame (x:%d) target for frame %d %o character %s for action %s is %o',barbarian.getX(), barbarianFrame, barbarian.getCurrentFrame(barbarianAction), barbarian.getProperties().getSprite().attr('class'), barbarianAction, frameTargetBarbarian);
         if (frameTarget !== undefined && frameTargetBarbarian !== undefined) {
             //console.log('frame target for %s frame %s is %o. frame target for %s is %o', character.getProperties().getSprite().attr('class'), frame, frameTarget, barbarian.getProperties().getSprite().attr('class'), frameTargetBarbarian);
 
@@ -183,6 +185,7 @@ class Fighting {
         validateRequiredParams(this.shouldCpuFight, arguments, 'character', 'gameBoard');
 
         return character.getProperties().getType() !== AXE_CHARACTER_TYPE &&
+            character.getProperties().getType() !== SHARK_CHARACTER_TYPE &&
             !character.isBarbarian() && !character.isDead() && !character.getBarbarian().isDead() &&
             this.getOpponentsWithinX(character, gameBoard, FIGHTING_RANGE_PIXELS).length > 0 &&
                 !this.didBarbarianEvadeAttack(character.getBarbarian(), character);

@@ -39,7 +39,7 @@ class Sounds {
      * @param sound the sound to play
      */
     static playStackedSound(sound) {
-        new Audio(sound).play().then(e => handlePromiseError(e));
+        new Audio(sound).play().catch(e => handlePromiseError(e));
     }
 
     /**

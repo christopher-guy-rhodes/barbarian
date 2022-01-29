@@ -70,6 +70,27 @@ class Game {
     }
 
     /**
+     * Show or hide the sprites on the screen. Used for loading all the sprites before the game plays to prevent latency
+     * of sprite loading while playing. Will not hide a sprite if it is set to appear on the current screen.
+     * @param show show the sprites if set, hide otherwise.
+     */
+    screenWarmup(show) {
+        let opponents = this.gameBoard.getAllOpponents();
+        for (let opponent of opponents) {
+            if (opponent.isBarbarian()) {
+                continue;
+            }
+            if (show) {
+                opponent.getProperties().getSprite().show();
+                opponent.getProperties().getDeathSprite().show();
+            } else if (!opponent.isOnScreen(this.gameBoard)) {
+                opponent.getProperties().getSprite().hide();
+                opponent.getProperties().getDeathSprite().hide();
+            }
+        }
+    }
+
+    /**
      * Get the messages object.
      * @returns {Messages} the messages object
      */

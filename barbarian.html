@@ -34,7 +34,7 @@
     $.getScript('/js/gameConfiguration.js', function() {
 
     game.setViewPort();
-    game.getGameBoard().setBackdrop(game.getScreenNumber());7
+    game.getGameBoard().setBackdrop(game.getScreenNumber());
 
 
     // Bind click events
@@ -42,6 +42,12 @@
     game.getGameBoard().getBackdrop().on('swipeleft', events.swipeLeftHandler);
     game.getGameBoard().getBackdrop().on('taphold', events.tapHoldHandler);
     game.getGameBoard().getBackdrop().on('click', events.clickHandler);
+
+    game.screenWarmup(true);
+    setTimeout(function () {
+        game.screenWarmup(false);
+    }, 1000);
+
 
     // Don't allow screen resizing
     $(window).resize(function(){

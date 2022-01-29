@@ -65,6 +65,12 @@ const BARBARIAN_WALK_TARGETS = {
     11: BARBARIAN_HORIZONTAL_BODY_TARGET, 12: BARBARIAN_HORIZONTAL_BODY_TARGET, 13: BARBARIAN_HORIZONTAL_BODY_TARGET,
 };
 
+const BARBARIAN_ATTACK_TARGETS = {
+    0 : BARBARIAN_HORIZONTAL_BODY_TARGET, 1 : BARBARIAN_HORIZONTAL_BODY_TARGET, 2 : BARBARIAN_HORIZONTAL_BODY_TARGET,
+    3 : BARBARIAN_HORIZONTAL_BODY_TARGET, 4 : BARBARIAN_HORIZONTAL_BODY_TARGET, 5 : BARBARIAN_HORIZONTAL_BODY_TARGET,
+    6 : BARBARIAN_HORIZONTAL_BODY_TARGET, 7 : BARBARIAN_HORIZONTAL_BODY_TARGET
+}
+
 const BARBARIAN_RUN_TARGETS = {
     16: BARBARIAN_HORIZONTAL_BODY_TARGET, 17: BARBARIAN_HORIZONTAL_BODY_TARGET, 18: BARBARIAN_HORIZONTAL_BODY_TARGET,
     19: BARBARIAN_HORIZONTAL_BODY_TARGET, 20: BARBARIAN_HORIZONTAL_BODY_TARGET, 21: BARBARIAN_HORIZONTAL_BODY_TARGET,
@@ -333,19 +339,22 @@ const BARBARIAN_CHARACTER = new CharacterBuilder(undefined, obstacles)
                 walk: { right : BARBARIAN_WALK_TARGETS, left : BARBARIAN_WALK_TARGETS },
                 run: { right : BARBARIAN_RUN_TARGETS, left : BARBARIAN_RUN_TARGETS },
                 stop: { right : BARBARIAN_STOP_TARGETS, left : BARBARIAN_STOP_TARGETS  },
-                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS }
+                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS },
+                attack: { right: BARBARIAN_ATTACK_TARGETS, left : BARBARIAN_ATTACK_TARGETS}
             },
             7 : {
                 walk: { right : BARBARIAN_WALK_TARGETS, left : BARBARIAN_WALK_TARGETS },
                 run: { right : BARBARIAN_RUN_TARGETS, left : BARBARIAN_RUN_TARGETS},
                 stop: { right : BARBARIAN_STOP_TARGETS, left : BARBARIAN_STOP_TARGETS },
-                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS }
+                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS },
+                attack: { right: BARBARIAN_ATTACK_TARGETS, left : BARBARIAN_ATTACK_TARGETS}
             },
             9 : {
                 walk: { right : BARBARIAN_WALK_TARGETS, left : BARBARIAN_WALK_TARGETS },
                 run: { right : BARBARIAN_RUN_TARGETS, left : BARBARIAN_RUN_TARGETS },
                 stop: { right : BARBARIAN_STOP_TARGETS, left : BARBARIAN_STOP_TARGETS },
-                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS }
+                jump: { right : BARBARIAN_JUMP_TARGETS, left : BARBARIAN_JUMP_TARGETS },
+                attack: {right : BARBARIAN_ATTACK_TARGETS, left : BARBARIAN_ATTACK_TARGETS}
             }
         })
         .withCanHighlight(false)
@@ -391,9 +400,11 @@ const FIREBALL_CHARACTER =
             .withFrameTargets({
                 9 : {
                     attack : {
-                        0: FIREBALL_FRAME_TARGET,
-                        1: FIREBALL_FRAME_TARGET,
-                        2: FIREBALL_FRAME_TARGET
+                        left : {
+                            0: FIREBALL_FRAME_TARGET,
+                            1: FIREBALL_FRAME_TARGET,
+                            2: FIREBALL_FRAME_TARGET
+                        }
                     }
 
                 }

@@ -186,6 +186,7 @@ class Fighting {
 
         return character.getProperties().getType() !== AXE_CHARACTER_TYPE &&
             character.getProperties().getType() !== SHARK_CHARACTER_TYPE &&
+            character.getProperties().getType() !== FIREBALL_CHARACTER_TYPE &&
             !character.isBarbarian() && !character.isDead() && !character.getBarbarian().isDead() &&
             this.getOpponentsWithinX(character, gameBoard, FIGHTING_RANGE_PIXELS).length > 0 &&
                 !this.didBarbarianEvadeAttack(character.getBarbarian(), character);

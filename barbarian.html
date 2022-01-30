@@ -12,26 +12,7 @@
     $(document).ready(function(){
     // Classes
     // Include constants
-    $.getScript('/js/constants.js', function() {
-    $.getScript('/js/util.js', function() {
-    $.getScript('/js/messages/Messages.js', function() {
-    $.getScript('/js/animation/Animator.js', function() {
-    $.getScript('/js/animation/Frames.js', function() {
-    $.getScript('/js/animation/FramesBuilder.js', function() {
-    $.getScript('/js/obstacles/Obstacle.js', function() {
-    $.getScript('/js/obstacles/Obstacles.js', function() {
-    $.getScript('/js/sounds/Sounds.js', function() {
-    $.getScript('/js/obstacles/ObstaclesBuilder.js', function() {
-    $.getScript('/js/characters/CharacterProperties.js', function() {
-    $.getScript('/js/characters/CharacterPropertiesBuilder.js', function() {
-    $.getScript('/js/characters/Character.js', function() {
-    $.getScript('/js/characters/CharacterBuilder.js', function() {
-    $.getScript('js/events/Events.js', function() {
-    $.getScript('/js/game/GameBoard.js', function() {
-    $.getScript('/js/game/GameBoardBuilder.js', function() {
-    $.getScript('/js/game/Game.js', function() {
-    $.getScript('/js/game/Fighting.js', function() {
-    $.getScript('/js/gameConfiguration.js', function() {
+    $.getScript('/js/compiled.js', function() {
 
     game.setViewPort();
     game.getGameBoard().setBackdrop(game.getScreenNumber());
@@ -61,7 +42,7 @@
 
 
 
-})})})})})})})})})})})})})})})})})})})})});
+})});
 </script>
 </head>
 <body style="touch-action: pan-y;">

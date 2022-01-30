@@ -172,8 +172,10 @@ class Game {
         this.gameBoard.resetSpritePositions(this.getBarbarian());
         this.gameBoard.initializeScreen(this.getScreenNumber());
         // Perform a stop action for the Barbarian so that he has a frame target
-        this.performAction(this.getBarbarian(), STOP_LABEL);
-        this.getBarbarian().getAnimator().stopMovement();
+        if (!this.gameBoard.isWater(this.getScreenNumber())) {
+            this.performAction(this.getBarbarian(), STOP_LABEL);
+            this.getBarbarian().getAnimator().stopMovement();
+        }
     }
 
     /**

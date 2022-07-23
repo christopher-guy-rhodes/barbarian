@@ -16,7 +16,7 @@ const FIRE_SOUND_DURATION = 2800;
  */
 class Sounds {
     constructor() {
-        this.isSoundOn = true;
+        this.isSoundOn = false;
 
         this.sounds = {
             THEME_SONG : new Audio('/sounds/theme.mp3'),
